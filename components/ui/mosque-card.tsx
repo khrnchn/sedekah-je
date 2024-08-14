@@ -1,11 +1,16 @@
 "use client";
 
 import React, { useEffect, useId, useRef, useState } from "react";
-import Image from "next/image";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Mosque } from "@/app/types";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { CopyIcon, DownloadIcon } from "lucide-react";
+import Image from "next/image";
 import { TwitterIcon } from "./icons";
 import { AnimatePresence, motion } from "framer-motion";
 import { useOutsideClick } from "@/hooks/use-outside-click";
@@ -104,17 +109,14 @@ const MosqueCard: React.FC<Mosque> = ({ name, location, image }) => {
                     Go to map
                   </motion.a>
                 </div>
-                
+
               </div>
             </motion.div>
           </div>
         ) : null}
       </AnimatePresence>
 
-      <Card
-        className="group transition-all duration-300 ease-in-out transform hover:scale-105 cursor-pointer"
-        onClick={() => setActive(true)}
-      >
+      <Card className="group " onClick={() => setActive(true)}>
         <CardContent className="flex flex-col items-center gap-4 p-6 h-full">
           <div className="flex flex-col items-center gap-2 h-20">
             <h3 className="text-lg font-semibold text-green-600">{name}</h3>
@@ -131,23 +133,42 @@ const MosqueCard: React.FC<Mosque> = ({ name, location, image }) => {
             <Button
               size="icon"
               variant="ghost"
-              className="group-hover:bg-muted/50 group-focus:bg-muted/50"
+              className="group-hover:bg-muted/50 group-focus:bg-muted/50 hover:scale-105 transition-transform duration-200 ease-in-out"
             >
               <CopyIcon className="h-5 w-5 text-green-600" />
               <span className="sr-only">Copy QR code link</span>
             </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="group-hover:bg-muted/50 group-focus:bg-muted/50 hover:scale-105 transition-transform duration-200 ease-in-out"
+                  >
+                    <DownloadIcon
+                      className="h-5 w-5 text-green-600"
+                      onClick={async () => {
+                        const blob = await fetch(image).then((res) => res.blob());
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement("a");
+                        a.href = url;
+                        a.download = `${name.toLowerCase().replace(/\s/g, "-")}.png`;
+                        a.click();
+                      }}
+                    />
+                    <span className="sr-only">Download QR code</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Download QR Code</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <Button
               size="icon"
               variant="ghost"
-              className="group-hover:bg-muted/50 group-focus:bg-muted/50"
-            >
-              <DownloadIcon className="h-5 w-5 text-green-600" />
-              <span className="sr-only">Download QR code</span>
-            </Button>
-            <Button
-              size="icon"
-              variant="ghost"
-              className="group-hover:bg-muted/50 group-focus:bg-muted/50"
+              className="group-hover:bg-muted/50 group-focus:bg-muted/50 hover:scale-105 transition-transform duration-200 ease-in-out"
             >
               <TwitterIcon className="h-5 w-5 text-green-600" />
               <span className="sr-only">Share on Twitter</span>
