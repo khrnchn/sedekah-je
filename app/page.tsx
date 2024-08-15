@@ -1,11 +1,11 @@
 "use client";
 
 import { Header } from "@/components/ui/header";
-import { MosqueCard } from "@/components/ui/mosque-card";
 import { SearchBar } from "@/components/ui/searchbar";
 import type React from "react";
 import { useState } from "react";
 import { mosques } from "./data/mosques";
+import MosqueCard from "@/components/ui/mosque-card";
 
 const Home: React.FC = () => {
 	const [filteredMosques, setFilteredMosques] = useState<Mosque[]>(mosques);
