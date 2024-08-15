@@ -192,7 +192,6 @@ const MosqueCard: React.FC<Mosque> = ({ name, location, image }) => {
           </CardContent>
         </Card>
       </motion.div>
-
     </>
   );
 };
@@ -222,4 +221,3 @@ export const CloseIcon = () => {
 };
 
 export default MosqueCard;
-
