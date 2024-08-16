@@ -160,17 +160,17 @@ const MosqueCard: React.FC<Mosque> = ({ name, location, image }) => {
                       size="icon"
                       variant="ghost"
                       className="group-hover:bg-muted/50 group-focus:bg-muted/50 hover:scale-105 transition-transform duration-200 ease-in-out"
+                      onClick={async () => {
+                        const blob = await fetch(image).then((res) => res.blob());
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement("a");
+                        a.href = url;
+                        a.download = `${name.toLowerCase().replace(/\s/g, "-")}.png`;
+                        a.click();
+                      }}
                     >
                       <DownloadIcon
                         className="h-5 w-5 text-green-600"
-                        onClick={async () => {
-                          const blob = await fetch(image).then((res) => res.blob());
-                          const url = URL.createObjectURL(blob);
-                          const a = document.createElement("a");
-                          a.href = url;
-                          a.download = `${name.toLowerCase().replace(/\s/g, "-")}.png`;
-                          a.click();
-                        }}
                       />
                       <span className="sr-only">Download QR code</span>
                     </Button>
