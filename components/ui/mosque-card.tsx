@@ -155,7 +155,7 @@ const MosqueCard: React.FC<Mosque> = ({ name, location, image }) => {
               </Button>
               <TooltipProvider>
                 <Tooltip>
-                  <TooltipTrigger>
+                  <TooltipTrigger >
                     <Button
                       size="icon"
                       variant="ghost"
