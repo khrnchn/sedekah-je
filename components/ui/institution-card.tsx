@@ -11,11 +11,13 @@ import {
 } from "@/components/ui/tooltip";
 import { CopyIcon, DownloadIcon } from "lucide-react";
 import Image from "next/image";
-import { TwitterIcon } from "./icons";
+// import { TwitterIcon } from "./icons";
 import { AnimatePresence, motion } from "framer-motion";
 import { useOutsideClick } from "@/hooks/use-outside-click";
+import { Institution } from "@/app/types/institutions";
+import CategoryLabel from "./category-label";
 
-const MosqueCard: React.FC<Mosque> = ({ name, location, image }) => {
+const InstitutionCard: React.FC<Institution> = ({ name, location, image,  qrContent, supportedPayment, category }) => {
   const [active, setActive] = useState<boolean | null>(false);
   const id = useId();
   const ref = useRef<HTMLDivElement>(null);
@@ -121,6 +123,9 @@ const MosqueCard: React.FC<Mosque> = ({ name, location, image }) => {
         <Card className="group " >
           <CardContent className="flex flex-col items-center gap-4 p-6 h-full">
             <div className="flex flex-col items-center gap-2 h-20">
+              <motion.div>
+                <CategoryLabel category={category} />
+              </motion.div>
               <motion.h3
                 layoutId={`title-${name}-${id}`}
                 className="text-lg font-semibold text-green-600"
@@ -180,14 +185,14 @@ const MosqueCard: React.FC<Mosque> = ({ name, location, image }) => {
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-              <Button
+              {/* <Button
                 size="icon"
                 variant="ghost"
                 className="group-hover:bg-muted/50 group-focus:bg-muted/50 hover:scale-105 transition-transform duration-200 ease-in-out"
               >
                 <TwitterIcon className="h-5 w-5 text-green-600" />
                 <span className="sr-only">Share on Twitter</span>
-              </Button>
+              </Button> */}
             </div>
           </CardContent>
         </Card>
@@ -220,4 +225,4 @@ export const CloseIcon = () => {
   );
 };
 
-export default MosqueCard;
+export default InstitutionCard;

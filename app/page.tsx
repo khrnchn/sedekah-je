@@ -4,27 +4,40 @@ import { Header } from "@/components/ui/header";
 import { SearchBar } from "@/components/ui/searchbar";
 import type React from "react";
 import { useState } from "react";
-import { mosques } from "./data/mosques";
-import MosqueCard from "@/components/ui/mosque-card";
+import { institutions } from "./data/institutions";
+import InstitutionCard from "@/components/ui/institution-card";
+import Filters from "@/components/sections/filters";
 
 const Home: React.FC = () => {
-	const [filteredMosques, setFilteredMosques] = useState<Mosque[]>(mosques);
+	const [query, setQuery] = useState<string>("");
+	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
 	const handleSearch = (query: string) => {
-		const lowercaseQuery = query.toLowerCase();
-		const filtered = mosques.filter((mosque) =>
-			mosque.name.toLowerCase().includes(lowercaseQuery),
-		);
-		setFilteredMosques(filtered);
+		setQuery(query);
 	};
 
+	const handleFilters = (props: { categories: string[] }) => {
+		setSelectedCategories(props.categories);
+	};
+
+	const filteredInstitutions = institutions.filter((institution) => {
+		const lowercaseQuery = query.toLowerCase();
+		return (
+			institution.name.toLowerCase().includes(lowercaseQuery) &&
+			(selectedCategories.length === 0 ||
+			selectedCategories.includes(institution.category))
+		);
+	});
+
 	return (
-		<div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+		<div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-8">
 			<Header />
+			<Filters onChange={handleFilters} />
+			{/* Add filter for categories */}
 			<SearchBar onSearch={handleSearch} />
 			<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-				{filteredMosques.map((mosque, index) => (
-					<MosqueCard key={index} {...mosque} />
+				{filteredInstitutions.map((institution) => (
+					<InstitutionCard key={institution.id} {...institution} />
 				))}
 			</div>
 		</div>
