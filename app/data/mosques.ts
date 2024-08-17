@@ -6,7 +6,7 @@ export const mosques: Mosque[] = [
   },
   {
     name: "Masjid Al Ghufran",
-    location: "-",
+    location: "Kuala Lumpur",
     image: "/masjid/masjid-al-ghufran.png",
   },
   {
