@@ -16,6 +16,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 import { Institution } from "@/app/types/institutions";
 import CategoryLabel from "./category-label";
+import QrCodeDisplay from "./qrCodeDisplay";
 
 const InstitutionCard: React.FC<Institution> = ({ name, location, image,  qrContent, supportedPayment, category }) => {
   const [active, setActive] = useState<boolean | null>(false);
@@ -72,15 +73,22 @@ const InstitutionCard: React.FC<Institution> = ({ name, location, image,  qrCont
               ref={ref}
               className="w-full max-w-[500px] h-full md:h-fit md:max-h-[90%] flex flex-col bg-white dark:bg-neutral-900 sm:rounded-3xl overflow-auto lg:overflow-hidden"
             >
-              <motion.div layoutId={`image-${name}-${id}`}>
-                <Image
-                  priority
-                  width={200}
-                  height={200}
-                  src={image}
-                  alt={name}
-                  className="w-full h-full lg:h-full sm:rounded-tr-lg sm:rounded-tl-lg object-cover object-top"
-                />
+              <motion.div layoutId={`image-${name}-${id}`} className="flex items-center justify-center">
+                {
+                  qrContent && <QrCodeDisplay qrContent={qrContent} supportedPayment={supportedPayment} size={500} />
+                }
+                {
+                  !qrContent && (
+                    <Image
+                      priority
+                      width={200}
+                      height={200}
+                      src={image}
+                      alt={name}
+                      className="w-full h-full lg:h-full sm:rounded-tr-lg sm:rounded-tl-lg object-cover object-top"
+                    />
+                  )
+                }
               </motion.div>
 
               <div>
@@ -140,14 +148,21 @@ const InstitutionCard: React.FC<Institution> = ({ name, location, image,  qrCont
               </motion.p>
             </div>
             <motion.div layoutId={`image-${name}-${id}`} className="cursor-pointer">
-              <Image
-                src={image}
-                alt={`QR Code for ${name}`}
-                width={160}
-                height={160}
-                className="rounded-lg h-40 object-cover"
-                onClick={() => setActive(true)}
-              />
+              {
+                qrContent && <QrCodeDisplay qrContent={qrContent} supportedPayment={supportedPayment} onClick={() => setActive(true)} />
+              }
+              {
+                !qrContent && (
+                  <Image
+                  src={image}
+                  alt={`QR Code for ${name}`}
+                  width={160}
+                  height={160}
+                  className="rounded-lg h-40 object-cover"
+                  onClick={() => setActive(true)}
+                />
+                )
+              }
             </motion.div>
             <div className="flex gap-2 mt-auto">
               <Button
