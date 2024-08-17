@@ -33,7 +33,6 @@ const Home: React.FC = () => {
 		<div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-8">
 			<Header />
 			<Filters onChange={handleFilters} />
-			{/* Add filter for categories */}
 			<SearchBar onSearch={handleSearch} />
 			<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 				{filteredInstitutions.map((institution) => (
