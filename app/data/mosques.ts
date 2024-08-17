@@ -29,7 +29,6 @@ export const mosques: Mosque[] = [
     location: "Selangor",
     image: "/surau/surau-as-salam-seksyen-4.png",
   },
-  ,
   {
     name: "Masjid Sri Sendayan",
     location: "Negeri Sembilan",
