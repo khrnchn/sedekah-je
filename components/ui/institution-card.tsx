@@ -116,7 +116,7 @@ const InstitutionCard: React.FC<Institution> = ({ name, location, image,  qrCont
                     target="_blank"
                     className="px-4 py-3 text-sm rounded-full font-bold bg-green-500 text-white"
                   >
-                    Go to map
+                    Cari di peta
                   </motion.a>
                 </div>
               </div>
@@ -129,20 +129,29 @@ const InstitutionCard: React.FC<Institution> = ({ name, location, image,  qrCont
         layoutId={`card-${name}-${id}`}
       >
         <Card className="group " >
-          <CardContent className="flex flex-col items-center gap-4 p-6 h-full">
-            <div className="flex flex-col items-center gap-2 h-20">
+          <CardContent className="flex flex-col items-center gap-2 p-4 h-full">
+            <div className="flex flex-col items-center gap-1 mb-2 w-full">
               <motion.div>
                 <CategoryLabel category={category} />
               </motion.div>
-              <motion.h3
-                layoutId={`title-${name}-${id}`}
-                className="text-lg font-semibold text-green-600"
-              >
-                {name}
-              </motion.h3>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <motion.h3
+                      layoutId={`title-${name}-${id}`}
+                      className="text-lg font-semibold text-green-600 truncate w-full text-center"
+                    >
+                      {name}
+                    </motion.h3>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{name}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
               <motion.p
                 layoutId={`location-${location}-${id}`}
-                className="text-sm text-muted-foreground"
+                className="text-sm text-muted-foreground truncate w-full text-center"
               >
                 {location}
               </motion.p>
