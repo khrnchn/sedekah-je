@@ -169,7 +169,7 @@ export const institutions: Institution[] = [
     name: "Surau Al Ikhlasiah",
     category: "surau",
     location: "Selangor",
-    image: "/placeholder.png",
+    image: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000225031001921366955204866153034585802MY5918SURAU AL-IKHLASIAH6006AMPANG6105680006304ADB9",
     supportedPayment: ["duitnow", "tng"],
@@ -179,7 +179,7 @@ export const institutions: Institution[] = [
     name: "Masjid Al Mustaqim",
     category: "mosque",
     location: "Selangor",
-    image: "/placeholder.png",
+    image: "",
     qrContent:
       "00020201021126620014A000000615000101065641670215QRMID00000003890311011100924415204866153034585802MY5925MASJID AL MUSTAQIM AMPANG6006AMPANG6105680006304F9D2",
     supportedPayment: ["duitnow", "tng"],
@@ -189,7 +189,7 @@ export const institutions: Institution[] = [
     name: "Surau Al Umm",
     category: "surau",
     location: "Selangor",
-    image: "/placeholder.png",
+    image: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000036031001393260725204866153034585802MY5912SURAU AL-UMM6006KAJANG6105430006304CDE7",
     supportedPayment: ["duitnow", "tng"],
@@ -199,7 +199,7 @@ export const institutions: Institution[] = [
     name: "Masjid As Syakirin",
     category: "mosque",
     location: "Selangor",
-    image: "/placeholder.png",
+    image: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000140031001265703345204866153034585802MY5918MASJID AS SYAKIRIN6007DENGKIL61054380063041627",
     supportedPayment: ["duitnow", "tng"],
@@ -209,7 +209,7 @@ export const institutions: Institution[] = [
     name: "Surau Damai",
     category: "surau",
     location: "Selangor",
-    image: "/placeholder.png",
+    image: "",
     qrContent:
       "00020201021126600014A000000615000101065641670215QRMID000000015103090123369895204866153034585802MY5911SURAU DAMAI6005BANGI610543650630409F3",
     supportedPayment: ["duitnow", "tng"],
@@ -219,7 +219,7 @@ export const institutions: Institution[] = [
     name: "Surau Al Kauthar",
     category: "surau",
     location: "Selangor",
-    image: "/placeholder.png",
+    image: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000197031001328608795204866153034585802MY5916SURAU AL-KAUTHAR6015BANDAR BARU BAN6105436506304DDB5",
     supportedPayment: ["duitnow", "tng"],
@@ -229,7 +229,7 @@ export const institutions: Institution[] = [
     name: "Surau Ar Raudhah",
     category: "surau",
     location: "Selangor",
-    image: "/placeholder.png",
+    image: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000220031001933151515204866153034585802MY5916SURAU AR-RAUDHAH6006KAJANG6105430006304980F",
     supportedPayment: ["duitnow", "tng"],
@@ -239,7 +239,7 @@ export const institutions: Institution[] = [
     name: "Surau As Sobah",
     category: "surau",
     location: "Selangor",
-    image: "/placeholder.png",
+    image: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000292031001739679955204866153034585802MY5914SURAU AL-SOBAH6015BANDAR BARU BAN6105436506304CDF0",
     supportedPayment: ["duitnow", "tng"],
@@ -249,7 +249,7 @@ export const institutions: Institution[] = [
     name: "Masjid Al Azhar Kolej Universiti Islam Selangor",
     category: "mosque",
     location: "Selangor",
-    image: "/placeholder.png",
+    image: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000277031001337175795204866153034585802MY5915MASJID AL AZHAR6006KAJANG61054300063045B9C",
     supportedPayment: ["duitnow", "tng"],
@@ -259,7 +259,7 @@ export const institutions: Institution[] = [
     name: "Masjid Al Hasanah",
     category: "mosque",
     location: "Selangor",
-    image: "/placeholder.png",
+    image: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000320031001964433995204866153034585802MY5925MASJID AL-HASANAH BBBANGI6015BANDAR BARU BAN61054365063047E34",
     supportedPayment: ["duitnow", "tng"],
@@ -269,7 +269,7 @@ export const institutions: Institution[] = [
     name: "Yayasan Darussyifa Bangi",
     category: "others",
     location: "Selangor",
-    image: "/placeholder.png",
+    image: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000335031001390507915204866153034585802MY5924YAYASAN DARUSSYIFA BANGI6005BANGI61054365063042858",
     supportedPayment: ["duitnow", "tng"],
@@ -279,7 +279,7 @@ export const institutions: Institution[] = [
     name: "Surau Al Mujahidin",
     category: "surau",
     location: "Selangor",
-    image: "/placeholder.png",
+    image: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000378031001292084515204866153034585802MY5918SURAU AL MUJAHIDIN6005BANGI61054365063041927",
     supportedPayment: ["duitnow", "tng"],
@@ -289,7 +289,7 @@ export const institutions: Institution[] = [
     name: "Tabung Sekolah Rendah Sri Al Amin Bangi",
     category: "others",
     location: "Selangor",
-    image: "/placeholder.png",
+    image: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000482031001922555695204533153034585802MY5915TABUNG SEK SAAB6006KAJANG6105430006304A92B",
     supportedPayment: ["duitnow", "tng"],
@@ -299,7 +299,7 @@ export const institutions: Institution[] = [
     name: "Surau Al Madani",
     category: "surau",
     location: "Selangor",
-    image: "/placeholder.png",
+    image: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000901031001935048475204866153034585802MY5915SURAU AL MADANI6015BANDAR BARU BAN6105436506304EDA6",
     supportedPayment: ["duitnow", "tng"],

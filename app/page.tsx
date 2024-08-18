@@ -26,16 +26,16 @@ const Home: React.FC = () => {
 		return (
 			institution.name.toLowerCase().includes(lowercaseQuery) &&
 			(selectedCategories.length === 0 ||
-			selectedCategories.includes(institution.category))
+				selectedCategories.includes(institution.category))
 		);
 	});
 
 	return (
-		<div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-8">
+		<div className="max-w-5xl mx-auto px-2 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 flex flex-col gap-4 sm:gap-6 lg:gap-8">
 			<Header />
 			<Filters onChange={handleFilters} />
 			<SearchBar onSearch={handleSearch} />
-			<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+			<div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
 				{filteredInstitutions.map((institution) => (
 					<InstitutionCard key={institution.id} {...institution} />
 				))}

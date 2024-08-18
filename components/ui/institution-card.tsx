@@ -128,9 +128,9 @@ const InstitutionCard: React.FC<Institution> = ({ name, location, image,  qrCont
       <motion.div
         layoutId={`card-${name}-${id}`}
       >
-        <Card className="group " >
+        <Card className="group">
           <CardContent className="flex flex-col items-center gap-2 p-4 h-full">
-            <div className="flex flex-col items-center gap-1 mb-2 w-full">
+            <div className="flex flex-col items-center gap-1 mb-2">
               <motion.div>
                 <CategoryLabel category={category} />
               </motion.div>
