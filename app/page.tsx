@@ -7,6 +7,7 @@ import { useState } from "react";
 import { institutions } from "./data/institutions";
 import InstitutionCard from "@/components/ui/institution-card";
 import Filters from "@/components/sections/filters";
+import Ribbon from "@/components/ui/ribbon";
 
 const Home: React.FC = () => {
 	const [query, setQuery] = useState<string>("");
@@ -39,6 +40,7 @@ const Home: React.FC = () => {
 					<InstitutionCard key={institution.id} {...institution} />
 				))}
 			</div>
+			<Ribbon />
 		</div>
 	);
 };
