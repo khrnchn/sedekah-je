@@ -47,7 +47,7 @@ const Home: React.FC = () => {
 	return (
 		<div className="max-w-5xl mx-auto px-2 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 flex flex-col gap-4 sm:gap-6 lg:gap-8">
 			<Header />
-			{/* <Map /> */}
+			<Map />
 			<Filters onChange={handleFilters} />
 			<SearchBar onSearch={handleSearch} className="col-span-3" />
 			<div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">

@@ -22,7 +22,7 @@ export default function Map() {
             zoom={11}
             scrollWheelZoom={true}
             style={{ height: "240px", width: "965px" }}
-        // className="w-full h-auto"
+            className="w-full h-auto z-0"
         >
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
