@@ -52,15 +52,6 @@ const Home: React.FC = () => {
 		}
 	), [])
 
-	// const filteredInstitutions = institutions.filter((institution) => {
-	// 	const lowercaseQuery = query.toLowerCase();
-	// 	return (
-	// 		institution.name.toLowerCase().includes(lowercaseQuery) &&
-	// 		(selectedCategories.length === 0 ||
-	// 			selectedCategories.includes(institution.category)) && (selectedState ? institution.location === selectedState.toLocaleUpperCase().replaceAll('-', ' ') : true)
-	// 	);
-	// });
-
 	useEffect(() => {
 		setIsLoading(true);
 		const filterData = new Promise((resolve) => {
