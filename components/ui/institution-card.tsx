@@ -18,10 +18,21 @@ import { Institution } from "@/app/types/institutions";
 import CategoryLabel from "./category-label";
 import QrCodeDisplay from "./qrCodeDisplay";
 
+const capitalizeWords = (str: string) => {
+  return str
+    .toLowerCase() 
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
 const InstitutionCard: React.FC<Institution> = ({ name, location, image,  qrContent, supportedPayment, category }) => {
   const [active, setActive] = useState<boolean | null>(false);
   const id = useId();
   const ref = useRef<HTMLDivElement>(null);
+
+  const capitalizedName = capitalizeWords(name);
+  const capitalizedLocation = capitalizeWords(location);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -73,7 +84,7 @@ const InstitutionCard: React.FC<Institution> = ({ name, location, image,  qrCont
               ref={ref}
               className="w-full max-w-[500px] h-full md:h-fit md:max-h-[90%] flex flex-col bg-white dark:bg-neutral-900 sm:rounded-3xl overflow-auto lg:overflow-hidden"
             >
-              <motion.div layoutId={`image-${name}-${id}`} className="flex items-center justify-center">
+              <motion.div layoutId={`image-${name}-${id}`} className="flex items-center justify-center ">
                 {
                   qrContent && <QrCodeDisplay qrContent={qrContent} supportedPayment={supportedPayment} size={500} />
                 }
@@ -98,13 +109,13 @@ const InstitutionCard: React.FC<Institution> = ({ name, location, image,  qrCont
                       layoutId={`title-${name}-${id}`}
                       className="font-medium text-neutral-700 dark:text-neutral-200 text-base"
                     >
-                      {name}
+                      {capitalizedName}
                     </motion.h3>
                     <motion.p
                       layoutId={`location-${location}-${id}`}
                       className="text-neutral-600 dark:text-neutral-400 text-base"
                     >
-                      {location}
+                      {capitalizedLocation}
                     </motion.p>
                   </div>
                   <motion.a
@@ -130,7 +141,7 @@ const InstitutionCard: React.FC<Institution> = ({ name, location, image,  qrCont
       >
         <Card className="group">
           <CardContent className="flex flex-col items-center gap-2 p-4 h-full">
-            <div className="flex flex-col items-center gap-1 mb-2">
+            <div className="flex flex-col items-center gap-1 mb-2 w-full">
               <motion.div>
                 <CategoryLabel category={category} />
               </motion.div>
@@ -141,11 +152,11 @@ const InstitutionCard: React.FC<Institution> = ({ name, location, image,  qrCont
                       layoutId={`title-${name}-${id}`}
                       className="text-lg font-semibold text-green-600 truncate w-full text-center"
                     >
-                      {name}
+                      {capitalizedName}
                     </motion.h3>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>{name}</p>
+                    <p>{capitalizedName}</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
@@ -153,7 +164,7 @@ const InstitutionCard: React.FC<Institution> = ({ name, location, image,  qrCont
                 layoutId={`location-${location}-${id}`}
                 className="text-sm text-muted-foreground truncate w-full text-center"
               >
-                {location}
+                {capitalizedLocation}
               </motion.p>
             </div>
             <motion.div layoutId={`image-${name}-${id}`} className="cursor-pointer">
