@@ -18,7 +18,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
   return (
     <Input
       type="search"
-      placeholder="Cari masjid/ surau/ institusi..."
+      placeholder="Cari lokasi/ masjid/ surau/ institusi..."
       className="w-full rounded-lg bg-muted pl-8 pr-4 py-2 text-sm"
       value={searchTerm}
       onChange={handleInputChange}

@@ -30,12 +30,12 @@ const Home: React.FC = () => {
 	};
 
 	const filteredInstitutions = institutions.filter((institution) => {
-		const lowercaseQuery = query.toLowerCase();
-		return (
-			institution.name.toLowerCase().includes(lowercaseQuery) &&
-			(selectedCategories.length === 0 ||
-				selectedCategories.includes(institution.category))
-		);
+		const lowercaseQuery = query.toLowerCase().trim();
+
+		const nameMatch = institution.name.toLowerCase().includes(lowercaseQuery);
+		const locationMatch = institution.location.toLowerCase().includes(lowercaseQuery);
+
+		return (nameMatch || locationMatch) && (selectedCategories.length === 0 || selectedCategories.includes(institution.category));
 	});
 
 	return (
