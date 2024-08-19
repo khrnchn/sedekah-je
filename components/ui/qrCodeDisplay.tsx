@@ -90,4 +90,6 @@ const QrCodeDisplay = forwardRef<HTMLButtonElement, Props>((props, ref) => {
 	);
 });
 
+QrCodeDisplay.displayName = "QrCodeDisplay";
+
 export default QrCodeDisplay;

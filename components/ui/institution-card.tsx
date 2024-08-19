@@ -279,6 +279,7 @@ const InstitutionCard: React.FC<Institution> = ({
 export const CloseIcon = () => {
 	return (
 		<motion.svg
+			name="close-icon"
 			initial={{ opacity: 0 }}
 			animate={{ opacity: 1 }}
 			exit={{ opacity: 0, transition: { duration: 0.05 } }}
