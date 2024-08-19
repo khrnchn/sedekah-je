@@ -9,7 +9,7 @@ import { institutions } from "@/app/data/institutions";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import { LatLngExpression } from "leaflet";
 
-export default function Map() {
+export default function MapLocation() {
     // Full semenanjung view coords: 3.8300, 101.4046, zoom: 7
     const position = {
         center: [3.1685, 101.6512] as LatLngExpression,
@@ -21,8 +21,7 @@ export default function Map() {
             center={position.center}
             zoom={11}
             scrollWheelZoom={true}
-            style={{ height: "240px", width: "965px" }}
-            className="w-full h-auto z-0"
+            className="w-full h-auto z-0 min-h-[240px] min-w-[965px] rounded-md overflow-clip"
         >
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

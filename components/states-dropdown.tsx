@@ -122,9 +122,9 @@ export function StatesDropdown(props: Props, { widthFull = false }) {
                                     key={state.value}
                                     value={state.value}
                                     onSelect={(currentValue) => {
-                                        setValue(currentValue === value ? "" : currentValue)
+                                        setValue(currentValue === value ? '' : currentValue)
                                         setOpen(false)
-                                        props.onChange({ state: currentValue })
+                                        props.onChange({ state: currentValue === value ? '' : currentValue })
                                     }}
                                 >
                                     {state.label}
