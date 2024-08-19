@@ -31,7 +31,6 @@ export default function Map() {
 
             {
                 position.marker.map((position, idx) => {
-                    console.log(position.coords)
                     if (position.coords) return (
                         <Marker key={idx} position={position.coords as LatLngExpression}>
                             <Popup>
