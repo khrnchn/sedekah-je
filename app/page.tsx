@@ -3,19 +3,27 @@
 import { Header } from "@/components/ui/header";
 import { SearchBar } from "@/components/ui/searchbar";
 import type React from "react";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { institutions } from "./data/institutions";
 import InstitutionCard from "@/components/ui/institution-card";
 import Filters from "@/components/sections/filters";
 import Ribbon from "@/components/ui/ribbon";
+import { debounce } from "lodash-es";
 
 const Home: React.FC = () => {
 	const [query, setQuery] = useState<string>("");
 	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 
-	const handleSearch = (query: string) => {
-		setQuery(query);
-	};
+	const debouncedSetQuery = useCallback(
+    debounce((newQuery: string) => {
+      setQuery(newQuery);
+    }, 300),
+    []
+  );
+
+  const handleSearch = useCallback((newQuery: string) => {
+    debouncedSetQuery(newQuery);
+  }, [debouncedSetQuery]);
 
 	const handleFilters = (props: { categories: string[] }) => {
 		setSelectedCategories(props.categories);
