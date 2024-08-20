@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
@@ -20,7 +21,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch, className }) => 
     <Input
       type="search"
       placeholder="Cari masjid/ surau/ institusi..."
-      className={`w-full rounded-lg bg-muted pl-8 pr-4 py-2 text-sm ${className ?? ""}`}
+      className={cn("w-full rounded-lg bg-muted dark:bg-zinc-800 px-4 py-2 text-sm dark:placeholder:text-slate-500", className)}
       value={searchTerm}
       onChange={handleInputChange}
     />

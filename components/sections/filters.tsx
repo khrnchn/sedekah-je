@@ -54,7 +54,6 @@ const Filters = (props: Props) => {
 				))}
 			</div>
 			<StatesDropdown onChange={handleStateFilters} className="max-md:min-w-full" />
-			{/* <StatesDropdown onChange={(states) => setSelectedStates(states)} /> */}
 		</div>
 	);
 };
