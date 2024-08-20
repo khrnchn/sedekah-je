@@ -21,7 +21,7 @@ export const institutions: Institution[] = [
     qrContent:
       "00020201021126520014A000000615000101068900530220MDN162217666262104305204866153034585802MY5915MASJIDALGHUFRAN6011KUALALUMPUR6304AC7A",
     supportedPayment: ["duitnow", "tng"],
-    coords: [3.1578854416571565, 101.61682224883123]
+    coords: [3.1578854416571565, 101.61682224883123],
   },
   {
     id: 3,
@@ -32,7 +32,7 @@ export const institutions: Institution[] = [
     qrContent:
       "00020101021126580014A000000615000101065887340212MBBQR124979103100000000000520400005303458540500.005802MY5918MASJID AL MUHTADIN6008SELANGOR630414E7",
     supportedPayment: ["duitnow", "tng"],
-    coords: [3.201055431014754, 101.59551490051814]
+    coords: [3.201055431014754, 101.59551490051814],
   },
   {
     id: 4,
@@ -42,7 +42,7 @@ export const institutions: Institution[] = [
     image: "/masjid/masjid-ar-rahman.png",
     qrContent: "https://qr.tngdigital.com.my/m/281011056697947085062292043",
     supportedPayment: ["tng"],
-    coords: [3.124261867632774, 101.67413567602591]
+    coords: [3.124261867632774, 101.67413567602591],
   },
   {
     id: 5,
@@ -2237,5 +2237,16 @@ export const institutions: Institution[] = [
     qrContent:
       "00020201021126580014A000000615000101065887340212MBBQR1384949031000000000005204729953034585802MY5917MASJID AL FIRDAUS6012KUALA LUMPUR630448CA",
     supportedPayment: ["duitnow"],
+  },
+  {
+    id: 225,
+    name: "Surau Haji Omar Jalan Genting",
+    image: "",
+    category: "surau",
+    location: "SELANGOR",
+    qrContent:
+      "00020201021126420014A000000615000101066033460210MD001301335204866153034585802MY5925Surau Hj Omar Jln Genting6002MY6273032517071030332970090364035730520170710363623000637960716170710184223100163040BE9",
+    supportedPayment: ["duitnow", "tng"],
+    coords: [3.0705502405615954, 101.40133071533951],
   },
 ];
