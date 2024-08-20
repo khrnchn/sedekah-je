@@ -114,7 +114,7 @@ const InstitutionCard: React.FC<Institution> = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, transition: { duration: 0.05 } }}
-              className="flex absolute top-2 right-2 lg:hidden items-center justify-center bg-white rounded-full h-6 w-6 z-10"
+              className="flex absolute top-2 right-2 lg:hidden items-center justify-center bg-white  dark:bg-slate-800 rounded-full h-6 w-6 z-10"
               onClick={() => setActive(null)}
             >
               <CloseIcon />
@@ -125,7 +125,7 @@ const InstitutionCard: React.FC<Institution> = ({
               drag
               onDragEnd={() => setActive(false)}
               whileDrag={{ scale: 1.05 }}
-              className="w-full max-w-[500px] h-full md:h-fit p-5 md:max-h-[90%] flex flex-col bg-white sm:rounded-3xl overflow-auto lg:overflow-hidden"
+              className="w-full max-w-[500px] h-full md:h-fit p-5 md:max-h-[90%] flex flex-col bg-white dark:bg-slate-800 sm:rounded-3xl overflow-auto lg:overflow-hidden"
             >
               <motion.div
                 layoutId={`image-${name}-${id}`}
