@@ -9,6 +9,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { toast } from "sonner";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 // import { TwitterIcon } from "./icons";
 import { AnimatePresence, motion } from "framer-motion";
@@ -238,35 +239,34 @@ const InstitutionCard: React.FC<Institution> = ({
                       variant="ghost"
                       className="hover:bg-muted/50 focus:bg-muted/50 hover:scale-105 transition-transform duration-200 ease-in-out"
                       onClick={async () => {
-                        if (!qrContent) {
-                          const blob = await fetch(
-                            qrContent ? qrContent : image,
-                          ).then((res) => res.blob());
-                          const url = URL.createObjectURL(blob);
-                          const a = document.createElement("a");
+                        try {
+                          if (!qrContent) {
+                            const blob = await fetch(image).then((res) => res.blob());
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement("a");
 
-                          a.href = url;
-                          a.download = `${name.toLowerCase().replace(/\s/g, "-")}.png`;
-                          a.click();
-                          URL.revokeObjectURL(url);
-                          return;
+                            a.href = url;
+                            a.download = `${name.toLowerCase().replace(/\s/g, "-")}.png`;
+                            a.click();
+                            URL.revokeObjectURL(url);
+                          } else {
+                            const element = printRef.current;
+                            const canvas = await html2canvas(element as HTMLButtonElement);
+
+                            const data = canvas.toDataURL("image/jpg");
+                            const link = document.createElement("a");
+
+                            link.href = data;
+                            link.download = `${name.toLowerCase().replace(/\s/g, "-")}.png`;
+
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                          }
+                          toast.success('QR code downloaded successfully!');
+                        } catch (error) {
+                          toast.error('Failed to download the QR code.');
                         }
-
-                        const element = printRef.current;
-                        const canvas = await html2canvas(
-                          element as HTMLButtonElement,
-                        );
-
-                        const data = canvas.toDataURL("image/jpg");
-                        const link = document.createElement("a");
-
-                        link.href = data;
-                        link.download = `${name.toLowerCase().replace(/\s/g, "-")}.png`;
-
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        return;
                       }}
                     >
                       <DownloadIcon className="h-5 w-5 text-green-600" />
