@@ -182,15 +182,19 @@ const InstitutionCard: React.FC<Institution> = ({
               >
                 {capitalizedLocation}
               </motion.p>
-              </div>
-            <motion.div
-              layoutId={`image-${name}-${id}`}
-              className="cursor-pointer"
-            >
-              {qrContent ? (
-                <QrCodeDisplay
-                  qrContent={qrContent}
-                  supportedPayment={supportedPayment}
+            </div>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <motion.div
+                    layoutId={`image-${name}-${id}`}
+                    className="cursor-pointer"
+                  >
+
+                    {qrContent ? (
+                      <QrCodeDisplay
+                        qrContent={qrContent}
+                        supportedPayment={supportedPayment}
                         onClick={() => setActive(true)}
                         ref={printRef}
                         name={name}
@@ -206,17 +210,32 @@ const InstitutionCard: React.FC<Institution> = ({
                       />
                     )}
                   </motion.div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Klik untuk maklumat lanjut</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <div className="flex gap-2 mt-auto">
-              <Button
-                size="icon"
-                variant="ghost"
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon"
+                      variant="ghost"
                       className="hover:bg-muted/50 focus:bg-muted/50 hover:scale-105 transition-transform duration-200 ease-in-out"
-                      // TODO
-                      // onClick=
+                    // TODO
+                    // onClick=
                     >
-                <CopyIcon className="h-5 w-5 text-green-600" />
-                <span className="sr-only">Copy QR code link</span>
-              </Button>
+                      <CopyIcon className="h-5 w-5 text-green-600" />
+                      <span className="sr-only">Salin pautan kod QR</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Salin pautan kod QR</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -257,11 +276,11 @@ const InstitutionCard: React.FC<Institution> = ({
                       }}
                     >
                       <DownloadIcon className="h-5 w-5 text-green-600" />
-                      <span className="sr-only">Download QR code</span>
+                      <span className="sr-only">Muat turun kod QR</span>
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Download QR Code</p>
+                    <p>Muat turun kod QR</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
