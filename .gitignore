@@ -5,8 +5,9 @@
 /.pnp
 .pnp.js
 .yarn/install-state.gz
-bun.lockb
 package-lock.json
+pnpm-lock.yaml
+yarn.lock
 
 
 # testing
