@@ -1,6 +1,7 @@
 import { categories } from "@/app/types/institutions";
 import React, { useEffect, useState } from "react";
 import { StatesDropdown } from "../states-dropdown";
+import { institutions } from "../../app/data/institutions";
 
 type Props = {
 	onChange: (props: {
@@ -31,7 +32,7 @@ const Filters = (props: Props) => {
 
 	return (
 		<div className="flex flex-wrap gap-4 justify-between max-md:justify-center">
-			<div className="grid grid-flow-col gap-2 items-center">
+			<div className="grid grid-flow-col gap-1 items-center">
 				<p className="max-sm:text-xs">Pilih Tapisan: </p>
 				{mappedCategories.map((category) => (
 					<button
@@ -47,9 +48,10 @@ const Filters = (props: Props) => {
 							}
 						}}
 						data-active={selectedCategories.includes(category.value)}
-						className="px-2 py-1 rounded text-sm max-sm:text-xs font-bold data-[active=true]:bg-blue-500 data-[active=true]:text-white truncate select-none"
+						className="px-4 py-2 rounded-xl text-sm max-sm:text-xs font-bold data-[active=true]:bg-slate-500 data-[active=true]:text-white truncate select-none flex flex-row gap-2 items-center justify-center"
 					>
 						{category.label}
+						<span className="rounded-full px-2 py-1 bg-slate-200 dark:bg-slate-800 text-black dark:text-slate-200">{institutions.filter(ins => ins.category === category.value).length}</span>
 					</button>
 				))}
 			</div>
