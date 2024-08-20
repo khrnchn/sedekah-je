@@ -1,6 +1,5 @@
 "use client";
 
-import { Header } from "@/components/ui/header";
 import { SearchBar } from "@/components/ui/searchbar";
 import type React from "react";
 import { useMemo, useState, useCallback, useEffect } from "react";
@@ -8,11 +7,11 @@ import { institutions } from "./data/institutions";
 import InstitutionCard from "@/components/ui/institution-card";
 import Filters from "@/components/sections/filters";
 import dynamic from "next/dynamic";
-import Ribbon from "@/components/ui/ribbon";
 
 import { debounce } from "lodash-es";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import PageSection from "@/components/ui/pageSection";
 
 const Home: React.FC = () => {
 	const [query, setQuery] = useState<string>("");
@@ -75,8 +74,7 @@ const Home: React.FC = () => {
 	}, [query, selectedCategories, selectedState]);
 
 	return (
-		<div className="max-w-5xl mx-auto px-2 sm:px-4 lg:px-6 py-4 sm:py-6 lg:py-8 flex flex-col gap-4 sm:gap-6 lg:gap-8">
-			<Header />
+		<PageSection>
 			<Map />
 			<Filters onChange={handleFilters} />
 			<SearchBar onSearch={handleSearch} className="col-span-3" />
@@ -100,8 +98,7 @@ const Home: React.FC = () => {
 					))}
 				</div>
 			)}
-			<Ribbon />
-		</div>
+		</PageSection>
 	);
 };
 
