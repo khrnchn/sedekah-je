@@ -104,7 +104,7 @@ export function StatesDropdown(props: Props) {
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-[200px] justify-between"
+                    className="w-[200px] justify-between dark:bg-slate-900 dark:border-slate-800 dark:hover:bg-slate-800 dark:text-slate-200 dark:hover:text-slate-200"
                 >
                     {value
                         ? states.find((state) => state.value === value)?.label
