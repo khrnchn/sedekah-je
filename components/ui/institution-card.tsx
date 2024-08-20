@@ -263,9 +263,9 @@ const InstitutionCard: React.FC<Institution> = ({
                             link.click();
                             document.body.removeChild(link);
                           }
-                          toast.success('QR code downloaded successfully!');
+                          toast.success('Berjaya memuat turun kod QR!');
                         } catch (error) {
-                          toast.error('Failed to download the QR code.');
+                          toast.error('Gagal memuat turun kod QR.');
                         }
                       }}
                     >
