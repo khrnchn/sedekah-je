@@ -2217,6 +2217,7 @@ export const institutions: Institution[] = [
     qrContent:
       "00020201021126610014A000000615000101065018540215000001224037457031000000000005204866153034585802MY5920MASJID SETIA ALAM-QR6009SHAH ALAM6105401706215011110186840000630414C0",
     supportedPayment: ["duitnow", "tng"],
+    coords:[3.1030528,101.4417153],
   },
   {
     id: 223,
@@ -2249,4 +2250,25 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
     coords: [3.0705502405615954, 101.40133071533951],
   },
+  {
+    id: 226,
+    name : "Masjid Ahmadi Rantau Panjang",
+    image :"",
+    category:"mosque",
+    location:"SELANGOR",
+    qrContent:"00020201021126610014A000000615000101065641670215QRMID0000000345031001935771345204866153034585802MY5923MASJID AHMADI R.PANJANG6005KLANG610542100630451B6",
+    supportedPayment:["duitnow","tng"],
+    coords: [ 3.0584777,101.4084735]
+  },
+  {
+    id:227,
+    name : "Masjid An-Nur Temasya Glenmarie",
+    image : "",
+    category : "mosque",
+    location : "SELANGOR",
+    qrContent : "00020101021126610014A000000615000101065641670215QRMID000000002103100123425951520430005303458540500.005802MY5923MASJID AN-NUR GLENMARIE6009SHAH ALAM6105401506304CF92",
+    supportedPayment : ["duitnow","tng"],
+    coords : [3.0904867,101.5771061],
+  },
+  
 ];
