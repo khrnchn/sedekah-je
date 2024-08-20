@@ -182,7 +182,7 @@ const InstitutionCard: React.FC<Institution> = ({
               >
                 {capitalizedLocation}
               </motion.p>
-            </div>
+              </div>
             <motion.div
               layoutId={`image-${name}-${id}`}
               className="cursor-pointer"
@@ -191,27 +191,29 @@ const InstitutionCard: React.FC<Institution> = ({
                 <QrCodeDisplay
                   qrContent={qrContent}
                   supportedPayment={supportedPayment}
-                  onClick={() => setActive(true)}
-                  ref={printRef}
-                  name={name}
-                />
-              ) : (
-                <Image
-                  src={image}
-                  alt={`QR Code for ${name}`}
-                  width={160}
-                  height={160}
-                  className="rounded-lg h-40 object-cover"
-                  onClick={() => setActive(true)}
-                />
-              )}
-            </motion.div>
+                        onClick={() => setActive(true)}
+                        ref={printRef}
+                        name={name}
+                      />
+                    ) : (
+                      <Image
+                        src={image}
+                        alt={`QR Code for ${name}`}
+                        width={160}
+                        height={160}
+                        className="rounded-lg h-40 object-cover"
+                        onClick={() => setActive(true)}
+                      />
+                    )}
+                  </motion.div>
             <div className="flex gap-2 mt-auto">
               <Button
                 size="icon"
                 variant="ghost"
-                className="group-hover:bg-muted/50 group-focus:bg-muted/50 hover:scale-105 transition-transform duration-200 ease-in-out"
-              >
+                      className="hover:bg-muted/50 focus:bg-muted/50 hover:scale-105 transition-transform duration-200 ease-in-out"
+                      // TODO
+                      // onClick=
+                    >
                 <CopyIcon className="h-5 w-5 text-green-600" />
                 <span className="sr-only">Copy QR code link</span>
               </Button>
@@ -221,7 +223,7 @@ const InstitutionCard: React.FC<Institution> = ({
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="group-hover:bg-muted/50 group-focus:bg-muted/50 hover:scale-105 transition-transform duration-200 ease-in-out"
+                      className="hover:bg-muted/50 focus:bg-muted/50 hover:scale-105 transition-transform duration-200 ease-in-out"
                       onClick={async () => {
                         if (!qrContent) {
                           const blob = await fetch(
