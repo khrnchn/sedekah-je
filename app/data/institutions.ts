@@ -10,6 +10,7 @@ export const institutions: Institution[] = [
     qrContent:
       "00020201021126420014A000000615000101066033460210MD001295465204939953034585802MY5913MASJID NEGARA6002MY627303251704936237869008996045430052017072988178750084448071617049359619050076304FD9C",
     supportedPayment: ["duitnow", "tng"],
+    coords: [3.1419827397613664, 101.69175298700645],
   },
   {
     id: 2,
@@ -20,6 +21,7 @@ export const institutions: Institution[] = [
     qrContent:
       "00020201021126520014A000000615000101068900530220MDN162217666262104305204866153034585802MY5915MASJIDALGHUFRAN6011KUALALUMPUR6304AC7A",
     supportedPayment: ["duitnow", "tng"],
+    coords: [3.1578854416571565, 101.61682224883123]
   },
   {
     id: 3,
@@ -30,6 +32,7 @@ export const institutions: Institution[] = [
     qrContent:
       "00020101021126580014A000000615000101065887340212MBBQR124979103100000000000520400005303458540500.005802MY5918MASJID AL MUHTADIN6008SELANGOR630414E7",
     supportedPayment: ["duitnow", "tng"],
+    coords: [3.201055431014754, 101.59551490051814]
   },
   {
     id: 4,
@@ -39,6 +42,7 @@ export const institutions: Institution[] = [
     image: "/masjid/masjid-ar-rahman.png",
     qrContent: "https://qr.tngdigital.com.my/m/281011056697947085062292043",
     supportedPayment: ["tng"],
+    coords: [3.124261867632774, 101.67413567602591]
   },
   {
     id: 5,
