@@ -30,9 +30,9 @@ const Filters = (props: Props) => {
 	}, [selectedCategories, selectedState, props]);
 
 	return (
-		<div className="flex flex-wrap gap-4 justify-between">
+		<div className="flex flex-wrap gap-4 justify-between max-md:justify-center">
 			<div className="grid grid-flow-col gap-2 items-center">
-				<p>Pilih Tapisan: </p>
+				<p className="max-sm:text-xs">Pilih Tapisan: </p>
 				{mappedCategories.map((category) => (
 					<button
 						type="button"
@@ -47,13 +47,13 @@ const Filters = (props: Props) => {
 							}
 						}}
 						data-active={selectedCategories.includes(category.value)}
-						className="px-2 py-1 rounded text-sm font-bold data-[active=true]:bg-blue-500 data-[active=true]:text-white"
+						className="px-2 py-1 rounded text-sm max-sm:text-xs font-bold data-[active=true]:bg-blue-500 data-[active=true]:text-white truncate select-none"
 					>
 						{category.label}
 					</button>
 				))}
 			</div>
-			<StatesDropdown onChange={handleStateFilters} />
+			<StatesDropdown onChange={handleStateFilters} className="max-md:min-w-full" />
 			{/* <StatesDropdown onChange={(states) => setSelectedStates(states)} /> */}
 		</div>
 	);

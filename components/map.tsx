@@ -21,7 +21,7 @@ export default function MapLocation() {
             center={position.center}
             zoom={11}
             scrollWheelZoom={true}
-            className="w-full h-auto z-0 min-h-[240px] min-w-[965px] rounded-md overflow-clip"
+            className="w-full h-auto z-0 min-h-[240px] min-w-full rounded-md overflow-clip"
         >
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'

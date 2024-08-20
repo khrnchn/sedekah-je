@@ -89,16 +89,17 @@ const states = [
 type Props = {
     onChange: (props: {
         state: string;
-    }) => void;
+    }) => void,
+    className: string
 };
 
-export function StatesDropdown(props: Props, { widthFull = false }) {
+export function StatesDropdown(props: Props) {
     const [open, setOpen] = React.useState(false)
     const [value, setValue] = React.useState("")
 
     return (
         <Popover open={open} onOpenChange={setOpen} >
-            <PopoverTrigger asChild className={widthFull ? "min-w-full" : ""}>
+            <PopoverTrigger asChild className={props.className}>
                 <Button
                     variant="outline"
                     role="combobox"

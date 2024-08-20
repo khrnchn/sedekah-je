@@ -40,7 +40,7 @@ const Home: React.FC = () => {
 		() => import('@/components/map'),
 		{
 			loading: () => (
-				<Card className="h-[240px] w-[965px]">
+				<Card className="min-h-[240px] md:min-h-[240px] md:min-w-[965px]">
 					<Skeleton className="min-h-full min-w-full flex items-center justify-center">
 						<CardContent className="italic">
 							Peta sedang dinampan...
