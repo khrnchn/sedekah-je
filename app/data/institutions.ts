@@ -152,7 +152,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 16,
-    name: "Masjid Tengku Ampuan Afzan",
+    name: "Masjid Tengku Ampuan Afzan Bandar Satelit",
     category: "mosque",
     location: "Pahang",
     image: "/masjid/masjid-tengku-ampuan-afzan.jpeg",
@@ -2294,7 +2294,7 @@ export const institutions: Institution[] = [
     name : "MASJID AR-RAHAH",
     image : "",
     category : "mosque",
-    location : "SELANGOR",
+    location : "KUALA LUMPUR",
     qrContent : "https://qr.tngdigital.com.my/m/281011056461095422624256135",
     supportedPayment : ["tng"],
     coords : [3.1138839387692325, 101.66876285084557],
@@ -2407,4 +2407,137 @@ export const institutions: Institution[] = [
     supportedPayment : ["duitnow"],
     coords: [3.0995722494486113, 101.53908664659981],
   },
+  {
+    id: 242,
+    name : "Masjid Cyberjaya 10",
+    image : "",
+    category : "mosque",
+    location : "SELANGOR",
+    qrContent : "00020201021126580014A000000615000101065887340212MBBQR1634314031000000000005204000053034585802MY5919MASJID CYBERJAYA 106015WP KUALA LUMPUR62270723MBBQR1634314INFAQONLINE630401DB",
+    supportedPayment : ["duitnow","tng"],
+    coords : [2.9004262,101.6288741]
+  },
+  {
+    id : 243,
+    name : "Masjid Al-Ikhlas Seksyen 13 Shah Alam",
+    image : "",
+    category : "mosque",
+    location : "SELANGOR", 
+    qrContent : "00020201021126610014A000000615000101065641670215QRMID0000000003031001930793065204866153034585802MY5924MASJID AL-IKHLAS SEK. 136009SHAH ALAM6105400006304B186",
+    supportedPayment : ["duitnow", "tng"],
+    coords : [3.0865926,101.5427397]
+  }, 
+  {
+    id: 244,
+    name :"Masjid Seksyen 7 Shah Alam",
+    image : "",
+    category : "mosque",
+    location : "SELANGOR",
+    qrContent : "00020101021126580014A000000615000101065887340212MBBQR129369103100000000000520400005303458540500.005802MY5916MASJID SEKSYEN 76008SELANGOR6304799C",
+    supportedPayment : ["duitnow", "tng"],
+    coords : [3.0712195,101.476559]
+  },
+
+  {
+    id :245,
+    name : "Masjid Kota Kemuning ",
+    image: "",
+    category : "mosque",
+    location : "SELANGOR",
+    qrContent : "00020201021126610014A000000615000101065018540215000001234001816031000000000005204866153034585802MY5923MASJID KOTA KEMUNING-QR6009SHAH ALAM61054046062150111102286000006304D60C",
+    supportedPayment :["duitnow","tng"],
+    coords: [3.0026341,101.5351182]
+  },
+
+  {
+   id :246,
+   name : "Masjid Darul Ehsan Subang Jaya",
+   image: "",
+   category : "mosque",
+   location : "SELANGOR",
+   qrContent : "00020101021126580014A000000615000101065887340212MBBQR129928603100000000000520400005303458540500.005802MY5918MASJID DARUL EHSAN6008SELANGOR63044A00",
+   supportedPayment :["duitnow","tng"],
+   coords: [3.101386,101.4345701]
+ },
+
+  {
+   id :247,
+   name : "Masjid Al-Husna, Bandar Sunway",
+   image: "",
+   category : "mosque",
+   location : "SELANGOR",
+   qrContent : "00020201021126580014A000000615000101065887340212MBBQR1643608031000000000005204000053034585802MY5915MASJID AL-HUSNA6008SELANGOR6304298E",
+   supportedPayment :["duitnow","tng"],
+   coords: [3.0749024,101.6022337]
+ },
+ {
+  id :248,
+  name : "Masjid Syed Alwi ,Batu Anam ",
+  image: "",
+  category : "mosque",
+  location : "JOHOR",
+  qrContent : "00020201021126610014A000000615000101065641670215QRMID0000000278031001372358515204866153034585802MY5916MASJID SYED ALWI6009BATU ANAM6105851006304F1EE",
+  supportedPayment :["duitnow","tng"],
+  coords: [2.5711614,102.7086086]
+},
+{
+  id :249,
+  name : "Masjid Raja Haji Fi Sabilillah Cyberjaya",
+  image: "",
+  category : "mosque",
+  location : "SELANGOR",
+  qrContent : "00020201021126420014A000000615000101066033460210MD000023045204866153034585802MY5930MASJID RAJA HAJI FI SABILILLAH6002MY6253032516327093926000030197246580520163270983900800704486304F4F5",
+  supportedPayment :["duitnow","tng"],
+  coords: [2.9324933,101.6453831]
+},
+{
+  id :250,
+  name : "Masjid Nurul Iman Sg Bertek, Teluk Gadong",
+  image: "",
+  category : "mosque",
+  location : "SELANGOR",
+  qrContent : "00020201021126420014A000000615000101066033460210MD001015535204866153034585802MY5917MASJID NURUL IMAN6002MY62730325167886296094100630989091205201678862964570007352507161678862768391001630498F1",
+  supportedPayment :["duitnow","tng"],
+  coords: [3.0319213,101.4216912]
+},
+{
+  id :251,
+  name: "Masjid Al-Falah Usj 9",
+  image: "",
+  category : "mosque",
+  location : "SELANGOR",
+  qrContent : "00020201021126420014A000000615000101066033460210MD000063555204866153034585802MY5921MASJID AL FALAH USJ 96002MY6273032516397133474820091719896110520167652249808100195170716163971301865000563048B15",
+  supportedPayment :["duitnow","tng"],
+  coords: [3.0440697,101.5846234]
+},
+{
+  id :252,
+  name : "Masjid Sultan Azlan Shah",
+  image: "",
+  category : "mosque",
+  location : "PERAK",
+  qrContent : "00020201021126420014A000000615000101066033460210MD000134995204866153034585802MY5924MASJID SULTAN AZLAN SHAH6002MY6273032516490601380230053489219590520164906066401300985010716164905636766500663048885",
+  supportedPayment :["duitnow","tng"],
+  coords: [4.5892824,101.1219537]
+},
+{
+  id :253,
+  name : "Masjid Damansara Perdana ",
+  image: "",
+  category : "mosque",
+  location : "SELANGOR",
+  qrContent : "00020201021126610014A000000615000101065018540215000001234025435031000000000005204866153034585802MY5925MASJID DAMANSARAPERDA-QR6013PETALING JAYA610547820621501111025371000063048D84",
+  supportedPayment :["duitnow","tng"],
+  coords: [3.1731733,101.6156173]
+},
+{
+  id:254,
+  name :"MASJID AL-TAQWA Felda Triang",
+  image : "",
+  category :"mosque",
+  location: "PAHANG",
+  qrContent: "00020201021126790014A000000615000101065893730209MTRI003130319Agrobank's Merchant041+60924697665204866153034585802MY5925MASJID AL-TAQWA F.TRIANG36011BANDAR BERA610528300630496B7",
+  supportedPayment :["duitnow","tng"],
+  coords: [3.253478,102.5470493]
+},
 ];
