@@ -9,12 +9,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { toast } from "sonner";
 import { useOutsideClick } from "@/hooks/use-outside-click";
-// import { TwitterIcon } from "./icons";
 import { AnimatePresence, motion } from "framer-motion";
 import html2canvas from "html2canvas";
-import { CopyIcon, DownloadIcon } from "lucide-react";
+import { DownloadIcon, Share2 } from "lucide-react";
 import Image from "next/image";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
@@ -63,6 +68,30 @@ const InstitutionCard: React.FC<Institution> = ({
   }, [active]);
 
   useOutsideClick(ref, () => setActive(false));
+
+  const copyQrCode = async () => {
+    try {
+      if (qrContent) {
+        const element = printRef.current;
+        const canvas = await html2canvas(element as HTMLButtonElement);
+
+        canvas.toBlob(async (blob) => {
+          if (blob) {
+            const item = new ClipboardItem({ "image/png": blob });
+            await navigator.clipboard.write([item]);
+          }
+        });
+      } else {
+        const response = await fetch(image);
+        const blob = await response.blob();
+        const item = new ClipboardItem({ "image/png": blob });
+        await navigator.clipboard.write([item]);
+      }
+      toast.success('Berjaya menyalin kod QR ke papan keratan.');
+    } catch (error) {
+      toast.error('Gagal menyalin kod QR.');
+    }
+  };
 
   return (
     <>
@@ -221,23 +250,6 @@ const InstitutionCard: React.FC<Institution> = ({
                       size="icon"
                       variant="ghost"
                       className="hover:bg-muted/50 focus:bg-muted/50 hover:scale-105 transition-transform duration-200 ease-in-out"
-                    // TODO
-                    // onClick=
-                    >
-                      <CopyIcon className="h-5 w-5 text-green-600" />
-                      <span className="sr-only">Salin pautan kod QR</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Salin pautan kod QR</p>
-                  </TooltipContent>
-                </Tooltip>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="hover:bg-muted/50 focus:bg-muted/50 hover:scale-105 transition-transform duration-200 ease-in-out"
                       onClick={async () => {
                         try {
                           if (!qrContent) {
@@ -277,14 +289,28 @@ const InstitutionCard: React.FC<Institution> = ({
                     <p>Muat turun kod QR</p>
                   </TooltipContent>
                 </Tooltip>
-                {/* <Button
-                size="icon"
-                variant="ghost"
-                className="group-hover:bg-muted/50 group-focus:bg-muted/50 hover:scale-105 transition-transform duration-200 ease-in-out"
-              >
-                <TwitterIcon className="h-5 w-5 text-green-600" />
-                <span className="sr-only">Share on Twitter</span>
-              </Button> */}
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="hover:bg-muted/50 focus:bg-muted/50 hover:scale-105 transition-transform duration-200 ease-in-out"
+                    >
+                      <Share2 className="h-5 w-5 text-green-600" />
+                      <span className="sr-only">Muat turun kod QR</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem onClick={copyQrCode}>Salin QR</DropdownMenuItem>
+                    {/*
+                    TODO: Implement sharing feature
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>Kongsi ke WhatsApp</DropdownMenuItem>
+                    <DropdownMenuItem>Kongsi ke X</DropdownMenuItem>
+                    */}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </CardContent>
           </Card>
