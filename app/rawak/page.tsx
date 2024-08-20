@@ -6,13 +6,22 @@ import { institutions } from "../data/institutions";
 import QrCodeDisplay from '@/components/ui/qrCodeDisplay';
 import Image from "next/image";
 import useClientDimensions from '@/hooks/use-client-dimensions';
+import { categories } from '../types/institutions';
 
 const Rawak = () => {
   const id = useId();
   const [randomInstitutionId, setRandomInstitutionId] = useState(0);
+	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const { width } = useClientDimensions();
 
-  const institutionLength = institutions.length;
+
+	const mappedCategories = Object.keys(categories).map((category) => ({
+		label: categories[category as keyof typeof categories].label,
+		value: category,
+	}));
+
+  const filteredInstitutions = institutions.filter((institution) => selectedCategories.length !== 0 ? selectedCategories.includes(institution.category) : true);
+  const institutionLength = filteredInstitutions.length;
   
   const generateRandomNumber = () => {
     const randomNumber = Math.floor(Math.random() * institutionLength);
@@ -20,10 +29,10 @@ const Rawak = () => {
     setRandomInstitutionId(randomNumber);
   };
 
-  const randomInstitution = institutions[randomInstitutionId];
+  const randomInstitution = filteredInstitutions[randomInstitutionId];
 
   return (
-    <PageSection>
+    <PageSection className="items-center justify-center">
       <div className="grid place-items-center m-8">
         <div
           className="w-full max-w-[500px] h-full flex flex-col bg-white dark:bg-slate-800 sm:rounded-3xl"
@@ -78,6 +87,30 @@ const Rawak = () => {
       <button type="button" onClick={generateRandomNumber} className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors duration-300 sticky bottom-12">
         🎲 Generate Random Institution
       </button>
+
+			<div className="grid grid-flow-col gap-1 items-center">
+				<p className="max-sm:text-xs">Pilih Tapisan: </p>
+				{mappedCategories.map((category) => (
+					<button
+						type="button"
+						key={category.value}
+						onClick={() => {
+							if (selectedCategories.includes(category.value)) {
+								setSelectedCategories(
+									selectedCategories.filter((c) => c !== category.value),
+								);
+							} else {
+								setSelectedCategories([...selectedCategories, category.value]);
+							}
+						}}
+						data-active={selectedCategories.includes(category.value)}
+						className="px-4 py-2 rounded-xl text-sm max-sm:text-xs font-bold data-[active=true]:bg-slate-500 data-[active=true]:text-white truncate select-none flex flex-row gap-2 items-center justify-center"
+					>
+						{category.label}
+						<span className="rounded-full px-2 py-1 bg-slate-200 dark:bg-slate-800 text-black dark:text-slate-200">{institutions.filter(ins => ins.category === category.value).length}</span>
+					</button>
+				))}
+			</div>
     </PageSection>
   )
 }
