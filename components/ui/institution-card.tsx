@@ -297,7 +297,7 @@ const InstitutionCard: React.FC<Institution> = ({
                       variant="ghost"
                       className="hover:bg-muted/50 focus:bg-muted/50 hover:scale-105 transition-transform duration-200 ease-in-out"
                     >
-                      <Share className="h-5 w-5 text-green-600" />
+                      <Share2 className="h-5 w-5 text-green-600" />
                       <span className="sr-only">Muat turun kod QR</span>
                     </Button>
                   </DropdownMenuTrigger>
