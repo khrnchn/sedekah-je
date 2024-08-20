@@ -2270,5 +2270,14 @@ export const institutions: Institution[] = [
     supportedPayment : ["duitnow","tng"],
     coords : [3.0904867,101.5771061],
   },
-  
+  {
+    id:228,
+    name : "Masjid Al-Aziz Al-Hadi Kota Spp Warisan",
+    image : "",
+    category : "mosque",
+    location : "KELANTAN",
+    qrContent : "00020201021126420014A000000615000101066033460210MD001351855204866153034585802MY5922Masjid Al Aziz Al Hadi6002MY6273032517185452588090027722341210520171854529821600280160716171854410260400163043A93",
+    supportedPayment : ["duitnow","tng"],
+    coords : [6.156211316956017, 102.20206961957389],
+  },
 ];
