@@ -2228,7 +2228,7 @@ export const institutions: Institution[] = [
     id: 224,
     name: "MASJID AL FIRDAUS",
     image: "",
-    category: "masjid",
+    category: "mosque",
     location: "SELANGOR",
     qrContent:
       "00020201021126580014A000000615000101065887340212MBBQR1384949031000000000005204729953034585802MY5917MASJID AL FIRDAUS6012KUALA LUMPUR630448CA",
