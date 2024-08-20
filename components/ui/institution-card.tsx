@@ -19,7 +19,7 @@ import { toast } from "sonner";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 import { AnimatePresence, motion } from "framer-motion";
 import html2canvas from "html2canvas";
-import { DownloadIcon, Share } from "lucide-react";
+import { DownloadIcon, Share2 } from "lucide-react";
 import Image from "next/image";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
