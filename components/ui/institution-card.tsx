@@ -9,17 +9,25 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useToast } from "@/components/ui/use-toast";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 // import { TwitterIcon } from "./icons";
 import { AnimatePresence, motion } from "framer-motion";
 import html2canvas from "html2canvas";
-import Jimp from "jimp";
-import { CopyIcon, DownloadIcon } from "lucide-react";
+import { Check, CopyIcon, DownloadIcon } from "lucide-react";
 import Image from "next/image";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import CategoryLabel from "./category-label";
 import QrCodeDisplay from "./qrCodeDisplay";
+
+const capitalizeWords = (str: string) => {
+	return str
+		.toLowerCase()
+		.split(" ")
+		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(" ");
+};
 
 const InstitutionCard: React.FC<Institution> = ({
 	id,
@@ -31,11 +39,24 @@ const InstitutionCard: React.FC<Institution> = ({
 	category,
 }) => {
 	const [active, setActive] = useState<boolean | null>(false);
+	const [copied, setCopied] = useState(false);
+
 	const ref = useRef<HTMLDivElement>(null);
 	const printRef = useRef<HTMLButtonElement>(null);
 
 	const capitalizedName = capitalizeWords(name);
 	const capitalizedLocation = capitalizeWords(location);
+
+	const { toast } = useToast();
+
+	useEffect(() => {
+		if (copied) {
+			const timeout = setTimeout(() => {
+				setCopied(false);
+			}, 3000);
+			return () => clearTimeout(timeout);
+		}
+	}, [copied]);
 
 	useEffect(() => {
 		function onKeyDown(event: KeyboardEvent) {
@@ -55,6 +76,66 @@ const InstitutionCard: React.FC<Institution> = ({
 	}, [active]);
 
 	useOutsideClick(ref, () => setActive(false));
+
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	const createImage = (options: any) => {
+		const img = document.createElement("img");
+		if (options.src) {
+			img.src = options.src;
+		}
+		return img;
+	};
+
+	const copyToClipboard = async (pngBlob: Blob | null) => {
+		if (!pngBlob) return;
+		try {
+			await navigator.clipboard.write([
+				new ClipboardItem({
+					[pngBlob.type]: pngBlob,
+				}),
+			]);
+			toast({
+				title: "Kod QR disalin!",
+			});
+			setCopied(true);
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
+	const convertToPng = (imgBlob: Blob) => {
+		try {
+			const canvas = document.createElement("canvas");
+			const ctx = canvas.getContext("2d");
+			const imageEl = createImage({ src: window.URL.createObjectURL(imgBlob) });
+			imageEl.onload = (e) => {
+				//@ts-ignore
+				canvas.width = e.target?.width;
+				//@ts-ignore
+				canvas.height = e.target?.height;
+				//@ts-ignore
+				ctx?.drawImage(e.target, 0, 0, e.target?.width, e.target?.height);
+				canvas.toBlob(copyToClipboard, "image/png", 1);
+			};
+		} catch (e) {
+			console.error(e);
+		}
+	};
+
+	const copyImg = async (src: string) => {
+		const img = await fetch(src);
+		const imgBlob = await img.blob();
+
+		try {
+			const extension = src.split(".").pop();
+			if (!extension) throw new Error("No extension found");
+
+			return convertToPng(imgBlob);
+		} catch (e) {
+			console.error("Format unsupported");
+		}
+		return;
+	};
 
 	return (
 		<>
@@ -232,7 +313,11 @@ const InstitutionCard: React.FC<Institution> = ({
 												return;
 											}}
 										>
-											<CopyIcon className="h-5 w-5 text-green-600" />
+											{copied ? (
+												<Check className="h-5 w-5 text-green-600" />
+											) : (
+												<CopyIcon className="h-5 w-5 text-green-600" />
+											)}
 											<span className="sr-only">Salin pautan kod QR</span>
 										</Button>
 									</TooltipTrigger>
@@ -326,71 +411,6 @@ export const CloseIcon = () => {
 			<path d="M6 6l12 12" />
 		</motion.svg>
 	);
-};
-
-const capitalizeWords = (str: string) => {
-	return str
-		.toLowerCase()
-		.split(" ")
-		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-		.join(" ");
-};
-
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-const createImage = (options: any) => {
-	const img = document.createElement("img");
-	if (options.src) {
-		img.src = options.src;
-	}
-	return img;
-};
-
-const copyToClipboard = async (pngBlob: Blob | null) => {
-	if (!pngBlob) return;
-	try {
-		await navigator.clipboard.write([
-			new ClipboardItem({
-				[pngBlob.type]: pngBlob,
-			}),
-		]);
-		console.log("Image copied");
-	} catch (error) {
-		console.error(error);
-	}
-};
-
-const convertToPng = (imgBlob: Blob) => {
-	try {
-		const canvas = document.createElement("canvas");
-		const ctx = canvas.getContext("2d");
-		const imageEl = createImage({ src: window.URL.createObjectURL(imgBlob) });
-		imageEl.onload = (e) => {
-			//@ts-ignore
-			canvas.width = e.target?.width;
-			//@ts-ignore
-			canvas.height = e.target?.height;
-			//@ts-ignore
-			ctx?.drawImage(e.target, 0, 0, e.target?.width, e.target?.height);
-			canvas.toBlob(copyToClipboard, "image/png", 1);
-		};
-	} catch (e) {
-		console.error(e);
-	}
-};
-
-const copyImg = async (src: string) => {
-	const img = await fetch(src);
-	const imgBlob = await img.blob();
-
-	try {
-		const extension = src.split(".").pop();
-		if (!extension) throw new Error("No extension found");
-
-		return convertToPng(imgBlob);
-	} catch (e) {
-		console.error("Format unsupported");
-	}
-	return;
 };
 
 export default InstitutionCard;
