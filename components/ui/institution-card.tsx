@@ -154,14 +154,14 @@ const InstitutionCard: React.FC<Institution> = ({
         ) : null}
       </AnimatePresence>
 
-      <motion.div layoutId={`card-${name}-${id}`}>
-        <Card className="group">
-          <CardContent className="flex flex-col items-center gap-2 p-4 h-full">
-            <div className="flex flex-col items-center gap-1 mb-2 w-full">
-              <motion.div>
-                <CategoryLabel category={category} />
-              </motion.div>
-              <TooltipProvider>
+      <TooltipProvider>
+        <motion.div layoutId={`card-${name}-${id}`}>
+          <Card className="group">
+            <CardContent className="flex flex-col items-center gap-2 p-4 h-full">
+              <div className="flex flex-col items-center gap-1 mb-2 w-full">
+                <motion.div>
+                  <CategoryLabel category={category} />
+                </motion.div>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <motion.h3
@@ -175,15 +175,13 @@ const InstitutionCard: React.FC<Institution> = ({
                     <p>{capitalizedName}</p>
                   </TooltipContent>
                 </Tooltip>
-              </TooltipProvider>
-              <motion.p
-                layoutId={`location-${location}-${id}`}
-                className="text-sm text-muted-foreground truncate w-full text-center"
-              >
-                {capitalizedLocation}
-              </motion.p>
-            </div>
-            <TooltipProvider>
+                <motion.p
+                  layoutId={`location-${location}-${id}`}
+                  className="text-sm text-muted-foreground truncate w-full text-center"
+                >
+                  {capitalizedLocation}
+                </motion.p>
+              </div>
               <Tooltip>
                 <TooltipTrigger asChild>
                   <motion.div
@@ -215,9 +213,7 @@ const InstitutionCard: React.FC<Institution> = ({
                   <p>Klik untuk maklumat lanjut</p>
                 </TooltipContent>
               </Tooltip>
-            </TooltipProvider>
-            <div className="flex gap-2 mt-auto">
-              <TooltipProvider>
+              <div className="flex gap-2 mt-auto">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
@@ -235,8 +231,6 @@ const InstitutionCard: React.FC<Institution> = ({
                     <p>Salin pautan kod QR</p>
                   </TooltipContent>
                 </Tooltip>
-              </TooltipProvider>
-              <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Button
@@ -283,8 +277,7 @@ const InstitutionCard: React.FC<Institution> = ({
                     <p>Muat turun kod QR</p>
                   </TooltipContent>
                 </Tooltip>
-              </TooltipProvider>
-              {/* <Button
+                {/* <Button
                 size="icon"
                 variant="ghost"
                 className="group-hover:bg-muted/50 group-focus:bg-muted/50 hover:scale-105 transition-transform duration-200 ease-in-out"
@@ -292,10 +285,11 @@ const InstitutionCard: React.FC<Institution> = ({
                 <TwitterIcon className="h-5 w-5 text-green-600" />
                 <span className="sr-only">Share on Twitter</span>
               </Button> */}
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </TooltipProvider>
     </>
   );
 };
