@@ -22,7 +22,7 @@ const Rawak = () => {
 
   const filteredInstitutions = institutions.filter((institution) => selectedCategories.length !== 0 ? selectedCategories.includes(institution.category) : true);
   const institutionLength = filteredInstitutions.length;
-  
+
   const generateRandomNumber = () => {
     const randomNumber = Math.floor(Math.random() * institutionLength);
 
@@ -35,7 +35,7 @@ const Rawak = () => {
     <PageSection className="items-center justify-center">
       <div className="grid place-items-center m-8">
         <div
-          className="w-full max-w-[500px] h-full flex flex-col bg-white dark:bg-slate-800 sm:rounded-3xl"
+          className="w-full max-w-[500px] h-full flex flex-col bg-white sm:rounded-3xl"
         >
           <div
             className="flex items-center justify-center "
@@ -62,12 +62,12 @@ const Rawak = () => {
             <div className="flex justify-between items-start p-4">
               <div>
                 <h3
-                  className="font-medium text-neutral-700 dark:text-neutral-200 text-base capitalize"
+                  className="font-medium text-neutral-700 text-base capitalize"
                 >
                   {randomInstitution.name}
                 </h3>
                 <p
-                  className="text-neutral-600 dark:text-neutral-400 text-base capitalize"
+                  className="text-neutral-600 text-base capitalize"
                 >
                   {randomInstitution.location}
                 </p>
@@ -107,7 +107,7 @@ const Rawak = () => {
 						className="px-4 py-2 rounded-xl text-sm max-sm:text-xs font-bold data-[active=true]:bg-slate-500 data-[active=true]:text-white truncate select-none flex flex-row gap-2 items-center justify-center"
 					>
 						{category.label}
-						<span className="rounded-full px-2 py-1 bg-slate-200 dark:bg-slate-800 text-black dark:text-slate-200">{institutions.filter(ins => ins.category === category.value).length}</span>
+						<span className="rounded-full px-2 py-1 bg-slate-200  text-black ">{institutions.filter(ins => ins.category === category.value).length}</span>
 					</button>
 				))}
 			</div>
