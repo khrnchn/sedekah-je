@@ -159,7 +159,8 @@ const InstitutionCard: React.FC<Institution> = ({
 							drag
 							onDragEnd={() => setActive(false)}
 							whileDrag={{ scale: 1.05 }}
-							className="w-full max-w-[500px] h-full md:h-fit p-5 md:max-h-[90%] flex flex-col bg-white sm:rounded-3xl overflow-auto lg:overflow-hidden"
+							className="w-full max-w-[500px] h-full md:h-fit p-5 md:max-h-[90%] flex flex-col bg-white dark:bg-slate-800 sm:rounded-3xl overflow-auto lg:overflow-hidden"
+
 						>
 							<motion.div
 								layoutId={`image-${name}-${id}`}
