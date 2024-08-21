@@ -24,7 +24,7 @@ export default function RootLayout({
 		<>
     <html lang="en" suppressHydrationWarning>
 				<head />
-				<body className={cn(inter.className, "py-12 flex flex-col gap-4")}>
+				<body className={cn(inter.className)}>
 					<ThemeProvider
 						attribute="class"
 						defaultTheme="system"
