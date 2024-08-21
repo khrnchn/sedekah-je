@@ -5,7 +5,7 @@ import InstitutionCard from "@/components/ui/institution-card";
 import { SearchBar } from "@/components/ui/searchbar";
 import dynamic from "next/dynamic";
 import type React from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import {  useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { institutions } from "./data/institutions";
 import type { Institution } from "./types/institutions";
 
@@ -19,6 +19,8 @@ const Home: React.FC = () => {
 	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 	const [selectedState, setSelectedState] = useState<string>();
 	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [offset, setOffset] = useState<number>(0);
+	const [limit, setLimit] = useState<number>(15);
 	const [filteredInstitutions, setFilteredInstitutions] = useState<
 		Institution[]
 	>([]);
@@ -63,9 +65,30 @@ const Home: React.FC = () => {
 		// remove duplicates based on institution name
 		return institutions.filter(
 			(institution, index, self) =>
-				index === self.findIndex((t) => t.name.toLowerCase() === institution.name.toLowerCase()),
+				index ===
+				self.findIndex(
+					(t) => t.name.toLowerCase() === institution.name.toLowerCase(),
+				),
 		);
 	}, []);
+
+	const observer = useRef<IntersectionObserver | null>(null);
+
+	const lastPostElementRef = useCallback(
+		(node: Element) => {
+			if (isLoading) return;
+			if (observer.current) observer.current.disconnect();
+
+			observer.current = new IntersectionObserver((entries) => {
+				if (entries[0].isIntersecting) {
+          setOffset((prevOffset) => prevOffset + limit);
+				}
+			});
+
+			if (node) observer.current.observe(node);
+		},
+		[isLoading, limit],
+	);
 
 	useEffect(() => {
 		setIsLoading(true);
@@ -82,8 +105,7 @@ const Home: React.FC = () => {
 						: true)
 				);
 			});
-      console.log(filteredResults);
-			resolve(filteredResults);
+			resolve(filteredResults.slice(0, offset + limit));
 		});
 
 		filterData.then((results) => {
@@ -92,7 +114,7 @@ const Home: React.FC = () => {
 		setTimeout(() => {
 			setIsLoading(false);
 		}, 1000);
-	}, [_institutions, query, selectedCategories, selectedState]);
+	}, [_institutions, query, selectedCategories, selectedState, offset, limit]);
 
 	return (
 		<PageSection>
@@ -114,8 +136,8 @@ const Home: React.FC = () => {
 				</div>
 			) : (
 				<div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-					{filteredInstitutions.map((institution) => (
-						<InstitutionCard key={institution.id} {...institution} />
+					{filteredInstitutions.map((institution, i) => (
+						<InstitutionCard key={institution.id} {...institution} ref={filteredInstitutions.length === i + 1 ? lastPostElementRef : null} />
 					))}
 				</div>
 			)}
