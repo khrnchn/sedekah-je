@@ -5,7 +5,7 @@ import InstitutionCard from "@/components/ui/institution-card";
 import { SearchBar } from "@/components/ui/searchbar";
 import dynamic from "next/dynamic";
 import type React from "react";
-import {  useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { institutions } from "./data/institutions";
 import type { Institution } from "./types/institutions";
 
@@ -18,7 +18,8 @@ const Home: React.FC = () => {
 	const [query, setQuery] = useState<string>("");
 	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 	const [selectedState, setSelectedState] = useState<string>();
-	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
 	const [offset, setOffset] = useState<number>(0);
 	const [limit, setLimit] = useState<number>(15);
 	const [filteredInstitutions, setFilteredInstitutions] = useState<
@@ -75,13 +76,13 @@ const Home: React.FC = () => {
 	const observer = useRef<IntersectionObserver | null>(null);
 
 	const lastPostElementRef = useCallback(
-		(node: Element) => {
+		(node: HTMLDivElement) => {
 			if (isLoading) return;
 			if (observer.current) observer.current.disconnect();
 
 			observer.current = new IntersectionObserver((entries) => {
 				if (entries[0].isIntersecting) {
-          setOffset((prevOffset) => prevOffset + limit);
+					setOffset((prevOffset) => prevOffset + limit);
 				}
 			});
 
@@ -91,7 +92,7 @@ const Home: React.FC = () => {
 	);
 
 	useEffect(() => {
-		setIsLoading(true);
+		setIsLoadingMore(true);
 		const filterData = new Promise((resolve) => {
 			const filteredResults = _institutions.filter((institution) => {
 				const lowercaseQuery = query.toLowerCase();
@@ -113,6 +114,7 @@ const Home: React.FC = () => {
 		});
 		setTimeout(() => {
 			setIsLoading(false);
+			setIsLoadingMore(false);
 		}, 1000);
 	}, [_institutions, query, selectedCategories, selectedState, offset, limit]);
 
@@ -128,7 +130,7 @@ const Home: React.FC = () => {
 				</div>
 			) : isLoading ? (
 				<div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-					{Array.from({ length: 6 }).map((_, idx) => (
+					{Array.from({ length: offset }).map((_, idx) => (
 						<Card key={idx} className="aspect-square w-full">
 							<Skeleton className="min-h-full min-w-full" />
 						</Card>
@@ -137,7 +139,24 @@ const Home: React.FC = () => {
 			) : (
 				<div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
 					{filteredInstitutions.map((institution, i) => (
-						<InstitutionCard key={institution.id} {...institution} ref={filteredInstitutions.length === i + 1 ? lastPostElementRef : null} />
+						<InstitutionCard
+							key={institution.id}
+							{...institution}
+							ref={
+								filteredInstitutions.length === i + 1
+									? lastPostElementRef
+									: null
+							}
+						/>
+					))}
+				</div>
+			)}
+			{isLoadingMore && (
+				<div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+					{Array.from({ length: 6 }).map((_, idx) => (
+						<Card key={idx} className="aspect-square w-full">
+							<Skeleton className="min-h-full min-w-full" />
+						</Card>
 					))}
 				</div>
 			)}
