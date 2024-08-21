@@ -137,25 +137,20 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
 						<motion.div
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
-							exit={{ opacity: 0 }}
-							className="fixed inset-0 h-full w-full z-10 md:bg-black/20 bg-transparent"
-						/>
-					)}
-				</AnimatePresence>
-				<AnimatePresence>
-					{active ? (
-						<div className="fixed inset-0 grid place-items-center z-[100]">
-							<motion.button
-								key={`button-${name}-${id}`}
-								layout
-								initial={{ opacity: 0 }}
-								animate={{ opacity: 1 }}
-								exit={{ opacity: 0, transition: { duration: 0.05 } }}
-								className="flex absolute top-2 right-2 lg:hidden items-center justify-center bg-white  dark:bg-slate-800 rounded-full h-6 w-6 z-10"
-								onClick={() => setActive(null)}
-							>
-								<CloseIcon />
-							</motion.button>
+							exit={{ opacity: 0, transition: { duration: 0.05 } }}
+							className="flex absolute top-2 right-2 lg:hidden items-center justify-center bg-white rounded-full h-6 w-6 z-10"
+							onClick={() => setActive(null)}
+						>
+							<CloseIcon />
+						</motion.button>
+						<motion.div
+							layoutId={`card-${name}-${id}`}
+							ref={ref}
+							drag
+							onDragEnd={() => setActive(false)}
+							whileDrag={{ scale: 1.05 }}
+							className="w-full max-w-[500px] h-full md:h-fit p-5 md:max-h-[90%] flex flex-col bg-white dark:bg-slate-800 sm:rounded-3xl overflow-auto lg:overflow-hidden"
+						>
 							<motion.div
 								layoutId={`card-${name}-${id}`}
 								ref={innerRef}
@@ -185,32 +180,18 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
 										/>
 									)}
 								</motion.div>
-
-								<div>
-									<div className="flex justify-between items-start p-4">
-										<div>
-											<motion.h3
-												layoutId={`title-${name}-${id}`}
-												className="font-medium text-neutral-700 dark:text-neutral-200 text-base"
-											>
-												{capitalizedName}
-											</motion.h3>
-											<motion.p
-												layoutId={`location-${location}-${id}`}
-												className="text-neutral-600 dark:text-neutral-400 text-base"
-											>
-												{capitalizedLocation}
-											</motion.p>
-										</div>
-										<motion.a
-											layout
-											initial={{ opacity: 0 }}
-											animate={{ opacity: 1 }}
-											exit={{ opacity: 0 }}
-											href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}`}
-											target="_blank"
-											className="px-4 py-3 text-sm rounded-full font-bold bg-green-500 text-white"
-											rel="noreferrer"
+							<div>
+								<div className="flex justify-between items-start p-4">
+									<div>
+										<motion.h3
+											layoutId={`title-${name}-${id}`}
+											className="font-medium text-neutral-700 text-base"
+										>
+											{capitalizedName}
+										</motion.h3>
+										<motion.p
+											layoutId={`location-${location}-${id}`}
+											className="text-neutral-600 text-base"
 										>
 											Cari di peta
 										</motion.a>

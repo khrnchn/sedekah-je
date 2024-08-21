@@ -13,6 +13,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import PageSection from "@/components/ui/pageSection";
 import { Skeleton } from "@/components/ui/skeleton";
 import { debounce } from "lodash-es";
+import { ModeToggle } from "@/components/ui/mode-toggle";
 
 const Home: React.FC = () => {
 	const [query, setQuery] = useState<string>("");
@@ -122,7 +123,11 @@ const Home: React.FC = () => {
 		<PageSection>
 			<CustomMap />
 			<Filters onChange={handleFilters} />
-			<SearchBar onSearch={handleSearch} className="col-span-3" />
+
+			<div className="flex justify-end items-center gap-4 mb-4">
+				<SearchBar onSearch={handleSearch} />
+				<ModeToggle />
+			</div>
 
 			{filteredInstitutions.length === 0 ? (
 				<div className="flex flex-wrap justify-center">

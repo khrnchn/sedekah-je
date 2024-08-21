@@ -21,7 +21,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSearch, className }) => 
     <Input
       type="search"
       placeholder="Cari masjid/ surau/ institusi..."
-      className={cn("w-full rounded-lg bg-muted dark:bg-zinc-800 px-4 py-2 text-sm dark:placeholder:text-slate-500", className)}
+      className={cn("w-full rounded-lg bg-muted px-4 py-2 text-sm", className)}
       value={searchTerm}
       onChange={handleInputChange}
     />
