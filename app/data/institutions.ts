@@ -148,7 +148,9 @@ export const institutions: Institution[] = [
     category: "mosque",
     location: "Johor",
     image: "/masjid/masjid-jamek-al-manar.jpeg",
-    // QR not clear
+    qrContent:
+      "00020201021126420014A000000615000101066033460210MD001296155204866153034585802MY5921MASJID JAMEK AL-MANAR6002MY6273032517052918176870018562499830520170529314563500845950716170529140692300163046EAD",
+    supportedPayment: ["duitnow", "tng"],
   },
   {
     id: 16,
