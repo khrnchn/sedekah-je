@@ -22,67 +22,67 @@ import {
 const states = [
     {
         label: "Johor",
-        value: "johor",
+        value: "Johor",
     },
     {
         label: "Kedah",
-        value: "kedah",
+        value: "Kedah",
     },
     {
         label: "Kelantan",
-        value: "kelantan",
+        value: "Kelantan",
     },
     {
         label: "Melaka",
-        value: "melaka",
+        value: "Melaka",
     },
     {
         label: "Negeri Sembilan",
-        value: "negeri-sembilan",
+        value: "Negeri Sembilan",
     },
     {
         label: "Pahang",
-        value: "pahang",
+        value: "Pahang",
     },
     {
         label: "Perak",
-        value: "perak",
+        value: "Perak",
     },
     {
         label: "Perlis",
-        value: "perlis",
+        value: "Perlis",
     },
     {
         label: "Pulau Pinang",
-        value: "pulau-pinang",
+        value: "Pulau Pinang",
     },
     {
         label: "Sabah",
-        value: "sabah",
+        value: "Sabah",
     },
     {
         label: "Sarawak",
-        value: "sarawak",
+        value: "Sarawak",
     },
     {
         label: "Selangor",
-        value: "selangor",
+        value: "Selangor",
     },
     {
         label: "Terengganu",
-        value: "terengganu",
+        value: "Terengganu",
     },
     {
         label: "W.P. Kuala Lumpur",
-        value: "kuala-lumpur",
+        value: "W.P. Kuala Lumpur",
     },
     {
         label: "W.P. Labuan",
-        value: "labuan",
+        value: "W.P. Labuan",
     },
     {
         label: "W.P. Putrajaya",
-        value: "putrajaya",
+        value: "W.P. Putrajaya",
     },
 ]
 
@@ -98,49 +98,49 @@ export function StatesDropdown(props: Props) {
     const [value, setValue] = React.useState("")
 
     return (
-        <Popover open={open} onOpenChange={setOpen} >
-            <PopoverTrigger asChild className={props.className}>
-                <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    className="w-[200px] justify-between"
-                >
-                    {value
-                        ? states.find((state) => state.value === value)?.label
-                        : "Semua Negeri"}
-                    <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-0">
-                <Command>
-                    <CommandInput placeholder="Search state..." className="h-9" />
-                    <CommandList>
-                        <CommandEmpty>Tiada negeri dijumpai.</CommandEmpty>
-                        <CommandGroup>
-                            {states.map((state) => (
-                                <CommandItem
-                                    key={state.value}
-                                    value={state.value}
-                                    onSelect={(currentValue) => {
-                                        setValue(currentValue === value ? '' : currentValue)
-                                        setOpen(false)
-                                        props.onChange({ state: currentValue === value ? '' : currentValue })
-                                    }}
-                                >
-                                    {state.label}
-                                    <CheckIcon
+        <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild className={props.className}>
+            <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={open}
+                className="w-[200px] justify-between"
+            >
+                {value
+                    ? states.find((state) => state.value === value)?.label
+                    : "Semua Negeri"}
+                <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-[200px] p-0">
+            <Command>
+                <CommandInput placeholder="Search state..." className="h-9" />
+                <CommandList>
+                    <CommandEmpty>Tiada negeri dijumpai.</CommandEmpty>
+                    <CommandGroup>
+                        {states.map((state) => (
+                            <CommandItem
+                                key={state.value}
+                                value={state.value}
+                                onSelect={(currentValue) => {
+                                    setValue(currentValue === value ? '' : currentValue)
+                                    setOpen(false)
+                                    props.onChange({ state: currentValue === value ? '' : currentValue })
+                                }}
+                            >
+                                {state.label}
+                                <CheckIcon
                                         className={cn(
                                             "ml-auto h-4 w-4",
                                             value === state.value ? "opacity-100" : "opacity-0"
                                         )}
                                     />
-                                </CommandItem>
-                            ))}
-                        </CommandGroup>
-                    </CommandList>
-                </Command>
-            </PopoverContent>
-        </Popover>
+                            </CommandItem>
+                        ))}
+                    </CommandGroup>
+                </CommandList>
+            </Command>
+        </PopoverContent>
+    </Popover>
     )
 }
