@@ -94,29 +94,33 @@ const Home: React.FC = () => {
 
 	useEffect(() => {
 		setIsLoadingMore(true);
-		const filterData = new Promise((resolve) => {
-			const filteredResults = _institutions.filter((institution) => {
+
+		const filterInstitutions = () => {
+			return _institutions.filter((institution) => {
 				const lowercaseQuery = query.toLowerCase();
-				return (
-					institution.name.toLowerCase().includes(lowercaseQuery) &&
-					(selectedCategories.length === 0 ||
-						selectedCategories.includes(institution.category)) &&
-					(selectedState
-						? institution.location ===
-							selectedState.toLocaleUpperCase().replaceAll("-", " ")
-						: true)
-				);
+
+				const matchesQuery = institution.name.toLowerCase().includes(lowercaseQuery);
+				const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(institution.category);
+				const matchesState = !selectedState || institution.state === selectedState;
+
+				return matchesQuery && matchesCategory && matchesState;
 			});
+		};
+
+		const filterData = new Promise((resolve) => {
+			const filteredResults = filterInstitutions();
 			resolve(filteredResults.slice(0, offset + limit));
 		});
 
 		filterData.then((results) => {
 			setFilteredInstitutions(results as Institution[]);
 		});
+
 		setTimeout(() => {
 			setIsLoading(false);
 			setIsLoadingMore(false);
 		}, 1000);
+
 	}, [_institutions, query, selectedCategories, selectedState, offset, limit]);
 
 	return (
