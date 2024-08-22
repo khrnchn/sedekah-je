@@ -14,15 +14,12 @@ export const categories = {
 export type Category = keyof typeof categories;
 
 export type Institution = {
-  // Mandatory
   id: number;
   name: string;
   category: Category;
   state: string;
   city: string;
-
-  // Optional
-  qrImage?: string;
+  qrImage: string;
   qrContent?: string;
   supportedPayment?: PaymentOption[];
   coords?: [number, number];
