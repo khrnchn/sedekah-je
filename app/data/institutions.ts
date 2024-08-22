@@ -484,7 +484,7 @@ export const institutions: Institution[] = [
     // https://www.facebook.com/faridiyah
 		id: 41,
     name: "Maahad Tahfiz Al-Madrasathul Faridiyah",
-    category: "surau",
+    category: "others",
 		state: "W.P. Kuala Lumpur",
 		city: "Kuala Lumpur",
 		qrImage: "",
@@ -1414,7 +1414,7 @@ export const institutions: Institution[] = [
   {
 		id: 120,
     name: "Maahad Tahfiz Al-Furqan",
-    category: "mosque",
+    category: "others",
     state: "Pahang",
     city: "Temerloh",
 		qrImage: "",
