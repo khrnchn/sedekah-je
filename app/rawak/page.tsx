@@ -55,7 +55,7 @@ const Rawak = () => {
                 priority
                 width={200}
                 height={200}
-                src={randomInstitution.image}
+                src={randomInstitution.qrImage}
                 alt={randomInstitution.name}
                 className="w-full h-full lg:h-full sm:rounded-tr-lg sm:rounded-tl-lg object-cover object-top"
               />
@@ -73,7 +73,7 @@ const Rawak = () => {
                 <p
                   className="text-neutral-600 text-base capitalize"
                 >
-                  {randomInstitution.location}
+                  {randomInstitution.city}, {randomInstitution.state}
                 </p>
               </div>
               <a
