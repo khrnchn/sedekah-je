@@ -2,6 +2,7 @@ import type { Institution } from "../types/institutions";
 
 export const institutions: Institution[] = [
 	{
+    // https://www.facebook.com/masjidnegaramalaysia/
 		id: 1,
 		name: "Masjid Negara",
 		category: "mosque",
@@ -14,6 +15,7 @@ export const institutions: Institution[] = [
 		coords: [3.1419827397613664, 101.69175298700645],
 	},
 	{
+    // https://www.facebook.com/masjidalghufran/
 		id: 2,
 		name: "Masjid Al-Ghufran",
 		category: "mosque",
@@ -26,6 +28,7 @@ export const institutions: Institution[] = [
 		coords: [3.1578854416571565, 101.61682224883123],
 	},
 	{
+    // https://www.facebook.com/MasjidAlMuhtadinDamansaraDamai/
 		id: 3,
 		name: "Masjid Al-Muhtadin Damansara Damai",
 		category: "mosque",
@@ -38,6 +41,7 @@ export const institutions: Institution[] = [
 		coords: [3.201055431014754, 101.59551490051814],
 	},
 	{
+    // https://www.facebook.com/masjidarrahman.jawi/
 		id: 4,
 		name: "Masjid Ar-Rahman",
 		category: "mosque",
@@ -49,6 +53,7 @@ export const institutions: Institution[] = [
 		coords: [3.124261867632774, 101.67413567602591],
 	},
 	{
+    // https://www.facebook.com/masjidlamasurafan/
 		id: 5,
 		name: "Masjid Lama Kampung Sura",
 		category: "mosque",
@@ -59,6 +64,7 @@ export const institutions: Institution[] = [
 		coords: [4.7383225224584855, 103.42684395703144],
 	},
 	{
+    // https://www.facebook.com/AsSalamKD/
 		id: 6,
 		name: "Surau As-Salam Seksyen 4",
 		category: "surau",
@@ -71,6 +77,7 @@ export const institutions: Institution[] = [
 		coords: [3.1525404874785603, 101.58173564835822],
 	},
 	{
+    // https://www.facebook.com/masjidsrisendayanofficial/
 		id: 7,
 		name: "Masjid Sri Sendayan",
 		category: "mosque",
@@ -107,6 +114,7 @@ export const institutions: Institution[] = [
 		coords: [3.1138929331824166, 101.72054132480572],
 	},
 	{
+		// https://www.facebook.com/masjidlestariputraofficial/
 		id: 10,
 		name: "Masjid Lestari Putra", // or Surau Saidina Abu Bakar
 		category: "mosque",
@@ -167,6 +175,7 @@ export const institutions: Institution[] = [
 		coords: [2.9490553412681573, 101.772701949897],
 	},
 	{
+    // https://www.facebook.com/p/Masjid-Al-Manar-Kg-Parit-Sakai-Darat-100086783897014/
 		id: 15,
 		name: "Masjid Jamek Al Manar",
 		category: "mosque",
@@ -179,6 +188,7 @@ export const institutions: Institution[] = [
 		coords: [2.0331839076325915, 102.58894060000036],
 	},
 	{
+    // https://www.facebook.com/MTAABSMS/
 		id: 16,
 		name: "Masjid Tengku Ampuan Afzan, Bandar Satelit",
 		category: "mosque",
@@ -212,6 +222,7 @@ export const institutions: Institution[] = [
 		coords: [3.1525994383444234, 101.76554095937011],
 	},
 	{
+    // https://www.facebook.com/MAMTNA/
 		id: 19,
 		name: "Masjid Al Mustaqim",
 		category: "mosque",
@@ -370,6 +381,7 @@ export const institutions: Institution[] = [
     coords: [3.229518790943314, 101.71554352376846],
 	},
 	{
+    // https://www.facebook.com/mardasah.cherasperdanamcp/
 		id: 34,
 		name: "Madrasah Cheras Perdana",
 		category: "surau",
@@ -381,6 +393,7 @@ export const institutions: Institution[] = [
     coords: [3.0420408671659795, 101.76475768356461],
 	},
 	{
+		// https://www.facebook.com/p/Surau-Al-Hijrah-PPR-Pekan-Batu-100090311133470/
 		id: 35,
 		name: "Surau Al-Hijrah PPR Pekan Batu",
 		category: "surau",
@@ -456,6 +469,7 @@ export const institutions: Institution[] = [
     coords: [3.169913364998503, 101.74403646245656],
 	},
   {
+    // https://www.facebook.com/faridiyah
     id: 42,
     name: "Maahad Tahfiz Al-Madrasathul Faridiyah",
     category: "surau",
@@ -467,8 +481,9 @@ export const institutions: Institution[] = [
     coords: [3.1929096167514777, 101.73210982842211],
   },
   {
+    // https://www.facebook.com/musollabaiduriukayperdana/
     id: 43,
-    name: "Musolla Sri Baiduri",
+    name: "Musolla Sri Baiduri Ukay Perdana",
     category: "surau",
     state: "Selangor",
     city: "Ampang",
@@ -669,6 +684,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/suraualittihadiyyahs9/
     id: 62,
     name: "Surau Al-Ittihadiyyah Seksyen 9", // or Musalla Al-Ittihadiyyah
     category: "surau",
@@ -680,6 +696,7 @@ export const institutions: Institution[] = [
     coords: [3.080943452917789, 101.52789611928387],
   },
   {
+    // https://www.facebook.com/mai13.official/
     id: 63,
     name: "Masjid Al-Ikhlas Seksyen 13",
     category: "mosque",
@@ -691,8 +708,9 @@ export const institutions: Institution[] = [
     coords: [3.086588976386146, 101.54532636024668],
   },
   {
+    // https://www.facebook.com/masjid.kotadamansara/
     id: 64,
-    name: "Masjid Kota Damansara ",
+    name: "Masjid Kota Damansara",
     category: "mosque",
     state: "Selangor",
     city: "Petaling Jaya",
@@ -702,8 +720,9 @@ export const institutions: Institution[] = [
     coords: [3.161638907412847, 101.58720095211012],
   },
   {
+    // https://www.facebook.com/attaqwabbsa/
     id: 65,
-    name: "Surau At Taqwa Bukit Bandaraya",
+    name: "Surau At-Taqwa Bukit Bandaraya",
     category: "surau",
     state: "Selangor",
     city: "Shah Alam",
@@ -724,6 +743,7 @@ export const institutions: Institution[] = [
     coords: [3.095583942312656, 101.60437236603848],
   },
   {
+    // https://www.facebook.com/suraualazharsamsml/
     id: 67,
     name: "Surau Al Azhar Sam Sml",
     category: "surau",
@@ -765,6 +785,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/masjidjumhuriahtamandatoharun/
     id: 71,
     name: "Masjid Jumhuriah",
     category: "mosque",
@@ -797,6 +818,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/p/Masjid-Sultan-Ahmad-Paloh-2-100090488524753/
     id: 74,
     name: "Masjid Sultan Ahmad Paloh 02",
     category: "mosque",
@@ -840,6 +862,7 @@ export const institutions: Institution[] = [
     coords: [5.750505650202645, 101.89885622327735],
   },
   {
+    // https://www.facebook.com/masjidalabrarayerlanas/
     id: 78,
     name: "Masjid Al-Abrar Ayer Lanas",
     category: "mosque",
@@ -861,6 +884,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/p/Masjid-Mukim-Pantai-Senak-100083119489258/
     id: 80,
     name: "Masjid Al-Munir Mukim Pantai Senok",
     category: "mosque",
@@ -883,6 +907,7 @@ export const institutions: Institution[] = [
     coords: [6.138366491054416, 102.2953592485237],
   },
   {
+    // https://www.facebook.com/PIslamKampusKesihatan/
     id: 82,
     name: "Pusat Islam Kampus Kesihatan USM",
     category: "mosque",
@@ -905,6 +930,7 @@ export const institutions: Institution[] = [
     coords: [6.052128699333283, 102.23834045681281],
   },
   {
+    // https://www.facebook.com/masjidhidayahtm/
     id: 84,
     name: "Masjid Al-Hidayah Taman Melawati",
     category: "mosque",
@@ -926,6 +952,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/MasjidIbrahimi/
     id: 86,
     name: "Tabung Naiktaraf Masjid Ibrahimi Pasir Puteh",
     category: "mosque",
@@ -987,6 +1014,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/p/Masjid-Ar-Raudhah-Lundang-100068747751504/
     id: 92,
     name: "Masjid Ar-Raudhah Lundang",
     category: "mosque",
@@ -1058,6 +1086,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/p/Masjid-Mukim-Pangkal-Meleret-100064302567170/
     id: 99,
     name: "Masjid Mukim Pangkal Meleret",
     category: "mosque",
@@ -1118,6 +1147,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/pages/SRU%20(A)%20DARUL%20ULUM%20DINIAH/553383568011720/
     id: 105,
     name: "Sekolah Rendah Ugama Arab Darul Ulum Diniah",
     category: "others",
@@ -1138,6 +1168,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/Masjidmukimlalangpepuyu/
     id: 107,
     name: "Masjid Mukim Lalang Pepuyu",
     category: "mosque",
@@ -1169,6 +1200,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/masjidismailpetratanahmerah/
     id: 110,
     name: "Infaq Masjid Ismail Petra",
     category: "mosque",
@@ -1180,6 +1212,7 @@ export const institutions: Institution[] = [
     coords: [5.808598613088199, 102.145549492349],
   },
   {
+    // https://www.facebook.com/p/Masjid-AsSyakirin-Mukim-Kelewek-Tanah-Merah-100070071895715/
     id: 111,
     name: "Masjid As-Syakirin Mukim Kelewek",
     category: "mosque",
@@ -1201,6 +1234,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/masjid.shas.iiumk/
     id: 113,
     name: "Masjid Sultan Haji Ahmad Shah",
     category: "mosque",
@@ -1222,6 +1256,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/p/Masjid-Taman-Bukit-Bendera-Mentakab-100077104761581/
     id: 115,
     name: "Masjid Taman Bukit Bendera",
     category: "mosque",
@@ -1284,6 +1319,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/MasjidTJ/
     id: 121,
     name: "Masjid Tengku Mahkota Tengku Hassanal Ibrahim Alam Shah", // old name, Masjid Taman Temerloh Jaya
     category: "mosque",
@@ -1336,6 +1372,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/suraualikhlaskgserimedang/
     id: 126,
     name: "Surau Al-Ikhlas Kampung Seri Medang",
     category: "surau",
@@ -1357,6 +1394,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/alehsansglabu/
     id: 128,
     name: "Masjid Al Ehsan Kampung Sungai Labu",
     category: "mosque",
@@ -1377,6 +1415,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/MSMV.Labuan/
     id: 130,
     name: "Masjid Sultan Muhammad V",
     category: "mosque",
@@ -1479,6 +1518,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/masjidalmuhajirininderasabah/
     id: 140,
     name: "Masjid Al Muhajirin Inderasabah",
     category: "mosque",
@@ -1490,6 +1530,7 @@ export const institutions: Institution[] = [
     coords: [4.299930689886914, 118.17272938790096],
   },
   {
+    // https://www.facebook.com/MasjidAnnaimLutongMiri/
     id: 141,
     name: "Masjid An-Naim Lutong",
     category: "mosque",
@@ -1621,6 +1662,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/jalanputra58/
     id: 154,
     name: "Masjid Kampong Berjaya",
     category: "mosque",
@@ -1706,6 +1748,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/p/Masjid-Al-Hussain-100064413532530/
     id: 162,
     name: "Masjid Al Hussain",
     category: "mosque",
@@ -1717,6 +1760,7 @@ export const institutions: Institution[] = [
     coords: [6.3973373757204435, 100.12698125253013],
   },
   {
+    // https://www.facebook.com/profile.php?id=100083138536696
     id: 163,
     name: "Masjid Umar Ibnu Al-Khattab",
     category: "mosque",
@@ -1728,6 +1772,7 @@ export const institutions: Institution[] = [
     coords: [5.323649335075917, 100.28576359618626],
   },
   {
+    // https://www.facebook.com/p/Masjid-Hashim-Yahaya-Jalan-Perak-Pulau-Pinang-100070137350620/
     id: 164,
     name: "Qaryah Masjid Jamek Hashim Yahaya",
     category: "mosque",
@@ -1760,6 +1805,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/darulmuhajarinpenang/
     id: 167,
     name: "Madrasah Darul Muhajirin",
     category: "mosque",
@@ -1770,6 +1816,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/masjidpadangibu/
     id: 168,
     name: "Qaryah Masjid Jamek Padang Ibu",
     category: "mosque",
@@ -1824,6 +1871,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/masjidalhikmahfeldaairtawar5/
     id: 173,
     name: "Masjid Al-Hikmah Felda Air Tawar 5",
     category: "mosque",
@@ -1835,6 +1883,7 @@ export const institutions: Institution[] = [
     coords: [1.6039187182484582, 104.09006345524395],
   },
   {
+    // https://www.facebook.com/badanmasjidfsemenchu/
     id: 174,
     name: "Masjid Felda Semenchu",
     category: "mosque",
@@ -1866,6 +1915,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/p/Masjid-Assyakirin-Aping-Barat-100072113354988/
     id: 177,
     name: "Masjid As'syakirin Aping Barat",
     category: "mosque",
@@ -1888,6 +1938,7 @@ export const institutions: Institution[] = [
     coords: [1.4964204822307026, 104.04447591678588],
   },
   {
+    // https://www.facebook.com/surau.alrayyan.tpj/
     id: 179,
     name: "Surau Al-Rayyan, Taman Puteri Jaya",
     category: "surau",
@@ -1899,6 +1950,7 @@ export const institutions: Institution[] = [
     coords: [1.8829160120692154, 102.95555538073408],
   },
   {
+    // https://www.facebook.com/masjidparitsulong/?locale=ms_MY
     id: 180,
     name: "Masjid Jamek Pekan Parit Sulong",
     category: "mosque",
@@ -1910,6 +1962,7 @@ export const institutions: Institution[] = [
     coords: [1.9759040189084847, 102.88537731343868],
   },
   {
+    // https://www.facebook.com/masjid.terminal.larkin.jb/
     id: 181,
     name: "Masjid An-Nur @ Larkin Sentral",
     category: "mosque",
@@ -1921,6 +1974,7 @@ export const institutions: Institution[] = [
     coords: [1.4956104088480497, 103.74203342180577],
   },
   {
+    // https://www.facebook.com/mtsSAUJANA/
     id: 182,
     name: "TP Masjid Taman Seri Saujana",
     category: "mosque",
@@ -1942,6 +1996,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/masjidjamekalmubarak/
     id: 184,
     name: "Masjid Al-Mubarak Bandar Putra",
     category: "mosque",
@@ -1964,6 +2019,7 @@ export const institutions: Institution[] = [
     coords: [1.710101969265588, 103.95531798313507],
   },
   {
+    // https://www.facebook.com/profile.php?id=100057221119534
     id: 186,
     name: "PASTI Kawasan Johor Bahru",
     category: "others",
@@ -1984,6 +2040,8 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.suraualtaqwa.my/
+    // https://www.facebook.com/suraualtaqwa/
     id: 188,
     name: "Surau Al-Taqwa Pulai Bistari",
     category: "surau",
@@ -1995,6 +2053,7 @@ export const institutions: Institution[] = [
     coords: [1.5658237720271035, 103.59163477321788],
   },
   {
+    // https://www.facebook.com/p/Masjid-Bandar-Tun-Hussein-Onn-100064325539673/
     id: 189,
     name: "Masjid Jamek Tun Hussein Onn",
     category: "mosque",
@@ -2006,6 +2065,7 @@ export const institutions: Institution[] = [
     coords: [1.5039161456339258, 103.74087858075654],
   },
   {
+    // https://www.facebook.com/SurauAlJauhar/
     id: 190,
     name: "Surau Al Jauhar Taman Sentosa",
     category: "surau",
@@ -2028,6 +2088,7 @@ export const institutions: Institution[] = [
     coords: [2.495389913979471, 102.85368231492549],
   },
   {
+    // https://www.facebook.com/masjid.tamandatoonnlarkin/
     id: 192,
     name: "Masjid Taman Dato Onn Larkin",
     category: "mosque",
@@ -2039,6 +2100,7 @@ export const institutions: Institution[] = [
     coords: [1.4872646593121845, 103.75094604932772],
   },
   {
+    // https://www.facebook.com/masjidchaah/
     id: 193,
     name: "Masjid Jamek Chaah",
     category: "mosque",
@@ -2050,6 +2112,7 @@ export const institutions: Institution[] = [
     coords: [2.248216589533912, 103.03979517772844],
   },
   {
+    // https://www.facebook.com/masjid.at.taqwa.kulai/
     id: 194,
     name: "Surau At-Taqwa Kulai",
     category: "surau",
@@ -2081,6 +2144,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/ANWARULMAHABBAHKLUANG/
     id: 197,
     name: "Pengajian Anwarul Mahabbah",
     category: "others",
@@ -2092,6 +2156,7 @@ export const institutions: Institution[] = [
     coords: [1.970375489111683, 103.24324370129204],
   },
   {
+    // https://yayasanhidayah.my/
     id: 198,
     name: "Yayasan Pendidikan Hidayah",
     category: "others",
@@ -2102,6 +2167,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/MSAMuarJohor/
     id: 199,
     name: "Masjid Sungai Abong",
     category: "mosque",
@@ -2113,6 +2179,7 @@ export const institutions: Institution[] = [
     coords: [2.0592866115891697, 102.59555938672425],
   },
   {
+    // https://www.facebook.com/p/Masjid-Tunku-Laksamana-Abdul-Jalil-100064825270284/
     id: 200,
     name: "Masjid Tunku Laksamana Abdul Jalil",
     category: "mosque",
@@ -2133,6 +2200,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/MSIBP/
     id: 202,
     name: "Masjid Jamek Sultan Ismail",
     category: "mosque",
@@ -2144,6 +2212,7 @@ export const institutions: Institution[] = [
     coords: [1.856047406146543, 102.94620040443927],
   },
   {
+    // https://www.facebook.com/jkmbktOfficial/
     id: 203,
     name: "J.K Masjid Bandar Kota Tinggi",
     category: "mosque",
@@ -2155,6 +2224,7 @@ export const institutions: Institution[] = [
     coords: [1.7421092169404855, 103.8984277416688],
   },
   {
+    // https://www.facebook.com/p/Surau-Taman-Pasak-Indah-kota-Tinggi-100066368724844/
     id: 204,
     name: "Surau Taman Pasak Indah",
     category: "surau",
@@ -2196,6 +2266,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/SUAAKULAI/ (Unactive, latest post 2020)
     id: 208,
     name: "Surau Umar Abdul Aziz, Bandar Putra",
     category: "surau",
@@ -2217,6 +2288,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/masjidhussainofficial/
     id: 210,
     name: "Masjid Hussain",
     category: "mosque",
@@ -2228,6 +2300,7 @@ export const institutions: Institution[] = [
     coords: [2.6882401127514175, 101.9180310852145],
   },
   {
+    // https://www.facebook.com/p/Masjid-Assyakirin-Gemencheh-100067832415297/
     id: 211,
     name: "Masjid Assyakirin Gemencheh",
     category: "mosque",
@@ -2239,6 +2312,7 @@ export const institutions: Institution[] = [
     coords: [2.5239963936912186, 102.39572948662175],
   },
   {
+    // https://www.facebook.com/masjidattaqwaparoi/
     id: 212,
     name: "Masjid At-Taqwa Kampung Paroi",
     category: "mosque",
@@ -2261,6 +2335,8 @@ export const institutions: Institution[] = [
     coords: [2.583615613058011, 102.60773728251492],
   },
   {
+    // https://www.facebook.com/mwtkn9/
+    // https://www.instagram.com/masjid_warisan_tk/
     id: 214,
     name: "Masjid Warisan Telok Kemang",
     category: "mosque",
@@ -2272,6 +2348,7 @@ export const institutions: Institution[] = [
     coords: [2.4633698162499096, 101.85447690114914],
   },
   {
+    // https://www.facebook.com/sbsmpal/
     id: 215,
     name: "Surau Batu Sheikh Muhammad Paiz Al-Linggi",
     category: "surau",
@@ -2303,6 +2380,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/masjidsrisendayanofficial/
     id: 218,
     name: "Masjid Sri Sendayan",
     category: "mosque",
@@ -2346,6 +2424,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/profile.php?id=100089861776392
     id: 222,
     name: "Masjid Setia Alam Seksyen U13",
     category: "mosque",
@@ -2357,6 +2436,7 @@ export const institutions: Institution[] = [
     coords: [3.1030528, 101.4417153],
   },
   {
+    // https://www.facebook.com/baitulrahmanamanperdana/
     id: 223,
     name: "Surau Baitul Rahman, Taman Aman Perdana",
     category: "surau",
@@ -2368,6 +2448,7 @@ export const institutions: Institution[] = [
     coords: [3.0941948808682422, 101.40919706865623],
   },
   {
+    // https://www.facebook.com/masjidalfirdaussegambut/
     id: 224,
     name: "Masjid Al-Firdaus",
     category: "mosque",
@@ -2390,6 +2471,7 @@ export const institutions: Institution[] = [
     coords: [3.0705502405615954, 101.40133071533951],
   },
   {
+    // https://www.facebook.com/masjidahmadirp/
     id: 226,
     name: "Masjid Ahmadi Rantau Panjang",
     category: "mosque",
@@ -2401,6 +2483,7 @@ export const institutions: Institution[] = [
     coords: [3.0584777, 101.4084735],
   },
   {
+    // https://www.facebook.com/masjidannurglenmarie/
     id: 227,
     name: "Masjid An-Nur Temasya Glenmarie",
     category: "mosque",
@@ -2434,6 +2517,7 @@ export const institutions: Institution[] = [
     coords: [2.6262634074357485, 101.70727055288329],
   },
   {
+    // https://www.facebook.com/MasjidArRahahKualaLumpur/
     id: 230,
     name: "Masjid Ar-Rahah",
     category: "mosque",
@@ -2444,6 +2528,7 @@ export const institutions: Institution[] = [
     coords: [3.1138839387692325, 101.66876285084557],
   },
   {
+    // https://www.facebook.com/maebk5/
     id: 231,
     name: "Masjid Al-Ehsan, Bandar Kinrara",
     category: "mosque",
@@ -2455,6 +2540,7 @@ export const institutions: Institution[] = [
     coords: [3.0455435411318748, 101.64529926429225],
   },
   {
+    // https://www.facebook.com/masjidhusna/
     id: 232,
     name: "Masjid Al-Husna, Bandar Sunway",
     category: "mosque",
@@ -2477,6 +2563,7 @@ export const institutions: Institution[] = [
     coords: [3.1987214028503774, 101.45287150981959],
   },
   {
+    // https://www.facebook.com/masjidbbr/
     id: 234,
     name: "Masjid Bandar Bukit Raja",
     category: "mosque",
@@ -2513,6 +2600,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow"],
   },
   {
+    // https://www.facebook.com/masjid.abu.ubaidah/
     id: 237,
     name: "Masjid Abu Ubaidah Al Jarrah",
     category: "mosque",
@@ -2524,6 +2612,8 @@ export const institutions: Institution[] = [
     coords: [3.1937375498404372, 101.72870676988711],
   },
   {
+    // https://www.masjidwilayah.gov.my/
+    // https://www.facebook.com/masjidwilayahpersekutuan/
     id: 238,
     name: "Masjid Wilayah Persekutuan",
     category: "mosque",
@@ -2535,6 +2625,7 @@ export const institutions: Institution[] = [
     coords: [3.17218843155993, 101.67160440797008],
   },
   {
+    // https://www.facebook.com/masjidseven/
     id: 239,
     name: "Masjid Seksyen 7 Shah Alam",
     category: "mosque",
@@ -2546,6 +2637,8 @@ export const institutions: Institution[] = [
     coords: [3.071487332534143, 101.48189133495627],
   },
   {
+    // https://www.mssaas.gov.my/
+    // https://www.facebook.com/masjidnegeriselangor/
     id: 240,
     name: "Masjid Sultan Salahuddin Abdul Aziz Shah",
     category: "mosque",
@@ -2557,6 +2650,8 @@ export const institutions: Institution[] = [
     coords: [3.079201865570446, 101.52064542402636],
   },
   {
+    // https://mtajbj.gov.my/
+    // https://www.facebook.com/MTAJBJ/
     id: 241,
     name: "Masjid Tengku Ampuan Jemaah Bukit Jelutong",
     category: "mosque",
@@ -2568,6 +2663,8 @@ export const institutions: Institution[] = [
     coords: [3.0995722494486113, 101.53908664659981],
   },
   {
+    // https://www.facebook.com/masjidcyberjaya10/
+    // https://www.instagram.com/masjidcyberjaya10/
     id: 242,
     name: "Masjid Cyberjaya 10",
     category: "mosque",
@@ -2579,6 +2676,8 @@ export const institutions: Institution[] = [
     coords: [2.9004262, 101.6288741],
   },
   {
+    // https://www.facebook.com/mai13.official/
+    // https://www.instagram.com/mai13.official/
     id: 243,
     name: "Masjid Al-Ikhlas Seksyen 13 Shah Alam",
     category: "mosque",
@@ -2590,6 +2689,7 @@ export const institutions: Institution[] = [
     coords: [3.0865926, 101.5427397],
   },
   {
+    // https://www.facebook.com/masjidseven/
     id: 244,
     name: "Masjid Seksyen 7 Shah Alam",
     category: "mosque",
@@ -2601,6 +2701,7 @@ export const institutions: Institution[] = [
     coords: [3.0712195, 101.476559],
   },
   {
+    // https://www.facebook.com/masjidkotakemuning/
     id: 245,
     name: "Masjid Kota Kemuning",
     category: "mosque",
@@ -2612,6 +2713,7 @@ export const institutions: Institution[] = [
     coords: [3.0026341, 101.5351182],
   },
   {
+    // https://www.facebook.com/MasjidDarulEhsanSubangJaya/
     id: 246,
     name: "Masjid Darul Ehsan SS15 Subang Jaya",
     category: "mosque",
@@ -2623,6 +2725,7 @@ export const institutions: Institution[] = [
     coords: [3.101386, 101.4345701],
   },
   {
+    // https://www.facebook.com/masjidhusna/
     id: 247,
     name: "Masjid Al-Husna, Bandar Sunway",
     category: "mosque",
@@ -2645,6 +2748,7 @@ export const institutions: Institution[] = [
     coords: [2.5711614, 102.7086086],
   },
   {
+    // https://www.facebook.com/masjidrajahajifisabilillah/
     id: 249,
     name: "Masjid Raja Haji Fi Sabilillah Cyberjaya",
     category: "mosque",
@@ -2667,6 +2771,8 @@ export const institutions: Institution[] = [
     coords: [3.0319172269355716, 101.42426483009802],
   },
   {
+    // https://masjidalfalah.com/
+    // https://www.facebook.com/masjidalfalahusj9/
     id: 251,
     name: "Masjid Al-Falah USJ 9",
     category: "mosque",
@@ -2678,6 +2784,7 @@ export const institutions: Institution[] = [
     coords: [3.0440697, 101.5846234],
   },
   {
+    // https://www.facebook.com/msasperak/
     id: 252,
     name: "Masjid Sultan Azlan Shah",
     category: "mosque",
@@ -2689,6 +2796,7 @@ export const institutions: Institution[] = [
     coords: [4.589270441026612, 101.12681956062723],
   },
   {
+    // https://www.facebook.com/masjiddamansaraperdana/
     id: 253,
     name: "Masjid Damansara Perdana",
     category: "mosque",
@@ -2711,6 +2819,7 @@ export const institutions: Institution[] = [
     coords: [3.253478, 102.5470493],
   },
   {
+    // https://www.facebook.com/masjidhusna/
     id: 255,
     name: "Masjid Al-Husna, Bandar Sunway",
     category: "mosque",
@@ -2733,6 +2842,7 @@ export const institutions: Institution[] = [
     coords: [2.5711614, 102.7086086],
   },
   {
+    // https://www.facebook.com/masjidrajahajifisabilillah/
     id: 257,
     name: "Masjid Raja Haji Fi Sabilillah Cyberjaya",
     category: "mosque",
@@ -2755,6 +2865,8 @@ export const institutions: Institution[] = [
     coords: [3.0319172269355716, 101.42426483009802],
   },
   {
+    // https://masjidalfalah.com/
+    // https://www.facebook.com/masjidalfalahusj9/
     id: 259,
     name: "Masjid Al-Falah USJ 9",
     category: "mosque",
@@ -2766,6 +2878,7 @@ export const institutions: Institution[] = [
     coords: [3.0440697, 101.5846234],
   },
   {
+    // https://www.facebook.com/msasperak/
     id: 260,
     name: "Masjid Sultan Azlan Shah",
     category: "mosque",
@@ -2777,6 +2890,8 @@ export const institutions: Institution[] = [
     coords: [4.589270441026612, 101.12681956062723],
   },
   {
+    // https://www.masjidtuankumizan.gov.my/v3/
+    // https://www.facebook.com/masjidtuankumizanzainalabidin/
     id: 261,
     name: "Masjid Tuanku Mizan Zainal Abidin",
     category: "mosque",
@@ -2788,6 +2903,7 @@ export const institutions: Institution[] = [
     coords: [2.9191710871320597, 101.68116713044142],
   },
   {
+    // https://www.facebook.com/masjidhijausubangairport/
     id: 262,
     name: "Masjid Lapangan Terbang Sultan Abdul Aziz Shah Subang",
     category: "mosque",
@@ -2799,6 +2915,7 @@ export const institutions: Institution[] = [
     coords: [3.1199533504385784, 101.56448522427296],
   },
   {
+    // https://www.facebook.com/SurauAlManarKomunitiPresint14Putrajaya/
     id: 263,
     name: "Surau Al-Manar",
     category: "surau",
@@ -2842,6 +2959,7 @@ export const institutions: Institution[] = [
     coords: [6.225364489670574, 102.34014190570367],
   },
   {
+    // https://www.facebook.com/p/Surau-Nur-baiduri-100064363312323/
     id: 267,
     name: "Surau Nur Baiduri, Bandar Bukit Puchong",
     category: "surau",
@@ -2853,6 +2971,8 @@ export const institutions: Institution[] = [
     coords: [2.9835377985885634, 101.62801688936486],
   },
   {
+    // https://www.facebook.com/masjidcyberjaya10/
+    // https://www.instagram.com/masjidcyberjaya10/
     id: 268,
     name: "Masjid Cyberjaya 10",
     category: "mosque",
@@ -2924,6 +3044,7 @@ export const institutions: Institution[] = [
     coords: [3.0837002, 101.7066497]
   },
   {
+    // https://www.facebook.com/masjidalfaizin28/
     id: 276,
     name: "Masjid Al Faizin",
     category: "mosque",
