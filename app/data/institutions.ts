@@ -216,6 +216,7 @@ export const institutions: Institution[] = [
 		category: "surau",
 		state: "Selangor",
 		city: "Ampang",
+		qrImage: "",
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000225031001921366955204866153034585802MY5918SURAU AL-IKHLASIAH6006AMPANG6105680006304ADB9",
 		supportedPayment: ["duitnow", "tng"],
@@ -228,6 +229,7 @@ export const institutions: Institution[] = [
 		category: "mosque",
 		state: "Selangor",
 		city: "Ampang",
+		qrImage: "",
 		qrContent:
 			"00020201021126620014A000000615000101065641670215QRMID00000003890311011100924415204866153034585802MY5925MASJID AL MUSTAQIM AMPANG6006AMPANG6105680006304F9D2",
 		supportedPayment: ["duitnow", "tng"],
@@ -239,6 +241,7 @@ export const institutions: Institution[] = [
 		category: "surau",
 		state: "Selangor",
 		city: "Bandar Baru Bangi",
+		qrImage: "",
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000036031001393260725204866153034585802MY5912SURAU AL-UMM6006KAJANG6105430006304CDE7",
 		supportedPayment: ["duitnow", "tng"],
@@ -250,6 +253,7 @@ export const institutions: Institution[] = [
 		category: "mosque",
 		state: "Selangor",
 		city: "Bandar Seri Putra",
+		qrImage: "",
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000140031001265703345204866153034585802MY5918MASJID AS SYAKIRIN6007DENGKIL61054380063041627",
 		supportedPayment: ["duitnow", "tng"],
@@ -260,6 +264,7 @@ export const institutions: Institution[] = [
 		category: "surau",
 		state: "Selangor",
 		city: "Bandar Baru Bangi",
+		qrImage: "",
 		qrContent:
 			"00020201021126600014A000000615000101065641670215QRMID000000015103090123369895204866153034585802MY5911SURAU DAMAI6005BANGI610543650630409F3",
 		supportedPayment: ["duitnow", "tng"],
@@ -271,6 +276,7 @@ export const institutions: Institution[] = [
 		category: "surau",
 		state: "Selangor",
 		city: "Bandar Baru Bangi",
+		qrImage: "",
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000197031001328608795204866153034585802MY5916SURAU AL-KAUTHAR6015BANDAR BARU BAN6105436506304DDB5",
 		supportedPayment: ["duitnow", "tng"],
@@ -281,6 +287,7 @@ export const institutions: Institution[] = [
 		category: "surau",
 		state: "Selangor",
 		city: "Bandar Baru Bangi",
+		qrImage: "",
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000220031001933151515204866153034585802MY5916SURAU AR-RAUDHAH6006KAJANG6105430006304980F",
 		supportedPayment: ["duitnow", "tng"],
@@ -292,6 +299,7 @@ export const institutions: Institution[] = [
 		category: "surau",
 		state: "Selangor",
 		city: "Bandar Baru Bangi",
+		qrImage: "",
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000292031001739679955204866153034585802MY5914SURAU AL-SOBAH6015BANDAR BARU BAN6105436506304CDF0",
 		supportedPayment: ["duitnow", "tng"],
@@ -302,6 +310,7 @@ export const institutions: Institution[] = [
 		category: "mosque",
 		state: "Selangor",
 		city: "Bandar Seri Putra",
+		qrImage: "",
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000277031001337175795204866153034585802MY5915MASJID AL AZHAR6006KAJANG61054300063045B9C",
 		supportedPayment: ["duitnow", "tng"],
@@ -312,6 +321,7 @@ export const institutions: Institution[] = [
 		category: "mosque",
 		state: "Selangor",
 		city: "Bandar Baru Bangi",
+		qrImage: "",
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000320031001964433995204866153034585802MY5925MASJID AL-HASANAH BBBANGI6015BANDAR BARU BAN61054365063047E34",
 		supportedPayment: ["duitnow", "tng"],
@@ -323,6 +333,7 @@ export const institutions: Institution[] = [
 		category: "others",
 		state: "Selangor",
 		city: "Bandar Baru Bangi",
+		qrImage: "",
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000335031001390507915204866153034585802MY5924YAYASAN DARUSSYIFA BANGI6005BANGI61054365063042858",
 		supportedPayment: ["duitnow", "tng"],
@@ -333,6 +344,7 @@ export const institutions: Institution[] = [
 		category: "surau",
 		state: "Selangor",
 		city: "Bandar Baru Bangi",
+		qrImage: "",
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000378031001292084515204866153034585802MY5918SURAU AL MUJAHIDIN6005BANGI61054365063041927",
 		supportedPayment: ["duitnow", "tng"],
@@ -343,6 +355,7 @@ export const institutions: Institution[] = [
 		category: "others",
 		state: "Selangor",
 		city: "Bandar Baru Bangi",
+		qrImage: "",
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000482031001922555695204533153034585802MY5915TABUNG SEK SAAB6006KAJANG6105430006304A92B",
 		supportedPayment: ["duitnow", "tng"],
@@ -353,6 +366,7 @@ export const institutions: Institution[] = [
 		category: "mosque",
 		state: "Wilayah Persekutuan Kuala Lumpur",
 		city: "Kuala Lumpur",
+		qrImage: "",
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000002031001633145685204866153034585802MY5925MASJID JAMEK BANDARAYA KL6012KUALA LUMPUR6105500506304B927",
 		supportedPayment: ["duitnow", "tng"],
@@ -364,6 +378,7 @@ export const institutions: Institution[] = [
 		category: "surau",
 		state: "Selangor",
 		city: "Gombak",
+		qrImage: "",
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000003022031001938169345204866153034585802MY5924SURAU KHAIRIAH KG TENGAH6008SELANGOR61055310063048223",
 		supportedPayment: ["duitnow", "tng"],
@@ -376,6 +391,7 @@ export const institutions: Institution[] = [
 		category: "surau",
 		state: "Selangor",
 		city: "Cheras",
+		qrImage: "",
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000710031001334739915204866153034585802MY5923MADRASAH CHERAS PERDANA6006CHERAS610543200630477B7",
 		supportedPayment: ["duitnow", "tng"],
@@ -388,6 +404,7 @@ export const institutions: Institution[] = [
 		category: "surau",
 		state: "Wilayah Persekutuan Kuala Lumpur",
 		city: "Kuala Lumpur",
+		qrImage: "",
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000187031001934644905204866153034585802MY5925SR AL HIJRAH PPR PEKAN BT6013JINJANG UTARA61055200063042A74",
 		supportedPayment: ["duitnow", "tng"],
@@ -399,6 +416,7 @@ export const institutions: Institution[] = [
 		category: "others",
 		state: "Wilayah Persekutuan Kuala Lumpur",
 		city: "Kuala Lumpur",
+		qrImage: "",
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000949031001724397055204866153034585802MY5923SUMBANGAN IHYA RAMADHAN6012KUALA LUMPUR6105506046304C09F",
 		supportedPayment: ["duitnow", "tng"],
@@ -409,6 +427,7 @@ export const institutions: Institution[] = [
 		category: "mosque",
 		state: "Wilayah Persekutuan Kuala Lumpur",
 		city: "Kuala Lumpur",
+		qrImage: "",
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000094031001966815035204866153034585802MY5924MASJID AL-MUQARRABIN BTS6012KUALA LUMPUR61055700063044569",
 		supportedPayment: ["duitnow", "tng"],
@@ -420,6 +439,7 @@ export const institutions: Institution[] = [
 		category: "mosque",
 		state: "Wilayah Persekutuan Kuala Lumpur",
 		city: "Kuala Lumpur",
+		qrImage: "",
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000248031001969154145204866153034585802MY5918MASJID AL MUHSININ6012KUALA LUMPUR610558100630475BB",
 		supportedPayment: ["duitnow", "tng"],
@@ -431,6 +451,7 @@ export const institutions: Institution[] = [
 		category: "others",
 		state: "Wilayah Persekutuan Kuala Lumpur",
 		city: "Kuala Lumpur",
+		qrImage: "",
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000859031001360657415204829953034585802MY5922SEKOLAH AGAMA AL FATEH6012KUALA LUMPUR61055700063041F6D",
 		supportedPayment: ["duitnow", "tng"],
@@ -441,6 +462,7 @@ export const institutions: Institution[] = [
 		category: "mosque",
 		state: "Wilayah Persekutuan Kuala Lumpur",
 		city: "Kuala Lumpur",
+		qrImage: "",
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000040031001938121605204866153034585802MY5920MASJID AL-HIDAYAH TM6012KUALA LUMPUR6105531006304AB74",
 		supportedPayment: ["duitnow", "tng"],
@@ -452,6 +474,7 @@ export const institutions: Institution[] = [
 		category: "mosque",
 		state: "Wilayah Persekutuan Kuala Lumpur",
 		city: "Kuala Lumpur",
+		qrImage: "",
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000331031001938554835204866153034585802MY5925MASJID AL-ANSAR T.KERAMAT6012KUALA LUMPUR61055420063045371",
 		supportedPayment: ["duitnow", "tng"],
@@ -464,6 +487,7 @@ export const institutions: Institution[] = [
     category: "surau",
 		state: "Wilayah Persekutuan Kuala Lumpur",
 		city: "Kuala Lumpur",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000352031001234333335204866153034585802MY5922M.TAHFIZ AL-MADRASATUL6012KUALA LUMPUR6105533006304ECAE",
     supportedPayment: ["duitnow", "tng"],
@@ -476,6 +500,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Selangor",
     city: "Ampang",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000477031001935065925204866153034585802MY5919MUSOLLA SRI BAIDURI6006AMPANG6105680006304F1D1",
     supportedPayment: ["duitnow", "tng"],
@@ -487,6 +512,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Ampang",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000003426031001739478275204866153034585802MY5918MADRASAH ADDINNIAH6006AMPANG610568000630417D7",
     supportedPayment: ["duitnow", "tng"],
@@ -498,6 +524,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Ampang",
+		qrImage: "",
     qrContent:
       "00020201021126620014A000000615000101065641670215QRMID00000003890311011100924415204866153034585802MY5925MASJID AL MUSTAQIM AMPANG6006AMPANG6105680006304F9D2",
     supportedPayment: ["duitnow", "tng"],
@@ -509,6 +536,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Selangor",
     city: "Bandar Baru Bangi",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000197031001328608795204866153034585802MY5916SURAU AL-KAUTHAR6015BANDAR BARU BAN6105436506304DDB5",
     supportedPayment: ["duitnow", "tng"],
@@ -520,6 +548,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Bandar Seri Putra",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000277031001337175795204866153034585802MY5915MASJID AL AZHAR6006KAJANG61054300063045B9C",
     supportedPayment: ["duitnow", "tng"],
@@ -531,6 +560,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Bandar Baru Bangi",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000320031001964433995204866153034585802MY5925MASJID AL-HASANAH BBBANGI6015BANDAR BARU BAN61054365063047E34",
     supportedPayment: ["duitnow", "tng"],
@@ -542,6 +572,7 @@ export const institutions: Institution[] = [
 		category: "surau",
 		state: "Selangor",
 		city: "Bandar Baru Bangi",
+		qrImage: "",
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000901031001935048475204866153034585802MY5915SURAU AL MADANI6015BANDAR BARU BAN6105436506304EDA6",
 		supportedPayment: ["duitnow", "tng"],
@@ -553,6 +584,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Kajang",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000003043031001926627135204866153034585802MY5924MASJID SUNGAI RAMAL LUAR6006KAJANG61054300063041B03",
     supportedPayment: ["duitnow", "tng"],
@@ -564,6 +596,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Batu Caves",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000202031001928656985204866153034585802MY5923MASJID JAMEK KG NAKHODA6010BATU CAVES6105681006304EFB3",
     supportedPayment: ["duitnow", "tng"],
@@ -575,6 +608,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Batu Caves",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000369031001965018735204866153034585802MY5923TBG PMBNGUNN M.JAMIATUS6010BATU CAVES610568100630465F6",
     supportedPayment: ["duitnow", "tng"],
@@ -586,6 +620,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Selangor",
     city: "Batu Caves",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000004223031001634135315204866153034585802MY5918SURAU AL KHAIRIYAH6012KUALA LUMPUR61055200063045986",
     supportedPayment: ["duitnow", "tng"],
@@ -596,6 +631,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Selangor",
     city: "Batu Caves",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000004360031001926888395204866153034585802MY5923SURAU AL-EHSAN BT CAVES6010BATU CAVES610568100630475C5",
     supportedPayment: ["duitnow", "tng"],
@@ -606,6 +642,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Wilayah Persekutuan Kuala Lumpur",
     city: "Kuala Lumpur",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000004490031001352013965204866153034585802MY5923KHAIRAT KEMATIAN KEMSAH6012KUALA LUMPUR61055110063047457",
     supportedPayment: ["duitnow", "tng"],
@@ -616,6 +653,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Selangor",
     city: "Shah Alam",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000934031001929362865204866153034585802MY5925SURAU AL-BUKHARY LMN GLEN6009SHAH ALAM6105401506304D00F",
     supportedPayment: ["duitnow", "tng"],
@@ -627,6 +665,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Selangor",
     city: "Kajang",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000317031001362224245204866153034585802MY5914SURAU AT-TAQWA6006KAJANG61054300063044565",
     supportedPayment: ["duitnow", "tng"],
@@ -637,6 +676,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Selangor",
     city: "Kajang",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000481031001697534675204866153034585802MY5922SURAU DESA SRI JENARIS6006KAJANG6105430006304ADC4",
     supportedPayment: ["duitnow", "tng"],
@@ -647,6 +687,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Hulu Langat",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000783031001339420445204866153034585802MY5924MASJID AL AMIN SG TEKALI6011HULU LANGAT61054310063049DE7",
     supportedPayment: ["duitnow", "tng"],
@@ -658,6 +699,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Kajang",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000004026031001390537045204866153034585802MY5921MASJID AL-EHSAN SMAPK6006KAJANG610543000630499A7",
     supportedPayment: ["duitnow", "tng"],
@@ -668,6 +710,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Hulu Langat",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000004493031001938642125204866153034585802MY5925PEMBINAAN MASJID SG SERAI6011HULU LANGAT6105431006304D3D1",
     supportedPayment: ["duitnow", "tng"],
@@ -679,6 +722,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Selangor",
     city: "Shah Alam",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000283031001238746885204866153034585802MY5921SURAU AL ITTIHADIYYAH6009SHAH ALAM6105400006304D360",
     supportedPayment: ["duitnow", "tng"],
@@ -691,6 +735,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Shah Alam",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000003031001930793065204866153034585802MY5924MASJID AL-IKHLAS SEK. 136009SHAH ALAM6105400006304B186",
     supportedPayment: ["duitnow", "tng"],
@@ -703,6 +748,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Petaling Jaya",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000003090031001381165705204866153034585802MY5921MASJID KOTA DAMANSARA6013PETALING JAYA61054781063042F93",
     supportedPayment: ["duitnow", "tng"],
@@ -715,6 +761,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Selangor",
     city: "Shah Alam",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000004296031001238871265204866153034585802MY5919SURAU AT TAQWA BBSA6009SHAH ALAM6105401706304951C",
     supportedPayment: ["duitnow", "tng"],
@@ -726,6 +773,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Selangor",
     city: "Petaling Jaya",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000242031001938100885204866153034585802MY5925SURAU ALEHSANIAH AHMADIAH6013PETALING JAYA6105473016304495B",
     supportedPayment: ["duitnow", "tng"],
@@ -738,6 +786,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Selangor",
     city: "Kajang",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000353031001239414765204866153034585802MY5921SURAU AL-AZHAR SAMSML6006KAJANG610543000630480DC",
     supportedPayment: ["duitnow", "tng"],
@@ -748,6 +797,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Selangor",
     city: "Rawang",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000510031001663457785204866153034585802MY5917SURAU AL MUTTAQIN6009PUTRAJAYA61056220063046803",
     supportedPayment: ["duitnow", "tng"],
@@ -759,6 +809,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Wilayah Persekutuan Putrajaya",
     city: "Putrajaya",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000838031001922427865204866153034585802MY5925SURAU SK SULTAN ALAM SHAH6009PUTRAJAYA6105625206304B2F8",
     supportedPayment: ["duitnow", "tng"],
@@ -769,6 +820,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Selangor",
     city: "Rawang",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000456031001734000255204866153034585802MY5916SURAU AL-HIDAYAH6006RAWANG6105480006304D169",
     supportedPayment: ["duitnow", "tng"],
@@ -780,6 +832,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Petaling Jaya",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000170031001334155805204866153034585802MY5916MASJID JUMHURIAH6007PUCHONG6105460006304355D",
     supportedPayment: ["duitnow", "tng"],
@@ -791,6 +844,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Gombak",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000362031001320062355204866153034585802MY5918IIUM GOMBAK MOSQUE6012KUALA LUMPUR6105531006304051C",
     supportedPayment: ["duitnow", "tng"],
@@ -802,6 +856,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Gua Musang",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000086031001298321775204866153034585802MY5922JK PBN MASJID AT-TAQWA6014GUA MUSANG KEL61051830063045A99",
     supportedPayment: ["duitnow", "tng"],
@@ -813,6 +868,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Gua Musang",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000098031001970076815204866153034585802MY5925MJD SULTAN AHMAD PALOH 026010GUA MUSANG6105183006304CB72",
     supportedPayment: ["duitnow", "tng"],
@@ -824,6 +880,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Gua Musang",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000101031001481951575204866153034585802MY5923MJD MUKIM LIMAU KASTURI6010GUA MUSANG61051830063042CE8",
     supportedPayment: ["duitnow", "tng"],
@@ -834,6 +891,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Kuala Balah",
+		qrImage: "",
     qrContent:
       "00020201021126620014A000000615000101065641670215QRMID00000002800311011199774245204866153034585802MY5922MJD MUKIM LUBOK BONGOR6011KUALA BALAH61051761063043597",
     supportedPayment: ["duitnow", "tng"],
@@ -845,6 +903,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Ayer Lanas",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000355031001397376305204866153034585802MY5912MASJID LEGEH6004JELI6105177006304C65D",
     supportedPayment: ["duitnow", "tng"],
@@ -857,6 +916,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Ayer Lanas",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000358031001796305805204866153034585802MY5923MJD AL ABRAR AYER LANAS6004JELI61051770063045BBF",
     supportedPayment: ["duitnow", "tng"],
@@ -868,6 +928,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Jeli",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000910031001393254865204866153034585802MY5919MASJID MUKIM LAKOTA6004JELI61051760063047660",
     supportedPayment: ["duitnow", "tng"],
@@ -879,6 +940,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Bachok",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000080031001994460255204866153034585802MY5918MASJID MUKIM SENAK6015BACHOK KELANTAN6105163206304DD5F",
     supportedPayment: ["duitnow", "tng"],
@@ -890,6 +952,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Kota Bharu", // Pengkalan Chepa
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000330031001995944775204866153034585802MY5923MASJID TAMAN DESA ORKID6010KOTA BHARU61051610063042EAE",
     supportedPayment: ["duitnow", "tng"],
@@ -902,6 +965,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Kota Bharu", // Kubang Kerian
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000666031001991263075204866153034585802MY5922MASJID PUSAT ISLAM USM6010KOTA BHARU61051615063047F24",
     supportedPayment: ["duitnow", "tng"],
@@ -913,6 +977,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Kota Bharu",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000803031001926323365204866153034585802MY5924TABUNG MJD MUKIM TUNJUNG6010KOTA BHARU61051601063042678",
     supportedPayment: ["duitnow", "tng"],
@@ -925,6 +990,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Wilayah Persekutuan Kuala Lumpur",
     city: "Kuala Lumpur",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000040031001938121605204866153034585802MY5920MASJID AL-HIDAYAH TM6012KUALA LUMPUR6105531006304AB74",
     supportedPayment: ["duitnow", "tng"],
@@ -936,6 +1002,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Pahang",
     city: "Mentakab", // Temerloh
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000634031001991903055204866153034585802MY5924MASJID KARIAH GAJAH MATI6008MENTAKAB610528400630486D2",
     supportedPayment: ["duitnow", "tng"],
@@ -947,6 +1014,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Pasir Puteh",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000046031001033013605204866153034585802MY5925TB NAIKTARAF MJD IBRAHIMI6011PASIR PUTEH610516800630430C9",
     supportedPayment: ["duitnow", "tng"],
@@ -958,6 +1026,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Pulai Chondong",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000228031001482637455204866153034585802MY5925MASJID AT TAQWA MCHONDONG6014PULAI CHONDONG6105166006304F459",
     supportedPayment: ["duitnow", "tng"],
@@ -968,6 +1037,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Selising",
+		qrImage: "",
     qrContent:
       "00020201021126620014A000000615000101065641670215QRMID00000002640311011255427655204866153034585802MY5925MASJID MUKIM BUKIT MERBAU6008SELISING61051681063042118",
     supportedPayment: ["duitnow", "tng"],
@@ -978,6 +1048,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Pulai Chondong",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000315031001296498405204866153034585802MY5918MASJID TOK KERAWAT6014PULAI CHONDONG6105166006304B359",
     supportedPayment: ["duitnow", "tng"],
@@ -988,6 +1059,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Pulai Chondong",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000349031001482817325204866153034585802MY5923MJD AL-RAHMAN KG.GALANG6014PULAI CHONDONG6105166006304A97F",
     supportedPayment: ["duitnow", "tng"],
@@ -998,6 +1070,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Rantau Panjang",
+		qrImage: "",
     qrContent:
       "00020201021126620014A000000615000101065641670215QRMID00000001980311011105116595204866153034585802MY5917MASJID DARUL NAIM6014RANTAU PANJANG6105172006304CA22",
     supportedPayment: ["duitnow", "tng"],
@@ -1009,6 +1082,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Kota Bharu",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000230031001990652355204866153034585802MY5925MASJID AR RAUDHAH LUNDANG6010KOTA BHARU61051520063048494",
     supportedPayment: ["duitnow", "tng"],
@@ -1020,6 +1094,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Kota Bharu",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000274031001949407855204866153034585802MY5923JK MJD MUKIM PINTU GANG6010KOTA BHARU61051510063041EA2",
     supportedPayment: ["duitnow", "tng"],
@@ -1030,6 +1105,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Kota Bharu",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000329031001298514615204866153034585802MY5918MASJID MUKIM PANJI6010KOTA BHARU6105161006304C28B",
     supportedPayment: ["duitnow", "tng"],
@@ -1040,6 +1116,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Kota Bharu",
+		qrImage: "",
     qrContent:
       "00020201021126620014A000000615000101065641670215QRMID00000003590311011107796715204866153034585802MY5923MD MASYARAKAT ROHINGYA 6010KOTA BHARU6105150006304C460",
     supportedPayment: ["duitnow", "tng"],
@@ -1050,6 +1127,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Kota Bharu",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000381031001926140665204866153034585802MY5911SEDEKAH@UMK6010KOTA BHARU6105161006304FCB4",
     supportedPayment: ["duitnow", "tng"],
@@ -1060,6 +1138,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Kota Bharu",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000444031001295202005204866153034585802MY5923TABUNG MASJID AL FATTAH6010KOTA BHARU61051510063048653",
     supportedPayment: ["duitnow", "tng"],
@@ -1070,6 +1149,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Kota Bharu",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000660031001797108895204533153034585802MY5922KHAIRAT KEMATIAN ISLAM6010KOTA BHARU61051510063041334",
     supportedPayment: ["duitnow", "tng"],
@@ -1081,6 +1161,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Machang",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000849031001959904835204866153034585802MY5925MJD MUKIM PANGKAL MELERET6007MACHANG61051850063045B32",
     supportedPayment: ["duitnow", "tng"],
@@ -1091,6 +1172,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Tanah Merah",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000069031001392146725204866153034585802MY5924MASJID MUKIM TEPI SUNGAI6011TANAH MERAH61051750063044CA1",
     supportedPayment: ["duitnow", "tng"],
@@ -1101,6 +1183,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Tanah Merah",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000226031001923564295204866153034585802MY5924MASJID MUKIM BECHAH LAUT6011TANAH MERAH6105175006304519E",
     supportedPayment: ["duitnow", "tng"],
@@ -1111,6 +1194,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Tanah Merah",
+		qrImage: "",
     qrContent:
       "00020201021126620014A000000615000101065641670215QRMID00000003600311011121752315204866153034585802MY5922MASJID MUKIM PASIR SAT6011TANAH MERAH6105175006304F868",
     supportedPayment: ["duitnow", "tng"],
@@ -1121,6 +1205,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Tanah Merah",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000740031001398601345204866153034585802MY5924JKS PEMBANGUNAN MJD IPTM6011TANAH MERAH6105175006304667B",
     supportedPayment: ["duitnow", "tng"],
@@ -1131,6 +1216,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Tanah Merah",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000939031001346720125204866153034585802MY5923PUSAT KHIDMAT KHAIRIYAH6011TANAH MERAH6105175006304A30E",
     supportedPayment: ["duitnow", "tng"],
@@ -1142,6 +1228,7 @@ export const institutions: Institution[] = [
     category: "others",
     state: "Kelantan",
     city: "Tanah Merah", // Padang Siam
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000001114031001999034425204829953034585802MY5924SRU(A) DARUL ULUM DINIAH6011PADANG SIAM6105175006304A137",
     supportedPayment: ["duitnow", "tng"],
@@ -1152,6 +1239,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Tanah Merah",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000001168031001935862015204866153034585802MY5924MASJID MUKIM KUALA KEPOK6011TANAH MERAH61051750063041CF7",
     supportedPayment: ["duitnow", "tng"],
@@ -1163,6 +1251,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Tanah Merah",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000001432031001992737465204866153034585802MY5923MJD MUKIM LALANG PEPUYU6011TANAH MERAH6105175006304B636",
     supportedPayment: ["duitnow", "tng"],
@@ -1174,6 +1263,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Tanah Merah",
+		qrImage: "",
     qrContent:
       "00020201021126620014A000000615000101065641670215QRMID00000015410311011293352455204866153034585802MY5921MADRASAH HAJI DERAMAN6011TANAH MERAH6105175006304083D",
     supportedPayment: ["duitnow", "tng"],
@@ -1184,6 +1274,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Tanah Merah",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000002105031001993194505204866153034585802MY5921TAB KEBAJIKAN HALAQAT6011TANAH MERAH61051750063048CF7",
     supportedPayment: ["duitnow", "tng"],
@@ -1195,6 +1286,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Tanah Merah",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000002391031001398601345204866153034585802MY5922INFAQ MJD ISMAIL PETRA6011TANAH MERAH61051750063041C74",
     supportedPayment: ["duitnow", "tng"],
@@ -1207,6 +1299,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Tanah Merah",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000003599031001936464645204866153034585802MY5920MASJID MUKIM KELEWEK6011TANAH MERAH61051750063043D59",
     supportedPayment: ["duitnow", "tng"],
@@ -1218,6 +1311,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Balok",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000218031001290982275204866153034585802MY5925MASJID TAMAN BALOK MAKMUR6007BESERAH61052610063042FFF",
     supportedPayment: ["duitnow", "tng"],
@@ -1229,6 +1323,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Pahang",
     city: "Kuantan",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000258031001299889905204866153034585802MY5924MJD SULTAN HJ AHMAD SHAH6007KUANTAN610525200630476F7",
     supportedPayment: ["duitnow", "tng"],
@@ -1240,6 +1335,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Pahang",
     city: "Kuantan",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000743031001398324155204866153034585802MY5913SURAU WARISAN6007KUANTAN6105251006304A2A9",
     supportedPayment: ["duitnow", "tng"],
@@ -1251,6 +1347,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Pahang",
     city: "Mentakab",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000043031001393608095204866153034585802MY5924MASJID TMN BUKIT BENDERA6008MENTAKAB61052840063047D09",
     supportedPayment: ["duitnow", "tng"],
@@ -1262,6 +1359,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Pahang",
     city: "Lanchang",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000077031001398191485204866153034585802MY5916MASJID KG BONGSU6008LANCHANG61052850063042F11",
     supportedPayment: ["duitnow", "tng"],
@@ -1273,6 +1371,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Pahang",
     city: "Pekan",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000207031001396453595204866153034585802MY5924MASJID KG TANJUNG MEDANG6005PEKAN610526600630424E8",
     supportedPayment: ["duitnow", "tng"],
@@ -1283,6 +1382,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Pahang",
     city: "Pekan",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000246031001997783135204866153034585802MY5918MASJID PALOH HINAI6005PEKAN61052660063043658",
     supportedPayment: ["duitnow", "tng"],
@@ -1293,6 +1393,7 @@ export const institutions: Institution[] = [
     category: "others",
     state: "Pahang",
     city: "Kuantan",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000865031001298886795204866153034585802MY5925P PENG FARDHU AIN AL AZID6007KUANTAN6105260806304D252",
     supportedPayment: ["duitnow", "tng"],
@@ -1304,6 +1405,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Pahang",
     city: "Temerloh",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000012031001998816105204866153034585802MY5924MASJID TMN TEMERLOH JAYA6008TEMERLOH61052800063041FA5",
     supportedPayment: ["duitnow", "tng"],
@@ -1315,6 +1417,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Pahang",
     city: "Temerloh",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000001138031001344420245204866153034585802MY5923MAAHAD TAHFIZ AL-FURQAN6008TEMERLOH61052800063049750",
     supportedPayment: ["duitnow", "tng"],
@@ -1325,6 +1428,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Terengganu",
     city: "Kampung Raja",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000024031001393774335204866153034585802MY5923MJD DARUL IMAN KG LAHAR6005BESUT6105222006304E2EE",
     supportedPayment: ["duitnow", "tng"],
@@ -1336,6 +1440,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Terengganu",
     city: "Jerteh",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000027031001392445415204866153034585802MY5919MASJID PAK DA MALIK6005BESUT61052220063041A1B",
     supportedPayment: ["duitnow", "tng"],
@@ -1346,6 +1451,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Terengganu",
     city: "Kampung Raja",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000056031001298134335204866153034585802MY5924MASJID KAMPUNG PAYA RAWA6012KAMPUNG RAJA6105222006304C3A6",
     supportedPayment: ["duitnow", "tng"],
@@ -1357,6 +1463,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Terengganu",
     city: "Kampung Raja",
+		qrImage: "",
     qrContent:
       "00020201021126620014A000000615000101065641670215QRMID00000024140311011206052675204866153034585802MY5924SURAU AL-IKHLAS S/MEDANG6007KG RAJA6105222006304457E",
     supportedPayment: ["duitnow", "tng"],
@@ -1368,6 +1475,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Terengganu",
     city: "Kampung Raja",
+		qrImage: "",
     qrContent:
       "00020201021126620014A000000615000101065641670215QRMID00000045380311011194238355204866153034585802MY5917MASJID TAMAN ILMU6007KG RAJA61052220063047D6D",
     supportedPayment: ["duitnow", "tng"],
@@ -1379,6 +1487,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Wilayah Persekutuan Labuan",
     city: "Labuan",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000186031001282966775204866153034585802MY5923MJD AL EHSAN KG SG LABU6006LABUAN6105870006304FA80",
     supportedPayment: ["duitnow", "tng"],
@@ -1389,6 +1498,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Wilayah Persekutuan Labuan",
     city: "Labuan",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000323031001681738065204866153034585802MY5925MJD AL-MUNAWWAR (KHAIRAT)6006LABUAN61058702263042F7B",
     supportedPayment: ["duitnow", "tng"],
@@ -1400,6 +1510,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Wilayah Persekutuan Labuan",
     city: "Labuan",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000350031001993196165204866153034585802MY5924MASJID SULTAN MUHAMMAD V6006LABUAN610587029630414A5",
     supportedPayment: ["duitnow", "tng"],
@@ -1411,6 +1522,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Sabah",
     city: "Kota Kinabalu",
+		qrImage: "",
     qrContent:
       "00020201021126620014A000000615000101065641670215QRMID00000001640311011209046405204866153034585802MY5925SR NURHIDAYAH TMN KERAMAT6013KOTA KINABALU6105881006304020D",
     supportedPayment: ["duitnow", "tng"],
@@ -1421,6 +1533,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Sabah",
     city: "Kota Kinabalu",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000210031001789903465204866153034585802MY5919MASJID BANDARAYA KK6013KOTA KINABALU6105880006304417D",
     supportedPayment: ["duitnow", "tng"],
@@ -1432,6 +1545,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Sabah",
     city: "Kota Kinabalu",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000211031001789903465204866153034585802MY5925MADRASAH 2 MJD BNDRAYA KK6013KOTA KINABALU610588000630479A8",
     supportedPayment: ["duitnow", "tng"],
@@ -1442,6 +1556,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Sabah",
     city: "Kota Kinabalu",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000003117031001987192485204866153034585802MY5921MASJID TUN AHMAD SHAH6013KOTA KINABALU61058840063049608",
     supportedPayment: ["duitnow", "tng"],
@@ -1452,6 +1567,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Sabah",
     city: "Tawau",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000293031001981357625204866153034585802MY5917SURAU AL-AMIN KBG6005TAWAU6105910226304A47A",
     supportedPayment: ["duitnow", "tng"],
@@ -1462,6 +1578,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Sabah",
     city: "Tawau",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000766031001388044355204866153034585802MY5925SURAU AL IMAN TMN MGH JYA6005TAWAU6105910006304852A",
     supportedPayment: ["duitnow", "tng"],
@@ -1472,6 +1589,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Sabah",
     city: "Tawau",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000001019031001380424235204866153034585802MY5924SUR AL-FIRDAUS AL-HIKMAH6005TAWAU61059100063047934",
     supportedPayment: ["duitnow", "tng"],
@@ -1482,6 +1600,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Sabah",
     city: "Tawau",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000001119031001985378865204866153034585802MY5924SUR AT TAQWA APAS PERMAI6005TAWAU6105910006304A74B",
     supportedPayment: ["duitnow", "tng"],
@@ -1492,6 +1611,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Kok Lanas",
+		qrImage: "",
     qrContent:
       "00020201021126620014A000000615000101065641670215QRMID00000002630311011263868865204866153034585802MY5916MASJID AR RAHMAH6009KOK LANAS6105164506304A622",
     supportedPayment: ["duitnow", "tng"],
@@ -1503,6 +1623,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Sabah",
     city: "Tawau",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000004228031001988082975204866153034585802MY5919MASJID AL MUHAJIRIN6005TAWAU6105910306304DEB5",
     supportedPayment: ["duitnow", "tng"],
@@ -1515,6 +1636,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Sarawak",
     city: "Lutong",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000185031001687281895204866153034585802MY5921MASJID AN-NAIM LUTONG6014LUTONG SARAWAK6105981006304537A",
     supportedPayment: ["duitnow", "tng"],
@@ -1525,6 +1647,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Sarawak",
     city: "Miri",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000502031001289047455204866153034585802MY5925SURAU NURUL JAMILUN SUBHI6004MIRI61059800063043EF6",
     supportedPayment: ["duitnow", "tng"],
@@ -1535,6 +1658,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Sarawak",
     city: "Kuching",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000062031001981868005204866153034585802MY5925SURAU AL-HIDAYAH T SEJOLI6007KUCHING61059305063044007",
     supportedPayment: ["duitnow", "tng"],
@@ -1545,6 +1669,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Sarawak",
     city: "Kuching",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000073031001981868005204866153034585802MY5921SURAU DARUL ILMI PPKS6012TABUAN JAYA 6105933506304791E",
     supportedPayment: ["duitnow", "tng"],
@@ -1555,6 +1680,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Sarawak",
     city: "Kuching",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000143031001981740165204866153034585802MY5925MJ DRUL MUTTAQIN KGBUNTAL6007KUCHING61059305063041495",
     supportedPayment: ["duitnow", "tng"],
@@ -1566,6 +1692,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Sarawak",
     city: "Kuching",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000162031001988956005204866153034585802MY5920MASJID DARUS SAKINAH6007KUCHING61059325063043B38",
     supportedPayment: ["duitnow", "tng"],
@@ -1576,6 +1703,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Sarawak",
     city: "Kuching",
+		qrImage: "",
     qrContent:
       "00020201021126620014A000000615000101065641670215QRMID00000002690311011105199225204866153034585802MY5925MDRASAH TAHFIZ AL-FAAIZUN6007KUCHING6105930506304DF8E",
     supportedPayment: ["duitnow", "tng"],
@@ -1586,6 +1714,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Sarawak",
     city: "Kuching",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000778031001981873455204866153034585802MY5925AJK SURAU DARUL ISTIQAMAH6007KUCHING610593050630405AF",
     supportedPayment: ["duitnow", "tng"],
@@ -1596,6 +1725,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Sarawak",
     city: "Kuching",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000001060031001066841195204866153034585802MY5915SURAU AL FITRAH6007KUCHING61059305063048A86",
     supportedPayment: ["duitnow", "tng"],
@@ -1606,6 +1736,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Sarawak",
     city: "Kuching",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000003631031001686287845204866153034585802MY5922MASJID DARUL ISTIQLAAL6007KUCHING61059315063042040",
     supportedPayment: ["duitnow", "tng"],
@@ -1616,6 +1747,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Sarawak",
     city: "Kuching",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000004329031001658946945204866153034585802MY5915SURAU JABAL NUR6007KUCHING610593050630497EA",
     supportedPayment: ["duitnow", "tng"],
@@ -1626,6 +1758,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kedah",
     city: "Kuala Ketil",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000091031001947793585204866153034585802MY5923JK PBN MJD BARU K KETIL6015KUALA KETIL KDH61050930063044A77",
     supportedPayment: ["duitnow", "tng"],
@@ -1636,6 +1769,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kedah",
     city: "Alor Setar",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000134031001644256835204866153034585802MY5924MASJID AN-NUR TOK KELING6010ALOR SETAR610505400630406BC",
     supportedPayment: ["duitnow", "tng"],
@@ -1647,6 +1781,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kedah",
     city: "Alor Setar",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000135031001348845215204866153034585802MY5922MASJID KAMPONG BERJAYA6010ALOR SETAR610505150630458B8",
     supportedPayment: ["duitnow", "tng"],
@@ -1657,6 +1792,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kedah",
     city: "Sungai Petani",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000161031001948033385204866153034585802MY5923MJD KARIAH PENGHULU HIM6013SUNGAI PETANI6105080006304C8F6",
     supportedPayment: ["duitnow", "tng"],
@@ -1668,6 +1804,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kedah",
     city: "Ayer Hitam",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000201031001946466435204866153034585802MY5923MASJID AR-RAHMAN KERPAN6010ALOR SETAR610506150630420BC",
     supportedPayment: ["duitnow", "tng"],
@@ -1679,6 +1816,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kedah",
     city: "Alor Setar",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000334031001343537305204866153034585802MY5925MJD M.ISKANDAR W.TEMPAWAN6010ALOR SETAR6105053006304A773",
     supportedPayment: ["duitnow", "tng"],
@@ -1690,6 +1828,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kedah",
     city: "Sungai Petani",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000656031001944457365204866153034585802MY5924MASJID TUNKU PUAN HABSAH6013SUNGAI PETANI61050800063048975",
     supportedPayment: ["duitnow", "tng"],
@@ -1701,6 +1840,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kedah",
     city: "Alor Setar",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000815031001944898665204866153034585802MY5924MASJID TANJUNG BENDAHARA6010ALOR SETAR6105053006304B3DB",
     supportedPayment: ["duitnow", "tng"],
@@ -1712,6 +1852,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Kedah",
     city: "Kuala Ketil",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000001703031001342446675204866153034585802MY5924PMBINAAN SURAU SEK TAWAR6011KUALA KETIL610509310630420C2",
     supportedPayment: ["duitnow", "tng"],
@@ -1723,6 +1864,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Perlis",
     city: "Kuala Perlis",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000203031001255802135204866153034585802MY5925MASJID AL-HUSSAIN KPERLIS6012KUALA PERLIS6105020006304037D",
     supportedPayment: ["duitnow", "tng"],
@@ -1735,6 +1877,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Pulau Pinang",
     city: "Bayan Lepas",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000052031001941597945204866153034585802MY5924MJD UMAR IBNU AL KHATTAB6011BAYAN LEPAS610511950630431CF",
     supportedPayment: ["duitnow", "tng"],
@@ -1747,6 +1890,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Pulau Pinang",
     city: "George Town",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000065031001748682795204866153034585802MY5924QARYAH MJD HASHIM YAHAYA6010GEORGETOWN6105101506304C4E6",
     supportedPayment: ["duitnow", "tng"],
@@ -1758,6 +1902,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Pulau Pinang",
     city: "George Town",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000131031001249319885204866153034585802MY5924MASJID JAMI' AL MUNAWWAR6012PULAU PINANG6105102506304486A",
     supportedPayment: ["duitnow", "tng"],
@@ -1769,6 +1914,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Pulau Pinang",
     city: "Bayan Lepas",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000252031001348100085204866153034585802MY5925MJD ALHIDAYAH BAYAN LEPAS6011BAYAN LEPAS610511900630471F2",
     supportedPayment: ["duitnow", "tng"],
@@ -1780,6 +1926,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Pulau Pinang",
     city: "Tasek Gelugor",
+		qrImage: "",
     qrContent:
       "00020201021126620014A000000615000101065641670215QRMID00000004900311011109455815204866153034585802MY5924MADRASAH DARUL MUHAJIRIN6013TASEK GELUGOR610513310630477DA",
     supportedPayment: ["duitnow", "tng"],
@@ -1791,6 +1938,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Pulau Pinang",
     city: "Bukit Mertajam", // Kubang Semang
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000920031001257747715204866153034585802MY5924QARYAH MASJID PADANG IBU6013KUBANG SEMANG61051440063049CBF",
     supportedPayment: ["duitnow", "tng"],
@@ -1802,6 +1950,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Pulau Pinang",
     city: "Bayan Lepas",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000001403031001350440405204866153034585802MY5925SURAU AT-TAQWA SK MUT PER6011BAYAN LEPAS6105119206304AB56",
     supportedPayment: ["duitnow", "tng"],
@@ -1813,6 +1962,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Pulau Pinang",
     city: "Bayan Lepas",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000001444031001945703555204866153034585802MY5922TABUNG MJD BAYAN LEPAS6011BAYAN LEPAS610511900630406F2",
     supportedPayment: ["duitnow", "tng"],
@@ -1824,6 +1974,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Pulau Pinang",
     city: "Bayan Lepas",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000003546031001251479815204866153034585802MY5922TAHFIZ MANAHILIL IRFAN6011BAYAN LEPAS6105119606304B73D",
     supportedPayment: ["duitnow", "tng"],
@@ -1835,6 +1986,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Johor",
     city: "Segamat",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000006031001276981245204866153034585802MY5924MASJID BDR PUTRA SEGAMAT6007SEGAMAT6105850006304E974",
     supportedPayment: ["duitnow", "tng"],
@@ -1846,6 +1998,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Johor",
     city: "Kota Tinggi",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000015031001778693685204866153034585802MY5922MASJID AL HIKMAH KFAT56011KOTA TINGGI61058190063043B17",
     supportedPayment: ["duitnow", "tng"],
@@ -1858,6 +2011,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Johor",
     city: "Kota Tinggi",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000016031001376433725204866153034585802MY5921MASJID FELDA SEMENCHU6011KOTA TINGGI61058190063047585",
     supportedPayment: ["duitnow", "tng"],
@@ -1869,6 +2023,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Johor",
     city: "Kota Tinggi",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000055031001374790945204866153034585802MY5925TBG MASJID BT 1 KT TINGGI6011KOTA TINGGI61058190063046909",
     supportedPayment: ["duitnow", "tng"],
@@ -1879,6 +2034,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Johor",
     city: "Batu Pahat",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000060031001786662025204866153034585802MY5925JK PBN SURAU DARUL ATHIAH6010BATU PAHAT61058300063044870",
     supportedPayment: ["duitnow", "tng"],
@@ -1890,6 +2046,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Johor",
     city: "Kota Tinggi",
+		qrImage: "",
     qrContent:
       "00020201021126620014A000000615000101065641670215QRMID00000001090311011191402405204866153034585802MY5925MJ ASSYAKIRIN APING BARAT6011KOTA TINGGI6105819006304BCC4",
     supportedPayment: ["duitnow", "tng"],
@@ -1901,6 +2058,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Johor",
     city: "Kota Tinggi",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000110031001127676595204866153034585802MY5924MASJID AN-NUR KG TG BUAI6011KOTA TINGGI61058190063049729",
     supportedPayment: ["duitnow", "tng"],
@@ -1913,6 +2071,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Johor",
     city: "Batu Pahat",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000119031001378721725204866153034585802MY5925SR ALRAYYAN T PUTERI JAYA6010BATU PAHAT61058300063047C0A",
     supportedPayment: ["duitnow", "tng"],
@@ -1925,6 +2084,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Johor",
     city: "Parit Sulong",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000127031001270942455204866153034585802MY5925MJ JAMEK PEKAN PRT SULONG6012PARIT SULONG610583500630455E6",
     supportedPayment: ["duitnow", "tng"],
@@ -1937,6 +2097,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Johor",
     city: "Johor Bahru",
+		qrImage: "",
     qrContent:
       "00020201021126600014A000000615000101065641670215QRMID000000015403090721951215204866153034585802MY5925MJD AN-NUR LARKIN SENTRAL6011JOHOR BAHRU610580000630485A2",
     supportedPayment: ["duitnow", "tng"],
@@ -1949,6 +2110,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Johor",
     city: "Kota Tinggi",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000179031001979785735204866153034585802MY5922TP MJD TMN SRI SAUJANA6011KOTA TINGGI6105819006304D5CF",
     supportedPayment: ["duitnow", "tng"],
@@ -1960,6 +2122,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Johor",
     city: "Kota Tinggi",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000181031001274195165204866153034585802MY5923MASJID JAMEK KG SIMPANG6011KOTA TINGGI61058190063045CEE",
     supportedPayment: ["duitnow", "tng"],
@@ -1971,6 +2134,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Johor",
     city: "Kulai",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000213031001970047375204866153034585802MY5923MASJID JAMEK AL MUBARAK6005KULAI6105810006304554F",
     supportedPayment: ["duitnow", "tng"],
@@ -1982,6 +2146,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Johor",
     city: "Kota Tinggi",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000234031001975921205204866153034585802MY5921MASJID JAMEK AL EHSAN6011KOTA TINGGI610581900630474FC",
     supportedPayment: ["duitnow", "tng"],
@@ -1994,6 +2159,7 @@ export const institutions: Institution[] = [
     category: "others",
     state: "Johor",
     city: "Johor Bahru",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000237031001778096795204866153034585802MY5921PASTI KAW JOHOR BAHRU6011JOHOR BAHRU61058035063046979",
     supportedPayment: ["duitnow", "tng"],
@@ -2004,6 +2170,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Johor",
     city: "Kota Tinggi",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000243031001671652005204866153034585802MY5921MASJID BARU FELDA AT46011KOTA TINGGI6105819006304279D",
     supportedPayment: ["duitnow", "tng"],
@@ -2016,6 +2183,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Johor",
     city: "Johor Bahru", // Kangkar Pulai
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000261031001374535355204866153034585802MY5925SR AL TAQWA PULAI BISTARI6013KANGKAR PULAI610581110630474F5",
     supportedPayment: ["duitnow", "tng"],
@@ -2028,6 +2196,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Johor",
     city: "Johor Bahru",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000275031001977795515204866153034585802MY5922MASJID TUN HUSSEIN ONN6011JOHOR BAHRU6105803506304E577",
     supportedPayment: ["duitnow", "tng"],
@@ -2040,6 +2209,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Johor",
     city: "Johor Bahru",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000286031001977956655204866153034585802MY5925SURAU AL JAUHAR T.SENTOSA6011JOHOR BAHRU61058015063040C15",
     supportedPayment: ["duitnow", "tng"],
@@ -2051,6 +2221,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Johor",
     city: "Segamat",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000288031001772544695204866153034585802MY5925MASJID JAMEK SEGAMAT BARU6007SEGAMAT6105850006304B9D5",
     supportedPayment: ["duitnow", "tng"],
@@ -2063,6 +2234,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Johor",
     city: "Johor Bahru",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000312031001972619645204866153034585802MY5923MJD TMN DATO'ONN LARKIN6011JOHOR BAHRU61058035063047394",
     supportedPayment: ["duitnow", "tng"],
@@ -2075,6 +2247,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Johor",
     city: "Chaah",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000341031001973443005204866153034585802MY5912MASJID CHAAH6005CHAAH6105854006304A34C",
     supportedPayment: ["duitnow", "tng"],
@@ -2087,6 +2260,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Johor",
     city: "Kulai",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000344031001271484165204866153034585802MY5920SURAU AT-TAQWA KULAI6005KULAI6105810006304385D",
     supportedPayment: ["duitnow", "tng"],
@@ -2098,6 +2272,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Johor",
     city: "Batu Pahat",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000385031001335750525204866153034585802MY5925PRTBHN KHAIRAT KMTIAN E.H6010BATU PAHAT6105830006304B99A",
     supportedPayment: ["duitnow", "tng"],
@@ -2108,6 +2283,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Johor",
     city: "Kulai",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000548031001277816935204866153034585802MY5925JK PMBINAAN SURAU ALPINIA6005KULAI6105810006304DB50",
     supportedPayment: ["duitnow", "tng"],
@@ -2119,6 +2295,7 @@ export const institutions: Institution[] = [
     category: "others",
     state: "Johor",
     city: "Kluang",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000706031001772005455204533153034585802MY5916ANWARUL MAHABBAH6006KLUANG6105860006304DE42",
     supportedPayment: ["duitnow", "tng"],
@@ -2131,6 +2308,7 @@ export const institutions: Institution[] = [
     category: "others",
     state: "Johor",
     city: "Johor Bahru",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000717031001977849795204839853034585802MY5925YAYASAN PNDIDIKAN HIDAYAH6006SKUDAI610581300630438E5",
     supportedPayment: ["duitnow", "tng"],
@@ -2142,6 +2320,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Johor",
     city: "Muar",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000775031001265197815204866153034585802MY5919MASJID SUNGAI ABONG6004MUAR6105840006304E6C6",
     supportedPayment: ["duitnow", "tng"],
@@ -2154,6 +2333,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Johor",
     city: "Johor Bahru",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000830031001956609235204866153034585802MY5922MASJID TUNKU LAKSAMANA6011JOHOR BAHRU610580990630490E4",
     supportedPayment: ["duitnow", "tng"],
@@ -2164,6 +2344,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Johor",
     city: "Johor Bahru",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000909031001972881115204866153034585802MY5917SURAU KURNIAWATI 6011JOHOR BAHRU6105802506304771D",
     supportedPayment: ["duitnow", "tng"],
@@ -2175,6 +2356,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Johor",
     city: "Batu Pahat",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000001151031001375298155204866153034585802MY5922MASJID SULTAN IBRAHIM 6010BATU PAHAT61058300063043E7E",
     supportedPayment: ["duitnow", "tng"],
@@ -2187,6 +2369,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Johor",
     city: "Kota Tinggi",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000002261031001978652145204866153034585802MY5922J.K MJD BNDAR K.TINGGI6011KOTA TINGGI6105819006304D504",
     supportedPayment: ["duitnow", "tng"],
@@ -2199,6 +2382,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Johor",
     city: "Kota Tinggi",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000002273031001374184385204866153034585802MY5923SURAU TAMAN PASAK INDAH6011KOTA TINGGI6105819006304F706",
     supportedPayment: ["duitnow", "tng"],
@@ -2210,6 +2394,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Negeri Sembilan",
     city: "Seremban",
+		qrImage: "",
     qrContent:
       "00020201021126620014A000000615000101065641670215QRMID00000024220311011169202115204866153034585802MY5924SURAU AL AMIN DESA RHU 26008SEREMBAN610570400630435D3",
     supportedPayment: ["duitnow", "tng"],
@@ -2220,6 +2405,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Johor",
     city: "Kulai",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000004184031001975381815204866153034585802MY5924TBG KHAIRAT PMBINAAN MJD6005KULAI6105810006304DB15",
     supportedPayment: ["duitnow", "tng"],
@@ -2230,6 +2416,7 @@ export const institutions: Institution[] = [
     category: "others",
     state: "Johor",
     city: "Johor Bahru",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000004809031001975757655204866153034585802MY5925TABUNG URUSAN KUBUR JOHOR6011JOHOR BAHRU61058099063046A78",
     supportedPayment: ["duitnow", "tng"],
@@ -2241,6 +2428,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Johor",
     city: "Kulai",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000004931031001979675575204866153034585802MY5921SURAU UMAR ABDUL AZIZ6005KULAI6105810006304C6D0",
     supportedPayment: ["duitnow", "tng"],
@@ -2252,6 +2440,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Negeri Sembilan",
     city: "Seremban",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000031031001361663255204866153034585802MY5920MASJID SEREMBAN JAYA6008SEREMBAN6105701006304A64F",
     supportedPayment: ["duitnow", "tng"],
@@ -2263,6 +2452,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Negeri Sembilan",
     city: "Seremban 2",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000034031001361663255204866153034585802MY5925MASJID HUSSAIN SEREMBAN 26008SEREMBAN61057010063044099",
     supportedPayment: ["duitnow", "tng"],
@@ -2275,6 +2465,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Negeri Sembilan",
     city: "Gemencheh",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000113031001937171925204866153034585802MY5924MJD ASSYAKIRIN GEMENCHEH6012GEMENCHEH NS610573200630455D9",
     supportedPayment: ["duitnow", "tng"],
@@ -2287,6 +2478,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Negeri Sembilan",
     city: "Seremban",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000247031001931348705204866153034585802MY5925M ATTAQWA KARIAH KG PAROI6008SEREMBAN6105704006304C873",
     supportedPayment: ["duitnow", "tng"],
@@ -2298,6 +2490,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Negeri Sembilan",
     city: "Gemas",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000240031001979581465204866153034585802MY5919TABUNG SURAU SMKTAR6005GEMAS610573400630440A5",
     supportedPayment: ["duitnow", "tng"],
@@ -2311,6 +2504,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Negeri Sembilan",
     city: "Port Dickson",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000530031001756163305204866153034585802MY5923MJD WRISAN TELOK KEMANG6012PORT DICKSON61057105063042F96",
     supportedPayment: ["duitnow", "tng"],
@@ -2323,6 +2517,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Negeri Sembilan",
     city: "Port Dickson",
+		qrImage: "",
     qrContent:
       "00020201021126620014A000000615000101065641670215QRMID00000006630311011187067385204533153034585802MY5924SR SHEIKH PAIZ AL-LINGGI6012PORT DICKSON6105711506304CE6B",
     supportedPayment: ["duitnow", "tng"],
@@ -2334,6 +2529,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Negeri Sembilan",
     city: "Gemas",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000001126031001330580385204866153034585802MY5923MJD KARIAH (F) PALONG 36005GEMAS61057364063049828",
     supportedPayment: ["duitnow", "tng"],
@@ -2344,6 +2540,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Negeri Sembilan",
     city: "Seremban",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000001377031001265787235204866153034585802MY5925TBG ANAK YATIM MJD P.JAYA6008SEREMBAN6105704006304294B",
     supportedPayment: ["duitnow", "tng"],
@@ -2354,6 +2551,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Melaka",
     city: "Alai",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000106031001767100515204866153034585802MY5922MJD AL-FALIHIN KG ALAI6012ALAI  MELAKA61057546063046098",
     supportedPayment: ["duitnow", "tng"],
@@ -2365,6 +2563,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Melaka",
     city: "Padang Temu",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000001688031001761293945204866153034585802MY5924SURAU AN NUR PIBG SMKPTM6006MELAKA6105754606304F8CD",
     supportedPayment: ["duitnow", "tng"],
@@ -2376,6 +2575,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Melaka",
     city: "Melaka",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000005035031001967078795204839853034585802MY5907UKHUWAH6006MELAKA6105764506304ACF2",
     supportedPayment: ["duitnow", "tng"],
@@ -2387,6 +2587,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Shah Alam",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065018540215000001224037457031000000000005204866153034585802MY5920MASJID SETIA ALAM-QR6009SHAH ALAM6105401706215011110186840000630414C0",
     supportedPayment: ["duitnow", "tng"],
@@ -2399,6 +2600,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Selangor",
     city: "Klang",
+		qrImage: "",
     qrContent:
       "00020201021126580014A000000615000101065887340212MBBQR1687780031000000000005204000053034585802MY5919SURAU BAITUL RAHMAN6008SELANGOR630447A5",
     supportedPayment: ["duitnow", "tng"],
@@ -2411,6 +2613,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Wilayah Persekutuan Kuala Lumpur",
     city: "Kuala Lumpur", // Segambut Luar
+		qrImage: "",
     qrContent:
       "00020201021126580014A000000615000101065887340212MBBQR1384949031000000000005204729953034585802MY5917MASJID AL FIRDAUS6012KUALA LUMPUR630448CA",
     supportedPayment: ["duitnow"],
@@ -2422,6 +2625,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Selangor",
     city: "Klang",
+		qrImage: "",
     qrContent:
       "00020201021126420014A000000615000101066033460210MD001301335204866153034585802MY5925Surau Hj Omar Jln Genting6002MY6273032517071030332970090364035730520170710363623000637960716170710184223100163040BE9",
     supportedPayment: ["duitnow", "tng"],
@@ -2434,6 +2638,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Klang",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000345031001935771345204866153034585802MY5923MASJID AHMADI R.PANJANG6005KLANG610542100630451B6",
     supportedPayment: ["duitnow", "tng"],
@@ -2446,6 +2651,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Shah Alam",
+		qrImage: "",
     qrContent:
       "00020101021126610014A000000615000101065641670215QRMID000000002103100123425951520430005303458540500.005802MY5923MASJID AN-NUR GLENMARIE6009SHAH ALAM6105401506304CF92",
     supportedPayment: ["duitnow", "tng"],
@@ -2457,6 +2663,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Kota Bharu",
+		qrImage: "",
     qrContent:
       "00020201021126420014A000000615000101066033460210MD001351855204866153034585802MY5922Masjid Al Aziz Al Hadi6002MY6273032517185452588090027722341210520171854529821600280160716171854410260400163043A93",
     supportedPayment: ["duitnow", "tng"],
@@ -2468,6 +2675,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Selangor",
     city: "Sungai Pelek",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000007399041001655728855204866153034585802MY5918MUSOLLA AR-RAUDHAH6006SEPANG61054390063043931",
     supportedPayment: ["duitnow"],
@@ -2480,6 +2688,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Wilayah Persekutuan Kuala Lumpur",
     city: "Kuala Lumpur",
+		qrImage: "",
     qrContent: "https://qr.tngdigital.com.my/m/281011056461095422624256135",
     supportedPayment: ["tng"],
     coords: [3.1138839387692325, 101.66876285084557],
@@ -2491,6 +2700,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Puchong",
+		qrImage: "",
     qrContent:
       "00020201021126560014A0000006150001010689006102246022b89b11a4a9ef9c5dce705204599953034585802MY5915MASJID AL-EHSAN6002MY82403c10e7b548543bc94628906e095bd79f39cef91b6304404B",
     supportedPayment: ["duitnow"],
@@ -2503,6 +2713,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Petaling Jaya",
+		qrImage: "",
     qrContent:
       "00020201021126580014A000000615000101065887340212MBBQR1643608031000000000005204000053034585802MY5915MASJID AL-HUSNA6008SELANGOR6304298E",
     supportedPayment: ["duitnow"],
@@ -2514,6 +2725,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Selangor",
     city: "Puncak Alam",
+		qrImage: "",
     qrContent:
       "00020201021126420014A000000615000101066033460210MD000107365204829953034585802MY5925UNIVERSITI TEKNOLOGI MARA6002MY627303251673926826765007940334875052016762633690920014323071616762632433440096304BC32",
     supportedPayment: ["duitnow"],
@@ -2526,6 +2738,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Klang",
+		qrImage: "",
     qrContent:
       "00020201021126520014A000000615000101068900530220MDN165667779814771485204866153034585802MY5921MASJIDBANDARBUKITRAJA6005KLANG630496CB",
     supportedPayment: ["duitnow"],
@@ -2537,6 +2750,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Wilayah Persekutuan Kuala Lumpur",
     city: "Kuala Lumpur",
+		qrImage: "",
     qrContent:
       "00020201021126420014A000000615000101066033460210MD000007835204866153034585802MY5924Masjid Asy-Syakirin KLCC6002MY62530325162883612792300732003419405201628836167342002723063045E07",
     supportedPayment: ["duitnow"],
@@ -2552,6 +2766,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Selangor",
     city: "",
+		qrImage: "",
     qrContent:
       "00020201021126580014A000000615000101065641600226126209000027950RHBQR0345635204739953034585802MY5919Surau Nurul Hidayah6002MY61054320062250309ROA0699410708SNHQR2538264ABA0D0725C918EF294C850B9BF88E836A9F0999D1E1204AB857F64764E80662B6304E439",
     supportedPayment: ["duitnow"],
@@ -2563,6 +2778,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Wilayah Persekutuan Kuala Lumpur",
     city: "Kuala Lumpur",
+		qrImage: "",
     qrContent:
       "00020201021126420014A000000615000101066033460210MD000025405204866153034585802MY5925MASJID ABU UBAIDAH AL JAR6002MY6273032516330783723630049414272730520172137330156900795620716163307769676500463043FDB",
     supportedPayment: ["duitnow"],
@@ -2576,6 +2792,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Wilayah Persekutuan Kuala Lumpur",
     city: "Kuala Lumpur",
+		qrImage: "",
     qrContent:
       "00020201021126420014A000000615000101066033460210MD000011395204866153034585802MY5929MASJID WILAYAH PERSEKUTUAN KL6002MY6253032516297759221400042396012760520162977593414100357106304CB9C",
     supportedPayment: ["duitnow"],
@@ -2588,6 +2805,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Shah Alam",
+		qrImage: "",
     qrContent:
       "00020101021126580014A000000615000101065887340212MBBQR129369103100000000000520400005303458540500.005802MY5916MASJID SEKSYEN 76008SELANGOR6304799C",
     supportedPayment: ["duitnow", "tng"],
@@ -2601,6 +2819,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Shah Alam",
+		qrImage: "",
     qrContent:
       "00020201021126420014A000000615000101066033460210MD000002755204866153034585802MY5922MASJID NEGERI SELANGOR6002MY627303251620111366044008752000885052016747112716590010126071616201107832770076304A961",
     supportedPayment: ["duitnow"],
@@ -2614,6 +2833,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Shah Alam",
+		qrImage: "",
     qrContent:
       "00020201021126420014A000000615000101066033460210MD000021125204866153034585802MY5927MASJID TENGKU AMPUAN JEMAAH6002MY6253032516322926602800010665964820520163229279016800842816304B6E8",
     supportedPayment: ["duitnow"],
@@ -2627,6 +2847,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Cyberjaya",
+		qrImage: "",
     qrContent:
       "00020201021126580014A000000615000101065887340212MBBQR1634314031000000000005204000053034585802MY5919MASJID CYBERJAYA 106015WP KUALA LUMPUR62270723MBBQR1634314INFAQONLINE630401DB",
     supportedPayment: ["duitnow", "tng"],
@@ -2640,6 +2861,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Shah Alam",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000003031001930793065204866153034585802MY5924MASJID AL-IKHLAS SEK. 136009SHAH ALAM6105400006304B186",
     supportedPayment: ["duitnow", "tng"],
@@ -2652,6 +2874,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Shah Alam",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065018540215000001234001816031000000000005204866153034585802MY5923MASJID KOTA KEMUNING-QR6009SHAH ALAM61054046062150111102286000006304D60C",
     supportedPayment: ["duitnow", "tng"],
@@ -2664,6 +2887,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Subang Jaya",
+		qrImage: "",
     qrContent:
       "00020101021126580014A000000615000101065887340212MBBQR129928603100000000000520400005303458540500.005802MY5918MASJID DARUL EHSAN6008SELANGOR63044A00",
     supportedPayment: ["duitnow", "tng"],
@@ -2675,6 +2899,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Johor",
     city: "Batu Anam",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000278031001372358515204866153034585802MY5916MASJID SYED ALWI6009BATU ANAM6105851006304F1EE",
     supportedPayment: ["duitnow", "tng"],
@@ -2687,6 +2912,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Cyberjaya",
+		qrImage: "",
     qrContent:
       "00020201021126420014A000000615000101066033460210MD000023045204866153034585802MY5930MASJID RAJA HAJI FI SABILILLAH6002MY6253032516327093926000030197246580520163270983900800704486304F4F5",
     supportedPayment: ["duitnow", "tng"],
@@ -2698,6 +2924,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Klang",
+		qrImage: "",
     qrContent:
       "00020201021126420014A000000615000101066033460210MD001015535204866153034585802MY5917MASJID NURUL IMAN6002MY62730325167886296094100630989091205201678862964570007352507161678862768391001630498F1",
     supportedPayment: ["duitnow", "tng"],
@@ -2711,6 +2938,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Subang Jaya",
+		qrImage: "",
     qrContent:
       "00020201021126420014A000000615000101066033460210MD000063555204866153034585802MY5921MASJID AL FALAH USJ 96002MY6273032516397133474820091719896110520167652249808100195170716163971301865000563048B15",
     supportedPayment: ["duitnow", "tng"],
@@ -2723,6 +2951,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Perak",
     city: "Ipoh",
+		qrImage: "",
     qrContent:
       "00020201021126420014A000000615000101066033460210MD000134995204866153034585802MY5924MASJID SULTAN AZLAN SHAH6002MY6273032516490601380230053489219590520164906066401300985010716164905636766500663048885",
     supportedPayment: ["duitnow", "tng"],
@@ -2735,6 +2964,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Petaling Jaya",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065018540215000001234025435031000000000005204866153034585802MY5925MASJID DAMANSARAPERDA-QR6013PETALING JAYA610547820621501111025371000063048D84",
     supportedPayment: ["duitnow", "tng"],
@@ -2746,6 +2976,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Pahang",
     city: "Teriang",
+		qrImage: "",
     qrContent:
       "00020201021126790014A000000615000101065893730209MTRI003130319Agrobank's Merchant041+60924697665204866153034585802MY5925MASJID AL-TAQWA F.TRIANG36011BANDAR BERA610528300630496B7",
     supportedPayment: ["duitnow", "tng"],
@@ -2759,6 +2990,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Wilayah Persekutuan Putrajaya",
     city: "Putrajaya",
+		qrImage: "",
     qrContent:
       "00020201021126420014A000000615000101066033460210MD001302275204940253034585802MY5925MASJID TUANKU MIZAN ZAINA6002MY6273032517079878068880011426813310520170978076079900976070716170798716340500163045F6C",
     supportedPayment: ["duitnow", "tng"],
@@ -2771,6 +3003,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Subang",
+		qrImage: "",
     qrContent:
       "00020201021126420014A000000615000101066033460210MD000003645204866153034585802MY5946MASJID LAPANGAN TERBANG SULTAN ABDUL AZIZ SHAH6002MY6253032516261476078090019051892750520162614765683600342816304A341",
     supportedPayment: ["duitnow", "tng"],
@@ -2783,6 +3016,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Wilayah Persekutuan Putrajaya",
     city: "Putrajaya",
+		qrImage: "",
     qrContent:
       "00020201021126580014A000000615000101065641600226126601600007194RHBQR0412445204739953034585802MY5925surau al manar presint 146002MY61056205062230309ROA08525807061857298264704CE22CAFE5D9E54B4612148A8731ECD405BF9F8B45272C19D03182B4DF9CF5630442B0",
     supportedPayment: ["duitnow", "tng"],
@@ -2794,6 +3028,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Wilayah Persekutuan Kuala Lumpur",
     city: "Kuala Lumpur",
+		qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000387041001661737565204866153034585802MY5918MASJID IBN KHALDUN6012KUALA LUMPUR6105570006304805E",
     supportedPayment: ["duitnow", "tng"],
@@ -2804,6 +3039,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Melaka",
     city: "Krubong",
+		qrImage: "",
     qrContent:
       "00020201021126580014A000000615000101065887340212MBBQR1965581031000000000005204000053034585802MY5925MASJID CINA NEGERI MELAKA6006MELAKA63044B08",
     supportedPayment: ["duitnow", "tng"],
@@ -2815,6 +3051,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Kelantan",
     city: "Machang",
+		qrImage: "",
     qrContent:
       "00020201021126420014A000000615000101066033460210MD001307155204866153034585802MY5925MASJID AL-TAQWA GELONG MA6002MY6273032517092049937960047434271820520170921276499900953660716170920431501700163045DBC",
     supportedPayment: ["duitnow", "tng"],
@@ -2827,6 +3064,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Selangor",
     city: "Puchong",
+		qrImage: "",
     qrContent:
       "00020201021126580014A000000615000101065887340212MBBQR2075652031000000000005204000053034585802MY5917SURAU NUR BAIDURI6008SELANGOR6304E5FA",
     supportedPayment: ["duitnow", "tng"],
@@ -2838,6 +3076,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Selayang",
+		qrImage: "",
     qrContent:
       "00020201021126580014A000000615000101065887340212MBBQR2157030031000000000005204729953034585802MY5923MASJID SELAYANG MUTIARA6015WP KUALA LUMPUR6304BB95",
     supportedPayment: ["duitnow", "tng"],
@@ -2848,6 +3087,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Wilayah Persekutuan Kuala Lumpur",
     city: "Kuala Lumpur",
+		qrImage: "",
     qrContent: "https://qr.tngdigital.com.my/m/281011055105183318942282243",
     supportedPayment: ["tng"],
     coords: [3.1224998923328267, 101.67512871187822],
@@ -2858,6 +3098,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Wilayah Persekutuan Kuala Lumpur",
     city: "Kuala Lumpur",
+		qrImage: "",
     qrContent: "00020201021126610014A000000615000101065018540215000001244014338031000000000005204866153034585802MY5918SURAU AL MUKMIN-QR6012KUALA LUMPUR61055310062150111101635300006304D099",
     supportedPayment: ["duitnow","tng"],
     coords: [3.117958, 101.673981]
@@ -2868,6 +3109,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Johor",
     city: "Tangkak",
+		qrImage: "",
     qrContent: "00020201021126580014A000000615000101065887340212MBBQR2004736031000000000005204000053034585802MY5917MASJID AN NUR KMJ6005JOHOR6304BFE3",
     supportedPayment: ["duitnow","tng"],
     coords: [2.287209, 102.5635944]
@@ -2878,6 +3120,7 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Negeri Sembilan",
     city: "Nilai",
+		qrImage: "",
     qrContent: "00020201021126420014A000000615000101066033460210MD000048725204866153034585802MY5926SURAU ARRAHMAH CEMPAKAPURI6002MY6253032516373107252290011462184580520163731073888200807956304EBD5",
     supportedPayment: ["duitnow","tng"],
     coords: [2.7980786, 101.7643757]
@@ -2888,6 +3131,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Wilayah Persekutuan Kuala Lumpur",
     city: "Kuala Lumpur",
+		qrImage: "",
     qrContent: "00020201021126520014A000000615000101068900530220MDN162245583328130615204866153034585802MY5918MASJIDAL-KHASYI'IN6011KUALALUMPUR63049DD0",
     supportedPayment: ["duitnow","tng"],
     coords: [3.0837002, 101.7066497]
@@ -2899,6 +3143,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Shah Alam",
+		qrImage: "",
     qrContent: "00020201021126420014A000000615000101066033460210MD001285465204866153034585802MY5916MASJID AL FAIZIN6002MY62730325170166033644100961358658305201701660739080003707907161701659742675009630495BA",
     supportedPayment: ["duitnow","tng"],
     coords: [3.0077261, 101.5607074]
@@ -2909,6 +3154,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Puncak Alam",
+		qrImage: "",
     qrContent: "00020201021126420014A000000615000101066033460210MD000702455204866153034585802MY5918MASJID PUNCAK ALAM6002MY6273032516530301431840010815755520520167245801239500530940716165302974725300463047073",
     supportedPayment: ["duitnow","tng"],
     coords: [3.2289209, 101.4304386]
@@ -2919,6 +3165,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Jenjarom",
+		qrImage: "",
     qrContent: "00020201021126580014A000000615000101065641600226126241000006433RHBQR0272785204739953034585802MY5915masjid jenjarom6002MY61054260062250309ROA0571210708A143348782647C1D66ACFC29CC01C987B39A0E0D5B59EF28F334709B54836DED8FB0D042CC1A6304BD5E",
     supportedPayment: ["duitnow"],
     coords: [2.8843392, 101.5196352]
@@ -2929,6 +3176,7 @@ export const institutions: Institution[] = [
     category: "mosque",
     state: "Selangor",
     city: "Sabak Bernam",
+		qrImage: "",
     qrContent: "00020201021126580014A000000615000101065887340212MBBQR1145580031000000000005204729953034585802MY5925MASJID JAMIK SABAK BERNAM6008SELANGOR63041A77",
     supportedPayment: ["duitnow"],
     coords: [3.7703992, 100.9854913]
