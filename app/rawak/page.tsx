@@ -1,7 +1,7 @@
 "use client";
 
 import PageSection from '@/components/ui/pageSection';
-import React, { useId, useState } from 'react';
+import React, { useCallback, useId, useState } from 'react';
 import { institutions } from "../data/institutions";
 import QrCodeDisplay from '@/components/ui/qrCodeDisplay';
 import Image from "next/image";
@@ -10,7 +10,9 @@ import { categories } from '../types/institutions';
 
 const Rawak = () => {
   const id = useId();
+  // const [randomInstitutionId, setRandomInstitutionId] = useState(Math.floor(Math.random() * institutions.length));
   const [randomInstitutionId, setRandomInstitutionId] = useState(0);
+  const [isLoaded, setIsLoaded] = useState(false);
 	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const { width } = useClientDimensions();
 
@@ -23,11 +25,13 @@ const Rawak = () => {
   const filteredInstitutions = institutions.filter((institution) => selectedCategories.length !== 0 ? selectedCategories.includes(institution.category) : true);
   const institutionLength = filteredInstitutions.length;
 
-  const generateRandomNumber = () => {
+  const generateRandomNumber = useCallback(() => {
+    setIsLoaded(false);
     const randomNumber = Math.floor(Math.random() * institutionLength);
 
     setRandomInstitutionId(randomNumber);
-  };
+    setIsLoaded(true);
+  }, [institutionLength]);
 
   const randomInstitution = filteredInstitutions[randomInstitutionId];
 
@@ -40,7 +44,7 @@ const Rawak = () => {
           <div
             className="flex items-center justify-center "
           >
-            {randomInstitution.qrContent ? (
+            {isLoaded && randomInstitution.qrContent ? (
               <QrCodeDisplay
                 qrContent={randomInstitution.qrContent}
                 supportedPayment={randomInstitution.supportedPayment}
