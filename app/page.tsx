@@ -1,19 +1,18 @@
 "use client";
 
 import Filters from "@/components/sections/filters";
+import { Card, CardContent } from "@/components/ui/card";
 import InstitutionCard from "@/components/ui/institution-card";
+import { ModeToggle } from "@/components/ui/mode-toggle";
+import PageSection from "@/components/ui/pageSection";
 import { SearchBar } from "@/components/ui/searchbar";
+import { Skeleton } from "@/components/ui/skeleton";
+import { debounce } from "lodash-es";
 import dynamic from "next/dynamic";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { institutions } from "./data/institutions";
 import type { Institution } from "./types/institutions";
-
-import { Card, CardContent } from "@/components/ui/card";
-import PageSection from "@/components/ui/pageSection";
-import { Skeleton } from "@/components/ui/skeleton";
-import { debounce } from "lodash-es";
-import { ModeToggle } from "@/components/ui/mode-toggle";
 
 const Home: React.FC = () => {
 	const [query, setQuery] = useState<string>("");
@@ -22,7 +21,8 @@ const Home: React.FC = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
 	const [offset, setOffset] = useState<number>(0);
-	const [limit, setLimit] = useState<number>(15);
+	const [limit] = useState<number>(15);
+	const [allItemsLoaded, setAllItemsLoaded] = useState<boolean>(false);
 	const [filteredInstitutions, setFilteredInstitutions] = useState<
 		Institution[]
 	>([]);
@@ -112,8 +112,13 @@ const Home: React.FC = () => {
 			resolve(filteredResults.slice(0, offset + limit));
 		});
 
-		filterData.then((results) => {
-			setFilteredInstitutions(results as Institution[]);
+		filterData.then((_results) => {
+			const results = _results as Institution[];
+
+			if (results.length < offset + limit) {
+				setAllItemsLoaded(true);
+			}
+			setFilteredInstitutions(results);
 		});
 
 		setTimeout(() => {
@@ -160,7 +165,7 @@ const Home: React.FC = () => {
 					))}
 				</div>
 			)}
-			{isLoadingMore && (
+			{isLoadingMore && !allItemsLoaded && (
 				<div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
 					{Array.from({ length: 6 }).map((_, idx) => (
 						<Card key={idx} className="aspect-square w-full">
