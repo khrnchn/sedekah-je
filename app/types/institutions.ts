@@ -14,13 +14,15 @@ export const categories = {
 export type Category = keyof typeof categories;
 
 export type Institution = {
+  // Mandatory
   id: number;
   name: string;
   category: Category;
-  location: string;
-  image: string;
+  state: string;
+  city: string;
 
-  // Just a suggestion, tapi ni require extra work, untuk extract dulu info dari QR code, so boleh restructure QR for high definition
+  // Optional
+  qrImage?: string;
   qrContent?: string;
   supportedPayment?: PaymentOption[];
   coords?: [number, number];
