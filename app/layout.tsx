@@ -51,25 +51,23 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<>
-			<html lang="en" suppressHydrationWarning>
-				<head />
-				<body className={cn(inter.className)}>
-					<ThemeProvider
-						attribute="class"
-						defaultTheme="system"
-						enableSystem
-						disableTransitionOnChange
-					>
-						<Header />
-						{children}
-						<Analytics />
-						<Toaster richColors />
-						<Ribbon />
-					</ThemeProvider>
-				</body>
+		<html lang="en" suppressHydrationWarning>
+			<head />
+			<body className={cn(inter.className)}>
+				<ThemeProvider
+					attribute="class"
+					defaultTheme="system"
+					enableSystem
+					disableTransitionOnChange
+				>
+					<Header />
+					{children}
+					<Analytics />
+					<Toaster richColors />
+					<Ribbon />
+				</ThemeProvider>
+			</body>
 
-			</html>
-		</>
+		</html>
 	);
 }
