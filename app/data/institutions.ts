@@ -6,7 +6,7 @@ export const institutions: Institution[] = [
 		id: 1,
 		name: "Masjid Negara",
 		category: "mosque",
-		state: "Wilayah Persekutuan Kuala Lumpur",
+		state: "W.P. Kuala Lumpur",
 		city: "Kuala Lumpur",
 		qrImage: "/masjid/masjid-negara.png",
 		qrContent:
@@ -19,7 +19,7 @@ export const institutions: Institution[] = [
 		id: 2,
 		name: "Masjid Al-Ghufran",
 		category: "mosque",
-		state: "Wilayah Persekutuan Kuala Lumpur",
+		state: "W.P. Kuala Lumpur",
 		city: "Kuala Lumpur",
 		qrImage: "/masjid/masjid-al-ghufran.png",
 		qrContent:
@@ -45,7 +45,7 @@ export const institutions: Institution[] = [
 		id: 4,
 		name: "Masjid Ar-Rahman",
 		category: "mosque",
-		state: "Wilayah Persekutuan Kuala Lumpur",
+		state: "W.P. Kuala Lumpur",
 		city: "Kuala Lumpur",
 		qrImage: "/masjid/masjid-ar-rahman.png",
 		qrContent: "https://qr.tngdigital.com.my/m/281011056697947085062292043",
@@ -105,7 +105,7 @@ export const institutions: Institution[] = [
 		id: 9,
 		name: "Masjid Azzubair Ibnul Awwam",
 		category: "mosque",
-		state: "Wilayah Persekutuan Kuala Lumpur",
+		state: "W.P. Kuala Lumpur",
 		city: "Kuala Lumpur",
 		qrImage: "/masjid/masjid-azzubair-ibnul-awwam.jpeg",
 		qrContent:
@@ -142,7 +142,7 @@ export const institutions: Institution[] = [
 		id: 12,
 		name: "Masjid Al Ansar",
 		category: "mosque",
-		state: "Wilayah Persekutuan Kuala Lumpur",
+		state: "W.P. Kuala Lumpur",
 		city: "Kuala Lumpur",
 		qrImage: "/masjid/masjid-al-ansar.jpeg",
 		qrContent:
@@ -202,7 +202,7 @@ export const institutions: Institution[] = [
 		id: 17,
 		name: "Masjid UTM KL",
 		category: "mosque",
-		state: "Wilayah Persekutuan Kuala Lumpur",
+		state: "W.P. Kuala Lumpur",
 		city: "Kuala Lumpur",
 		qrImage: "/masjid/masjid-utmkl.jpeg",
 		qrContent:
@@ -364,7 +364,7 @@ export const institutions: Institution[] = [
 		id: 31,
 		name: "Masjid Jamek Kuala Lumpur", // atau Masjid Jamek Sultan Abdul Samad
 		category: "mosque",
-		state: "Wilayah Persekutuan Kuala Lumpur",
+		state: "W.P. Kuala Lumpur",
 		city: "Kuala Lumpur",
 		qrImage: "",
 		qrContent:
@@ -402,7 +402,7 @@ export const institutions: Institution[] = [
 		id: 34,
 		name: "Surau Al-Hijrah PPR Pekan Batu",
 		category: "surau",
-		state: "Wilayah Persekutuan Kuala Lumpur",
+		state: "W.P. Kuala Lumpur",
 		city: "Kuala Lumpur",
 		qrImage: "",
 		qrContent:
@@ -414,7 +414,7 @@ export const institutions: Institution[] = [
 		id: 35,
 		name: "Sumbangan Ihya Ramadhan - Jabatan Pendidikan Wilayah Persekutuan",
 		category: "others",
-		state: "Wilayah Persekutuan Kuala Lumpur",
+		state: "W.P. Kuala Lumpur",
 		city: "Kuala Lumpur",
 		qrImage: "",
 		qrContent:
@@ -425,7 +425,7 @@ export const institutions: Institution[] = [
 		id: 36,
 		name: "Masjid Al-Muqarrabin Bandar Tasik Selatan",
 		category: "mosque",
-		state: "Wilayah Persekutuan Kuala Lumpur",
+		state: "W.P. Kuala Lumpur",
 		city: "Kuala Lumpur",
 		qrImage: "",
 		qrContent:
@@ -437,7 +437,7 @@ export const institutions: Institution[] = [
 		id: 37,
 		name: "Masjid Al-Muhsinin",
 		category: "mosque",
-		state: "Wilayah Persekutuan Kuala Lumpur",
+		state: "W.P. Kuala Lumpur",
 		city: "Kuala Lumpur",
 		qrImage: "",
 		qrContent:
@@ -449,7 +449,7 @@ export const institutions: Institution[] = [
 		id: 38,
 		name: "Sekolah Agama Al Fateh",
 		category: "others",
-		state: "Wilayah Persekutuan Kuala Lumpur",
+		state: "W.P. Kuala Lumpur",
 		city: "Kuala Lumpur",
 		qrImage: "",
 		qrContent:
@@ -460,7 +460,7 @@ export const institutions: Institution[] = [
 		id: 39,
 		name: "Masjid Al-Hidayah Taman Melawati",
 		category: "mosque",
-		state: "Wilayah Persekutuan Kuala Lumpur",
+		state: "W.P. Kuala Lumpur",
 		city: "Kuala Lumpur",
 		qrImage: "",
 		qrContent:
@@ -472,7 +472,7 @@ export const institutions: Institution[] = [
 		id: 40,
 		name: "Masjid Al-Ansar Taman Keramat",
 		category: "mosque",
-		state: "Wilayah Persekutuan Kuala Lumpur",
+		state: "W.P. Kuala Lumpur",
 		city: "Kuala Lumpur",
 		qrImage: "",
 		qrContent:
@@ -485,7 +485,7 @@ export const institutions: Institution[] = [
 		id: 41,
     name: "Maahad Tahfiz Al-Madrasathul Faridiyah",
     category: "surau",
-		state: "Wilayah Persekutuan Kuala Lumpur",
+		state: "W.P. Kuala Lumpur",
 		city: "Kuala Lumpur",
 		qrImage: "",
     qrContent:
@@ -640,7 +640,7 @@ export const institutions: Institution[] = [
 		id: 54,
     name: "Khairat Kematian Kemsah - Masjid Saidin Hamzah",
     category: "mosque",
-    state: "Wilayah Persekutuan Kuala Lumpur",
+    state: "W.P. Kuala Lumpur",
     city: "Kuala Lumpur",
 		qrImage: "",
     qrContent:
@@ -807,7 +807,7 @@ export const institutions: Institution[] = [
 		id: 68,
     name: "Surau SK Sultan Ahmad Shah",
     category: "surau",
-    state: "Wilayah Persekutuan Putrajaya",
+    state: "W.P. Putrajaya",
     city: "Putrajaya",
 		qrImage: "",
     qrContent:
@@ -988,7 +988,7 @@ export const institutions: Institution[] = [
 		id: 83,
     name: "Masjid Al-Hidayah Taman Melawati",
     category: "mosque",
-    state: "Wilayah Persekutuan Kuala Lumpur",
+    state: "W.P. Kuala Lumpur",
     city: "Kuala Lumpur",
 		qrImage: "",
     qrContent:
@@ -1485,7 +1485,7 @@ export const institutions: Institution[] = [
 		id: 126,
     name: "Masjid Al Ehsan Kampung Sungai Labu",
     category: "mosque",
-    state: "Wilayah Persekutuan Labuan",
+    state: "W.P. Labuan",
     city: "Labuan",
 		qrImage: "",
     qrContent:
@@ -1496,7 +1496,7 @@ export const institutions: Institution[] = [
 		id: 127,
     name: "Masjid Al-Munawwar (Khairat)",
     category: "mosque",
-    state: "Wilayah Persekutuan Labuan",
+    state: "W.P. Labuan",
     city: "Labuan",
 		qrImage: "",
     qrContent:
@@ -1508,7 +1508,7 @@ export const institutions: Institution[] = [
 		id: 128,
     name: "Masjid Sultan Muhammad V",
     category: "mosque",
-    state: "Wilayah Persekutuan Labuan",
+    state: "W.P. Labuan",
     city: "Labuan",
 		qrImage: "",
     qrContent:
@@ -2611,7 +2611,7 @@ export const institutions: Institution[] = [
 		id: 220,
     name: "Masjid Al-Firdaus",
     category: "mosque",
-    state: "Wilayah Persekutuan Kuala Lumpur",
+    state: "W.P. Kuala Lumpur",
     city: "Kuala Lumpur", // Segambut Luar
 		qrImage: "",
     qrContent:
@@ -2686,7 +2686,7 @@ export const institutions: Institution[] = [
 		id: 226,
     name: "Masjid Ar-Rahah",
     category: "mosque",
-    state: "Wilayah Persekutuan Kuala Lumpur",
+    state: "W.P. Kuala Lumpur",
     city: "Kuala Lumpur",
 		qrImage: "",
     qrContent: "https://qr.tngdigital.com.my/m/281011056461095422624256135",
@@ -2748,7 +2748,7 @@ export const institutions: Institution[] = [
 		id: 231,
     name: "Masjid Asy-Syakirin, KLCC",
     category: "mosque",
-    state: "Wilayah Persekutuan Kuala Lumpur",
+    state: "W.P. Kuala Lumpur",
     city: "Kuala Lumpur",
 		qrImage: "",
     qrContent:
@@ -2776,7 +2776,7 @@ export const institutions: Institution[] = [
 		id: 233,
     name: "Masjid Abu Ubaidah Al Jarrah",
     category: "mosque",
-    state: "Wilayah Persekutuan Kuala Lumpur",
+    state: "W.P. Kuala Lumpur",
     city: "Kuala Lumpur",
 		qrImage: "",
     qrContent:
@@ -2790,7 +2790,7 @@ export const institutions: Institution[] = [
 		id: 234,
     name: "Masjid Wilayah Persekutuan",
     category: "mosque",
-    state: "Wilayah Persekutuan Kuala Lumpur",
+    state: "W.P. Kuala Lumpur",
     city: "Kuala Lumpur",
 		qrImage: "",
     qrContent:
@@ -2988,7 +2988,7 @@ export const institutions: Institution[] = [
 		id: 249,
     name: "Masjid Tuanku Mizan Zainal Abidin",
     category: "mosque",
-    state: "Wilayah Persekutuan Putrajaya",
+    state: "W.P. Putrajaya",
     city: "Putrajaya",
 		qrImage: "",
     qrContent:
@@ -3014,7 +3014,7 @@ export const institutions: Institution[] = [
 		id: 251,
     name: "Surau Al-Manar",
     category: "surau",
-    state: "Wilayah Persekutuan Putrajaya",
+    state: "W.P. Putrajaya",
     city: "Putrajaya",
 		qrImage: "",
     qrContent:
@@ -3026,7 +3026,7 @@ export const institutions: Institution[] = [
 		id: 252,
     name: "Masjid Ibn Khaldun",
     category: "mosque",
-    state: "Wilayah Persekutuan Kuala Lumpur",
+    state: "W.P. Kuala Lumpur",
     city: "Kuala Lumpur",
 		qrImage: "",
     qrContent:
@@ -3085,7 +3085,7 @@ export const institutions: Institution[] = [
 		id: 257,
     name: "Masjid Jamek Abdullah Hukum @ KL Eco City",
     category: "mosque",
-    state: "Wilayah Persekutuan Kuala Lumpur",
+    state: "W.P. Kuala Lumpur",
     city: "Kuala Lumpur",
 		qrImage: "",
     qrContent: "https://qr.tngdigital.com.my/m/281011055105183318942282243",
@@ -3096,7 +3096,7 @@ export const institutions: Institution[] = [
 		id: 258,
     name: "Surau Al-Mukmin PPR Wangsa Maju",
     category: "surau",
-    state: "Wilayah Persekutuan Kuala Lumpur",
+    state: "W.P. Kuala Lumpur",
     city: "Kuala Lumpur",
 		qrImage: "",
     qrContent: "00020201021126610014A000000615000101065018540215000001244014338031000000000005204866153034585802MY5918SURAU AL MUKMIN-QR6012KUALA LUMPUR61055310062150111101635300006304D099",
@@ -3129,7 +3129,7 @@ export const institutions: Institution[] = [
 		id: 261,
     name : "Masjid Al-Khasyi'in",
     category: "mosque",
-    state: "Wilayah Persekutuan Kuala Lumpur",
+    state: "W.P. Kuala Lumpur",
     city: "Kuala Lumpur",
 		qrImage: "",
     qrContent: "00020201021126520014A000000615000101068900530220MDN162245583328130615204866153034585802MY5918MASJIDAL-KHASYI'IN6011KUALALUMPUR63049DD0",
