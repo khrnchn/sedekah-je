@@ -1022,7 +1022,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 86,
-    name: "Masjid At Taqwa Mchondong",
+    name: "Masjid At Taqwa Pulai Chondong",
     category: "mosque",
     state: "Kelantan",
     city: "Pulai Chondong",
@@ -2612,7 +2612,7 @@ export const institutions: Institution[] = [
     name: "Masjid Al-Firdaus",
     category: "mosque",
     state: "W.P. Kuala Lumpur",
-    city: "Kuala Lumpur", // Segambut Luar
+    city: "Segambut", // Segambut Luar
     qrImage: "",
     qrContent:
       "00020201021126580014A000000615000101065887340212MBBQR1384949031000000000005204729953034585802MY5917MASJID AL FIRDAUS6012KUALA LUMPUR630448CA",
