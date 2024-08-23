@@ -3389,7 +3389,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 283,
-    name: "Masjid Nurrusaadah ",
+    name: "Masjid Nurrusaadah",
     category: "mosque",
     state: "W.P. Kuala Lumpur",
     city: "Kuala Lumpur",
@@ -3449,7 +3449,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 289,
-    name: "Per Seruan Islam Sel W.p",
+    name: "Persekutuan Seruan Islam Selangor & Wilayah Persekutuan (Jam'iyah)",
     category: "others",
     state: "W.P. Kuala Lumpur",
     city: "Jalan Ipoh",
@@ -3559,7 +3559,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 300,
-    name: "Masjid A.ubaidah Al Jarrah",
+    name: "Masjid Abu Ubaidah Al Jarrah",
     category: "others",
     state: "W.P. Kuala Lumpur",
     city: "Kuala Lumpur",
@@ -3609,7 +3609,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 305,
-    name: "Per Pnddk Taman Danau Kota",
+    name: "Persatuan Penduduk Taman Danau Kota",
     category: "others",
     state: "W.P. Kuala Lumpur",
     city: "Setapak",
@@ -3659,7 +3659,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 310,
-    name: "Surau Al Hidayah T.sunway",
+    name: "Surau Al Hidayah Taman Sunway",
     category: "surau",
     state: "Selangor",
     city: "Gombak",
@@ -3749,7 +3749,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 319,
-    name: "Persatuan Kbjkn Al-Fikrah",
+    name: "Persatuan Kebajikan Al-Fikrah",
     category: "others",
     state: "Selangor",
     city: "Kajang",
