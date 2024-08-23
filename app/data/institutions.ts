@@ -195,8 +195,7 @@ export const institutions: Institution[] = [
     state: "Pahang",
     city: "Muadzam Shah",
     qrImage: "/masjid/masjid-tengku-ampuan-afzan.jpeg",
-    qrContent: "00020201021126600014A000000615000101065892670228BRQR65e1901b481cbd226738d96e5204866153034585802MY5925MASJID TENGKU AMPUAN AFZA6012MUADZAM SHAH61052670062420310M000002273052465e575d1d3f9a90682ebc39b63040BB5",
-    supportedPayment: ["duitnow", "tng"],
+    // QR not clear
     coords: [3.067148219132197, 103.06875243657876],
   },
   {
@@ -3460,7 +3459,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 290,
-    name: "Surau At Taqwa Jpwpkl",
+    name: "Surau At Taqwa Jabatan Pendidikan WPKL",
     category: "surau",
     state: "W.P. Kuala Lumpur",
     city: "Kuala Lumpur",
@@ -3530,10 +3529,10 @@ export const institutions: Institution[] = [
   },
   {
     id: 297,
-    name: "Masjid Al-Mardhiyah Tm",
+    name: "Masjid Al-Mardhiyah Taman Melawati",
     category: "mosque",
-    state: "W.P. Kuala Lumpur",
-    city: "Kuala Lumpur",
+    state: "Selangor",
+    city: "Ampang",
     qrImage: "",
     qrContent: "00020201021126610014A000000615000101065641670215QRMID0000000038031001931931615204866153034585802MY5922MASJID AL-MARDHIYAH TM6012KUALA LUMPUR61055310063041F2A",
     supportedPayment: ["duitnow", "tng"],
@@ -3630,7 +3629,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 307,
-    name: "Surau Kuarters Sekolah 14 Bb",
+    name: "Surau Kuarters Kerajaan Negeri Seksyen 14 Bandar Baru Bangi",
     category: "surau",
     state: "Selangor",
     city: "Bangi",
@@ -3650,7 +3649,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 309,
-    name: "Surau Al-Ikhwan Ts",
+    name: "Surau Al-Ikhwan Taman Samudra Batu Caves",
     category: "surau",
     state: "Selangor",
     city: "Batu Caves",
@@ -3700,7 +3699,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 314,
-    name: "Surau Al Khairiah Sp",
+    name: "Surau Al-Khairiah Selayang Permai",
     category: "surau",
     state: "Selangor",
     city: "Batu Caves",
@@ -3740,10 +3739,10 @@ export const institutions: Institution[] = [
   },
   {
     id: 318,
-    name: "Surau Al-Hidayah W Drb Hicom",
-    category: "others",
+    name: "Surau Al-Hidayah Wisma DRB-HICOM",
+    category: "surau",
     state: "Selangor",
-    city: "Glenmarie Sa",
+    city: "Shah Alam",
     qrImage: "",
     qrContent: "00020201021126610014A000000615000101065641670215QRMID0000000088031001922159905204866153034585802MY5925SR AL-HIDAYAH W DRB HICOM6012GLENMARIE SA6105401506304939B",
     supportedPayment: ["duitnow", "tng"],
@@ -3780,10 +3779,10 @@ export const institutions: Institution[] = [
   },
   {
     id: 322,
-    name: "Al Hidayah B.t.k",
-    category: "others",
+    name: "Surau Al-Hidayah Bandar Teknologi Kajang",
+    category: "surau",
     state: "Selangor",
-    city: "Semenyih",
+    city: "Kajang",
     qrImage: "",
     qrContent: "00020201021126610014A000000615000101065641670215QRMID0000000462031001320828875204533153034585802MY5916AL HIDAYAH B.T.K6008SEMENYIH6105435006304E4AE",
     supportedPayment: ["duitnow", "tng"],
@@ -3800,7 +3799,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 324,
-    name: "Surau An Nur Tkp",
+    name: "Surau An-Nur Taman Kantan Permai",
     category: "surau",
     state: "Selangor",
     city: "Kajang",
@@ -3810,7 +3809,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 325,
-    name: "Pmbnaan Surau Nurul Huda",
+    name: "Surau Nurul Huda",
     category: "surau",
     state: "Selangor",
     city: "Kajang",
@@ -3821,7 +3820,7 @@ export const institutions: Institution[] = [
   {
     id: 326,
     name: "Masjid Prima Saujana Kajang",
-    category: "others",
+    category: "mosque",
     state: "Selangor",
     city: "Kajang",
     qrImage: "",
@@ -3830,7 +3829,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 327,
-    name: "Surau Sekolah kebangsaan Saujana Impian",
+    name: "Surau Sekolah Kebangsaan Saujana Impian",
     category: "surau",
     state: "Selangor",
     city: "Kajang",
@@ -3860,7 +3859,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 330,
-    name: "Pitas",
+    name: "PITAS",
     category: "others",
     state: "Selangor",
     city: "Batu Caves",
@@ -3870,7 +3869,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 331,
-    name: "Surau Ar Rahmah",
+    name: "Surau Ar-Rahmah Seksyen 8",
     category: "surau",
     state: "Selangor",
     city: "Shah Alam",
@@ -3880,7 +3879,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 332,
-    name: "Surau Al Munawwarah Sek13",
+    name: "Surau Al Munawwarah Seksyen 13",
     category: "surau",
     state: "Selangor",
     city: "Shah Alam",
@@ -3970,23 +3969,25 @@ export const institutions: Institution[] = [
   },
   {
     id: 341,
-    name: "Surau Al-Mukhlisin",
+    name: "Surau Al-Mukhlisin Putrajaya",
     category: "surau",
-    state: "Selangor",
-    city: "Kajang",
+    state: "W.P. Putrajaya",
+    city: "Putrajaya",
     qrImage: "",
     qrContent: "00020201021126610014A000000615000101065641670215QRMID0000000354031001333024695204866153034585802MY5918SURAU AL-MUKHLISIN6006KAJANG61054300063042278",
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // Tempat Farhan Helmy membesar url: "https://www.facebook.com/unitenmosque/"
     id: 342,
-    name: "Masjid Uniten",
+    name: "Masjid UNITEN",
     category: "mosque",
     state: "Selangor",
     city: "Kajang",
     qrImage: "",
     qrContent: "00020201021126610014A000000615000101065641670215QRMID0000000384031001022096315204866153034585802MY5913MASJID UNITEN6006KAJANG6105430006304A2C9",
     supportedPayment: ["duitnow", "tng"],
+    coords:[2.971944, 101.733889]
   },
   {
     id: 343,
@@ -4000,7 +4001,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 344,
-    name: "Masjid N.islamiah Sg Choh",
+    name: "Masjid Nurul Islamiah Sungai Choh",
     category: "others",
     state: "Selangor",
     city: "Rawang",
@@ -4010,7 +4011,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 345,
-    name: "Surau At-Taqwa D.melor",
+    name: "Surau At-Taqwa Desa Melor",
     category: "surau",
     state: "Selangor",
     city: "Serendah",
@@ -4020,8 +4021,8 @@ export const institutions: Institution[] = [
   },
   {
     id: 346,
-    name: "Msjid Nurul Iman Serendah",
-    category: "others",
+    name: "Masjid Nurul Iman Serendah",
+    category: "mosque",
     state: "Selangor",
     city: "Rawang",
     qrImage: "",
@@ -4030,7 +4031,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 347,
-    name: "Surau Al Mustaqim",
+    name: "Surau Al-Mustaqim",
     category: "surau",
     state: "Perak",
     city: "Serendah",
@@ -4043,7 +4044,7 @@ export const institutions: Institution[] = [
     name: "Masjid Lepan Jaya",
     category: "mosque",
     state: "Kelantan",
-    city: "Gua Musang Kel",
+    city: "Gua Musang",
     qrImage: "",
     qrContent: "00020201021126610014A000000615000101065641670215QRMID0000000084031001992303515204866153034585802MY5917MASJID LEPAN JAYA6014GUA MUSANG KEL6105183006304007D",
     supportedPayment: ["duitnow", "tng"],
@@ -4053,7 +4054,7 @@ export const institutions: Institution[] = [
     name: "Masjid Ar Rahman",
     category: "mosque",
     state: "Kelantan",
-    city: "Gua Musang Kel",
+    city: "Gua Musang",
     qrImage: "",
     qrContent: "00020201021126620014A000000615000101065641670215QRMID00000000850311011199800735204866153034585802MY5916MASJID AR RAHMAN6014GUA MUSANG KEL6105183006304AC36",
     supportedPayment: ["duitnow", "tng"],
@@ -6887,7 +6888,7 @@ export const institutions: Institution[] = [
     qrImage: "",
     qrContent: "00020201021126610014A000000615000101065641670215QRMID0000005032031001363063305204566153034585802MY5924WKF PBGN SURAU AL-HIKMAH6006MELAKA610575250630409C2",
     supportedPayment: ["duitnow", "tng"],
-  },  
+  },
   {    
     id: 633,
     name: "Masjid Taman Impian Emas",
