@@ -3308,4 +3308,16 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow"],
     coords: [4.232186085721263, 100.69196003689001],
   },
+  {
+    id: 276,
+    name: "Masjid Tengku Ampuan Afzan Kuantan",
+    category: "mosque",
+    state: "Pahang",
+    city: "Kuantan",
+    qrImage: "",
+    qrContent:
+      "00020201021126610014A000000615000101065018540215000001248405631031000000000005204866153034585802MY5923MASJID T A AFZAN KTN-QR6007KUANTAN61052520062150111102057100006304EAFB",
+    supportedPayment: ["duitnow"],
+    coords: [3.824054319022322, 103.3055692802235],
+  },
 ];
