@@ -31,23 +31,20 @@ import { toast } from "sonner";
 import CategoryLabel from "./category-label";
 import QrCodeDisplay from "./qrCodeDisplay";
 
-const capitalizeWords = (str: string) => {
-	return str
-		.toLowerCase()
-		.split(" ")
-		.map((word) => {
-			if (word.includes("-")) {
-				return word
-					.split("-")
-					.map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-					.join("-");
-			} else if (word.startsWith("(") && word.endsWith(")")) {
-				return `(${word.charAt(1).toUpperCase() + word.slice(2)}`;
-			} else {
-				return word.charAt(0).toUpperCase() + word.slice(1);
-			}
-		})
-		.join(" ");
+const capitalizeWords = (str: string): string => {
+	return str.replace(/\S+/g, word => {
+		// Kalau semua huruf besar atau huruf besar dengan titik (contoh: "IIUM", "W.P."), biar je
+		if (/^[A-Z]+$/.test(word) || (/^[A-Z.]+$/.test(word) && word.length > 1)) return word;
+		// Kalau ada dalam kurungan (contoh: "(abc)"), apply the function recursively
+		if (word.startsWith('(') && word.endsWith(')')) {
+			const inner = word.slice(1, -1);
+			return capitalizeWords(inner);
+		}
+		// Kalau ada dash (contoh: "an-nur"), capitalize kedua-dua belah perkataan
+		if (word.includes('-')) return word.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('-');
+		// Default capitalization
+		return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+	});
 };
 
 const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
