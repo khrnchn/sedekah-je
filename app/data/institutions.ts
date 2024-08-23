@@ -190,7 +190,7 @@ export const institutions: Institution[] = [
   {
     // https://www.facebook.com/MTAABSMS/
     id: 16,
-    name: "Masjid Tengku Ampuan Afzan, Bandar Satelit",
+    name: "Masjid Tengku Ampuan Afzan, Bandar Satelit (MTAABSMS)",
     category: "mosque",
     state: "Pahang",
     city: "Muadzam Shah",
@@ -3309,8 +3309,9 @@ export const institutions: Institution[] = [
     coords: [4.232186085721263, 100.69196003689001],
   },
   {
+    // https://www.facebook.com/mastaaf.im/
     id: 276,
-    name: "Masjid Tengku Ampuan Afzan Kuantan",
+    name: "Masjid Tengku Ampuan Afzan, Indera Mahkota (MASTAAF)",
     category: "mosque",
     state: "Pahang",
     city: "Kuantan",
