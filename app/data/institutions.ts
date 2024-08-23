@@ -190,7 +190,7 @@ export const institutions: Institution[] = [
   {
     // https://www.facebook.com/MTAABSMS/
     id: 16,
-    name: "Masjid Tengku Ampuan Afzan, Bandar Satelit",
+    name: "Masjid Tengku Ampuan Afzan, Bandar Satelit (MTAABSMS)",
     category: "mosque",
     state: "Pahang",
     city: "Muadzam Shah",
@@ -3309,8 +3309,9 @@ export const institutions: Institution[] = [
     coords: [4.232186085721263, 100.69196003689001],
   },
   {
+    // https://www.facebook.com/mastaaf.im/
     id: 276,
-    name: "Masjid Tengku Ampuan Afzan Kuantan",
+    name: "Masjid Tengku Ampuan Afzan, Indera Mahkota (MASTAAF)",
     category: "mosque",
     state: "Pahang",
     city: "Kuantan",
@@ -3319,5 +3320,31 @@ export const institutions: Institution[] = [
       "00020201021126610014A000000615000101065018540215000001248405631031000000000005204866153034585802MY5923MASJID T A AFZAN KTN-QR6007KUANTAN61052520062150111102057100006304EAFB",
     supportedPayment: ["duitnow"],
     coords: [3.824054319022322, 103.3055692802235],
+  },
+  {
+    // https://www.facebook.com/p/Masjid-Al-Taqwa-Kariah-Kisap-100064860304444/
+    id: 277,
+    name: "Masjid Al-Taqwa Kariah Kisap",
+    category: "mosque",
+    state: "Kedah",
+    city: "Langkawi",
+    qrImage: "",
+    qrContent:
+      "00020201021126600014A000000615000101065892670228BRQR658d7901b16709469f2ef3be5204866153034585802MY5921MASJID AL-TAQWA KISAP6008Langkawi61050700062420310M000001253052465ceb7c7aa48bf00056300b96304117A",
+    supportedPayment: ["duitnow", "tng"],
+    coords: [6.37105987339039, 99.86510883207451],
+  },
+  {
+    // https://www.facebook.com/masjidassopiah/
+    id: 278,
+    name: "Masjid As-Sopiah, Keda Wang Tok Rendong",
+    category: "mosque",
+    state: "Kedah",
+    city: "Langkawi",
+    qrImage: "",
+    qrContent:
+      "00020201021126600014A000000615000101065892670228BRQR65d54f6e481cbd226738622f5204866153034585802MY5920MASJID ASSOFIAH KEDA6004kuah61050700062420310M000002093052465d54f6faa48bf0005637557630478DA",
+    supportedPayment: ["duitnow", "tng"],
+    coords: [6.352203154708551, 99.88020500425073],
   },
 ];
