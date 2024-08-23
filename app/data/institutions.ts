@@ -3347,4 +3347,15 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
     coords: [6.352203154708551, 99.88020500425073],
   },
+  {
+    id: 279,
+    name: "Masjid Taman Impian Emas",
+    category: "mosque",
+    state: "Johor",
+    city: "Skudai",
+    qrImage: "",
+    qrContent: "ENNpZhHA+LUZBc75U8peWUvCulhL5kH8p9GhppQd/5E=",
+    supportedPayment: ["boost"],
+    coords: [11.5539955398923895, 103.67005417671798],
+  },
 ];

@@ -1,4 +1,4 @@
-export type PaymentOption = "duitnow" | 'tng';
+export type PaymentOption = "duitnow" | 'tng' | 'boost';
 export const categories = {
   "mosque": {
     label: "🕌 Masjid",
