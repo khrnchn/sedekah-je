@@ -35,7 +35,18 @@ const capitalizeWords = (str: string) => {
 	return str
 		.toLowerCase()
 		.split(" ")
-		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+		.map((word) => {
+			if (word.includes("-")) {
+				return word
+					.split("-")
+					.map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+					.join("-");
+			} else if (word.startsWith("(") && word.endsWith(")")) {
+				return `(${word.charAt(1).toUpperCase() + word.slice(2)}`;
+			} else {
+				return word.charAt(0).toUpperCase() + word.slice(1);
+			}
+		})
 		.join(" ");
 };
 
