@@ -3334,4 +3334,17 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
     coords: [6.37105987339039, 99.86510883207451],
   },
+  {
+    // https://www.facebook.com/masjidassopiah/
+    id: 278,
+    name: "Masjid As-Sopiah, Keda Wang Tok Rendong",
+    category: "mosque",
+    state: "Kedah",
+    city: "Langkawi",
+    qrImage: "",
+    qrContent:
+      "00020201021126600014A000000615000101065892670228BRQR65d54f6e481cbd226738622f5204866153034585802MY5920MASJID ASSOFIAH KEDA6004kuah61050700062420310M000002093052465d54f6faa48bf0005637557630478DA",
+    supportedPayment: ["duitnow", "tng"],
+    coords: [6.352203154708551, 99.88020500425073],
+  },
 ];
