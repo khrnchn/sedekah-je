@@ -8,6 +8,7 @@ currently tracking and adding qrs from [catqeel](https://x.com/catqeel)'s [twitt
 
 ## Contribute
 
+email me at khrnchnv@gmail.com, or
 - fork the repo
 - add new mosque/ surau/ institution entry into institutions.ts
 - extract qr value using [this tool](https://qrcoderaptor.com/) and insert it into qrContent
