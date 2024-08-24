@@ -6359,7 +6359,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 580,
-    name: "Masjid Jmk Tenang Station",
+    name: "Masjid Jamek Tenang Station",
     category: "others",
     state: "Johor",
     city: "Segamat",
@@ -6369,7 +6369,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 581,
-    name: "Masjid Jmk Kampung Paya Pulai",
+    name: "Masjid Jamek Kampung Paya Pulai",
     category: "others",
     state: "Johor",
     city: "Segamat",
@@ -6389,7 +6389,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 583,
-    name: "Pembangunan Sur. An-Nur D.skudai",
+    name: "Pembangunan Surau An-Nur Desa Skudai",
     category: "others",
     state: "Johor",
     city: "Skudai",
@@ -6449,7 +6449,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 589,
-    name: "Mtaq At Tanwiriah",
+    name: "Madrasah Tahfiz Al Quran At Tanwiriah",
     category: "others",
     state: "Johor",
     city: "Muar",
@@ -6469,7 +6469,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 591,
-    name: "M T Al Quran As Sunnah",
+    name: "Maahad Tahfiz Al Quran Wa As Sunnah",
     category: "others",
     state: "Johor",
     city: "Kulai",
@@ -6499,7 +6499,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 594,
-    name: "Surau Al Hidayah T.bakri",
+    name: "Surau Al Hidayah Bakri",
     category: "surau",
     state: "Johor",
     city: "Muar",
@@ -6509,7 +6509,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 595,
-    name: "Pk Anak2 Yatim Islam Muar",
+    name: "Pusat Kebajikan Anak-Anak Yatim Islam Muar",
     category: "others",
     state: "Johor",
     city: "Muar",
@@ -6519,7 +6519,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 596,
-    name: "Khaujakan Muar",
+    name: "Madrasah Khaujakan Muar",
     category: "others",
     state: "Johor",
     city: "Muar",
@@ -6529,7 +6529,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 597,
-    name: "Ppaq Nurul Haq Lil Banat",
+    name: "Pusat Pengajian Al Quran Nurul Haq Lil Banat",
     category: "others",
     state: "Johor",
     city: "Kluang",
@@ -6590,7 +6590,7 @@ export const institutions: Institution[] = [
   {
     id: 603,
     name: "Masjid Al Baroqah Sri Paya",
-    category: "others",
+    category: "mosque",
     state: "Johor",
     city: "Kulai",
     qrImage: "",
@@ -6609,7 +6609,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 605,
-    name: "Jkuasa Surau Al Falah",
+    name: "Jawatankuasa Surau Al Falah",
     category: "surau",
     state: "Johor",
     city: "Skudai",
@@ -6619,7 +6619,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 606,
-    name: "Mahad Tahfiz Mataqas",
+    name: "Maahad Tahfiz Mataqas",
     category: "others",
     state: "Johor",
     city: "Kulai",
@@ -6639,7 +6639,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 608,
-    name: "Masjid Negeri Ns",
+    name: "Masjid Negeri Negeri Sembilan",
     category: "mosque",
     state: "Negeri Sembilan",
     city: "Seremban",
@@ -6649,7 +6649,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 609,
-    name: "Masjid Jamek Bandar Sbn",
+    name: "Masjid Jamek Bandar Seremban",
     category: "mosque",
     state: "Negeri Sembilan",
     city: "Seremban",
@@ -6689,7 +6689,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 613,
-    name: "Mj Nurul Huda Kampung Felda J3",
+    name: "Masjid Nurul Huda Kampung Felda J3",
     category: "others",
     state: "Negeri Sembilan",
     city: "Gemas",
@@ -6719,7 +6719,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 616,
-    name: "Masjid Annur F. Jelai 2",
+    name: "Masjid Annur Felda Jelai 2",
     category: "mosque",
     state: "Negeri Sembilan",
     city: "Gemas",
@@ -6729,7 +6729,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 617,
-    name: "Masjid Jamek Dato Hj Ahmad",
+    name: "Masjid Jamek Dato Haji Ahmad",
     category: "others",
     state: "Negeri Sembilan",
     city: "Seremban",
@@ -6759,7 +6759,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 620,
-    name: "Tilawah Jknns",
+    name: "Tilawah Jabatan Kesihatan Negeri, Negeri Sembilan",
     category: "others",
     state: "Negeri Sembilan",
     city: "Seremban",
@@ -6839,7 +6839,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 628,
-    name: "Pembangunan Surau Taman Bkt Cheng 2",
+    name: "Pembangunan Surau Taman Bukit Cheng 2",
     category: "surau",
     state: "Melaka",
     city: "Taman Bukit Che",
@@ -6859,7 +6859,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 630,
-    name: "Masjid Al-Mukmin Bkt Durian",
+    name: "Masjid Al-Mukmin Bukit Durian",
     category: "others",
     state: "Melaka",
     city: "Melaka",
