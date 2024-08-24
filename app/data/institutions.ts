@@ -3358,4 +3358,16 @@ export const institutions: Institution[] = [
     supportedPayment: ["boost"],
     coords: [11.5539955398923895, 103.67005417671798],
   },
+  {
+    id: 280,
+    name: "Surau Darul Madinah",
+    category: "surau",
+    state: "Sarawak",
+    city: "Niah",
+    qrImage: "",
+    qrContent:
+      "00020201021126580014A000000615000101065641600226126102000005251RHBQR0136115204739953034585802MY5919Surau Darul Madinah6002MY61059815062300309ROA0198010713A0420170087A28264BF4A3168CA26A3EDD503AA94C04D7BE730247A580C18F5D9636BC7010C009CDD63040FBB",
+    supportedPayment: ["duitnow", "tng"],
+    coords: [3.9911561200987213, 113.72836987669757],
+  },
 ];
