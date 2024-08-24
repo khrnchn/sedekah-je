@@ -8,6 +8,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { institutions } from "../data/institutions";
 import { type Institution, categories } from "../types/institutions";
+import Link from "next/link";
 
 const Rawak = () => {
 	const [randomInstitution, setRandomInstitution] =
@@ -85,16 +86,27 @@ const Rawak = () => {
 						</div>
 					</div>
 				) : (
-          <Skeleton className="w-full h-[500px] sm:w-[500px] sm:h-[500px] rounded-3xl" />
-        )}
+					<Skeleton className="w-full h-[500px] sm:w-[500px] sm:h-[500px] rounded-3xl" />
+				)}
 			</div>
-			<button
-				type="button"
-				onClick={generateRandomNumber}
-				className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors duration-300 sticky bottom-12"
-			>
-				🎲 Jana QR Secara Rawak
-			</button>
+			<div className="grid grid-flow-col gap-2">
+				<Link href="/">
+					<button
+						type="button"
+						className="bg-slate-500 text-white px-4 py-2 rounded-md hover:bg-slate-600 transition-colors duration-300 sticky bottom-12"
+					>
+						Kembali
+					</button>
+				</Link>
+				<button
+					type="button"
+					onClick={generateRandomNumber}
+					className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors duration-300 sticky bottom-12"
+				>
+					🎲 Jana QR Secara Rawak
+				</button>
+			</div>
+
 
 			<div className="grid grid-flow-col gap-1 items-center">
 				<p className="max-sm:text-xs">Pilih Tapisan: </p>
