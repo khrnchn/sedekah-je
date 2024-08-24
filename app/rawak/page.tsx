@@ -44,7 +44,7 @@ const Rawak = () => {
 		<PageSection className="items-center justify-center pb-8">
 			<div className="grid place-items-center m-8">
 				{randomInstitution ? (
-					<div className="w-full max-w-[500px] h-full flex flex-col bg-white sm:rounded-3xl">
+					<div className="w-full max-w-[500px] h-full flex flex-col bg-white rounded-3xl">
 						<div className="flex items-center justify-center ">
 							{randomInstitution.qrContent ? (
 								<QrCodeDisplay
