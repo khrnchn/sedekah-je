@@ -41,7 +41,7 @@ const Rawak = () => {
 	}, []);
 
 	return (
-		<PageSection className="items-center justify-center">
+		<PageSection className="items-center justify-center pb-8">
 			<div className="grid place-items-center m-8">
 				{randomInstitution ? (
 					<div className="w-full max-w-[500px] h-full flex flex-col bg-white sm:rounded-3xl">
