@@ -6911,4 +6911,17 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
     coords: [3.9911561200987213, 113.72836987669757],
   },
+  {
+    id: 635,
+    name: "Surau Haji Abu Bakar Yunus",
+    description: "Surau Jumaat yang berdaftar dengan Majlis Agama Islam Negeri Melaka.",
+    category: "surau",
+    state: "Melaka",
+    city: "Alor Gajah",
+    qrImage: "",
+    qrContent:
+      "00020201021126420014A000000615000101066033460210MD001228335204866153034585802MY5925Tabong Surau Hj Abu Bakar6002MY627303251695270859669008348440089052016952709283790011102071616952702687660036304313A",
+    supportedPayment: ["duitnow"],
+    coords: [2.4925023301969205, 102.18022557818212],
+  },
 ];
