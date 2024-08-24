@@ -93,7 +93,6 @@ const Home: React.FC = () => {
 	);
 
 	useEffect(() => {
-		setIsLoading(true);
 		setIsLoadingMore(true);
 
 		const filterInstitutions = () => {
