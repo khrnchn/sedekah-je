@@ -196,6 +196,7 @@ export const institutions: Institution[] = [
     city: "Muadzam Shah",
     qrImage: "/masjid/masjid-tengku-ampuan-afzan.jpeg",
     qrContent: "00020201021126600014A000000615000101065892670228BRQR65e1901b481cbd226738d96e5204866153034585802MY5925MASJID TENGKU AMPUAN AFZA6012MUADZAM SHAH61052670062420310M000002273052465e575d1d3f9a90682ebc39b63040BB5",
+    supportedPayment: ["duitnow", "tng"],
     coords: [3.067148219132197, 103.06875243657876],
   },
   {
