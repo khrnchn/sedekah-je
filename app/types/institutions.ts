@@ -16,6 +16,7 @@ export type Category = keyof typeof categories;
 export type Institution = {
   id: number;
   name: string;
+  description?: string;
   category: Category;
   state: string;
   city: string;
