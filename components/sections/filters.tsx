@@ -1,7 +1,9 @@
 import { categories } from "@/app/types/institutions";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { StatesDropdown } from "../states-dropdown";
 import { institutions } from "../../app/data/institutions";
+import { StatesDropdown } from "../states-dropdown";
+import { Button } from "../ui/button";
 
 type Props = {
 	onChange: (props: {
@@ -18,16 +20,17 @@ const Filters = (props: Props) => {
 		value: category,
 	}));
 
+	const router = useRouter();
+
 	const handleStateFilters = (props: { state: string }) => {
 		setSelectedState(props.state);
 	};
 
 	useEffect(() => {
-		props.onChange(
-			{
-				categories: selectedCategories,
-				state: selectedState
-			});
+		props.onChange({
+			categories: selectedCategories,
+			state: selectedState,
+		});
 	}, [selectedCategories, selectedState, props]);
 
 	return (
@@ -56,14 +59,22 @@ const Filters = (props: Props) => {
 								institutions.filter(
 									(ins) =>
 										ins.category === category.value &&
-										(selectedState ? ins.state === selectedState : true)
+										(selectedState ? ins.state === selectedState : true),
 								).length
 							}
 						</span>
 					</button>
 				))}
 			</div>
-			<StatesDropdown onChange={handleStateFilters} className="max-md:min-w-full" />
+			<div className="flex flex-row items-center gap-2">
+				<Button type="button" onClick={() => router.push("/rawak")}>
+					Rawak
+				</Button>
+				<StatesDropdown
+					onChange={handleStateFilters}
+					className="max-md:min-w-full"
+				/>
+			</div>
 		</div>
 	);
 };
