@@ -23,9 +23,21 @@ const Home: React.FC = () => {
 	const [offset, setOffset] = useState<number>(0);
 	const [limit] = useState<number>(15);
 	const [allItemsLoaded, setAllItemsLoaded] = useState<boolean>(false);
+
+	const _institutions = useMemo(() => {
+		// remove duplicates based on institution name
+		return institutions.filter(
+			(institution, index, self) =>
+				index ===
+				self.findIndex(
+					(t) => t.name.toLowerCase() === institution.name.toLowerCase(),
+				),
+		).sort(() => Math.random() - 0.5);
+	}, []);
+
 	const [filteredInstitutions, setFilteredInstitutions] = useState<
 		Institution[]
-	>([]);
+	>(_institutions);
 
 	const debouncedSetQuery = useCallback(
 		debounce((newQuery: string) => {
@@ -62,17 +74,6 @@ const Home: React.FC = () => {
 			}),
 		[],
 	);
-
-	const _institutions = useMemo(() => {
-		// remove duplicates based on institution name
-		return institutions.filter(
-			(institution, index, self) =>
-				index ===
-				self.findIndex(
-					(t) => t.name.toLowerCase() === institution.name.toLowerCase(),
-				),
-		);
-	}, []);
 
 	const observer = useRef<IntersectionObserver | null>(null);
 
