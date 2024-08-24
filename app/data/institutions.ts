@@ -3421,7 +3421,7 @@ export const institutions: Institution[] = [
     id: 286,
     name: "Surau At-Taqwa",
     category: "surau",
-    state: "Kedah",
+    state: "W.P. Kuala Lumpur",
     city: "Cheras",
     qrImage: "",
     qrContent: "00020201021126610014A000000615000101065641670215QRMID0000004237031001935142885204866153034585802MY5914SURAU AT-TAQWA6006CHERAS61050600063048B81",
