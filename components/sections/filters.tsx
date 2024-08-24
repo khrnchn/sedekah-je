@@ -1,7 +1,9 @@
 import { categories } from "@/app/types/institutions";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { StatesDropdown } from "../states-dropdown";
 import { institutions } from "../../app/data/institutions";
+import { StatesDropdown } from "../states-dropdown";
+import { Button } from "../ui/button";
 
 type Props = {
 	onChange: (props: {
@@ -18,22 +20,23 @@ const Filters = (props: Props) => {
 		value: category,
 	}));
 
+	const router = useRouter();
+
 	const handleStateFilters = (props: { state: string }) => {
 		setSelectedState(props.state);
 	};
 
 	useEffect(() => {
-		props.onChange(
-			{
-				categories: selectedCategories,
-				state: selectedState
-			});
+		props.onChange({
+			categories: selectedCategories,
+			state: selectedState,
+		});
 	}, [selectedCategories, selectedState, props]);
 
 	return (
-		<div className="flex flex-wrap gap-4 justify-between max-md:justify-center">
-			<div className="grid grid-flow-col gap-1 items-center">
-				<p className="max-sm:text-xs">Pilih Tapisan: </p>
+		<div className="flex flex-col md:flex-row md:justify-between gap-4">
+			<div className="grid grid-flow-col gap-1 items-center overflow-x-auto">
+				<p className="max-sm:text-xs whitespace-nowrap">Pilih Tapisan: </p>
 				{mappedCategories.map((category) => (
 					<button
 						type="button"
@@ -48,7 +51,7 @@ const Filters = (props: Props) => {
 							}
 						}}
 						data-active={selectedCategories.includes(category.value)}
-						className="px-4 py-2 rounded-xl text-sm max-sm:text-xs font-bold data-[active=true]:bg-slate-500 data-[active=true]:text-white truncate select-none flex flex-row gap-2 items-center justify-center"
+						className="px-4 py-2 rounded-xl text-sm max-sm:text-xs font-bold data-[active=true]:bg-slate-500 data-[active=true]:text-white truncate select-none flex flex-row gap-2 items-center justify-center whitespace-nowrap"
 					>
 						{category.label}
 						<span className="rounded-full px-2 py-1 bg-slate-200 text-black">
@@ -56,14 +59,22 @@ const Filters = (props: Props) => {
 								institutions.filter(
 									(ins) =>
 										ins.category === category.value &&
-										(selectedState ? ins.state === selectedState : true)
+										(selectedState ? ins.state === selectedState : true),
 								).length
 							}
 						</span>
 					</button>
 				))}
 			</div>
-			<StatesDropdown onChange={handleStateFilters} className="max-md:min-w-full" />
+			<div className="flex flex-row items-center gap-2 w-full md:w-auto">
+				<Button type="button" onClick={() => router.push("/rawak")} className="flex-[2] md:flex-none">
+					Rawak
+				</Button>
+				<StatesDropdown
+					onChange={handleStateFilters}
+					className="flex-[3] md:flex-none md:w-[180px]"
+				/>
+			</div>
 		</div>
 	);
 };
