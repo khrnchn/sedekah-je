@@ -64,9 +64,9 @@ const Rawak = () => {
 							)}
 						</div>
 
-						<div>
-							<div className="flex justify-between items-start p-4">
-								<div>
+						<div className="mt-4">
+							<div className="flex flex-col sm:flex-row justify-between items-start p-4 gap-4">
+								<div className="flex-1">
 									<h3 className="font-medium text-neutral-700 text-base capitalize">
 										{randomInstitution.name}
 									</h3>
@@ -77,7 +77,7 @@ const Rawak = () => {
 								<a
 									href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(randomInstitution.name)}`}
 									target="_blank"
-									className="px-4 py-3 text-sm rounded-full font-bold bg-green-500 text-white"
+									className="px-4 py-2 text-sm rounded-full font-bold bg-green-500 text-white self-center"
 									rel="noreferrer"
 								>
 									Cari di peta
