@@ -1,4 +1,4 @@
-export type PaymentOption = "duitnow" | 'tng';
+export type PaymentOption = "duitnow" | 'tng' | 'boost';
 export const categories = {
   "mosque": {
     label: "🕌 Masjid",
@@ -16,6 +16,7 @@ export type Category = keyof typeof categories;
 export type Institution = {
   id: number;
   name: string;
+  description?: string;
   category: Category;
   state: string;
   city: string;

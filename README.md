@@ -8,7 +8,7 @@ currently tracking and adding qrs from [catqeel](https://x.com/catqeel)'s [twitt
 
 ## Contribute
 
-email me at khrnchnv@gmail.com, or
+fill up this [google form](https://forms.gle/sUvn5KteEXi6Ke8G9), or
 - fork the repo
 - add new mosque/ surau/ institution entry into institutions.ts
 - extract qr value using [this tool](https://qrcoderaptor.com/) and insert it into qrContent
@@ -20,10 +20,10 @@ special thanks to [altaf](https://x.com/danielminho_?s=21&t=uaExBAqkDxtuY8KYLJBC
 
 ## Future Plans
 
-- [ ] extract *all* qr codes from this [pdf](https://www.muamalat.com.my/wp-content/uploads/2023/10/LIST-OF-QR-CODE-FOR-E-DERMA.pdf).
+- [x] extract *all* qr codes from this [pdf](https://www.muamalat.com.my/wp-content/uploads/2023/10/LIST-OF-QR-CODE-FOR-E-DERMA.pdf).
 - [ ] admin panel [*coughs*](https://filamentphp.com/) for the public to contribute/ upload qr.
-- [ ] extract from [rhb](https://www.rhbgroup.com/jomderma/index.html).
-- [x] extract from [rhb-boost](https://www.rhbgroup.com/-/media/Microsites/syuqr/files/Senarai_31_Institusi_Berdaftar_dgn_syuQR_02042019_V2.pdf).
+- [x] extract from [rhb](https://www.rhbgroup.com/jomderma/index.html).
+- [ ] extract from [rhb-boost](https://www.rhbgroup.com/-/media/Microsites/syuqr/files/Senarai_31_Institusi_Berdaftar_dgn_syuQR_02042019_V2.pdf).
 - [x] filterable by states.
 - [x] clean up inconsistent/ inaccurate data.
 - [ ] share options, the link will be something like `sedekahje.com/institutions/masjid-negara` (use name as slug)

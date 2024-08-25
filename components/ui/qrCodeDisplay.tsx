@@ -12,6 +12,7 @@ const labelVariants = cva(
 			supportedPayment: {
 				duitnow: "bg-[#ED2C67]",
 				tng: "bg-[#015ABF]",
+				boost: "bg-[#FF3333]",
 			},
 		},
 	},
@@ -41,6 +42,7 @@ const QrCodeDisplay = forwardRef<HTMLButtonElement, Props>((props, ref) => {
 					supportedPayment: props.supportedPayment?.[0] as
 						| "duitnow"
 						| "tng"
+						| "boost"
 						| undefined,
 				}),
 			)}
@@ -77,6 +79,22 @@ const QrCodeDisplay = forwardRef<HTMLButtonElement, Props>((props, ref) => {
 							fill
 							alt="TNG"
 							className="object-contain"
+						/>
+					</div>
+				)}
+				{props.supportedPayment?.[0] === "boost" && (
+					<div
+						style={{
+							width: (props.size || 160) * 0.2,
+							height: (props.size || 160) * 0.2,
+						}}
+						className="absolute top-0 flex items-center justify-center bg-[#EE2E24] rounded-full border-4 border-white"
+					>
+						<Image
+							src="/icons/boost.png"
+							fill
+							alt="Boost"
+							className="object-contain rounded-full"
 						/>
 					</div>
 				)}

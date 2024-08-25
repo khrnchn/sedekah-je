@@ -23,9 +23,21 @@ const Home: React.FC = () => {
 	const [offset, setOffset] = useState<number>(0);
 	const [limit] = useState<number>(15);
 	const [allItemsLoaded, setAllItemsLoaded] = useState<boolean>(false);
+
+	const _institutions = useMemo(() => {
+		// remove duplicates based on institution name
+		return institutions.filter(
+			(institution, index, self) =>
+				index ===
+				self.findIndex(
+					(t) => t.name.toLowerCase() === institution.name.toLowerCase(),
+				),
+		).sort(() => Math.random() - 0.5);
+	}, []);
+
 	const [filteredInstitutions, setFilteredInstitutions] = useState<
 		Institution[]
-	>([]);
+	>(_institutions);
 
 	const debouncedSetQuery = useCallback(
 		debounce((newQuery: string) => {
@@ -63,17 +75,6 @@ const Home: React.FC = () => {
 		[],
 	);
 
-	const _institutions = useMemo(() => {
-		// remove duplicates based on institution name
-		return institutions.filter(
-			(institution, index, self) =>
-				index ===
-				self.findIndex(
-					(t) => t.name.toLowerCase() === institution.name.toLowerCase(),
-				),
-		);
-	}, []);
-
 	const observer = useRef<IntersectionObserver | null>(null);
 
 	const lastPostElementRef = useCallback(
@@ -98,11 +99,9 @@ const Home: React.FC = () => {
 		const filterInstitutions = () => {
 			return _institutions.filter((institution) => {
 				const lowercaseQuery = query.toLowerCase();
-
 				const matchesQuery = institution.name.toLowerCase().includes(lowercaseQuery);
 				const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(institution.category);
 				const matchesState = !selectedState || institution.state === selectedState;
-
 				return matchesQuery && matchesCategory && matchesState;
 			});
 		};
@@ -114,18 +113,13 @@ const Home: React.FC = () => {
 
 		filterData.then((_results) => {
 			const results = _results as Institution[];
-
 			if (results.length < offset + limit) {
 				setAllItemsLoaded(true);
 			}
 			setFilteredInstitutions(results);
-		});
-
-		setTimeout(() => {
 			setIsLoading(false);
 			setIsLoadingMore(false);
-		}, 1000);
-
+		});
 	}, [_institutions, query, selectedCategories, selectedState, offset, limit]);
 
 	return (
@@ -138,17 +132,17 @@ const Home: React.FC = () => {
 				<ModeToggle />
 			</div>
 
-			{filteredInstitutions.length === 0 ? (
-				<div className="flex flex-wrap justify-center">
-					<p className="text-lg text-gray-500">Tiada institusi dijumpai.</p>
-				</div>
-			) : isLoading ? (
+			{isLoading ? (
 				<div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
 					{Array.from({ length: offset }).map((_, idx) => (
 						<Card key={idx} className="aspect-square w-full">
 							<Skeleton className="min-h-full min-w-full" />
 						</Card>
 					))}
+				</div>
+			) : filteredInstitutions.length === 0 ? (
+				<div className="flex flex-wrap justify-center">
+					<p className="text-lg text-gray-500">Tiada institusi dijumpai.</p>
 				</div>
 			) : (
 				<div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
@@ -165,6 +159,7 @@ const Home: React.FC = () => {
 					))}
 				</div>
 			)}
+
 			{isLoadingMore && !allItemsLoaded && (
 				<div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
 					{Array.from({ length: 6 }).map((_, idx) => (
