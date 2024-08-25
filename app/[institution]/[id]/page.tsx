@@ -38,9 +38,9 @@ const Institution: React.FC<Params> = ({ params }: { params: { institution: stri
     return (
         <PageSection>
             {
-                institution?.map((institution) => {
+                institution?.map((institution, i) => {
                     return (
-                        <div className="space-y-4">
+                        <div key={i} className="space-y-4">
                             <CustomMap location={institution.coords} name={institution.name} />
                             <InstitutionCard
                                 key={institution.id}
