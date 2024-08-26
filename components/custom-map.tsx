@@ -9,9 +9,9 @@ export default function CustomMap({ location, zoom = 19, name, showAll }: { loca
     const Map = useMemo(() =>
         dynamic(() => import("@/components/map"), {
             loading: () => (
-                <Card className="min-h-[240px] md:min-h-[240px] md:min-w-[965px]">
+                <Card className="min-h-[240px] h-[240px] md:min-h-[240px] md:min-w-[965px]">
                     <Skeleton className="min-h-full min-w-full flex items-center justify-center">
-                        <CardContent className="italic">
+                        <CardContent className="italic text-black/50 dark:text-white/50">
                             Peta sedang dinampan...
                         </CardContent>
                     </Skeleton>
