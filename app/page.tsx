@@ -8,11 +8,11 @@ import PageSection from "@/components/ui/pageSection";
 import { SearchBar } from "@/components/ui/searchbar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { debounce } from "lodash-es";
-import dynamic from "next/dynamic";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { institutions } from "./data/institutions";
 import type { Institution } from "./types/institutions";
+import CustomMap from "@/components/custom-map";
 
 const Home: React.FC = () => {
 	const [query, setQuery] = useState<string>("");
@@ -57,23 +57,6 @@ const Home: React.FC = () => {
 		setSelectedCategories(props.categories);
 		setSelectedState(props.state);
 	};
-
-	const CustomMap = useMemo(
-		() =>
-			dynamic(() => import("@/components/map"), {
-				loading: () => (
-					<Card className="min-h-[240px] md:min-h-[240px] md:min-w-[965px]">
-						<Skeleton className="min-h-full min-w-full flex items-center justify-center">
-							<CardContent className="italic">
-								Peta sedang dinampan...
-							</CardContent>
-						</Skeleton>
-					</Card>
-				),
-				ssr: false,
-			}),
-		[],
-	);
 
 	const observer = useRef<IntersectionObserver | null>(null);
 
@@ -124,7 +107,7 @@ const Home: React.FC = () => {
 
 	return (
 		<PageSection>
-			<CustomMap />
+			<CustomMap showAll={true} />
 			<Filters onChange={handleFilters} />
 
 			<div className="flex justify-end items-center gap-4 mb-4">

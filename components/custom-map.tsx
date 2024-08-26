@@ -1,11 +1,11 @@
 "use client"
 
 import dynamic from 'next/dynamic'
-import { useMemo } from 'react'
+import { Fragment, useMemo } from 'react'
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function CustomMap({ location, zoom = 19, name }: { location?: number[], zoom?: number, name?: string }) {
+export default function CustomMap({ location, zoom = 19, name, showAll }: { location?: number[], zoom?: number, name?: string, showAll?: boolean }) {
     const Map = useMemo(() =>
         dynamic(() => import("@/components/map"), {
             loading: () => (
@@ -22,8 +22,12 @@ export default function CustomMap({ location, zoom = 19, name }: { location?: nu
         [],
     );
 
-    if (!location || !name) {
+    if (showAll) {
         return <Map />
+    }
+
+    if (!location || !name) {
+        return <Fragment />
     }
 
     return (
