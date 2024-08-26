@@ -1,12 +1,12 @@
-export type PaymentOption = "duitnow" | 'tng' | 'boost';
+export type PaymentOption = "duitnow" | "tng" | "boost";
 export const categories = {
-  "mosque": {
+  mosque: {
     label: "🕌 Masjid",
   },
-  "surau": {
+  surau: {
     label: "🏡 Surau",
   },
-  "others": {
+  others: {
     label: "🏠 Lain-lain",
   },
 };
@@ -25,3 +25,9 @@ export type Institution = {
   supportedPayment?: PaymentOption[];
   coords?: [number, number];
 };
+
+export enum CategoryColor {
+  mosque = "blue",
+  surau = "green",
+  others = "violet",
+}

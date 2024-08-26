@@ -214,7 +214,7 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
                         {capitalizedName}
                       </motion.h3>
                       <motion.p
-                        layoutId={`location-${location}-${id}`}
+                        layoutId={`location-${city}-${state}-${id}`}
                         className="text-neutral-600 dark:text-neutral-400 text-base"
                       >
                         {capitalizedCity}, {capitalizedState}
@@ -273,7 +273,7 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
                     </TooltipContent>
                   </Tooltip>
                   <motion.p
-                    layoutId={`location-${location}-${id}`}
+                    layoutId={`location-${city}-${state}-${id}`}
                     className="text-sm text-muted-foreground truncate w-full text-center"
                   >
                     {capitalizedCity}, {capitalizedState}

@@ -1,58 +1,44 @@
+"use client";
+
 import PageSection from "@/components/ui/pageSection";
 import type React from "react";
 import { institutions } from "@/app/data/institutions";
 import InstitutionCard from "@/components/ui/institution-card";
 import CustomMap from "../../../components/custom-map";
+import { CategoryColor } from "../../types/institutions";
+import { notFound } from "next/navigation";
 
 type Params = {
     params: {
-        institution: string,
-        id: number
-    }
-}
-
-function getInstitution(id: number, category: string) {
-    const filterInstitution = (category: string) => {
-        switch (category) {
-            case "masjid":
-                return "mosque";
-            case "lain-lain":
-                return "others";
-            default:
-                return category;
-        }
+        id: number;
     };
+};
 
-    try {
-        return institutions.filter((institution) => +institution.id === +id && institution.category === filterInstitution(category));
-    } catch (error) {
-        return null
+const InstitutionPage: React.FC<Params> = ({ params }) => {
+    const institution = institutions.find(
+        (institution) => institution.id === +params.id
+    );
+
+    if (!institution) {
+        notFound();
     }
-
-}
-
-
-const Institution: React.FC<Params> = ({ params }: { params: { institution: string, id: number } }) => {
-    const institution = getInstitution(params.id, params.institution);
 
     return (
         <PageSection>
-            {
-                institution?.map((institution, i) => {
-                    return (
-                        <div key={i} className="space-y-4">
-                            <CustomMap location={institution.coords} name={institution.name} />
-                            <InstitutionCard
-                                key={institution.id}
-                                {...institution}
-                                ref={null}
-                            />
-                        </div>
-                    )
-                })
-            }
+        <div className="space-y-4">
+            {institution.coords?.length && (
+                <CustomMap
+                    marker={{
+                    coords: institution.coords,
+                    name: institution.name,
+                    color: CategoryColor[institution.category],
+                    }}
+                />
+            )}
+            <InstitutionCard key={institution.id} {...institution} />
+        </div>
         </PageSection>
     );
 };
 
-export default Institution;
+export default InstitutionPage;
