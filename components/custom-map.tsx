@@ -22,8 +22,8 @@ export default function CustomMap({ location, zoom = 19, name }: { location?: nu
         [],
     );
 
-    if (!location && !name) {
-        <Map />
+    if (!location || !name) {
+        return <Map />
     }
 
     return (
