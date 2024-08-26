@@ -4,9 +4,10 @@ import dynamic from 'next/dynamic'
 import { Fragment, useMemo } from 'react'
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { MapMarker } from '@/components/map';
 
-export default function CustomMap({ location, zoom = 19, name, showAll }: { location?: number[], zoom?: number, name?: string, showAll?: boolean }) {
-    const Map = useMemo(() =>
+export default function CustomMap({ showAll, marker }: { showAll?: boolean, marker?: MapMarker }) {
+    const LeafletMap = useMemo(() =>
         dynamic(() => import("@/components/map"), {
             loading: () => (
                 <Card className="min-h-[240px] h-[240px] md:min-h-[240px] md:min-w-[965px]">
@@ -23,14 +24,14 @@ export default function CustomMap({ location, zoom = 19, name, showAll }: { loca
     );
 
     if (showAll) {
-        return <Map />
+        return <LeafletMap />
     }
 
-    if (!location || !name) {
+    if (!marker) {
         return <Fragment />
-    }
+    }    
 
     return (
-        <Map center={location} zoom={16} marker={{ name: name!, coords: location! }} />
+        <LeafletMap center={marker.coords} zoom={16} marker={marker} />
     )
 }
