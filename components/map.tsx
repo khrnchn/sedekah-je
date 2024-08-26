@@ -9,17 +9,45 @@ import { institutions } from "@/app/data/institutions";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import { LatLngExpression } from "leaflet";
 
-export default function MapLocation() {
+export default function MapLocation({ center = [3.1685, 101.6512], zoom = 11, marker }: { center?: number[], zoom?: number, marker?: { name: string, coords: number[] } }) {
     // Full semenanjung view coords: 3.8300, 101.4046, zoom: 7
     const position = {
-        center: [3.1685, 101.6512] as LatLngExpression,
+        center: center as LatLngExpression ?? [3.1685, 101.6512] as LatLngExpression,
         marker: institutions
+    }
+
+    if (!marker) {
+        return (
+            <MapContainer
+                center={position.center}
+                zoom={zoom}
+                scrollWheelZoom={true}
+                className="w-full h-auto z-0 min-h-[240px] min-w-full rounded-md overflow-clip"
+            >
+                <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                />
+
+                {
+                    position.marker.map((position, idx) => {
+                        if (position.coords) return (
+                            <Marker key={idx} position={position.coords as LatLngExpression}>
+                                <Popup>
+                                    {position.name}
+                                </Popup>
+                            </Marker>
+                        )
+                    })
+                }
+            </MapContainer>
+        );
     }
 
     return (
         <MapContainer
             center={position.center}
-            zoom={11}
+            zoom={zoom}
             scrollWheelZoom={true}
             className="w-full h-auto z-0 min-h-[240px] min-w-full rounded-md overflow-clip"
         >
@@ -28,17 +56,12 @@ export default function MapLocation() {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
 
-            {
-                position.marker.map((position, idx) => {
-                    if (position.coords) return (
-                        <Marker key={idx} position={position.coords as LatLngExpression}>
-                            <Popup>
-                                {position.name}
-                            </Popup>
-                        </Marker>
-                    )
-                })
-            }
+            <Marker position={marker.coords as LatLngExpression}>
+                <Popup>
+                    {marker.name}
+                </Popup>
+            </Marker>
         </MapContainer>
     );
+
 }

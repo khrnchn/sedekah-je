@@ -8,6 +8,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator
 } from "@/components/ui/dropdown-menu";
 import {
   Tooltip,
@@ -30,6 +31,9 @@ import {
 import { toast } from "sonner";
 import CategoryLabel from "./category-label";
 import QrCodeDisplay from "./qrCodeDisplay";
+import { useRouter } from "next/navigation";
+import ShareToWhatsapp from "../share-to-whatsapp";
+import ShareToX from "../share-to-x";
 
 const capitalizeWords = (str: string): string => {
   return str.replace(/\S+/g, word => {
@@ -59,6 +63,11 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
     const capitalizedName = capitalizeWords(name);
     const capitalizedState = capitalizeWords(state);
     const capitalizedCity = capitalizeWords(city);
+
+    const router = useRouter();
+    const navigateToItem = (category: string, id: number) => {
+      router.push(`/${category}/${id}`);
+    }
 
     useEffect(() => {
       function onKeyDown(event: KeyboardEvent) {
@@ -161,7 +170,7 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0, transition: { duration: 0.05 } }}
                 className="flex absolute top-2 right-2 lg:hidden items-center justify-center bg-white dark:bg-slate-800 rounded-full h-6 w-6 z-10"
-                onClick={() => setActive(null)}
+                onClick={(e) => { e.stopPropagation(); setActive(null) }}
               >
                 <CloseIcon />
               </motion.button>
@@ -169,7 +178,7 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
                 layoutId={`card-${name}-${id}`}
                 ref={innerRef}
                 drag
-                onDragEnd={() => setActive(false)}
+                onDragEnd={(e) => { e.stopPropagation(); setActive(null) }}
                 whileDrag={{ scale: 1.05 }}
                 className="w-full max-w-[500px] h-full md:h-fit p-5 md:max-h-[90%] flex flex-col bg-white dark:bg-slate-800 sm:rounded-3xl overflow-auto lg:overflow-hidden"
               >
@@ -244,7 +253,7 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
 
         <TooltipProvider>
           <motion.div ref={ref} layoutId={`card-${name}-${id}`}>
-            <Card className="group">
+            <Card className="group" onClick={() => navigateToItem(category, id)}>
               <CardContent className="flex flex-col items-center gap-2 p-4 h-full">
                 <div className="flex flex-col items-center gap-1 mb-2 w-full">
                   <motion.div>
@@ -280,7 +289,7 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
                         <QrCodeDisplay
                           qrContent={qrContent}
                           supportedPayment={supportedPayment}
-                          onClick={() => setActive(true)}
+                          onClick={(e) => { e.stopPropagation(); setActive(true) }}
                           ref={printRef}
                           name={name}
                         />
@@ -291,7 +300,7 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
                           width={160}
                           height={160}
                           className="rounded-lg h-40 object-cover"
-                          onClick={() => setActive(true)}
+                          onClick={(e) => { e.stopPropagation(); setActive(true) }}
                         />
                       )}
                     </motion.div>
@@ -307,7 +316,8 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
                         size="icon"
                         variant="ghost"
                         className="hover:bg-muted/50 focus:bg-muted/50 hover:scale-105 transition-transform duration-200 ease-in-out"
-                        onClick={async () => {
+                        onClick={async (e) => {
+                          e.stopPropagation();
                           try {
                             if (!qrContent) {
                               const blob = await fetch(qrImage).then((res) =>
@@ -359,10 +369,10 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
                         className="hover:bg-muted/50 focus:bg-muted/50 hover:scale-105 transition-transform duration-200 ease-in-out"
                       >
                         <Share2 className="h-5 w-5 text-green-600" />
-                        <span className="sr-only">Muat turun kod QR</span>
+                        <span className="sr-only">Kongsi</span>
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent>
+                    <DropdownMenuContent onClick={(e) => e.stopPropagation()}>
                       <DropdownMenuItem
                         onClick={async () => {
                           if (!qrContent) {
@@ -386,12 +396,11 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
                       >
                         Salin QR
                       </DropdownMenuItem>
-                      {/*
-                    TODO: Implement sharing feature
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>Kongsi ke WhatsApp</DropdownMenuItem>
-                    <DropdownMenuItem>Kongsi ke X</DropdownMenuItem>
-                    */}
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>
+                        <ShareToWhatsapp data={{ category, id, name }} /></DropdownMenuItem>
+                      <DropdownMenuItem><ShareToX data={{ category, id, name }} /></DropdownMenuItem>
+
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
