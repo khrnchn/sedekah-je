@@ -23,10 +23,10 @@ special thanks to [altaf](https://x.com/danielminho_?s=21&t=uaExBAqkDxtuY8KYLJBC
 - [x] extract *all* qr codes from this [pdf](https://www.muamalat.com.my/wp-content/uploads/2023/10/LIST-OF-QR-CODE-FOR-E-DERMA.pdf).
 - [ ] admin panel [*coughs*](https://filamentphp.com/) for the public to contribute/ upload qr.
 - [x] extract from [rhb](https://www.rhbgroup.com/jomderma/index.html).
-- [ ] extract from [rhb-boost](https://www.rhbgroup.com/-/media/Microsites/syuqr/files/Senarai_31_Institusi_Berdaftar_dgn_syuQR_02042019_V2.pdf).
+- [x] extract from [rhb-boost](https://www.rhbgroup.com/-/media/Microsites/syuqr/files/Senarai_31_Institusi_Berdaftar_dgn_syuQR_02042019_V2.pdf).
 - [x] filterable by states.
 - [x] clean up inconsistent/ inaccurate data.
-- [ ] share options, the link will be something like `sedekahje.com/institutions/masjid-negara` (use name as slug)
+- [x] share options, the link will be something like `sedekahje.com/institutions/masjid-negara` (use name as slug)
 
 and 
 

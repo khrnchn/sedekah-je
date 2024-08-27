@@ -8,7 +8,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import {
   Tooltip,
@@ -22,30 +22,31 @@ import html2canvas from "html2canvas";
 import { DownloadIcon, Share2 } from "lucide-react";
 import Image from "next/image";
 import type React from "react";
-import {
-  forwardRef,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import CategoryLabel from "./category-label";
 import QrCodeDisplay from "./qrCodeDisplay";
 import { useRouter } from "next/navigation";
 import ShareToWhatsapp from "../share-to-whatsapp";
 import ShareToX from "../share-to-x";
+import { slugify } from "@/lib/utils";
 
 const capitalizeWords = (str: string): string => {
-  return str.replace(/\S+/g, word => {
+  return str.replace(/\S+/g, (word) => {
     // Kalau semua huruf besar atau huruf besar dengan titik (contoh: "IIUM", "W.P."), biar je
-    if (/^[A-Z]+$/.test(word) || (/^[A-Z.]+$/.test(word) && word.length > 1)) return word;
+    if (/^[A-Z]+$/.test(word) || (/^[A-Z.]+$/.test(word) && word.length > 1))
+      return word;
     // Kalau ada dalam kurungan (contoh: "(abc)"), apply the function recursively
-    if (word.startsWith('(') && word.endsWith(')')) {
+    if (word.startsWith("(") && word.endsWith(")")) {
       const inner = word.slice(1, -1);
       return capitalizeWords(inner);
     }
     // Kalau ada dash (contoh: "an-nur"), capitalize kedua-dua belah perkataan
-    if (word.includes('-')) return word.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join('-');
+    if (word.includes("-"))
+      return word
+        .split("-")
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .join("-");
     // Default capitalization
     return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
   });
@@ -53,7 +54,18 @@ const capitalizeWords = (str: string): string => {
 
 const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
   (
-    { id, name, description, state, city, qrImage, qrContent, supportedPayment, category, coords },
+    {
+      id,
+      name,
+      description,
+      state,
+      city,
+      qrImage,
+      qrContent,
+      supportedPayment,
+      category,
+      coords,
+    },
     ref,
   ) => {
     const [active, setActive] = useState<boolean | null>(false);
@@ -65,9 +77,9 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
     const capitalizedCity = capitalizeWords(city);
 
     const router = useRouter();
-    const navigateToItem = (category: string, id: number) => {
-      router.push(`/${category}/${id}`);
-    }
+    const navigateToItem = (category: string, slug: string) => {
+      router.push(`/${category}/${slug}`);
+    };
 
     useEffect(() => {
       function onKeyDown(event: KeyboardEvent) {
@@ -170,7 +182,10 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0, transition: { duration: 0.05 } }}
                 className="flex absolute top-2 right-2 lg:hidden items-center justify-center bg-white dark:bg-slate-800 rounded-full h-6 w-6 z-10"
-                onClick={(e) => { e.stopPropagation(); setActive(null) }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActive(null);
+                }}
               >
                 <CloseIcon />
               </motion.button>
@@ -178,7 +193,10 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
                 layoutId={`card-${name}-${id}`}
                 ref={innerRef}
                 drag
-                onDragEnd={(e) => { e.stopPropagation(); setActive(null) }}
+                onDragEnd={(e) => {
+                  e.stopPropagation();
+                  setActive(null);
+                }}
                 whileDrag={{ scale: 1.05 }}
                 className="w-full max-w-[500px] h-full md:h-fit p-5 md:max-h-[90%] flex flex-col bg-white dark:bg-slate-800 sm:rounded-3xl overflow-auto lg:overflow-hidden"
               >
@@ -225,7 +243,7 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      href={`https://www.google.com/maps/search/?api=1&query=${coords ? coords.join(',') : encodeURIComponent(name)}`}
+                      href={`https://www.google.com/maps/search/?api=1&query=${coords ? coords.join(",") : encodeURIComponent(name)}`}
                       target="_blank"
                       className="px-4 py-3 text-sm rounded-full font-bold bg-green-500 text-white"
                       rel="noreferrer"
@@ -234,7 +252,7 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
                     </motion.a>
                   </div>
                   {description ? (
-                    <div className="pt-4 relative px-4" >
+                    <div className="pt-4 relative px-4">
                       <motion.div
                         layout
                         initial={{ opacity: 0 }}
@@ -244,7 +262,8 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
                       >
                         {description}
                       </motion.div>
-                    </div>) : null}
+                    </div>
+                  ) : null}
                 </div>
               </motion.div>
             </div>
@@ -253,7 +272,10 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
 
         <TooltipProvider>
           <motion.div ref={ref} layoutId={`card-${name}-${id}`}>
-            <Card className="group" onClick={() => navigateToItem(category, id)}>
+            <Card
+              className="group"
+              onClick={() => navigateToItem(category, slugify(name))}
+            >
               <CardContent className="flex flex-col items-center gap-2 p-4 h-full">
                 <div className="flex flex-col items-center gap-1 mb-2 w-full">
                   <motion.div>
@@ -289,7 +311,10 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
                         <QrCodeDisplay
                           qrContent={qrContent}
                           supportedPayment={supportedPayment}
-                          onClick={(e) => { e.stopPropagation(); setActive(true) }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActive(true);
+                          }}
                           ref={printRef}
                           name={name}
                         />
@@ -300,7 +325,10 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
                           width={160}
                           height={160}
                           className="rounded-lg h-40 object-cover"
-                          onClick={(e) => { e.stopPropagation(); setActive(true) }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActive(true);
+                          }}
                         />
                       )}
                     </motion.div>
@@ -398,9 +426,11 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem>
-                        <ShareToWhatsapp data={{ category, id, name }} /></DropdownMenuItem>
-                      <DropdownMenuItem><ShareToX data={{ category, id, name }} /></DropdownMenuItem>
-
+                        <ShareToWhatsapp data={{ category, id, name }} />
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <ShareToX data={{ category, id, name }} />
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
