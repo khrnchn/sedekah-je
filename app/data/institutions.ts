@@ -7249,6 +7249,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/p/Masjid-Taman-Impian-Emas-Skudai-100057640749577/
     id: 633,
     name: "Masjid Taman Impian Emas",
     category: "mosque",
@@ -7257,7 +7258,7 @@ export const institutions: Institution[] = [
     qrImage: "",
     qrContent: "ENNpZhHA+LUZBc75U8peWUvCulhL5kH8p9GhppQd/5E=",
     supportedPayment: ["boost"],
-    coords: [11.5539955398923895, 103.67005417671798],
+    coords: [1.5529910624436756, 103.66982964988343],
   },
   {
     id: 634,
