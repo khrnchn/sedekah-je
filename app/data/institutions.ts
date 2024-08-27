@@ -5998,7 +5998,7 @@ export const institutions: Institution[] = [
     id: 519,
     name: "Madi Kampung Jejawi Dlm Perlis",
     category: "others",
-    state: "Unknown",
+    state: "Perlis",
     city: "Arau",
     qrImage: "",
     qrContent:
@@ -6031,7 +6031,7 @@ export const institutions: Institution[] = [
     id: 522,
     name: "Surau Pauh Putra",
     category: "surau",
-    state: "Unknown",
+    state: "Perlis",
     city: "Arau",
     qrImage: "",
     qrContent:
