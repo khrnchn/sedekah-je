@@ -26,18 +26,19 @@ const Home: React.FC = () => {
 
 	const _institutions = useMemo(() => {
 		// remove duplicates based on institution name
-		return institutions.filter(
-			(institution, index, self) =>
-				index ===
-				self.findIndex(
-					(t) => t.name.toLowerCase() === institution.name.toLowerCase(),
-				),
-		).sort(() => Math.random() - 0.5);
+		return institutions
+			.filter(
+				(institution, index, self) =>
+					index ===
+					self.findIndex(
+						(t) => t.name.toLowerCase() === institution.name.toLowerCase(),
+					),
+			)
+			.sort(() => Math.random() - 0.5);
 	}, []);
 
-	const [filteredInstitutions, setFilteredInstitutions] = useState<
-		Institution[]
-	>(_institutions);
+	const [filteredInstitutions, setFilteredInstitutions] =
+		useState<Institution[]>(_institutions);
 
 	const debouncedSetQuery = useCallback(
 		debounce((newQuery: string) => {
@@ -82,9 +83,14 @@ const Home: React.FC = () => {
 		const filterInstitutions = () => {
 			return _institutions.filter((institution) => {
 				const lowercaseQuery = query.toLowerCase();
-				const matchesQuery = institution.name.toLowerCase().includes(lowercaseQuery);
-				const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(institution.category);
-				const matchesState = !selectedState || institution.state === selectedState;
+				const matchesQuery = institution.name
+					.toLowerCase()
+					.includes(lowercaseQuery);
+				const matchesCategory =
+					selectedCategories.length === 0 ||
+					selectedCategories.includes(institution.category);
+				const matchesState =
+					!selectedState || institution.state === selectedState;
 				return matchesQuery && matchesCategory && matchesState;
 			});
 		};
@@ -110,7 +116,7 @@ const Home: React.FC = () => {
 			<CustomMap showAll={true} />
 			<Filters onChange={handleFilters} />
 
-			<div className="flex justify-end items-center gap-4 mb-4">
+			<div className="flex justify-end items-center gap-2 mb-4">
 				<SearchBar onSearch={handleSearch} />
 				<ModeToggle />
 			</div>
