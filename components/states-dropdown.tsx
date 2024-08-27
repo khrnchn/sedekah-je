@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-
 import { cn } from "@/lib/utils";
 import {
 	Select,
@@ -13,7 +12,10 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 
+const ALL_STATES = "all_states";
+
 const states = [
+	{ label: "Semua Negeri", value: ALL_STATES },
 	{ label: "Johor", value: "Johor" },
 	{ label: "Kedah", value: "Kedah" },
 	{ label: "Kelantan", value: "Kelantan" },
@@ -38,11 +40,11 @@ type Props = {
 };
 
 export function StatesDropdown({ onChange, className }: Props) {
-	const [value, setValue] = React.useState("");
+	const [value, setValue] = React.useState(ALL_STATES);
 
 	const handleSelect = (currentValue: string) => {
 		setValue(currentValue);
-		onChange({ state: currentValue });
+		onChange({ state: currentValue === ALL_STATES ? "" : currentValue });
 	};
 
 	return (
