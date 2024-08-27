@@ -7354,7 +7354,7 @@ export const institutions: Institution[] = [
     name: "Masjid Taman Pulai Indah",
     category: "mosque",
     state: "Johor",
-    city: "Johor Bharu",
+    city: "Johor Bahru",
     qrImage: "",
     qrContent:
       "00020201021126580014A000000615000101065887340212MBBQR1510009031000000000005204000053034585802MY5925MASJID TAMAN PULAI INDAH 6005JOHOR63040B81",
