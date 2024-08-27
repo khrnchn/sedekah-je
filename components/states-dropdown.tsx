@@ -1,14 +1,14 @@
+/* eslint-disable @next/next/no-img-element */
+
 "use client";
 
 import * as React from "react";
-import Image from "next/image";
 import { cn } from "@/lib/utils";
 import {
 	Select,
 	SelectContent,
 	SelectGroup,
 	SelectItem,
-	SelectLabel,
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
@@ -53,10 +53,9 @@ const states = [
 
 type Props = {
 	onChange: (props: { state: string }) => void;
-	className?: string;
 };
 
-export function StatesDropdown({ onChange, className }: Props) {
+export function StatesDropdown({ onChange }: Props) {
 	const [value, setValue] = React.useState(ALL_STATES);
 
 	const handleSelect = (currentValue: string) => {
@@ -66,8 +65,8 @@ export function StatesDropdown({ onChange, className }: Props) {
 
 	return (
 		<Select value={value} onValueChange={handleSelect}>
-			<SelectTrigger className={cn("", className)}>
-				<SelectValue placeholder="Semua Negeri" />
+			<SelectTrigger>
+				<SelectValue placeholder="" />
 			</SelectTrigger>
 			<SelectContent>
 				<SelectGroup>
@@ -79,13 +78,16 @@ export function StatesDropdown({ onChange, className }: Props) {
 						>
 							{state.flag ? (
 								<div className="flex items-center space-x-3 w-full">
-									<Image
-										src={state.flag}
-										alt={`${state.label} flag`}
-										width={20}
-										height={12}
-										className="object-contain"
-									/>
+									<div className="relative overflow-hidden border border-gray-200">
+										<img
+											loading="lazy"
+											src={state.flag}
+											alt={`${state.label} flag`}
+											width={32}
+											height={18}
+											style={{ objectFit: "cover" }}
+										/>
+									</div>
 									<span>{state.label}</span>
 								</div>
 							) : (
