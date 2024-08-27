@@ -7205,11 +7205,12 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/MasjidAlAbrarSemabok/
     id: 629,
     name: "Masjid Al Abrar Semabok",
     category: "mosque",
     state: "Melaka",
-    city: "Melaka",
+    city: "Semabok",
     qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000893031001975048605204866153034585802MY5923MASJID AL ABRAR SEMABOK6006MELAKA610575050630408BE",
@@ -7220,7 +7221,7 @@ export const institutions: Institution[] = [
     name: "Masjid Al-Mukmin Bukit Durian",
     category: "others",
     state: "Melaka",
-    city: "Melaka",
+    city: "Ayer Molek",
     qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000001037031001966858825204866153034585802MY5924MJD AL-MUKMIN BKT DURIAN6006MELAKA61057546063045DD6",
@@ -7238,11 +7239,12 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+    // https://www.facebook.com/p/Surau-Al-Hikmah-Melaka-100083763211724/
     id: 632,
     name: "Wakaf Pembangunan Surau Al-Hikmah",
     category: "surau",
     state: "Melaka",
-    city: "Melaka",
+    city: "Seri Pandan",
     qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000005032031001363063305204566153034585802MY5924WKF PBGN SURAU AL-HIKMAH6006MELAKA610575250630409C2",
