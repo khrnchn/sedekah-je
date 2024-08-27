@@ -3267,7 +3267,7 @@ export const institutions: Institution[] = [
     id: 272,
     name: "Surau Infiniti 3",
     category: "surau",
-    state: "Kuala Lumpur",
+    state: "W.P. Kuala Lumpur",
     city: "Wangsa Maju",
     qrImage: "",
     qrContent:
@@ -7387,7 +7387,7 @@ export const institutions: Institution[] = [
     id: 644,
     name: "Surau Al-Hidayah Vista Angkasa",
     category: "surau",
-    state: "Kuala Lumpur",
+    state: "W.P. Kuala Lumpur",
     city: "Kerinchi",
     qrImage: "",
     qrContent:
@@ -7435,7 +7435,7 @@ export const institutions: Institution[] = [
     id: 648,
     name: "Surau Al-Munawarah",
     category: "surau",
-    state: "Kuala Lumpur",
+    state: "W.P. Kuala Lumpur",
     city: "Alam Damai",
     qrImage: "",
     qrContent:
@@ -7459,7 +7459,7 @@ export const institutions: Institution[] = [
     id: 650,
     name: "Masjid Saidina Othman Ibn Affan",
     category: "mosque",
-    state: "Kuala Lumpur",
+    state: "W.P. Kuala Lumpur",
     city: "Cheras",
     qrImage: "",
     qrContent:
