@@ -7291,7 +7291,7 @@ export const institutions: Institution[] = [
     id: 636,
     name: "Masjid As-Syakirin Kota Bharu",
     category: "mosque",
-    state: "KELANTAN",
+    state: "Kelantan",
     city: "Kota Bharu",
     qrImage: "",
     qrContent:
@@ -7303,7 +7303,7 @@ export const institutions: Institution[] = [
     id: 637,
     name: "Masjid Bandar Cassia",
     category: "mosque",
-    state: "PULAU PINANG",
+    state: "Pulau Pinang",
     city: "Simpang Ampat",
     qrImage: "",
     qrContent:
@@ -7315,7 +7315,7 @@ export const institutions: Institution[] = [
     id: 638,
     name: "Masjid Nur Iman",
     category: "mosque",
-    state: "TERENGGANU",
+    state: "Terengganu",
     city: "Kuala Terengganu",
     qrImage: "",
     qrContent:
@@ -7327,7 +7327,7 @@ export const institutions: Institution[] = [
     id: 639,
     name: "Surau Al Wardah",
     category: "surau",
-    state: "SELANGOR",
+    state: "Selangor",
     city: "Sepang",
     qrImage: "",
     qrContent:
@@ -7339,7 +7339,7 @@ export const institutions: Institution[] = [
     id: 640,
     name: "Masjid Seberang Perai Selatan",
     category: "mosque",
-    state: "PULAU PINANG",
+    state: "Pulau Pinang",
     city: "Seberang Perai",
     qrImage: "",
     qrContent:
@@ -7351,7 +7351,7 @@ export const institutions: Institution[] = [
     id: 641,
     name: "Masjid Taman Pulai Indah",
     category: "mosque",
-    state: "JOHOR",
+    state: "Johor",
     city: "Johor Bharu",
     qrImage: "",
     qrContent:
@@ -7363,7 +7363,7 @@ export const institutions: Institution[] = [
     id: 642,
     name: "Masjid Datuk Amar Abdul Taib Mahmud Baru",
     category: "mosque",
-    state: "SARAWAK",
+    state: "Sarawak",
     city: "Samarahan",
     qrImage: "",
     qrContent:
@@ -7375,7 +7375,7 @@ export const institutions: Institution[] = [
     id: 643,
     name: "Masjid Lestari Putra",
     category: "mosque",
-    state: "SELANGOR",
+    state: "Selangor",
     city: "Seri Kembangan",
     qrImage: "",
     qrContent:
@@ -7387,7 +7387,7 @@ export const institutions: Institution[] = [
     id: 644,
     name: "Surau Al-Hidayah Vista Angkasa",
     category: "surau",
-    state: "KUALA LUMPUR",
+    state: "Kuala Lumpur",
     city: "Kerinchi",
     qrImage: "",
     qrContent:
@@ -7399,7 +7399,7 @@ export const institutions: Institution[] = [
     id: 645,
     name: "Surau Al-Amin Pekan",
     category: "surau",
-    state: "PAHANG",
+    state: "Pahang",
     city: "Pekan",
     qrImage: "",
     qrContent:
@@ -7411,7 +7411,7 @@ export const institutions: Institution[] = [
     id: 646,
     name: "Surau Raudhatul Sakinah",
     category: "surau",
-    state: "PULAU PINANG",
+    state: "Pulau Pinang",
     city: "Nibong Tebal",
     qrImage: "",
     qrContent:
@@ -7423,7 +7423,7 @@ export const institutions: Institution[] = [
     id: 647,
     name: "Masjid Al-Hidayah",
     category: "mosque",
-    state: "SELANGOR",
+    state: "Selangor",
     city: "Klang",
     qrImage: "",
     qrContent:
@@ -7435,7 +7435,7 @@ export const institutions: Institution[] = [
     id: 648,
     name: "Surau Al-Munawarah",
     category: "surau",
-    state: "KUALA LUMPUR",
+    state: "Kuala Lumpur",
     city: "Alam Damai",
     qrImage: "",
     qrContent:
@@ -7447,7 +7447,7 @@ export const institutions: Institution[] = [
     id: 649,
     name: "Masjid An-Nur Mukim Jejuluk",
     category: "mosque",
-    state: "KELANTAN",
+    state: "Kelantan",
     city: "Pasir Mas",
     qrImage: "",
     qrContent:
@@ -7459,7 +7459,7 @@ export const institutions: Institution[] = [
     id: 650,
     name: "Masjid Saidina Othman Ibn Affan",
     category: "mosque",
-    state: "KUALA LUMPUR",
+    state: "Kuala Lumpur",
     city: "Cheras",
     qrImage: "",
     qrContent:
@@ -7471,7 +7471,7 @@ export const institutions: Institution[] = [
     id: 651,
     name: "Masjid Al-Muktafi Billah Shah",
     category: "mosque",
-    state: "TERENGGANU",
+    state: "Terengganu",
     city: "Kuala Terengganu",
     qrImage: "",
     qrContent:
@@ -7483,7 +7483,7 @@ export const institutions: Institution[] = [
     id: 652,
     name: "Surau Ehsaniah Bota Kiri",
     category: "surau",
-    state: "PERAK",
+    state: "Perak",
     city: "Bota Kiri",
     qrImage: "",
     qrContent:
@@ -7495,7 +7495,7 @@ export const institutions: Institution[] = [
     id: 653,
     name: "Masjid Al Azim",
     category: "mosque",
-    state: "MELAKA",
+    state: "Melaka",
     city: "Bukit Baru",
     qrImage: "",
     qrContent:
@@ -7507,7 +7507,7 @@ export const institutions: Institution[] = [
     id: 654,
     name: "Surau Nur Baiduri",
     category: "surau",
-    state: "SELANGOR",
+    state: "Selangor",
     city: "Puchong",
     qrImage: "",
     qrContent:
@@ -7519,7 +7519,7 @@ export const institutions: Institution[] = [
     id: 655,
     name: "Masjid Khalifah Taman Jaya",
     category: "mosque",
-    state: "TERENGGANU",
+    state: "Terengganu",
     city: "Kuala Terengganu",
     qrImage: "",
     qrContent:
@@ -7531,7 +7531,7 @@ export const institutions: Institution[] = [
     id: 656,
     name: "Surau Al-Mukhlisin Pangsapuri Semarak",
     category: "surau",
-    state: "SELANGOR",
+    state: "Selangor",
     city: "Setia Alam",
     qrImage: "",
     qrContent:
