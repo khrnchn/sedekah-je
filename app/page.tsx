@@ -116,7 +116,7 @@ const Home: React.FC = () => {
 			<Filters onChange={handleFilters} />
 
 			<div className="flex justify-end items-center gap-2 mb-4">
-				<SearchBar onSearch={handleSearch} />
+				<SearchBar onSearch={handleSearch} onChange={handleFilters} />
 			</div>
 
 			<CustomMap showAll={true} />
