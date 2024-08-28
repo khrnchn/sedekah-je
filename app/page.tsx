@@ -1,5 +1,6 @@
 "use client";
 
+import CustomMap from "@/components/custom-map";
 import Filters from "@/components/sections/filters";
 import { Card, CardContent } from "@/components/ui/card";
 import InstitutionCard from "@/components/ui/institution-card";
@@ -12,7 +13,6 @@ import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { institutions } from "./data/institutions";
 import type { Institution } from "./types/institutions";
-import CustomMap from "@/components/custom-map";
 
 const Home: React.FC = () => {
 	const [query, setQuery] = useState<string>("");
@@ -114,11 +114,11 @@ const Home: React.FC = () => {
 	return (
 		<PageSection>
 			<CustomMap showAll={true} />
+			<ModeToggle className="absolute top-5 right-5" />
 			<Filters onChange={handleFilters} />
 
 			<div className="flex justify-end items-center gap-2 mb-4">
 				<SearchBar onSearch={handleSearch} />
-				<ModeToggle />
 			</div>
 
 			{isLoading ? (

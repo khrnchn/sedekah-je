@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "@/components/ui/sonner";
-import { Analytics } from '@vercel/analytics/react';
-import Ribbon from "@/components/ui/ribbon";
+import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/ui/header";
+import Ribbon from "@/components/ui/ribbon";
+import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
-import { ThemeProvider } from "@/components/theme-provider"
+import { Analytics } from "@vercel/analytics/react";
 
-const inter = Inter({ subsets: ["latin"] });
+const poppins = Poppins({ weight: ["400", "700", "900"], subsets: ["latin"] });
 
 export const metadata: Metadata = {
 	title: "Sedekah Je",
-	description: "Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
+	description:
+		"Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
 	keywords: [
 		"sedekahje",
 		"sedekah je",
@@ -31,7 +32,8 @@ export const metadata: Metadata = {
 		type: "website",
 		url: "https://sedekahje.com",
 		title: "Sedekah Je",
-		description: "Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
+		description:
+			"Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
 		siteName: "Sedekah Je",
 		images: "https://sedekahje.com/sedekahje-og.png",
 	},
@@ -40,9 +42,10 @@ export const metadata: Metadata = {
 		site: "@asdfghjkhairin",
 		creator: "@asdfghjkhairin",
 		title: "Sedekah Je",
-		description: "Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
+		description:
+			"Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
 		images: "https://sedekahje.com/sedekahje-twitter.png",
-	}
+	},
 };
 
 export default function RootLayout({
@@ -53,13 +56,13 @@ export default function RootLayout({
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<head />
-			<body className={cn(inter.className)}>
-				<ThemeProvider
-					attribute="class"
-					defaultTheme="system"
-					enableSystem
-					disableTransitionOnChange
-				>
+			<body
+				className={cn(
+					"bg-background transition-colors duration-200 ease-in-out",
+					poppins.className,
+				)}
+			>
+				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
 					<Header />
 					{children}
 					<Analytics />
@@ -67,7 +70,6 @@ export default function RootLayout({
 					<Ribbon />
 				</ThemeProvider>
 			</body>
-
 		</html>
 	);
 }

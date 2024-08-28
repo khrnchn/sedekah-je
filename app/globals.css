@@ -85,3 +85,7 @@
 .dark .leaflet-control-attribution {
   filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
 }
+
+/* * { */
+/*     @apply transition-colors duration-100 ease-in-out motion-reduce:transition-none; */
+/* } */
