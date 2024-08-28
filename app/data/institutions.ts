@@ -7541,4 +7541,17 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow"],
     coords: [3.0915147, 101.4862225],
   },
+  {
+    // https://www.facebook.com/MasjidAlHanaLangkawi/
+    id: 657,
+    name: "Masjid Al-Hana",
+    category: "mosque",
+    state: "Kedah",
+    city: "Langkawi",
+    qrImage: "",
+    qrContent:
+      "00020201021126420014A000000615000101066033460210MD000779005204866153034585802MY5914MASJID AL HANA6002MY627303251661240065379006997963779052017200119526590050385071616612399179210016304F5A8",
+    supportedPayment: ["duitnow", "tng"],
+    coords: [6.316542682545157, 99.85294203554166],
+  },
 ];
