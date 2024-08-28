@@ -1,29 +1,43 @@
-"use client";
-import { useState } from "react";
+import { StatesDropdown } from "@/components/states-dropdown";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { forwardRef, useState } from "react";
 
 interface SearchBarProps {
-  onSearch: (query: string) => void;
-  className?: string;
+	onSearch: (query: string) => void;
+	className?: string;
 }
 
-export const SearchBar: React.FC<SearchBarProps> = ({ onSearch, className }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
+	({ onSearch, className }) => {
+		const [searchTerm, setSearchTerm] = useState("");
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
-    setSearchTerm(newValue);
-    onSearch(newValue);
-  };
+		const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+			const newValue = e.target.value;
+			setSearchTerm(newValue);
+			onSearch(newValue);
+		};
 
-  return (
-    <Input
-      type="search"
-      placeholder="Cari masjid/ surau/ institusi..."
-      className={cn("w-full rounded-lg bg-muted px-4 py-2 text-sm", className)}
-      value={searchTerm}
-      onChange={handleInputChange}
-    />
-  );
-};
+		const handleStateFilters = (props: { state: string }) => {
+			setSearchTerm(props.state);
+		};
+
+		return (
+			<div className="w-full flex flex-row items-center justify-center gap-2">
+				<div className="w-1/5 rounded-full">
+					<StatesDropdown onChange={handleStateFilters} />
+				</div>
+				<Input
+					type="search"
+					placeholder="Cari masjid/ surau/ institusi..."
+					className={cn(
+						"w-full rounded-full bg-background px-4 py-2 text-sm border border-gray-400 dark:border-slate-900",
+						className,
+					)}
+					value={searchTerm}
+					onChange={handleInputChange}
+				/>
+			</div>
+		);
+	},
+);

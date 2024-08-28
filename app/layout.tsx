@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
+import RawakFooter from "@/components/rawak-footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/ui/header";
 import Ribbon from "@/components/ui/ribbon";
@@ -48,6 +49,13 @@ export const metadata: Metadata = {
 	},
 };
 
+export const viewport: Viewport = {
+	initialScale: 1,
+	width: "device-width",
+	maximumScale: 1,
+	viewportFit: "cover",
+};
+
 export default function RootLayout({
 	children,
 }: Readonly<{
@@ -55,19 +63,20 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" suppressHydrationWarning>
-			<head />
 			<body
 				className={cn(
-					"bg-background transition-colors duration-200 ease-in-out",
+					"bg-background transition-colors duration-200 ease-in-out overscroll-y-none",
 					poppins.className,
 				)}
 			>
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
 					<Header />
+					<div className="h-24 w-full absolute top-0 left-0 bg-gradient-to-b from-orange-300 to-background -z-10 opacity-20 dark:opacity-5" />
 					{children}
 					<Analytics />
 					<Toaster richColors />
 					<Ribbon />
+					<RawakFooter />
 				</ThemeProvider>
 			</body>
 		</html>

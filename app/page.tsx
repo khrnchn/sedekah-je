@@ -113,13 +113,14 @@ const Home: React.FC = () => {
 
 	return (
 		<PageSection>
-			<CustomMap showAll={true} />
-			<ModeToggle className="absolute top-5 right-5" />
 			<Filters onChange={handleFilters} />
 
 			<div className="flex justify-end items-center gap-2 mb-4">
 				<SearchBar onSearch={handleSearch} />
 			</div>
+
+			<CustomMap showAll={true} />
+			<ModeToggle className="absolute top-5 right-5" />
 
 			{isLoading ? (
 				<div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">

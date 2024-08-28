@@ -272,7 +272,7 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
 				<TooltipProvider>
 					<motion.div ref={ref} layoutId={`card-${name}-${id}`}>
 						<Card
-							className="group border-0 shadow-lg"
+							className="group border-0 shadow-lg dark:shadow-muted/50"
 							onClick={() => navigateToItem(category, slugify(name))}
 						>
 							<CardContent className="flex flex-col items-center gap-2 p-4 h-full">

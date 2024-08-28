@@ -66,12 +66,6 @@ const Filters = (props: Props) => {
 					</button>
 				))}
 			</div>
-			<div className="flex flex-row items-center gap-2 w-full md:w-auto">
-				<Button type="button" onClick={() => router.push("/rawak")}>
-					Rawak
-				</Button>
-				<StatesDropdown onChange={handleStateFilters} />
-			</div>
 		</div>
 	);
 };
