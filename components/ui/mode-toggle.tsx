@@ -37,13 +37,10 @@ export const ModeToggle = forwardRef<HTMLButtonElement, Props>(
 						right: theme === "light" ? "auto" : "2px",
 						transition: { ease: "easeInOut" },
 					}}
-					className="p-2 bg-background rounded-full absolute w-fit"
+					className="bg-background rounded-full absolute size-8 flex items-center justify-center"
 				>
-					{theme === "light" ? (
-						<Sun className="h-[1.2rem] w-[1.2rem]" />
-					) : (
-						<Moon className="h-[1.2rem] w-[1.2rem]" />
-					)}
+					<Sun className="dark:size-[1.2rem] size-0 transition-all" />
+					<Moon className="h-[1.2rem] w-[1.2rem] dark:size-0 transition-all" />
 				</motion.div>
 				<span className="sr-only">Toggle theme</span>
 			</Button>
