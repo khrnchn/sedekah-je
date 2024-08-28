@@ -16,6 +16,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import Share from "@/components/share";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 import { AnimatePresence, motion } from "framer-motion";
 import html2canvas from "html2canvas";
@@ -27,8 +28,6 @@ import { toast } from "sonner";
 import CategoryLabel from "./category-label";
 import QrCodeDisplay from "./qrCodeDisplay";
 import { useRouter } from "next/navigation";
-import ShareToWhatsapp from "../share-to-whatsapp";
-import ShareToX from "../share-to-x";
 import { slugify } from "@/lib/utils";
 
 const capitalizeWords = (str: string): string => {
@@ -426,10 +425,10 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem>
-                        <ShareToWhatsapp data={{ category, id, name }} />
+                        <Share data={{ category, name }} platform="WHATSAPP" />
                       </DropdownMenuItem>
                       <DropdownMenuItem>
-                        <ShareToX data={{ category, id, name }} />
+                        <Share data={{ category, name }} platform="X" />
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
