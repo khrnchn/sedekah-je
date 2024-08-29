@@ -35,7 +35,6 @@ const Rawak = () => {
 		setRandomInstitution(filteredInstitutions[randomNumber]);
 	}, [institutionLength, filteredInstitutions]);
 
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <render once only>
 	useEffect(() => {
 		generateRandomNumber();

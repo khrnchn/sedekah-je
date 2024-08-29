@@ -21,15 +21,15 @@ import { useOutsideClick } from "@/hooks/use-outside-click";
 import { slugify } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import html2canvas from "html2canvas";
-import { DownloadIcon, Share2 } from "lucide-react";
+import { DownloadIcon, Eye, Share2 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import type React from "react";
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import CategoryLabel from "./category-label";
 import QrCodeDisplay from "./qrCodeDisplay";
 
+// power do atif
 const capitalizeWords = (str: string): string => {
 	return str.replace(/\S+/g, (word) => {
 		// Kalau semua huruf besar atau huruf besar dengan titik (contoh: "IIUM", "W.P."), biar je
@@ -272,7 +272,7 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
 				<TooltipProvider>
 					<motion.div ref={ref} layoutId={`card-${name}-${id}`}>
 						<Card
-							className="group border-0 shadow-lg dark:shadow-muted/50"
+							className="group border-0 shadow-lg dark:shadow-muted/50 cursor-pointer hover:shadow-xl transition-shadow duration-200 ease-in-out hover:bg-gray-100 dark:hover:bg-zinc-900"
 							onClick={() => navigateToItem(category, slugify(name))}
 						>
 							<CardContent className="flex flex-col items-center gap-2 p-4 h-full">
@@ -311,42 +311,35 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
 										{capitalizedCity}, {capitalizedState}
 									</motion.p>
 								</div>
-								<Tooltip>
-									<TooltipTrigger asChild>
-										<motion.div
-											layoutId={`image-${name}-${id}`}
-											className="cursor-pointer"
-										>
-											{qrContent ? (
-												<QrCodeDisplay
-													qrContent={qrContent}
-													supportedPayment={supportedPayment}
-													onClick={(e) => {
-														e.stopPropagation();
-														setActive(true);
-													}}
-													ref={printRef}
-													name={name}
-												/>
-											) : (
-												<Image
-													src={qrImage}
-													alt={`QR Code for ${name}`}
-													width={160}
-													height={160}
-													className="rounded-lg h-40 object-cover"
-													onClick={(e) => {
-														e.stopPropagation();
-														setActive(true);
-													}}
-												/>
-											)}
-										</motion.div>
-									</TooltipTrigger>
-									<TooltipContent>
-										<p>Klik untuk maklumat lanjut</p>
-									</TooltipContent>
-								</Tooltip>
+								<motion.div
+									layoutId={`image-${name}-${id}`}
+									className="cursor-pointer"
+								>
+									{qrContent ? (
+										<QrCodeDisplay
+											qrContent={qrContent}
+											supportedPayment={supportedPayment}
+											// onClick={(e) => {
+											// 	e.stopPropagation();
+											// 	setActive(true);
+											// }}
+											ref={printRef}
+											name={name}
+										/>
+									) : (
+										<Image
+											src={qrImage}
+											alt={`QR Code for ${name}`}
+											width={160}
+											height={160}
+											className="rounded-lg h-40 object-cover"
+											onClick={(e) => {
+												e.stopPropagation();
+												setActive(true);
+											}}
+										/>
+									)}
+								</motion.div>
 								<div className="flex gap-2 mt-auto">
 									<Tooltip>
 										<TooltipTrigger asChild>
@@ -443,6 +436,25 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
 											</DropdownMenuItem>
 										</DropdownMenuContent>
 									</DropdownMenu>
+									<Tooltip>
+										<TooltipTrigger asChild>
+											<Button
+												size="icon"
+												variant="ghost"
+												className="hover:bg-muted/50 focus:bg-muted/50 hover:scale-105 transition-transform duration-200 ease-in-out"
+												onClick={async (e) => {
+													e.stopPropagation();
+													setActive(true);
+												}}
+											>
+												<Eye className="h-5 w-5 text-foreground" />
+												<span className="sr-only">Muat turun kod QR</span>
+											</Button>
+										</TooltipTrigger>
+										<TooltipContent>
+											<p>Pergi ke halaman QR</p>
+										</TooltipContent>
+									</Tooltip>
 								</div>
 							</CardContent>
 						</Card>
