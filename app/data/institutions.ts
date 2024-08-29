@@ -2021,7 +2021,7 @@ export const institutions: Institution[] = [
 	},
 	{
 		id: 172,
-		name: "Tabung Masjid Batu 1 Kt Tinggi",
+		name: "Tabung Masjid Batu 1",
 		category: "mosque",
 		state: "Johor",
 		city: "Kota Tinggi",
@@ -3279,7 +3279,7 @@ export const institutions: Institution[] = [
 		id: 273,
 		name: "Pertubuhan Pondok Thurat",
 		category: "others",
-		state: "Penang",
+		state: "Pulau Pinang",
 		city: "Bukit Mertajam",
 		qrImage: "",
 		qrContent:
@@ -5943,7 +5943,7 @@ export const institutions: Institution[] = [
 		id: 514,
 		name: "Surau Al Hannan",
 		category: "surau",
-		state: "Penang",
+		state: "Pulau Pinang",
 		city: "Bukit Mertajam",
 		qrImage: "",
 		qrContent:
@@ -6053,7 +6053,7 @@ export const institutions: Institution[] = [
 		id: 524,
 		name: "Surau As Solihin",
 		category: "surau",
-		state: "Penang",
+		state: "Pulau Pinang",
 		city: "Jelutong Penang",
 		qrImage: "",
 		qrContent:
@@ -6064,7 +6064,7 @@ export const institutions: Institution[] = [
 		id: 525,
 		name: "Masjid Umar Abdul Aziz",
 		category: "mosque",
-		state: "Penang",
+		state: "Pulau Pinang",
 		city: "Batu Maung",
 		qrImage: "",
 		qrContent:
@@ -6075,7 +6075,7 @@ export const institutions: Institution[] = [
 		id: 526,
 		name: "Masjid Alimsah Waley",
 		category: "mosque",
-		state: "Penang",
+		state: "Pulau Pinang",
 		city: "Georgetown",
 		qrImage: "",
 		qrContent:
@@ -6086,7 +6086,7 @@ export const institutions: Institution[] = [
 		id: 527,
 		name: "Masjid Taman Sg Dua Utama",
 		category: "mosque",
-		state: "Penang",
+		state: "Pulau Pinang",
 		city: "Butterworth",
 		qrImage: "",
 		qrContent:
@@ -6097,7 +6097,7 @@ export const institutions: Institution[] = [
 		id: 528,
 		name: "Masjid Jamek Sg.gelugor",
 		category: "mosque",
-		state: "Penang",
+		state: "Pulau Pinang",
 		city: "Gelugor",
 		qrImage: "",
 		qrContent:
@@ -6108,7 +6108,7 @@ export const institutions: Institution[] = [
 		id: 529,
 		name: "Masjid Al Malik Usm",
 		category: "mosque",
-		state: "Penang",
+		state: "Pulau Pinang",
 		city: "Pulau Pinang",
 		qrImage: "",
 		qrContent:
@@ -6119,7 +6119,7 @@ export const institutions: Institution[] = [
 		id: 530,
 		name: "Surau Al- Islam",
 		category: "surau",
-		state: "Penang",
+		state: "Pulau Pinang",
 		city: "Perai",
 		qrImage: "",
 		qrContent:
@@ -6130,7 +6130,7 @@ export const institutions: Institution[] = [
 		id: 531,
 		name: "Wakaf Masjid Papan Baru",
 		category: "mosque",
-		state: "Penang",
+		state: "Pulau Pinang",
 		city: "Pulau Pinang",
 		qrImage: "",
 		qrContent:
@@ -6141,7 +6141,7 @@ export const institutions: Institution[] = [
 		id: 532,
 		name: "Lembaga Masjid Haji Saad",
 		category: "mosque",
-		state: "Penang",
+		state: "Pulau Pinang",
 		city: "Bukit Mertajam",
 		qrImage: "",
 		qrContent:
@@ -6152,7 +6152,7 @@ export const institutions: Institution[] = [
 		id: 533,
 		name: "Ma'hadul Azhar",
 		category: "others",
-		state: "Penang",
+		state: "Pulau Pinang",
 		city: "Butterworth",
 		qrImage: "",
 		qrContent:
@@ -6163,7 +6163,7 @@ export const institutions: Institution[] = [
 		id: 534,
 		name: "Surau Bandar Bayan Baru",
 		category: "surau",
-		state: "Penang",
+		state: "Pulau Pinang",
 		city: "Bayan Baru",
 		qrImage: "",
 		qrContent:
@@ -6174,7 +6174,7 @@ export const institutions: Institution[] = [
 		id: 535,
 		name: "Surau Nurul Sakinah",
 		category: "surau",
-		state: "Penang",
+		state: "Pulau Pinang",
 		city: "Nibong Tebal",
 		qrImage: "",
 		qrContent:
@@ -6185,7 +6185,7 @@ export const institutions: Institution[] = [
 		id: 536,
 		name: "Masjid Jamek Seberang Jaya ",
 		category: "others",
-		state: "Penang",
+		state: "Pulau Pinang",
 		city: "Perai",
 		qrImage: "",
 		qrContent:
@@ -6207,7 +6207,7 @@ export const institutions: Institution[] = [
 		id: 538,
 		name: "Surau Bayu Nyaman",
 		category: "surau",
-		state: "Penang",
+		state: "Pulau Pinang",
 		city: "Bayan Lepas",
 		qrImage: "",
 		qrContent:
@@ -6370,8 +6370,8 @@ export const institutions: Institution[] = [
 	},
 	{
 		id: 553,
-		name: "Masjid Al Falah Tm Desa Jaya",
-		category: "others",
+		name: "Masjid Al Falah Taman Desa Jaya",
+		category: "mosque",
 		state: "Johor",
 		city: "Johor Bahru",
 		qrImage: "",
@@ -6414,7 +6414,7 @@ export const institutions: Institution[] = [
 	},
 	{
 		id: 557,
-		name: "Masjid Uthm",
+		name: "Masjid UTHM",
 		category: "mosque",
 		state: "Johor",
 		city: "Batu Pahat",
@@ -6425,8 +6425,8 @@ export const institutions: Institution[] = [
 	},
 	{
 		id: 558,
-		name: "Mj Jamek Ts Ainuddinwahid",
-		category: "others",
+		name: "Masjid Jamek Tan Sri Ainuddin Wahid",
+		category: "mosque",
 		state: "Johor",
 		city: "Skudai",
 		qrImage: "",
@@ -6490,8 +6490,9 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 	},
 	{
+		// https://www.facebook.com/akademi.darul.ameer.hq/?locale=ms_MY
 		id: 564,
-		name: "Akademi Tahfiz Darulameer",
+		name: "Akademi Tahfiz Darul Ameer",
 		category: "others",
 		state: "Johor",
 		city: "Kulai",
@@ -6513,8 +6514,8 @@ export const institutions: Institution[] = [
 	},
 	{
 		id: 566,
-		name: "Masjid At-Taqwa Taman Pulai U",
-		category: "others",
+		name: "Masjid At-Taqwa Taman Pulai Utama",
+		category: "mosque",
 		state: "Johor",
 		city: "Skudai",
 		qrImage: "",
@@ -6558,7 +6559,7 @@ export const institutions: Institution[] = [
 	{
 		id: 570,
 		name: "Masjid Ar Rahman Taman Putri",
-		category: "others",
+		category: "mosque",
 		state: "Johor",
 		city: "Kulai",
 		qrImage: "",
@@ -6578,20 +6579,22 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 	},
 	{
+		// https://masjid.islam.gov.my/maklumatMasjidSurau?carian=&jenis=&negeri=&daerah=&masjidSurau=&page=477
 		id: 572,
 		name: "Masjid Jamek Kampung Melayu Bt9",
-		category: "others",
+		category: "mosque",
 		state: "Johor",
-		city: "Ayer Hitam",
+		city: "Batu Pahat",
 		qrImage: "",
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000266031001271541345204866153034585802MY5923MJD JAMEK KG MELAYU BT96010AYER HITAM610586100630484DA",
 		supportedPayment: ["duitnow", "tng"],
 	},
 	{
+		// https://masjid.islam.gov.my/maklumatDetailMS/1/0103058
 		id: 573,
-		name: "Masjid Jamek Kgmelayu Kluang",
-		category: "others",
+		name: "Masjid Jamek Kg Melayu",
+		category: "mosque",
 		state: "Johor",
 		city: "Kluang",
 		qrImage: "",
@@ -7805,7 +7808,7 @@ export const institutions: Institution[] = [
     id: 273,
     name: "Pertubuhan Pondok Thurat",
     category: "others",
-    state: "Penang",
+    state: "Pulau Pinang",
     city: "Bukit Mertajam",
     qrImage: "",
     qrContent:
@@ -10469,7 +10472,7 @@ export const institutions: Institution[] = [
     id: 514,
     name: "Surau Al Hannan",
     category: "surau",
-    state: "Penang",
+    state: "Pulau Pinang",
     city: "Bukit Mertajam",
     qrImage: "",
     qrContent:
@@ -10579,7 +10582,7 @@ export const institutions: Institution[] = [
     id: 524,
     name: "Surau As Solihin",
     category: "surau",
-    state: "Penang",
+    state: "Pulau Pinang",
     city: "Jelutong Penang",
     qrImage: "",
     qrContent:
@@ -10590,7 +10593,7 @@ export const institutions: Institution[] = [
     id: 525,
     name: "Masjid Umar Abdul Aziz",
     category: "mosque",
-    state: "Penang",
+    state: "Pulau Pinang",
     city: "Batu Maung",
     qrImage: "",
     qrContent:
@@ -10601,7 +10604,7 @@ export const institutions: Institution[] = [
     id: 526,
     name: "Masjid Alimsah Waley",
     category: "mosque",
-    state: "Penang",
+    state: "Pulau Pinang",
     city: "Georgetown",
     qrImage: "",
     qrContent:
@@ -10612,7 +10615,7 @@ export const institutions: Institution[] = [
     id: 527,
     name: "Masjid Taman Sg Dua Utama",
     category: "mosque",
-    state: "Penang",
+    state: "Pulau Pinang",
     city: "Butterworth",
     qrImage: "",
     qrContent:
@@ -10623,7 +10626,7 @@ export const institutions: Institution[] = [
     id: 528,
     name: "Masjid Jamek Sg.gelugor",
     category: "mosque",
-    state: "Penang",
+    state: "Pulau Pinang",
     city: "Gelugor",
     qrImage: "",
     qrContent:
@@ -10634,7 +10637,7 @@ export const institutions: Institution[] = [
     id: 529,
     name: "Masjid Al Malik Usm",
     category: "mosque",
-    state: "Penang",
+    state: "Pulau Pinang",
     city: "Pulau Pinang",
     qrImage: "",
     qrContent:
@@ -10645,7 +10648,7 @@ export const institutions: Institution[] = [
     id: 530,
     name: "Surau Al- Islam",
     category: "surau",
-    state: "Penang",
+    state: "Pulau Pinang",
     city: "Perai",
     qrImage: "",
     qrContent:
@@ -10656,7 +10659,7 @@ export const institutions: Institution[] = [
     id: 531,
     name: "Wakaf Masjid Papan Baru",
     category: "mosque",
-    state: "Penang",
+    state: "Pulau Pinang",
     city: "Pulau Pinang",
     qrImage: "",
     qrContent:
@@ -10667,7 +10670,7 @@ export const institutions: Institution[] = [
     id: 532,
     name: "Lembaga Masjid Haji Saad",
     category: "mosque",
-    state: "Penang",
+    state: "Pulau Pinang",
     city: "Bukit Mertajam",
     qrImage: "",
     qrContent:
@@ -10678,7 +10681,7 @@ export const institutions: Institution[] = [
     id: 533,
     name: "Ma'hadul Azhar",
     category: "others",
-    state: "Penang",
+    state: "Pulau Pinang",
     city: "Butterworth",
     qrImage: "",
     qrContent:
@@ -10689,7 +10692,7 @@ export const institutions: Institution[] = [
     id: 534,
     name: "Surau Bandar Bayan Baru",
     category: "surau",
-    state: "Penang",
+    state: "Pulau Pinang",
     city: "Bayan Baru",
     qrImage: "",
     qrContent:
@@ -10700,7 +10703,7 @@ export const institutions: Institution[] = [
     id: 535,
     name: "Surau Nurul Sakinah",
     category: "surau",
-    state: "Penang",
+    state: "Pulau Pinang",
     city: "Nibong Tebal",
     qrImage: "",
     qrContent:
@@ -10711,7 +10714,7 @@ export const institutions: Institution[] = [
     id: 536,
     name: "Masjid Jamek Seberang Jaya ",
     category: "others",
-    state: "Penang",
+    state: "Pulau Pinang",
     city: "Perai",
     qrImage: "",
     qrContent:
@@ -10733,7 +10736,7 @@ export const institutions: Institution[] = [
     id: 538,
     name: "Surau Bayu Nyaman",
     category: "surau",
-    state: "Penang",
+    state: "Pulau Pinang",
     city: "Bayan Lepas",
     qrImage: "",
     qrContent:
@@ -10842,7 +10845,7 @@ export const institutions: Institution[] = [
   {
     id: 548,
     name: "Masjid Jamek Tenang Stesen",
-    category: "others",
+    category: "mosque",
     state: "Johor",
     city: "Segamat",
     qrImage: "",
@@ -10863,8 +10866,8 @@ export const institutions: Institution[] = [
   },
   {
     id: 550,
-    name: "Masjid Jamik Kampung Lukut Kt",
-    category: "others",
+    name: "Masjid Jamik Kampung Lukut",
+    category: "mosque",
     state: "Johor",
     city: "Kota Tinggi",
     qrImage: "",
@@ -10874,8 +10877,8 @@ export const institutions: Institution[] = [
   },
   {
     id: 551,
-    name: "Mj Alabrar Bdr Sri Perani",
-    category: "others",
+    name: "Masjid Al Abrar Bandar Sri Perani",
+    category: "mosque",
     state: "Johor",
     city: "Kota Tinggi",
     qrImage: "",
@@ -10885,8 +10888,8 @@ export const institutions: Institution[] = [
   },
   {
     id: 552,
-    name: "Mj Al Muttaqin Tm Kt Jaya",
-    category: "others",
+    name: "Masjid Al Muttaqin Taman Kota Jaya",
+    category: "mosque",
     state: "Johor",
     city: "Kota Tinggi",
     qrImage: "",
@@ -10973,7 +10976,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 560,
-    name: "S Almubaraq Kampung Baru Pasak",
+    name: "S Almubaraq Kampung Baru Pasak", // tak jumpa dalam google
     category: "others",
     state: "Johor",
     city: "Kota Tinggi",
@@ -11006,7 +11009,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 563,
-    name: "Mdrsh India Muslim Kluang",
+    name: "Madrasah India Muslim Kluang",
     category: "others",
     state: "Johor",
     city: "Kluang",
@@ -11029,7 +11032,7 @@ export const institutions: Institution[] = [
   {
     id: 565,
     name: "Masjid Abidin Taman Sri Skudai",
-    category: "others",
+    category: "mosque",
     state: "Johor",
     city: "Skudai",
     qrImage: "",
@@ -11170,9 +11173,10 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   },
   {
+	// https://www.facebook.com/story.php/?story_fbid=828042896034697&id=100064869813590
     id: 578,
-    name: "S Riadhul Jannah Tpelangi",
-    category: "others",
+    name: "Surau Riadhul Jannah Taman Pelangi",
+    category: "surau",
     state: "Johor",
     city: "Segamat",
     qrImage: "",
@@ -11193,8 +11197,8 @@ export const institutions: Institution[] = [
   },
   {
     id: 580,
-    name: "Masjid Jamek Tenang Station",
-    category: "others",
+    name: "Masjid Jamek Tenang Station", // duplicate
+    category: "mosque",
     state: "Johor",
     city: "Segamat",
     qrImage: "",
@@ -11205,7 +11209,7 @@ export const institutions: Institution[] = [
   {
     id: 581,
     name: "Masjid Jamek Kampung Paya Pulai",
-    category: "others",
+    category: "mosque",
     state: "Johor",
     city: "Segamat",
     qrImage: "",
@@ -11215,8 +11219,8 @@ export const institutions: Institution[] = [
   },
   {
     id: 582,
-    name: "B.tdbir Mj Jamek B.siput",
-    category: "others",
+    name: "Masjid Jamek B Siput",
+    category: "mosque",
     state: "Johor",
     city: "Segamat",
     qrImage: "",
@@ -12084,7 +12088,7 @@ export const institutions: Institution[] = [
 		id: 658,
 		name: "Masjid Tok Lebai Hashim",
 		category: "mosque",
-		state: "Penang",
+		state: "Pulau Pinang",
 		city: "Bukit Mertajam",
 		qrImage: "",
 		qrContent:
