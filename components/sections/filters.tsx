@@ -1,6 +1,6 @@
 import { categories } from "@/app/types/institutions";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 import { institutions } from "../../app/data/institutions";
 
 type Props = {
@@ -10,7 +10,7 @@ type Props = {
 	}) => void;
 };
 
-const Filters = (props: Props) => {
+const Filters = forwardRef<HTMLDivElement, Props>(({ onChange }) => {
 	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 	const [selectedState, setSelectedState] = useState<string>("");
 	const mappedCategories = Object.keys(categories).map((category) => ({
@@ -19,12 +19,22 @@ const Filters = (props: Props) => {
 		icon: categories[category as keyof typeof categories].icon,
 	}));
 
+	const handleCategoryFilter = (props: { state: string }) => {
+		setSelectedState(props.state);
+		onChange({
+			categories: selectedCategories,
+			state: props.state === "all_states" ? "" : props.state,
+		});
+	};
+
 	useEffect(() => {
-		props.onChange({
+		onChange({
 			categories: selectedCategories,
 			state: selectedState,
 		});
-	}, [selectedCategories, selectedState, props]);
+
+		console.log(selectedCategories, selectedState);
+	}, [selectedCategories, selectedState, onChange]);
 
 	return (
 		<div className="flex flex-col md:flex-row md:justify-between gap-4">
@@ -45,7 +55,6 @@ const Filters = (props: Props) => {
 						data-active={selectedCategories.includes(category.value)}
 						className="px-4 py-2 text-sm max-sm:text-xs font-bold data-[active=true]:bg-slate-500 data-[active=true]:text-white truncate select-none flex flex-row gap-2 items-center justify-center whitespace-nowrap bg-background w-fit border border-border rounded-full shadow-md dark:shadow-muted/50"
 					>
-						{/* {category.label} */}
 						<Image
 							src={category.icon}
 							alt={category.label}
@@ -67,6 +76,6 @@ const Filters = (props: Props) => {
 			</div>
 		</div>
 	);
-};
+});
 
 export default Filters;

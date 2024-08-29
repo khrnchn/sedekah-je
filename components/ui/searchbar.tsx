@@ -20,6 +20,10 @@ export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
 
 		const handleStateFilters = (props: { state: string }) => {
 			setSelectedState(props.state);
+			onChange({
+				categories: selectedCategories,
+				state: props.state === "all_states" ? "" : props.state,
+			});
 		};
 
 		useEffect(() => {
@@ -54,3 +58,5 @@ export const SearchBar = forwardRef<HTMLInputElement, SearchBarProps>(
 		);
 	},
 );
+
+SearchBar.displayName = "SearchBar";

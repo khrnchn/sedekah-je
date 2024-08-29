@@ -2,7 +2,7 @@
 
 import CustomMap from "@/components/custom-map";
 import Filters from "@/components/sections/filters";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import InstitutionCard from "@/components/ui/institution-card";
 import { ModeToggle } from "@/components/ui/mode-toggle";
 import PageSection from "@/components/ui/pageSection";
@@ -17,7 +17,7 @@ import type { Institution } from "./types/institutions";
 const Home: React.FC = () => {
 	const [query, setQuery] = useState<string>("");
 	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-	const [selectedState, setSelectedState] = useState<string>();
+	const [selectedState, setSelectedState] = useState<string>("");
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
 	const [offset, setOffset] = useState<number>(0);
