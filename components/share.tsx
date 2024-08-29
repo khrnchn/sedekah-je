@@ -27,7 +27,7 @@ const generateShareMessage = (data: ShareData) => {
 	const institutionSlug = `${baseUrl}/${data.category}/${slugify(data.name)}`;
 	// Encode the message to be URL-safe
 	return encodeURIComponent(
-		`Jom bersedekah! Dapatkan kod QR untuk ${data.name} dengan akses link di bawah! 🌟\nTerima kasih kerana menggunakan SedekahJe! 💖\n\n${institutionSlug}`,
+		`Jom bersedekah! Dapatkan kod QR untuk ${data.name} melalui pautan di bawah. 🌟\n\n${institutionSlug}\n\nTerima kasih kerana menggunakan SedekahJe! 💖`,
 	);
 };
 
