@@ -1,30 +1,37 @@
-import { categories } from "@/app/types/institutions";
+import { categories, type Institution } from "@/app/types/institutions";
 import Image from "next/image";
-import React, { forwardRef, useEffect, useState } from "react";
-import { institutions } from "../../app/data/institutions";
+import type React from "react";
+import { forwardRef, useEffect, useState } from "react";
+import { StatesDropdown } from "@/components/states-dropdown";
+import { Input } from "@/components/ui/input";
 
 type Props = {
+	onSearch: (query: string) => void;
 	onChange: (props: {
 		categories: string[];
 		state: string;
 	}) => void;
+	institutions: Institution[];
 };
 
-const Filters = forwardRef<HTMLDivElement, Props>(({ onChange }) => {
+const Filters = forwardRef<HTMLDivElement, Props>(({ onSearch, onChange, institutions }) => {
 	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 	const [selectedState, setSelectedState] = useState<string>("");
+	const [searchQuery, setSearchQuery] = useState<string>("");
+
 	const mappedCategories = Object.keys(categories).map((category) => ({
 		label: categories[category as keyof typeof categories].label,
 		value: category,
 		icon: categories[category as keyof typeof categories].icon,
 	}));
 
-	const handleCategoryFilter = (props: { state: string }) => {
-		setSelectedState(props.state);
-		onChange({
-			categories: selectedCategories,
-			state: props.state === "all_states" ? "" : props.state,
-		});
+	const handleStateChange = (props: { state: string }) => {
+		setSelectedState(props.state === "all_states" ? "" : props.state);
+	};
+
+	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setSearchQuery(e.target.value);
+		onSearch(e.target.value);
 	};
 
 	useEffect(() => {
@@ -32,13 +39,19 @@ const Filters = forwardRef<HTMLDivElement, Props>(({ onChange }) => {
 			categories: selectedCategories,
 			state: selectedState,
 		});
-
-		console.log(selectedCategories, selectedState);
 	}, [selectedCategories, selectedState, onChange]);
 
+	const getCountForCategory = (category: string) => {
+		return institutions.filter(
+			(ins) =>
+				(!selectedState || ins.state === selectedState) &&
+				ins.category === category
+		).length;
+	};
+
 	return (
-		<div className="flex flex-col md:flex-row md:justify-between gap-4">
-			<div className="flex items-center justify-center flex-row  gap-1 w-full">
+		<div className="flex flex-col gap-4 mb-4">
+			<div className="flex items-center justify-center flex-row flex-wrap gap-2">
 				{mappedCategories.map((category) => (
 					<button
 						type="button"
@@ -63,16 +76,22 @@ const Filters = forwardRef<HTMLDivElement, Props>(({ onChange }) => {
 						/>
 						<span className="hidden md:block">{category.label}</span>
 						<span className="rounded-full px-2 py-1 bg-slate-200 text-black">
-							{
-								institutions.filter(
-									(ins) =>
-										ins.category === category.value &&
-										(selectedState ? ins.state === selectedState : true),
-								).length
-							}
+							{getCountForCategory(category.value)}
 						</span>
 					</button>
 				))}
+			</div>
+			<div className="flex flex-row items-center justify-center gap-2">
+				<div className="w-1/5">
+					<StatesDropdown onChange={handleStateChange} />
+				</div>
+				<Input
+					type="search"
+					placeholder="Cari masjid/ surau/ institusi..."
+					className="w-full rounded-full bg-background px-4 py-2 text-sm border border-gray-400 dark:border-slate-900"
+					value={searchQuery}
+					onChange={handleSearchChange}
+				/>
 			</div>
 		</div>
 	);
