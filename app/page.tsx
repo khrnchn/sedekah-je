@@ -4,7 +4,6 @@ import CustomMap from "@/components/custom-map";
 import Filters from "@/components/sections/filters";
 import { Card } from "@/components/ui/card";
 import InstitutionCard from "@/components/ui/institution-card";
-import { ModeToggle } from "@/components/ui/mode-toggle";
 import PageSection from "@/components/ui/pageSection";
 import { Skeleton } from "@/components/ui/skeleton";
 import { debounce } from "lodash-es";
@@ -118,7 +117,6 @@ const Home: React.FC = () => {
 			<Filters onSearch={handleSearch} onChange={handleFilters} institutions={_institutions} />
 
 			<CustomMap showAll={true} />
-			<ModeToggle className="absolute top-5 right-5" />
 
 			{isLoading ? (
 				<div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
