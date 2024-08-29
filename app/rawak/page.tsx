@@ -5,10 +5,10 @@ import QrCodeDisplay from "@/components/ui/qrCodeDisplay";
 import { Skeleton } from "@/components/ui/skeleton";
 import useClientDimensions from "@/hooks/use-client-dimensions";
 import Image from "next/image";
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { institutions } from "../data/institutions";
 import { type Institution, categories } from "../types/institutions";
-import Link from "next/link";
 
 const Rawak = () => {
 	const [randomInstitution, setRandomInstitution] =
@@ -106,7 +106,6 @@ const Rawak = () => {
 					🎲 Jana QR Secara Rawak
 				</button>
 			</div>
-
 
 			<div className="grid grid-flow-col gap-1 items-center">
 				<p className="max-sm:text-xs">Pilih Tapisan: </p>

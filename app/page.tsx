@@ -1,7 +1,8 @@
 "use client";
 
+import CustomMap from "@/components/custom-map";
 import Filters from "@/components/sections/filters";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import InstitutionCard from "@/components/ui/institution-card";
 import { ModeToggle } from "@/components/ui/mode-toggle";
 import PageSection from "@/components/ui/pageSection";
@@ -12,12 +13,11 @@ import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { institutions } from "./data/institutions";
 import type { Institution } from "./types/institutions";
-import CustomMap from "@/components/custom-map";
 
 const Home: React.FC = () => {
 	const [query, setQuery] = useState<string>("");
 	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-	const [selectedState, setSelectedState] = useState<string>();
+	const [selectedState, setSelectedState] = useState<string>("");
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 	const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
 	const [offset, setOffset] = useState<number>(0);
@@ -113,13 +113,14 @@ const Home: React.FC = () => {
 
 	return (
 		<PageSection>
-			<CustomMap showAll={true} />
 			<Filters onChange={handleFilters} />
 
 			<div className="flex justify-end items-center gap-2 mb-4">
-				<SearchBar onSearch={handleSearch} />
-				<ModeToggle />
+				<SearchBar onSearch={handleSearch} onChange={handleFilters} />
 			</div>
+
+			<CustomMap showAll={true} />
+			<ModeToggle className="absolute top-5 right-5" />
 
 			{isLoading ? (
 				<div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">

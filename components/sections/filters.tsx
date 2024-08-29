@@ -1,9 +1,7 @@
 import { categories } from "@/app/types/institutions";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import Image from "next/image";
+import React, { forwardRef, useEffect, useState } from "react";
 import { institutions } from "../../app/data/institutions";
-import { StatesDropdown } from "../states-dropdown";
-import { Button } from "../ui/button";
 
 type Props = {
 	onChange: (props: {
@@ -12,31 +10,35 @@ type Props = {
 	}) => void;
 };
 
-const Filters = (props: Props) => {
+const Filters = forwardRef<HTMLDivElement, Props>(({ onChange }) => {
 	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 	const [selectedState, setSelectedState] = useState<string>("");
 	const mappedCategories = Object.keys(categories).map((category) => ({
 		label: categories[category as keyof typeof categories].label,
 		value: category,
+		icon: categories[category as keyof typeof categories].icon,
 	}));
 
-	const router = useRouter();
-
-	const handleStateFilters = (props: { state: string }) => {
+	const handleCategoryFilter = (props: { state: string }) => {
 		setSelectedState(props.state);
+		onChange({
+			categories: selectedCategories,
+			state: props.state === "all_states" ? "" : props.state,
+		});
 	};
 
 	useEffect(() => {
-		props.onChange({
+		onChange({
 			categories: selectedCategories,
 			state: selectedState,
 		});
-	}, [selectedCategories, selectedState, props]);
+
+		console.log(selectedCategories, selectedState);
+	}, [selectedCategories, selectedState, onChange]);
 
 	return (
 		<div className="flex flex-col md:flex-row md:justify-between gap-4">
-			<div className="grid grid-flow-col gap-1 items-center overflow-x-auto">
-				<p className="max-sm:text-xs whitespace-nowrap">Pilih Tapisan: </p>
+			<div className="flex items-center justify-center flex-row  gap-1 w-full">
 				{mappedCategories.map((category) => (
 					<button
 						type="button"
@@ -51,9 +53,15 @@ const Filters = (props: Props) => {
 							}
 						}}
 						data-active={selectedCategories.includes(category.value)}
-						className="px-4 py-2 rounded-xl text-sm max-sm:text-xs font-bold data-[active=true]:bg-slate-500 data-[active=true]:text-white truncate select-none flex flex-row gap-2 items-center justify-center whitespace-nowrap"
+						className="px-4 py-2 text-sm max-sm:text-xs font-bold data-[active=true]:bg-slate-500 data-[active=true]:text-white truncate select-none flex flex-row gap-2 items-center justify-center whitespace-nowrap bg-background w-fit border border-border rounded-full shadow-md dark:shadow-muted/50"
 					>
-						{category.label}
+						<Image
+							src={category.icon}
+							alt={category.label}
+							width={24}
+							height={24}
+						/>
+						<span className="hidden md:block">{category.label}</span>
 						<span className="rounded-full px-2 py-1 bg-slate-200 text-black">
 							{
 								institutions.filter(
@@ -66,14 +74,10 @@ const Filters = (props: Props) => {
 					</button>
 				))}
 			</div>
-			<div className="flex flex-row items-center gap-2 w-full md:w-auto">
-				<Button type="button" onClick={() => router.push("/rawak")}>
-					Rawak
-				</Button>
-				<StatesDropdown onChange={handleStateFilters} />
-			</div>
 		</div>
 	);
-};
+});
+
+Filters.displayName = "Filters";
 
 export default Filters;

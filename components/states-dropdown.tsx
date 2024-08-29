@@ -1,9 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
-
-"use client";
-
-import * as React from "react";
-import { cn } from "@/lib/utils";
 import {
 	Select,
 	SelectContent,
@@ -12,6 +6,8 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import Image from "next/image";
+import { forwardRef, useState } from "react";
 
 const ALL_STATES = "all_states";
 
@@ -55,48 +51,52 @@ type Props = {
 	onChange: (props: { state: string }) => void;
 };
 
-export function StatesDropdown({ onChange }: Props) {
-	const [value, setValue] = React.useState(ALL_STATES);
+export const StatesDropdown = forwardRef<HTMLSelectElement, Props>(
+	({ onChange }) => {
+		const [value, setValue] = useState(ALL_STATES);
 
-	const handleSelect = (currentValue: string) => {
-		setValue(currentValue);
-		onChange({ state: currentValue === ALL_STATES ? "" : currentValue });
-	};
+		const handleSelect = (currentValue: string) => {
+			setValue(currentValue);
+			onChange({ state: currentValue === ALL_STATES ? "" : currentValue });
+		};
 
-	return (
-		<Select value={value} onValueChange={handleSelect}>
-			<SelectTrigger>
-				<SelectValue placeholder="" />
-			</SelectTrigger>
-			<SelectContent>
-				<SelectGroup>
-					{states.map((state) => (
-						<SelectItem
-							key={state.value}
-							value={state.value}
-							className="flex items-center"
-						>
-							{state.flag ? (
-								<div className="flex items-center space-x-3 w-full">
-									<div className="relative overflow-hidden border border-gray-200">
-										<img
-											loading="lazy"
-											src={state.flag}
-											alt={`${state.label} flag`}
-											width={32}
-											height={18}
-											style={{ objectFit: "cover" }}
-										/>
+		return (
+			<Select value={value} onValueChange={handleSelect}>
+				<SelectTrigger className="rounded-full border border-gray-400">
+					<SelectValue placeholder="" />
+				</SelectTrigger>
+				<SelectContent>
+					<SelectGroup>
+						{states.map((state) => (
+							<SelectItem
+								key={state.value}
+								value={state.value}
+								className="flex items-center"
+							>
+								{state.flag ? (
+									<div className="flex items-center space-x-3 w-full">
+										<div className="relative overflow-hidden border border-gray-200">
+											<Image
+												loading="lazy"
+												src={state.flag}
+												alt={`${state.label} flag`}
+												width={32}
+												height={18}
+												className="object-cover"
+											/>
+										</div>
+										<span>{state.label}</span>
 									</div>
+								) : (
 									<span>{state.label}</span>
-								</div>
-							) : (
-								<span>{state.label}</span>
-							)}
-						</SelectItem>
-					))}
-				</SelectGroup>
-			</SelectContent>
-		</Select>
-	);
-}
+								)}
+							</SelectItem>
+						))}
+					</SelectGroup>
+				</SelectContent>
+			</Select>
+		);
+	},
+);
+
+StatesDropdown.displayName = "StatesDropdown";

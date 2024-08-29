@@ -10,36 +10,36 @@ import { notFound } from "next/navigation";
 import { slugify } from "@/lib/utils";
 
 type Params = {
-  params: {
-    slug: string;
-  };
+	params: {
+		slug: string;
+	};
 };
 
 const InstitutionPage: React.FC<Params> = ({ params }) => {
-  const institution = institutions.find(
-    (institution) => slugify(institution.name) === params.slug,
-  );
+	const institution = institutions.find(
+		(institution) => slugify(institution.name) === params.slug,
+	);
 
-  if (!institution) {
-    notFound();
-  }
+	if (!institution) {
+		notFound();
+	}
 
-  return (
-    <PageSection>
-      <div className="space-y-4">
-        {institution.coords?.length && (
-          <CustomMap
-            marker={{
-              coords: institution.coords,
-              name: institution.name,
-              color: CategoryColor[institution.category],
-            }}
-          />
-        )}
-        <InstitutionCard key={institution.id} {...institution} />
-      </div>
-    </PageSection>
-  );
+	return (
+		<PageSection>
+			<div className="space-y-4">
+				{institution.coords?.length && (
+					<CustomMap
+						marker={{
+							coords: institution.coords,
+							name: institution.name,
+							color: CategoryColor[institution.category],
+						}}
+					/>
+				)}
+				<InstitutionCard key={institution.id} {...institution} />
+			</div>
+		</PageSection>
+	);
 };
 
 export default InstitutionPage;

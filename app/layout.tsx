@@ -1,18 +1,20 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Poppins } from "next/font/google";
 import "./globals.css";
-import { Toaster } from "@/components/ui/sonner";
-import { Analytics } from '@vercel/analytics/react';
-import Ribbon from "@/components/ui/ribbon";
+import RawakFooter from "@/components/rawak-footer";
+import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/ui/header";
+import Ribbon from "@/components/ui/ribbon";
+import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
-import { ThemeProvider } from "@/components/theme-provider"
+import { Analytics } from "@vercel/analytics/react";
 
-const inter = Inter({ subsets: ["latin"] });
+const poppins = Poppins({ weight: ["400", "700", "900"], subsets: ["latin"] });
 
 export const metadata: Metadata = {
 	title: "Sedekah Je",
-	description: "Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
+	description:
+		"Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
 	keywords: [
 		"sedekahje",
 		"sedekah je",
@@ -31,7 +33,8 @@ export const metadata: Metadata = {
 		type: "website",
 		url: "https://sedekahje.com",
 		title: "Sedekah Je",
-		description: "Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
+		description:
+			"Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
 		siteName: "Sedekah Je",
 		images: "https://sedekahje.com/sedekahje-og.png",
 	},
@@ -40,9 +43,17 @@ export const metadata: Metadata = {
 		site: "@asdfghjkhairin",
 		creator: "@asdfghjkhairin",
 		title: "Sedekah Je",
-		description: "Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
+		description:
+			"Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
 		images: "https://sedekahje.com/sedekahje-twitter.png",
-	}
+	},
+};
+
+export const viewport: Viewport = {
+	initialScale: 1,
+	width: "device-width",
+	maximumScale: 1,
+	viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -52,22 +63,22 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en" suppressHydrationWarning>
-			<head />
-			<body className={cn(inter.className)}>
-				<ThemeProvider
-					attribute="class"
-					defaultTheme="system"
-					enableSystem
-					disableTransitionOnChange
-				>
+			<body
+				className={cn(
+					"bg-background transition-colors duration-200 ease-in-out overscroll-y-none",
+					poppins.className,
+				)}
+			>
+				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
 					<Header />
+					<div className="h-24 w-full absolute top-0 left-0 bg-gradient-to-b from-orange-300 to-background -z-10 opacity-20 dark:opacity-5" />
 					{children}
 					<Analytics />
 					<Toaster richColors />
 					<Ribbon />
+					<RawakFooter />
 				</ThemeProvider>
 			</body>
-
 		</html>
 	);
 }
