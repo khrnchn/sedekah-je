@@ -6,6 +6,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import Image from "next/image";
 import { forwardRef, useState } from "react";
 
 const ALL_STATES = "all_states";
@@ -75,13 +76,13 @@ export const StatesDropdown = forwardRef<HTMLSelectElement, Props>(
 								{state.flag ? (
 									<div className="flex items-center space-x-3 w-full">
 										<div className="relative overflow-hidden border border-gray-200">
-											<img
+											<Image
 												loading="lazy"
 												src={state.flag}
 												alt={`${state.label} flag`}
 												width={32}
 												height={18}
-												style={{ objectFit: "cover" }}
+												className="object-cover"
 											/>
 										</div>
 										<span>{state.label}</span>

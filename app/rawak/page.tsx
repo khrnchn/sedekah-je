@@ -5,10 +5,10 @@ import QrCodeDisplay from "@/components/ui/qrCodeDisplay";
 import { Skeleton } from "@/components/ui/skeleton";
 import useClientDimensions from "@/hooks/use-client-dimensions";
 import Image from "next/image";
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { institutions } from "../data/institutions";
 import { type Institution, categories } from "../types/institutions";
-import Link from "next/link";
 
 const Rawak = () => {
 	const [randomInstitution, setRandomInstitution] =
@@ -35,6 +35,7 @@ const Rawak = () => {
 		setRandomInstitution(filteredInstitutions[randomNumber]);
 	}, [institutionLength, filteredInstitutions]);
 
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	// biome-ignore lint/correctness/useExhaustiveDependencies: <render once only>
 	useEffect(() => {
 		generateRandomNumber();

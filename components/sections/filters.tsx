@@ -78,4 +78,6 @@ const Filters = forwardRef<HTMLDivElement, Props>(({ onChange }) => {
 	);
 });
 
+Filters.displayName = "Filters";
+
 export default Filters;
