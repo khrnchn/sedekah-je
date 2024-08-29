@@ -62,7 +62,7 @@ export const StatesDropdown = forwardRef<HTMLSelectElement, Props>(
 
 		return (
 			<Select value={value} onValueChange={handleSelect}>
-				<SelectTrigger className="rounded-full border border-gray-400">
+				<SelectTrigger className="rounded-lg border">
 					<SelectValue placeholder="" />
 				</SelectTrigger>
 				<SelectContent>

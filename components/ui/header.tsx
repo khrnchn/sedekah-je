@@ -1,14 +1,20 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ModeToggle } from "./mode-toggle";
 
 export const Header = () => (
-	<header className="flex items-center justify-center py-8 gap-5">
-		<Image src="/masjid.svg" alt="Masjid" width={100} height={100} />
-		<div className="flex flex-col items-start justify-center gap-0">
+	<header className="flex flex-col md:flex-row items-center justify-center py-8 gap-5">
+		<Link href="/">
+			<Image src="/masjid.svg" alt="Masjid" width={100} height={100} />
+		</Link>
+		<div className="flex flex-col items-center md:items-start">
 			<Link href="/">
-				<h1 className="text-3xl font-bold text-foreground">SedekahJe</h1>
+				<h1 className="text-2xl md:text-3xl font-bold text-foreground">SedekahJe</h1>
 			</Link>
-			<p className="text-lg mb-2">Senarai QR masjid, Surau, Institusi</p>
+			<p className="text-base md:text-lg text-gray-500 text-center md:text-left">
+				Senarai QR Masjid, Surau, Institusi
+			</p>
 		</div>
+		<ModeToggle className="absolute top-5 right-5" />
 	</header>
 );
