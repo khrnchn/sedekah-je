@@ -12079,4 +12079,17 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 		coords: [6.316542682545157, 99.85294203554166],
 	},
+	{
+		// https://www.facebook.com/masjid.toklebaihashim/
+		id: 658,
+		name: "Masjid Tok Lebai Hashim",
+		category: "mosque",
+		state: "Penang",
+		city: "Bukit Mertajam",
+		qrImage: "",
+		qrContent:
+			"00020201021126420014A000000615000101066033460210MD000908675204866153034585802MY5925MASJID TOK LEBAI HASHIM B6002MY6273032516710896242130011058633420520167108975808800416380716167108866930800663047946",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [5.3320414015369915, 100.45089589886389], 
+	},
 ];
