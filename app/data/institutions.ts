@@ -7288,7 +7288,7 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow"],
 		coords: [2.4925023301969205, 102.18022557818212],
 	},
-=======
+	{
     id: 232,
     name: "Surau Nurul Hidayah",
     category: "surau",
