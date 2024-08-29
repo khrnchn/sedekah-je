@@ -6,7 +6,6 @@ import { Card } from "@/components/ui/card";
 import InstitutionCard from "@/components/ui/institution-card";
 import { ModeToggle } from "@/components/ui/mode-toggle";
 import PageSection from "@/components/ui/pageSection";
-import { SearchBar } from "@/components/ui/searchbar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { debounce } from "lodash-es";
 import type React from "react";
@@ -24,8 +23,8 @@ const Home: React.FC = () => {
 	const [limit] = useState<number>(15);
 	const [allItemsLoaded, setAllItemsLoaded] = useState<boolean>(false);
 
+	// Remove duplicates based on institution name and shuffle institutions
 	const _institutions = useMemo(() => {
-		// remove duplicates based on institution name
 		return institutions
 			.filter(
 				(institution, index, self) =>
@@ -40,11 +39,9 @@ const Home: React.FC = () => {
 	const [filteredInstitutions, setFilteredInstitutions] =
 		useState<Institution[]>(_institutions);
 
-	const debouncedSetQuery = useCallback(
-		debounce((newQuery: string) => {
-			setQuery(newQuery);
-		}, 300),
-		[],
+	const debouncedSetQuery = useMemo(
+		() => debounce((newQuery: string) => setQuery(newQuery), 300),
+		[]
 	);
 
 	const handleSearch = useCallback(
@@ -54,10 +51,15 @@ const Home: React.FC = () => {
 		[debouncedSetQuery],
 	);
 
-	const handleFilters = (props: { categories: string[]; state: string }) => {
-		setSelectedCategories(props.categories);
-		setSelectedState(props.state);
-	};
+	const handleFilters = useCallback(
+		(props: { categories: string[]; state: string }) => {
+			setSelectedCategories(props.categories);
+			setSelectedState(props.state);
+			setOffset(0);
+			setAllItemsLoaded(false);
+		},
+		[]
+	);
 
 	const observer = useRef<IntersectionObserver | null>(null);
 
@@ -113,11 +115,7 @@ const Home: React.FC = () => {
 
 	return (
 		<PageSection>
-			<Filters onChange={handleFilters} />
-
-			<div className="flex justify-end items-center gap-2 mb-4">
-				<SearchBar onSearch={handleSearch} onChange={handleFilters} />
-			</div>
+			<Filters onSearch={handleSearch} onChange={handleFilters} institutions={_institutions} />
 
 			<CustomMap showAll={true} />
 			<ModeToggle className="absolute top-5 right-5" />
