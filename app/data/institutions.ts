@@ -5251,7 +5251,7 @@ export const institutions: Institution[] = [
     name: "Tabung Khairat Kematian",
     category: "others",
     state: "Terengganu",
-    city: "Besut",
+    city: "Jerteh",
     qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000001020031001993474755204866153034585802MY5923TABUNG KHAIRAT KEMATIAN6005BESUT61052200063045B8E",
@@ -5262,7 +5262,7 @@ export const institutions: Institution[] = [
     name: "Masjid Nasiruddin Shah",
     category: "mosque",
     state: "Terengganu",
-    city: "Kg Raja",
+    city: "Kampung Raja",
     qrImage: "",
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000001139031001393714145204866153034585802MY5922MASJID NASIRUDDIN SHAH6007KG RAJA6105222006304CB5B",
@@ -5415,7 +5415,7 @@ export const institutions: Institution[] = [
     id: 466,
     name: "Masjid Daerah Putatan",
     category: "mosque",
-    state: "Johor",
+    state: "Sabah",
     city: "Putatan",
     qrImage: "",
     qrContent:
