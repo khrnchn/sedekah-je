@@ -107,7 +107,6 @@ const Rawak = () => {
 				</button>
 			</div>
 
-
 			<div className="grid grid-flow-col gap-1 items-center">
 				<p className="max-sm:text-xs">Pilih Tapisan: </p>
 				{mappedCategories.map((category) => (

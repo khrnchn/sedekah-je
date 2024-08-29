@@ -1,44 +1,45 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from "react";
 
 interface Dimensions {
-  width: number;
-  height: number;
+	width: number;
+	height: number;
 }
 
 const useClientDimensions = (): Dimensions => {
-  const getDimensions = (): Dimensions => {
-    if (typeof window === 'undefined') {
-      return { width: 0, height: 0 };
-    }
-    
-    return {
-      width: window.innerWidth,
-      height: window.innerHeight,
-    }
-  };
+	const getDimensions = (): Dimensions => {
+		if (typeof window === "undefined") {
+			return { width: 0, height: 0 };
+		}
 
-  const [dimensions, setDimensions] = useState<Dimensions>(getDimensions);
+		return {
+			width: window.innerWidth,
+			height: window.innerHeight,
+		};
+	};
 
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
+	const [dimensions, setDimensions] = useState<Dimensions>(getDimensions);
 
-    const handleResize = () => {
-      setDimensions(getDimensions());
-    };
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+	useEffect(() => {
+		if (typeof window === "undefined") {
+			return;
+		}
 
-    window.addEventListener('resize', handleResize);
+		const handleResize = () => {
+			setDimensions(getDimensions());
+		};
 
-    // Cleanup listener on component unmount
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
+		window.addEventListener("resize", handleResize);
 
-  return dimensions;
+		// Cleanup listener on component unmount
+		return () => {
+			window.removeEventListener("resize", handleResize);
+		};
+	}, []);
+
+	return dimensions;
 };
 
 export default useClientDimensions;
