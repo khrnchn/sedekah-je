@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import RawakFooter from "@/components/rawak-footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/ui/header";
 import Ribbon from "@/components/ui/ribbon";
@@ -76,7 +75,6 @@ export default function RootLayout({
 					<Analytics />
 					<Toaster richColors />
 					<Ribbon />
-					<RawakFooter />
 				</ThemeProvider>
 			</body>
 		</html>

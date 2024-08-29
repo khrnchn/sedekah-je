@@ -1,5 +1,8 @@
 "use client";
 
+import type React from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
 import CustomMap from "@/components/custom-map";
 import Filters from "@/components/sections/filters";
 import { Card } from "@/components/ui/card";
@@ -7,9 +10,8 @@ import InstitutionCard from "@/components/ui/institution-card";
 import { ModeToggle } from "@/components/ui/mode-toggle";
 import PageSection from "@/components/ui/pageSection";
 import { Skeleton } from "@/components/ui/skeleton";
+import RawakFooter from "@/components/rawak-footer";
 import { debounce } from "lodash-es";
-import type React from "react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { institutions } from "./data/institutions";
 import type { Institution } from "./types/institutions";
 
@@ -157,6 +159,7 @@ const Home: React.FC = () => {
 					))}
 				</div>
 			)}
+			<RawakFooter />
 		</PageSection>
 	);
 };
