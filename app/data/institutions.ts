@@ -7546,5 +7546,16 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow"],
 		coords: [2.903710491949355, 101.72520144266342],
 	},
-
+	{
+		id: 661,
+		name: "Madrasah Tahfizul Quran Penanti",
+		category: "others",
+		state: "Pulau Pinang",
+		city: "Kubang Semang",
+		qrImage: "",
+		qrContent:
+			"00020201021126420014A000000615000101066033460210MD000846775204829953034585802MY5925Madrasah Tahfizul Quran P6002MY6273032516645077758810011150649030520166450781483100109530716166450751455500363043B8F",
+		supportedPayment: ["duitnow"],
+		coords: [5.414885082809886, 100.50885313468898],
+	},
 ];
