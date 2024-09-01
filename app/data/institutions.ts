@@ -7522,4 +7522,30 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 		coords: [5.3320414015369915, 100.45089589886389],
 	},
+	{
+		// https://www.facebook.com/MSAMuarJohor/
+		id: 659,
+		name: "Masjid Sungai Abong",
+		category: "mosque",
+		state: "Johor",
+		city: "Muar",
+		qrImage: "",
+		qrContent:
+			"00020201021126610014A000000615000101065641670215QRMID0000007494041001355045005204866153034585802MY5919MASJID SUNGAI ABONG6004MUAR61058400063041B1F",
+		supportedPayment: ["duitnow"],
+		coords: [2.059970,102.594600],
+	},
+	{
+		// https://www.facebook.com/annurpresint11/
+		id: 660,
+		name: "Surau An Nur Presint 11 Putrajaya",
+		category: "surau",
+		state: "W.P. Putrajaya",
+		city: "Putrajaya",
+		qrImage: "",
+		qrContent:
+			"00020201021126520014A000000615000101068900530220MDN162331281601870075204866153034585802MY5914SURAUANNURP11K6009PUTRAJAYA630465FC",
+		supportedPayment: ["duitnow"],
+		coords: [2.9480098,101.6746468],
+	},
 ];
