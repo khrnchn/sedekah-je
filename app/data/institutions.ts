@@ -7549,7 +7549,7 @@ export const institutions: Institution[] = [
 		coords: [2.9480098,101.6746468],
 	},
 	{
-		id: 661,
+    id: 661,
 		name: "Masjid Al-Syifa Bandar Penawar",
 		category: "mosque",
 		state: "Johor",
@@ -7597,4 +7597,17 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow"],
 		coords: [3.022100,101.443100],
 	},
+  {
+    // https://www.facebook.com/musollaarraudhahsouthvillecity/
+    id: 665,
+    name: "Musolla Ar Raudhah Southvillecity",
+    category: "surau",
+    state: "Selangor",
+    city: "Bangi",
+    qrImage: "",
+    qrContent:
+      "00020201021126610014A000000615000101065641670215QRMID0000007399041001655728855204866153034585802MY5918MUSOLLA AR-RAUDHAH6006SEPANG61054390063043931",
+    supportedPayment: ["duitnow", "tng"],
+    coords: [2.902881, 101.765017],
+  }
 ];
