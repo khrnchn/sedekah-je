@@ -7548,4 +7548,17 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow"],
 		coords: [2.9480098,101.6746468],
 	},
+	{
+		// https://www.facebook.com/musollaarraudhahsouthvillecity/
+		id: 661,
+		name: "Musolla Ar Raudhah Southvillecity",
+		category: "surau",
+		state: "Selangor",
+		city: "Bangi",
+		qrImage: "",
+		qrContent:
+			"00020201021126610014A000000615000101065641670215QRMID0000007399041001655728855204866153034585802MY5918MUSOLLA AR-RAUDHAH6006SEPANG61054390063043931",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [2.902881, 101.765017],
+	},
 ];
