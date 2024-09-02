@@ -7548,4 +7548,17 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow"],
 		coords: [2.9480098,101.6746468],
 	},
+	{
+		//https://www.instagram.com/mjarklang/?hl=en
+		id: 661,
+		name: "Masjid Jamek Ar-Rahimiah, Klang (MJAR Klang)",
+		category: "mosque",
+		state: "Selangor",
+		city: "Klang",
+		qrImage: "",
+		qrContent:
+			"00020201021126580014A000000615000101065887340212MBBQR1716799031000000000005204729953034585802MY5924MASJID JAMEK AR RAHIMIAH6008SELANGOR6304C977",
+		supportedPayment: ["duitnow"],
+		coords: [3.022100,101.443100],
+	}
 ];
