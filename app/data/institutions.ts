@@ -7548,4 +7548,40 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow"],
 		coords: [2.9480098,101.6746468],
 	},
+	{
+		id: 661,
+		name: "Masjid Al-Syifa Bandar Penawar",
+		category: "mosque",
+		state: "Johor",
+		city: "Kota Tinggi",
+		qrImage: "",
+		qrContent:
+			"00020201021126420014A000000615000101066033460210MD000081155204866153034585802MY5915MASJID AL-SYIFA6002MY62530325164204520572600132849403105201642045211097005110363040379",
+		supportedPayment: ["duitnow"],
+		coords: [1.5523071282221719, 104.23761355070707],
+	},
+	{
+		id: 662,
+		name: "Surau Al-Ikhwan Desa Pinggiran Putra",
+		category: "surau",
+		state: "Selangor",
+		city: "Sepang",
+		qrImage: "",
+		qrContent:
+			"00020201021126420014A000000615000101066033460210MD000825135204866153034585802MY5925SURAU AL-IKHWAN DESA PING6002MY627303251662693031661004183192293052016626934964280043425071616626923665280086304AF7C",
+		supportedPayment: ["duitnow"],
+		coords: [2.903710491949355, 101.72520144266342],
+	},
+	{
+		id: 663,
+		name: "Madrasah Tahfizul Quran Penanti",
+		category: "others",
+		state: "Pulau Pinang",
+		city: "Kubang Semang",
+		qrImage: "",
+		qrContent:
+			"00020201021126420014A000000615000101066033460210MD000846775204829953034585802MY5925Madrasah Tahfizul Quran P6002MY6273032516645077758810011150649030520166450781483100109530716166450751455500363043B8F",
+		supportedPayment: ["duitnow"],
+		coords: [5.414885082809886, 100.50885313468898],
+	},
 ];
