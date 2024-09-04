@@ -7758,5 +7758,15 @@ export const institutions: Institution[] = [
     supportedPayment: ['duitnow'],
     coords: [3.29905762120473, 101.63324944243256],
   },
-
+  {
+	id: 678,
+	name: "Surau Darun Najihin, Klang",
+	category: "surau",
+	state: "Selangor",
+	city: "Klang",
+	qrImage: "",
+	qrContent: "00020201021126420014A000000615000101066033460210MD001307045204866153034585802MY5919SURAU DARUN NAJIHIN6002MY627303251709192430756002080406081052017091924468150036756071617091920091980056304A486",
+	supportedPayment: ['duitnow'],
+	coords: [3.0258358912535916, 101.45294403951239],
+  }
 ];
