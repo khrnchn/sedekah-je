@@ -2165,10 +2165,12 @@ export const institutions: Institution[] = [
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000237031001778096795204866153034585802MY5921PASTI KAW JOHOR BAHRU6011JOHOR BAHRU61058035063046979",
 		supportedPayment: ["duitnow", "tng"],
+		coords: [1.4977054322750185, 103.74255758010585],
 	},
 	{
+		// https://www.facebook.com/p/Masjid-Al-Jawaher-Felda-Air-Tawar-4-100069622128798/?locale=ms_MY
 		id: 184,
-		name: "Masjid Baru FELDA Air Tawar 4",
+		name: "Masjid Al-Jawaher Kampung Felda Ayer Tawar 4",
 		category: "mosque",
 		state: "Johor",
 		city: "Kota Tinggi",
@@ -2176,6 +2178,7 @@ export const institutions: Institution[] = [
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000243031001671652005204866153034585802MY5921MASJID BARU FELDA AT46011KOTA TINGGI6105819006304279D",
 		supportedPayment: ["duitnow", "tng"],
+		coords: [1.6285532497961506, 104.08936330782181],
 	},
 	{
 		// https://www.suraualtaqwa.my/
@@ -2280,8 +2283,9 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 	},
 	{
+		// https://www.facebook.com/SurauAlpinia.BP
 		id: 193,
-		name: "JK Pembinaan Surau Alpinia Bandar Putra",
+		name: "Surau Alpinia Bandar Putra",
 		category: "surau",
 		state: "Johor",
 		city: "Kulai",
@@ -2289,6 +2293,7 @@ export const institutions: Institution[] = [
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000548031001277816935204866153034585802MY5925JK PMBINAAN SURAU ALPINIA6005KULAI6105810006304DB50",
 		supportedPayment: ["duitnow", "tng"],
+		coords: [1.6683703367875515, 103.64406088323074],
 	},
 	{
 		// https://www.facebook.com/ANWARULMAHABBAHKLUANG/
@@ -2314,6 +2319,7 @@ export const institutions: Institution[] = [
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000717031001977849795204839853034585802MY5925YAYASAN PNDIDIKAN HIDAYAH6006SKUDAI610581300630438E5",
 		supportedPayment: ["duitnow", "tng"],
+		coords: [1.5116902876529386, 103.68887389524497],
 	},
 	{
 		// https://www.facebook.com/MSAMuarJohor/
@@ -2339,10 +2345,12 @@ export const institutions: Institution[] = [
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000830031001956609235204866153034585802MY5922MASJID TUNKU LAKSAMANA6011JOHOR BAHRU610580990630490E4",
 		supportedPayment: ["duitnow", "tng"],
+		coords: [1.4753210202451663, 103.7650083],
 	},
 	{
+		// Doubt this surau still exists
 		id: 198,
-		name: "Surau Jalan Kurniawati",
+		name: "Surau Kampung Kurnia",
 		category: "surau",
 		state: "Johor",
 		city: "Johor Bahru",
@@ -2350,6 +2358,7 @@ export const institutions: Institution[] = [
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000909031001972881115204866153034585802MY5917SURAU KURNIAWATI 6011JOHOR BAHRU6105802506304771D",
 		supportedPayment: ["duitnow", "tng"],
+		coords:[1.4958693160048218, 103.75632287726339],
 	},
 	{
 		// https://www.facebook.com/MSIBP/
@@ -2400,6 +2409,7 @@ export const institutions: Institution[] = [
 		qrContent:
 			"00020201021126620014A000000615000101065641670215QRMID00000024220311011169202115204866153034585802MY5924SURAU AL AMIN DESA RHU 26008SEREMBAN610570400630435D3",
 		supportedPayment: ["duitnow", "tng"],
+		coords: [2.723623302488087, 101.88533788465793],
 	},
 	{
 		id: 203,
@@ -2437,8 +2447,9 @@ export const institutions: Institution[] = [
 		coords: [1.6630202495800865, 103.64198617799235],
 	},
 	{
+		// https://www.facebook.com/msktsj/?locale=ms_MY
 		id: 206,
-		name: "Masjid Seremban Jaya",
+		name: "Masjid Saidatina Khadijah, Taman Seremban Jaya",
 		category: "mosque",
 		state: "Negeri Sembilan",
 		city: "Seremban",
@@ -2446,6 +2457,7 @@ export const institutions: Institution[] = [
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000031031001361663255204866153034585802MY5920MASJID SEREMBAN JAYA6008SEREMBAN6105701006304A64F",
 		supportedPayment: ["duitnow", "tng"],
+		coords: [2.670806205841217, 101.97652306861723]
 	},
 	{
 		// https://www.facebook.com/masjidhussainofficial/
@@ -6041,7 +6053,7 @@ export const institutions: Institution[] = [
 	},
 	{
 		id: 527,
-		name: "Masjid Taman Sg Dua Utama",
+		name: "Masjid Taman Sungai Dua Utama",
 		category: "mosque",
 		state: "Pulau Pinang",
 		city: "Butterworth",
@@ -6051,8 +6063,9 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 	},
 	{
+		// https://www.facebook.com/MasjidJamekSungaiGelugor/?locale=ms_MY
 		id: 528,
-		name: "Masjid Jamek Sg.gelugor",
+		name: "Masjid Jamek Sungai Gelugor",
 		category: "mosque",
 		state: "Pulau Pinang",
 		city: "Gelugor",
@@ -6060,17 +6073,19 @@ export const institutions: Institution[] = [
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000311031001945744855204866153034585802MY5923MASJID JAMEK SG.GELUGOR6007GELUGOR61051170063049D41",
 		supportedPayment: ["duitnow", "tng"],
+		coords: [5.3708334731979335, 100.31075690364696],
 	},
 	{
 		id: 529,
-		name: "Masjid Al Malik Usm",
+		name: "Masjid Al Malik Khalid USM",
 		category: "mosque",
 		state: "Pulau Pinang",
-		city: "Pulau Pinang",
+		city: "Gelugor",
 		qrImage: "",
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000464031001340870015204866153034585802MY5919MASJID AL MALIK USM6012PULAU PINANG61051180063041F3B",
 		supportedPayment: ["duitnow", "tng"],
+		coords: [5.353697477717238, 100.30203775098181],
 	},
 	{
 		id: 530,
@@ -6196,7 +6211,7 @@ export const institutions: Institution[] = [
 	},
 	{
 		id: 541,
-		name: "Masjid Kampung Bkt Tunggal",
+		name: "Masjid Kampung Bukit Tunggal",
 		category: "mosque",
 		state: "Johor",
 		city: "Segamat",
@@ -6295,8 +6310,8 @@ export const institutions: Institution[] = [
 	},
 	{
 		id: 550,
-		name: "Masjid Jamik Kampung Lukut Kt",
-		category: "others",
+		name: "Masjid Jamik Kampung Lukut Kota Tinggi",
+		category: "mosque",
 		state: "Johor",
 		city: "Kota Tinggi",
 		qrImage: "",
