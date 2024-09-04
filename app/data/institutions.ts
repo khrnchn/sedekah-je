@@ -7760,7 +7760,7 @@ export const institutions: Institution[] = [
   },
   {
 	id: 678,
-	name: "Surau Darun Najihin, Klang",
+	name: "Surau Darun Najihin",
 	category: "surau",
 	state: "Selangor",
 	city: "Klang",
