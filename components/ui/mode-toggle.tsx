@@ -11,8 +11,9 @@ import { Button } from "@/components/ui/button";
 type Props = ComponentProps<typeof Button>;
 
 export const ModeToggle = forwardRef<HTMLButtonElement, Props>(
-	({ ...props }) => {
+	({ className, ...props }, ref) => {
 		const { theme, setTheme } = useTheme();
+
 		const toggleTheme = () => {
 			setTheme(theme === "light" ? "dark" : "light");
 		};
@@ -21,11 +22,12 @@ export const ModeToggle = forwardRef<HTMLButtonElement, Props>(
 				variant="outline"
 				size="icon"
 				onClick={toggleTheme}
-				ref={props.ref}
+				ref={ref}
 				className={cn(
 					"bg-muted border border-gray-200 dark:border-slate-900 rounded-full w-20 relative",
-					props.className,
+					className
 				)}
+				{...props}
 			>
 				<motion.div
 					initial={{
@@ -45,7 +47,7 @@ export const ModeToggle = forwardRef<HTMLButtonElement, Props>(
 				<span className="sr-only">Toggle theme</span>
 			</Button>
 		);
-	},
+	}
 );
 
 ModeToggle.displayName = "ModeToggle";

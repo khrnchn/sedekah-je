@@ -51,8 +51,8 @@ type Props = {
 	onChange: (props: { state: string }) => void;
 };
 
-export const StatesDropdown = forwardRef<HTMLSelectElement, Props>(
-	({ onChange }) => {
+export const StatesDropdown = forwardRef<HTMLButtonElement, Props>(
+	({ onChange, ...props }, ref) => {
 		const [value, setValue] = useState(ALL_STATES);
 
 		const handleSelect = (currentValue: string) => {
@@ -61,8 +61,8 @@ export const StatesDropdown = forwardRef<HTMLSelectElement, Props>(
 		};
 
 		return (
-			<Select value={value} onValueChange={handleSelect}>
-				<SelectTrigger className="rounded-lg border">
+			<Select value={value} onValueChange={handleSelect} {...props}>
+				<SelectTrigger className="rounded-lg border" ref={ref}>
 					<SelectValue placeholder="" />
 				</SelectTrigger>
 				<SelectContent>
