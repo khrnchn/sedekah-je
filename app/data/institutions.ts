@@ -3370,10 +3370,11 @@ export const institutions: Institution[] = [
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000005045031001338839665204566153034585802MY5924MASJID DAMANSARA PERDANA6013PETALING JAYA6105478206304EFB2",
 		supportedPayment: ["duitnow", "tng"],
+		coords: [3.1733578669952993, 101.61813343874167],
 	},
 	{
 		id: 281,
-		name: "Masjid Angkatan Tentera",
+		name: "Masjid Kem Tentera Sungai Besi",
 		category: "mosque",
 		state: "W.P. Kuala Lumpur",
 		city: "Sungai Besi",
@@ -3381,19 +3382,23 @@ export const institutions: Institution[] = [
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000297031001221777205204866153034585802MY5923MASJID ANGKATAN TENTERA6011SUNGAI BESI61055700063043EC8",
 		supportedPayment: ["duitnow", "tng"],
+		coords: [3.0585296127142145, 101.71656880395051],
 	},
 	{
+		// https://www.facebook.com/suraunurulimantamanminangcheras/
 		id: 282,
-		name: "Surau Nurul Iman",
+		name: "Surau Nurul Iman Taman Minang",
 		category: "surau",
-		state: "W.P. Kuala Lumpur",
-		city: "Taman Minang Kl",
+		state: "Selangor",
+		city: "Cheras",
 		qrImage: "",
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000318031001692066535204866153034585802MY5916SURAU NURUL IMAN6015TAMAN MINANG KL61055600063048622",
 		supportedPayment: ["duitnow", "tng"],
+		coords: [3.057902755357908, 101.75276297273837],
 	},
 	{
+		// https://www.facebook.com/masjidsaadah/
 		id: 283,
 		name: "Masjid Nurrusaadah",
 		category: "mosque",
@@ -3403,10 +3408,12 @@ export const institutions: Institution[] = [
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000391031001622145835204866153034585802MY5919MASJID NURRUSAADAH 6012KUALA LUMPUR6105561006304CE8E",
 		supportedPayment: ["duitnow", "tng"],
+		coords:[3.1102408603591045, 101.75458562959342],
 	},
 	{
+		// https://www.facebook.com/masjidalmukhlisinalamdamai/
 		id: 284,
-		name: "Masjid Al Mukhlisin",
+		name: "Masjid Al-Mukhlisin",
 		category: "mosque",
 		state: "W.P. Kuala Lumpur",
 		city: "Cheras",
@@ -3414,6 +3421,7 @@ export const institutions: Institution[] = [
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000549031001391372065204866153034585802MY5919MASJID AL MUKHLISIN6006CHERAS6105560006304613C",
 		supportedPayment: ["duitnow", "tng"],
+		coords: [3.063298329452579, 101.74236341534262],
 	},
 	{
 		id: 285,
@@ -3504,6 +3512,8 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 	},
 	{
+		// Zaid or Zahid in QR code?
+		// https://www.facebook.com/masjidzaidbinthabit/
 		id: 293,
 		name: "Masjid Zahid Bin Thabit",
 		category: "mosque",
@@ -3513,6 +3523,7 @@ export const institutions: Institution[] = [
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000103031001925422105204866153034585802MY5923MASJID ZAHID BIN THABIT6012KUALA LUMPUR6105560006304C4A8",
 		supportedPayment: ["duitnow", "tng"],
+		coords: [3.078213064044826, 101.71493011326791],
 	},
 	{
 		id: 294,
