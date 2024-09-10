@@ -2,20 +2,23 @@
 
 import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { debounce } from "lodash-es";
 
 import CustomMap from "@/components/custom-map";
-import Filters from "@/components/sections/filters";
 import { Card } from "@/components/ui/card";
 import InstitutionCard from "@/components/ui/institution-card";
 import PageSection from "@/components/ui/pageSection";
 import { Skeleton } from "@/components/ui/skeleton";
 import RawakFooter from "@/components/rawak-footer";
-import { debounce } from "lodash-es";
-import { institutions } from "./data/institutions";
-import type { Institution } from "./types/institutions";
 import { removeDuplicatesAndShuffle } from "@/lib/utils";
 
-const Home: React.FC = () => {
+import { institutions } from "./data/institutions";
+import type { Institution } from "./types/institutions";
+import FilterCategory from "@/components/filter-category";
+import FilterState from "@/components/filter-state";
+import Search from "@/components/search";
+
+const Home = () => {
 	const [query, setQuery] = useState<string>("");
 	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 	const [selectedState, setSelectedState] = useState<string>("");
@@ -46,15 +49,17 @@ const Home: React.FC = () => {
 		[debouncedSetQuery],
 	);
 
-	const handleFilters = useCallback(
-		(props: { categories: string[]; state: string }) => {
-			setSelectedCategories(props.categories);
-			setSelectedState(props.state);
-			setOffset(0);
-			setAllItemsLoaded(false);
-		},
-		[],
-	);
+	const handleStateChange = useCallback((state: string) => {
+		setSelectedState(state);
+		setOffset(0);
+		setAllItemsLoaded(false);
+	}, []);
+
+	const handleCategoryChange = useCallback((categories: string[]) => {
+		setSelectedCategories(categories);
+		setOffset(0);
+		setAllItemsLoaded(false);
+	}, []);
 
 	const observer = useRef<IntersectionObserver | null>(null);
 
@@ -110,11 +115,22 @@ const Home: React.FC = () => {
 
 	return (
 		<PageSection>
-			<Filters
-				onSearch={handleSearch}
-				onChange={handleFilters}
+			<FilterCategory
+				onCategoryChange={handleCategoryChange}
+				selectedState={selectedState}
 				institutions={_institutions}
 			/>
+			<div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 w-full">
+				<div className="w-full sm:w-1/5">
+					<FilterState
+						onStateChange={handleStateChange}
+						institutions={_institutions}
+					/>
+				</div>
+				<div className="w-full sm:w-4/5">
+					<Search onSearchChange={handleSearch} className="w-full" />
+				</div>
+			</div>
 
 			<CustomMap showAll={true} />
 
