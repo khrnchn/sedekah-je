@@ -3912,8 +3912,9 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 	},
 	{
+		// https://www.facebook.com/darulquranpitas/
 		id: 330,
-		name: "PITAS",
+		name: "Darul Quran PITAS",
 		category: "others",
 		state: "Selangor",
 		city: "Batu Caves",
