@@ -1,145 +1,140 @@
 "use client";
 
+import Image from "next/image";
+import React, { useCallback, useMemo, useState } from "react";
+
+import FilterCategory from "@/components/filter-category";
+import FilterState from "@/components/filter-state";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import PageSection from "@/components/ui/pageSection";
 import QrCodeDisplay from "@/components/ui/qrCodeDisplay";
-import { Skeleton } from "@/components/ui/skeleton";
 import useClientDimensions from "@/hooks/use-client-dimensions";
-import Image from "next/image";
-import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
-import { institutions } from "../data/institutions";
-import { type Institution, categories } from "../types/institutions";
+import { removeDuplicateInstitutions } from "@/lib/utils";
+
+import { MapPin, QrCode } from "lucide-react";
+import { institutions as rawInstitutions } from "../data/institutions";
+import type { Institution } from "../types/institutions";
 
 const Rawak = () => {
-  const [randomInstitution, setRandomInstitution] =
-    useState<Institution | null>(null);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const { width } = useClientDimensions();
+	const [randomInstitution, setRandomInstitution] =
+		useState<Institution | null>(null);
+	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+	const [selectedState, setSelectedState] = useState<string>("");
+	const { width } = useClientDimensions();
 
-  const mappedCategories = Object.keys(categories).map((category) => ({
-    label: categories[category as keyof typeof categories].label,
-    value: category,
-  }));
+	const institutions = removeDuplicateInstitutions(rawInstitutions);
 
-  const filteredInstitutions = institutions.filter((institution) =>
-    selectedCategories.length !== 0
-      ? selectedCategories.includes(institution.category)
-      : true
-  );
-  const institutionLength = filteredInstitutions.length;
+	const filteredInstitutions = useMemo(() => {
+		return institutions.filter((institution) => {
+			const matchesCategory =
+				selectedCategories.length === 0 ||
+				selectedCategories.includes(institution.category);
+			const matchesState =
+				selectedState === "" || institution.state === selectedState;
+			return matchesCategory && matchesState;
+		});
+	}, [institutions, selectedCategories, selectedState]);
 
-  const generateRandomNumber = useCallback(() => {
-    const randomNumber = Math.floor(Math.random() * institutionLength);
+	const generateRandomNumber = useCallback(() => {
+		if (filteredInstitutions.length > 0) {
+			const randomNumber = Math.floor(
+				Math.random() * filteredInstitutions.length,
+			);
+			setRandomInstitution(filteredInstitutions[randomNumber]);
+		}
+	}, [filteredInstitutions]);
 
-    // setRandomInstitutionId(randomNumber);
-    setRandomInstitution(filteredInstitutions[randomNumber]);
-  }, [institutionLength, filteredInstitutions]);
+	return (
+		<PageSection className="bg-background transition-colors duration-200 ease-in-out">
+			<FilterCategory
+				onCategoryChange={(categories) => {
+					setSelectedCategories(categories);
+					setRandomInstitution(null);
+				}}
+				selectedState={selectedState}
+				institutions={institutions}
+			/>
+			<div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 w-full">
+				<div className="w-full sm:w-2/5">
+					<FilterState
+						onStateChange={(state) => {
+							setSelectedState(state);
+							setRandomInstitution(null);
+						}}
+					/>
+				</div>
+				<div className="w-full sm:w-3/5">
+					<Button
+						onClick={generateRandomNumber}
+						className="w-full bg-green-500 text-white px-6 py-3 hover:bg-green-600 transition-colors duration-300 shadow-md focus:outline-none"
+					>
+						🎲 Jana QR Secara Rawak
+					</Button>
+				</div>
+			</div>
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <render once only>
-  useEffect(() => {
-    generateRandomNumber();
-  }, []);
-
-  return (
-    <PageSection className="bg-background transition-colors duration-200 ease-in-out items-center justify-center pb-8">
-      <div className="grid place-items-center m-8">
-        {randomInstitution ? (
-          <div className="w-full max-w-[500px] h-full flex flex-col bg-white rounded-3xl">
-            <div className="flex items-center justify-center ">
-              {randomInstitution.qrContent ? (
-                <QrCodeDisplay
-                  qrContent={randomInstitution.qrContent}
-                  supportedPayment={randomInstitution.supportedPayment}
-                  size={width < 500 ? width - 80 : 500}
-                />
-              ) : (
-                <Image
-                  priority
-                  width={200}
-                  height={200}
-                  src={randomInstitution.qrImage}
-                  alt={randomInstitution.name}
-                  className="w-full h-full lg:h-full sm:rounded-tr-lg sm:rounded-tl-lg object-cover object-top"
-                />
-              )}
-            </div>
-
-            <div className="mt-4">
-              <div className="flex flex-col sm:flex-row justify-between items-start p-4 gap-4">
-                <div className="flex-1">
-                  <h3 className="font-medium text-neutral-700 text-base capitalize">
-                    {randomInstitution.name}
-                  </h3>
-                  <p className="text-neutral-600 text-base capitalize">
-                    {randomInstitution.city}, {randomInstitution.state}
-                  </p>
-                </div>
-                <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                    randomInstitution.name
-                  )}`}
-                  target="_blank"
-                  className="px-4 py-2 text-sm rounded-full font-bold bg-green-500 text-white self-center"
-                  rel="noreferrer"
-                >
-                  Cari di peta
-                </a>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <Skeleton className="w-full h-[500px] sm:w-[500px] sm:h-[500px] rounded-3xl" />
-        )}
-      </div>
-
-      <div className="grid grid-flow-col gap-2 ">
-        <Link href="/">
-          <button
-            type="button"
-            className="bg-slate-500 text-white px-4 py-2 rounded-md hover:bg-slate-600 transition-colors duration-300 sticky bottom-12"
-          >
-            Kembali
-          </button>
-        </Link>
-        <button
-          type="button"
-          onClick={generateRandomNumber}
-          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors duration-300 sticky bottom-12"
-        >
-          🎲 Jana QR Secara Rawak
-        </button>
-      </div>
-
-      <div className="grid grid-flow-col gap-1 items-center">
-        <p className="max-sm:text-xs">Pilih Tapisan: </p>
-        {mappedCategories.map((category) => (
-          <button
-            type="button"
-            key={category.value}
-            onClick={() => {
-              if (selectedCategories.includes(category.value)) {
-                setSelectedCategories(
-                  selectedCategories.filter((c) => c !== category.value)
-                );
-              } else {
-                setSelectedCategories([...selectedCategories, category.value]);
-              }
-            }}
-            data-active={selectedCategories.includes(category.value)}
-            className="px-4 py-2 rounded-xl text-sm max-sm:text-xs font-bold data-[active=true]:bg-slate-500 data-[active=true]:text-white truncate select-none flex flex-row gap-2 items-center justify-center"
-          >
-            {category.label}
-            <span className="rounded-full px-2 py-1 bg-slate-200  text-black ">
-              {
-                institutions.filter((ins) => ins.category === category.value)
-                  .length
-              }
-            </span>
-          </button>
-        ))}
-      </div>
-    </PageSection>
-  );
+			<div className="flex flex-col md:flex-row gap-8">
+				<Card className="w-full">
+					{randomInstitution ? (
+						<div className="flex flex-col items-center">
+							<div className="m-4">
+								{randomInstitution.qrContent ? (
+									<QrCodeDisplay
+										qrContent={randomInstitution.qrContent}
+										supportedPayment={randomInstitution.supportedPayment}
+										size={width < 300 ? width - 40 : 260}
+									/>
+								) : (
+									<Image
+										priority
+										width={260}
+										height={260}
+										src={randomInstitution.qrImage}
+										alt={randomInstitution.name}
+										className="rounded-lg object-cover object-top"
+									/>
+								)}
+							</div>
+							<div className="w-full">
+								<h3 className="text-xl font-semibold mb-2 text-center">
+									{randomInstitution.name}
+								</h3>
+								<div className="flex items-center justify-center text-sm text-gray-600 dark:text-gray-400 mb-4">
+									<MapPin className="w-4 h-4 mr-1" />
+									<span>
+										{randomInstitution.city}, {randomInstitution.state}
+									</span>
+								</div>
+								<Button
+									asChild
+									className="flex items-center justify-center rounded-none rounded-b-lg bg-green-500 text-white px-6 py-3  hover:bg-green-600 transition-colors duration-300 shadow-md focus:outline-none"
+								>
+									<a
+										href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(randomInstitution.name)}`}
+										target="_blank"
+										rel="noreferrer"
+									>
+										Cari di peta
+									</a>
+								</Button>
+							</div>
+						</div>
+					) : (
+						<div className="flex flex-col items-center justify-center h-full min-h-[300px] bg-gray-50 dark:bg-gray-800 rounded-lg p-8 transition-colors duration-200">
+							<QrCode
+								size={48}
+								className="text-gray-400 dark:text-gray-500 mb-4"
+							/>
+							<p className="text-gray-600 dark:text-gray-300 text-lg mb-6 text-center">
+								Klik butang untuk menjana kod QR rawak.
+							</p>
+						</div>
+					)}
+				</Card>
+			</div>
+		</PageSection>
+	);
 };
 
 export default Rawak;
