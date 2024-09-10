@@ -13,6 +13,7 @@ import RawakFooter from "@/components/rawak-footer";
 import { debounce } from "lodash-es";
 import { institutions } from "./data/institutions";
 import type { Institution } from "./types/institutions";
+import { removeDuplicatesAndShuffle } from "@/lib/utils";
 
 const Home: React.FC = () => {
 	const [query, setQuery] = useState<string>("");
@@ -25,24 +26,17 @@ const Home: React.FC = () => {
 	const [allItemsLoaded, setAllItemsLoaded] = useState<boolean>(false);
 
 	// Remove duplicates based on institution name and shuffle institutions
-	const _institutions = useMemo(() => {
-		return institutions
-			.filter(
-				(institution, index, self) =>
-					index ===
-					self.findIndex(
-						(t) => t.name.toLowerCase() === institution.name.toLowerCase(),
-					),
-			)
-			.sort(() => Math.random() - 0.5);
-	}, []);
+	const _institutions = useMemo(
+		() => removeDuplicatesAndShuffle(institutions),
+		[],
+	);
 
 	const [filteredInstitutions, setFilteredInstitutions] =
 		useState<Institution[]>(_institutions);
 
 	const debouncedSetQuery = useMemo(
 		() => debounce((newQuery: string) => setQuery(newQuery), 300),
-		[]
+		[],
 	);
 
 	const handleSearch = useCallback(
@@ -59,7 +53,7 @@ const Home: React.FC = () => {
 			setOffset(0);
 			setAllItemsLoaded(false);
 		},
-		[]
+		[],
 	);
 
 	const observer = useRef<IntersectionObserver | null>(null);
@@ -116,7 +110,11 @@ const Home: React.FC = () => {
 
 	return (
 		<PageSection>
-			<Filters onSearch={handleSearch} onChange={handleFilters} institutions={_institutions} />
+			<Filters
+				onSearch={handleSearch}
+				onChange={handleFilters}
+				institutions={_institutions}
+			/>
 
 			<CustomMap showAll={true} />
 
