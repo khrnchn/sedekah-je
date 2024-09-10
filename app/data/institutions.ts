@@ -7795,7 +7795,7 @@ export const institutions: Institution[] = [
 	
 	{
 		id: 680,
-		name: "Masjid Al-Zakirin Selayang ",
+		name: "Masjid Al-Zakirin Selayang",
 		category: "mosque",
 		state: "Selangor",
 		city: "Selayang",
@@ -7817,10 +7817,10 @@ export const institutions: Institution[] = [
 	  },
 	  {
 		id: 682,
-		name: "Masjid Dato Penghulu Menteri Sg Ujong ",
+		name: "Masjid Dato Penghulu Menteri Sg Ujong",
 		category: "mosque",
-		state: "Negeri Sembilan ",
-		city: " Nilai ",
+		state: "Negeri Sembilan",
+		city: " Nilai",
 		qrImage: "",
 		qrContent: "00020201021126420014A000000615000101066033460210MD001227135204866153034585802MY5925MASJID DATO PENGHULU MENT6002MY6273032516951825791480059656805290520169527698219900950590716169518233077500663041C0D",
 		supportedPayment: ['duitnow'],
