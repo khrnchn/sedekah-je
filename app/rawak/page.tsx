@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState, useRef } from "react";
 
 import FilterCategory from "@/components/filter-category";
 import FilterState from "@/components/filter-state";
@@ -17,6 +17,7 @@ import { institutions as rawInstitutions } from "../data/institutions";
 import type { Institution } from "../types/institutions";
 
 const Rawak = () => {
+	const cardRef = useRef<HTMLDivElement>(null);
 	const [randomInstitution, setRandomInstitution] =
 		useState<Institution | null>(null);
 	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -42,6 +43,7 @@ const Rawak = () => {
 				Math.random() * filteredInstitutions.length,
 			);
 			setRandomInstitution(filteredInstitutions[randomNumber]);
+			cardRef.current?.scrollIntoView({ behavior: "smooth" });
 		}
 	}, [filteredInstitutions]);
 
@@ -74,10 +76,10 @@ const Rawak = () => {
 				</div>
 			</div>
 
-			<div className="flex flex-col md:flex-row gap-8">
+			<div className="flex flex-col md:flex-row gap-8 pb-4" ref={cardRef}>
 				<Card className="w-full">
 					{randomInstitution ? (
-						<div className="flex flex-col items-center">
+						<div className="flex flex-col items-center" >
 							<div className="m-4">
 								{randomInstitution.qrContent ? (
 									<QrCodeDisplay

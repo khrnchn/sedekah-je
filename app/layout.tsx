@@ -74,7 +74,7 @@ export default function RootLayout({
 					{children}
 					<Analytics />
 					<Toaster richColors />
-					<Ribbon />
+					{/* <Ribbon /> */}
 				</ThemeProvider>
 			</body>
 		</html>
