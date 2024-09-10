@@ -9,10 +9,12 @@ export const Header = () => (
 		</Link>
 		<div className="flex flex-col items-center md:items-start">
 			<Link href="/">
-				<h1 className="text-2xl md:text-3xl font-bold text-foreground">SedekahJe</h1>
+				<h1 className="text-2xl md:text-3xl font-bold text-foreground">
+					SedekahJe
+				</h1>
 			</Link>
-			<p className="text-base md:text-lg text-gray-500 text-center md:text-left">
-				Senarai QR Masjid, Surau, Institusi
+			<p className="text-base md:text-lg text-gray-600 dark:text-gray-400 text-center md:text-left">
+				Senarai QR masjid, surau, dan institusi.
 			</p>
 		</div>
 		<ModeToggle className="absolute top-5 right-5" />
