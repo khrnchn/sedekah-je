@@ -10,7 +10,7 @@ import InstitutionCard from "@/components/ui/institution-card";
 import PageSection from "@/components/ui/pageSection";
 import { Skeleton } from "@/components/ui/skeleton";
 import RawakFooter from "@/components/rawak-footer";
-import { removeDuplicatesAndShuffle } from "@/lib/utils";
+import { removeDuplicateInstitutions, shuffleInstitutions } from "@/lib/utils";
 
 import { institutions } from "./data/institutions";
 import type { Institution } from "./types/institutions";
@@ -29,10 +29,9 @@ const Home = () => {
 	const [allItemsLoaded, setAllItemsLoaded] = useState<boolean>(false);
 
 	// Remove duplicates based on institution name and shuffle institutions
-	const _institutions = useMemo(
-		() => removeDuplicatesAndShuffle(institutions),
-		[],
-	);
+	const _institutions = useMemo(() => {
+		return shuffleInstitutions(removeDuplicateInstitutions(institutions));
+	}, []);
 
 	const [filteredInstitutions, setFilteredInstitutions] =
 		useState<Institution[]>(_institutions);

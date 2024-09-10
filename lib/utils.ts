@@ -17,22 +17,24 @@ export const slugify = (str: string) =>
 		.replace(/ /g, "-")
 		.replace(/[^a-z0-9-]/g, "");
 
-/**
- * Remove duplicates based on institution name and shuffle the remaining institutions
+/** Remove duplicates based on institution name
  * @param institutions Array of institutions
- * @returns Array of institutions without duplicates and shuffled
+ * @returns Array of institutions without duplicates
  */
-export function removeDuplicatesAndShuffle(
-	institutions: Institution[],
-): Institution[] {
-	// Remove duplicates based on institution name
-	const uniqueInstitutions = institutions.filter(
+export function removeDuplicateInstitutions(institutions: Institution[]) {
+	return institutions.filter(
 		(institution, index, self) =>
 			index ===
 			self.findIndex(
 				(t) => t.name.toLowerCase() === institution.name.toLowerCase(),
 			),
 	);
-	// Shuffle the unique institutions
-	return uniqueInstitutions.sort(() => Math.random() - 0.5);
+}
+
+/** Shuffle the institutions
+ * @param institutions Array of institutions
+ * @returns Array of institutions shuffled
+ */
+export function shuffleInstitutions(institutions: Institution[]) {
+	return institutions.sort(() => Math.random() - 0.5);
 }
