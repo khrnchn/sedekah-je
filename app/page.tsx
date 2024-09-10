@@ -121,10 +121,7 @@ const Home = () => {
 			/>
 			<div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 w-full">
 				<div className="w-full sm:w-1/5">
-					<FilterState
-						onStateChange={handleStateChange}
-						institutions={_institutions}
-					/>
+					<FilterState onStateChange={handleStateChange} className="w-full" />
 				</div>
 				<div className="w-full sm:w-4/5">
 					<Search onSearchChange={handleSearch} className="w-full" />

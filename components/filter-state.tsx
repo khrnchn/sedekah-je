@@ -9,7 +9,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import type { Institution } from "@/app/types/institutions";
+import { cn } from "@/lib/utils";
 
 const ALL_STATES = "all_states";
 
@@ -51,10 +51,10 @@ const states = [
 
 type Props = {
 	onStateChange: (state: string) => void;
-	institutions: Institution[];
+	className?: string;
 };
 
-const FilterState = ({ onStateChange }: Props) => {
+const FilterState = ({ onStateChange, className }: Props) => {
 	const [selectedState, setSelectedState] = useState<string>(ALL_STATES);
 
 	const handleStateChange = (currentValue: string) => {
@@ -64,40 +64,42 @@ const FilterState = ({ onStateChange }: Props) => {
 	};
 
 	return (
-		<Select value={selectedState} onValueChange={handleStateChange}>
-			<SelectTrigger className="rounded-lg border">
-				<SelectValue placeholder="" />
-			</SelectTrigger>
-			<SelectContent>
-				<SelectGroup>
-					{states.map((state) => (
-						<SelectItem
-							key={state.value}
-							value={state.value}
-							className="flex items-center"
-						>
-							{state.flag ? (
-								<div className="flex items-center space-x-3 w-full">
-									<div className="relative overflow-hidden border border-gray-200">
-										<Image
-											loading="lazy"
-											src={state.flag}
-											alt={`${state.label} flag`}
-											width={32}
-											height={18}
-											className="object-cover"
-										/>
+		<div className={cn("w-full", className)}>
+			<Select value={selectedState} onValueChange={handleStateChange}>
+				<SelectTrigger className="rounded-lg border">
+					<SelectValue placeholder="" />
+				</SelectTrigger>
+				<SelectContent>
+					<SelectGroup>
+						{states.map((state) => (
+							<SelectItem
+								key={state.value}
+								value={state.value}
+								className="flex items-center"
+							>
+								{state.flag ? (
+									<div className="flex items-center space-x-3 w-full">
+										<div className="relative overflow-hidden border border-gray-200">
+											<Image
+												loading="lazy"
+												src={state.flag}
+												alt={`${state.label} flag`}
+												width={32}
+												height={18}
+												className="object-cover"
+											/>
+										</div>
+										<span>{state.label}</span>
 									</div>
+								) : (
 									<span>{state.label}</span>
-								</div>
-							) : (
-								<span>{state.label}</span>
-							)}
-						</SelectItem>
-					))}
-				</SelectGroup>
-			</SelectContent>
-		</Select>
+								)}
+							</SelectItem>
+						))}
+					</SelectGroup>
+				</SelectContent>
+			</Select>
+		</div>
 	);
 };
 
