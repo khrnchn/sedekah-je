@@ -7893,7 +7893,17 @@ export const institutions: Institution[] = [
 		supportedPayment: ['duitnow'],
 		coords: [5.318533374115124, 100.20526433992647],
 	  },
-	
+	  {
+		id: 689,
+		name: "Masjid Al-Alami MITC",
+		category: "mosque",
+		state: "Melaka",
+		city: "Ayer Keroh",
+		qrImage: "",
+		qrContent: "00020201021126420014A000000615000101066033460210MD000014275204866153034585802MY5926Masjid Al-Alami Ayer Keroh6002MY62530325163065513815800424151295005201630655144540001626663040409",
+		supportedPayment: ['duitnow'],
+		coords: [2.2700359468893563, 102.28835838207891],
+	  },
 ];
 
 
