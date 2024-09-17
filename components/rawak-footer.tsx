@@ -8,17 +8,17 @@ const RawakFooter = () => {
 			<Link href="/rawak">
 				<Button
 					variant="outline"
-					className="bg-gradient-to-br from-orange-500 to-orange-300 border border-orange-400 rounded-full"
+					className="bg-gradient-to-br from-orange-500 to-orange-300 border border-orange-400 rounded-full hover:from-orange-600 hover:to-orange-400 transition-colors"
 				>
-					<p className="text-background font-medium">Sedekah Rawak</p>
+					<p className="text-black font-medium dark:text-white">Sedekah Rawak</p>
 				</Button>
 			</Link>
 			<a href="https://forms.gle/epGv61AnEWcjYe1C8" target="_blank">
 				<Button
 					variant="outline"
-					className="bg-gradient-to-br from-orange-500 to-orange-300 border border-orange-400 rounded-full"
+					className="bg-gradient-to-br from-orange-500 to-orange-300 border border-orange-400 rounded-full hover:from-orange-600 hover:to-orange-400 transition-colors"
 				>
-					<p className="text-background font-medium">Muatnaik QR</p>
+					<p className="text-black font-medium bold dark:text-white">Muatnaik QR</p>
 				</Button>
 			</a>
 		</footer>
