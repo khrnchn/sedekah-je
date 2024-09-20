@@ -16,7 +16,7 @@ const RawakFooter = () => {
 			<a href="https://forms.gle/epGv61AnEWcjYe1C8" target="_blank">
 				<Button
 					variant="outline"
-					className="bg-gradient-to-br from-orange-500 to-orange-300 border border-orange-400 rounded-full hover:from-orange-600 hover:to-orange-400 transition-colors"
+					className="bg-gradient-to-br from-blue-500 to-blue-300 border border-blue-400 rounded-full hover:from-blue-700 hover:to-blue-500 transition-colors duration-300"
 				>
 					<p className="text-black font-medium bold dark:text-white">Muatnaik QR</p>
 				</Button>
