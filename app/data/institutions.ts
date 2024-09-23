@@ -8212,6 +8212,61 @@ export const institutions: Institution[] = [
       "00020201021126420014A000000615000101066033460210MD000003315204866153034585802MY5925TABUNG PEMBINAAN DEWAN SE6002MY6273032516842936542240046410383080520168429368582300650800716162462649449600263041DA2",
     supportedPayment: ["duitnow"],
   },
+  {
+    id: 716,
+    name: "MUSOLLA SERI MUTIARA",
+    category: "surau",
+    state: "Selangor",
+    city: "Setia Alam",
+    qrImage: "",
+    qrContent:
+      "00020201021126420014A000000615000101066033460210MD001234245204866153034585802MY5920MUSOLLA SERI MUTIARA6002MY627303251695798575764003353942930052016957986026750080479071616957982566940086304D121",
+    supportedPayment: ["duitnow"],
+  },
+  {
+    id: 717,
+    name: "Surau Clover Garden Residence",
+    category: "surau",
+    state: "Selangor",
+    city: "Cyberjaya",
+    qrImage: "",
+    qrContent:
+      "00020201021126580014A000000615000101065016640226100106730007824O11AQOA00015204839853034585802MY5925SURAU CLOVER GARDEN RESID6002MY62150311O11AQOA00018264E9F73D3153F6BB8A92BC6C3DCACE256C798652CF743B1AB095D5E734063AE23963047D32",
+    supportedPayment: ["duitnow"],
+  },
+  {
+    id: 718,
+    name: "Masjid Bandar Tun Hussein Onn",
+    category: "mosque",
+    state: "Selangor",
+    city: "Cheras",
+    qrImage: "",
+    qrContent:
+      "00020201021126580014A000000615000101065887340212MBBQR1199605031000000000005204000053034585802MY5911MASJID BTHO6008SELANGOR6304A67B",
+    supportedPayment: ["duitnow"],
+  },
+  {
+    id: 719,
+    name: "Surau At-Toyyibah",
+    category: "surau",
+    state: "Selangor",
+    city: "Puchong",
+    qrImage: "",
+    qrContent:
+      "00020101021126580014A000000615000101065887340212MBBQR149959803100000000000520400005303458540500.005802MY5917SURAU AT-TOYYIBAH6008SELANGOR630434C5",
+    supportedPayment: ["duitnow"],
+  },
+  {
+    id: 720,
+    name: "Masjid Jamek Alma Jaya",
+    category: "mosque",
+    state: "Pulau Pinang",
+    city: "Bukit Mertajam",
+    qrImage: "",
+    qrContent:
+      "00020201021126580014A000000615000101065887340212MBBQR2187481031000000000005204729953034585802MY5922MASJID JAMEK ALMA JAYA6012PULAU PINANG6304B988",
+    supportedPayment: ["duitnow"],
+  },
 ];
 
 
