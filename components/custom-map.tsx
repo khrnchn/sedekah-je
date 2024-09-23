@@ -56,7 +56,7 @@ const CollapsibleCustomMap = ({
 				<Link href="/faq" passHref>
 					<Button
 						variant="outline"
-						className="bg-gradient-to-br from-blue-500 to-blue-300 border border-blue-400 rounded-full hover:from-blue-700 hover:to-blue-500 transition-colors duration-300 text-white"
+						className="bg-gradient-to-br from-blue-500 to-blue-300 border border-blue-400 rounded-full hover:from-blue-700 hover:to-blue-500 transition-colors"
 					>
 						<HelpCircle className="mr-2 h-5 w-5" />
 						<span className="hidden sm:inline ml-2">Soalan Lazim</span>
