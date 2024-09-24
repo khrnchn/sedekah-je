@@ -7726,7 +7726,7 @@ export const institutions: Institution[] = [
     id: 673,
     name: "Stray Free Foundation",
     category: "others",
-    state: "Kuala Lumpur",
+    state: "W.P. Kuala Lumpur",
     city: "Segambut",
     qrImage: "",
     qrContent:
@@ -8061,14 +8061,15 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow"],
   },
   {
+    // https://www.facebook.com/masjidsaidinaumaralkhattab/
     id: 702,
-    name: "Masjid Saidina Umar Al-Khattab",
+    name: "Masjid Saidina Umar Al-Khattab, Bukit Damansara",
     category: "mosque",
-    state: "Kuala Lumpur",
+    state: "W.P. Kuala Lumpur",
     city: "Kuala Lumpur",
     qrImage: "",
-    qrContent: "",
-    supportedPayment: ["duitnow"],
+    qrContent: "U7g9uDNGesDg4pFjPYTsktMDbFWHVoc2lq24qQ63cZM=",
+    supportedPayment: ["boost"],
   },
   {
     id: 703,
@@ -8302,5 +8303,3 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow"],
   },
 ];
-
-
