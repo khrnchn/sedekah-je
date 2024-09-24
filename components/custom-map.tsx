@@ -1,14 +1,19 @@
 "use client";
 
+import type { MapMarker } from "@/components/map";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { HelpCircle, MapIcon } from "lucide-react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { Button } from "./ui/button";
 
-const CollapsibleCustomMap = () => {
+const CollapsibleCustomMap = ({
+	marker,
+}: {
+	marker?: MapMarker;
+}) => {
 	const [isMapVisible, setIsMapVisible] = useState(false);
 
 	const LeafletMap = useMemo(
@@ -59,7 +64,7 @@ const CollapsibleCustomMap = () => {
 			</div>
 			{isMapVisible && (
 				<div className="mt-2">
-					<LeafletMap />
+					<LeafletMap marker={marker} />
 				</div>
 			)}
 		</div>

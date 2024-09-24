@@ -35,7 +35,7 @@ type MarkerColor =
 	| "grey"
 	| "black";
 
-type MapMarker = {
+export type MapMarker = {
 	name: string;
 	coords: [number, number];
 	color?: MarkerColor;

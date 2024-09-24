@@ -1,13 +1,13 @@
 "use client";
 
-import PageSection from "@/components/ui/pageSection";
-import type React from "react";
 import { institutions } from "@/app/data/institutions";
+import { CategoryColor } from "@/app/types/institutions";
+import CustomMap from "@/components/custom-map";
 import InstitutionCard from "@/components/ui/institution-card";
-import CustomMap from "../../../components/custom-map";
-import { CategoryColor } from "../../types/institutions";
-import { notFound } from "next/navigation";
+import PageSection from "@/components/ui/pageSection";
 import { slugify } from "@/lib/utils";
+import { notFound } from "next/navigation";
+import type React from "react";
 
 type Params = {
 	params: {
