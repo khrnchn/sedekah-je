@@ -2760,9 +2760,9 @@ export const institutions: Institution[] = [
   },
   {
     /* TODO: There are two Surau Nurul Hidayah in Selangor, need to be more specific
-		Surau Nurul Hidayah, Prima Selayang
-		Surau Nurul Hidayah, Taman Kemacahaya
-		*/
+    Surau Nurul Hidayah, Prima Selayang
+    Surau Nurul Hidayah, Taman Kemacahaya
+    */
     id: 232,
     name: "Surau Nurul Hidayah",
     category: "surau",
@@ -8265,6 +8265,40 @@ export const institutions: Institution[] = [
     qrImage: "",
     qrContent:
       "00020201021126580014A000000615000101065887340212MBBQR2187481031000000000005204729953034585802MY5922MASJID JAMEK ALMA JAYA6012PULAU PINANG6304B988",
+    supportedPayment: ["duitnow"],
+  },
+  {
+    // https://www.facebook.com/MasjidAlIttihadKgKumpulanLangkawi/
+    id: 721,
+    name: "Masjid Al Ittihad Kg Kumpulan",
+    category: "mosque",
+    state: "Kedah",
+    city: "Langkawi",
+    qrImage: "",
+    qrContent:
+      "00020201021126420014A000000615000101066033460210MD001013325204866153034585802MY5925MASJID AL-ITTIHAD KG KUMP6002MY6273032516787865965250054796909200520171195706385500288390716167878628456800163041AFC",
+    supportedPayment: ["duitnow"],
+  },
+  {
+    id: 722,
+    name: "Masjid Ar Rabbani",
+    category: "mosque",
+    state: "Melaka",
+    city: "Tangga Baru",
+    qrImage: "",
+    qrContent:
+      "00020101021126580014A000000615000101065887340212MBBQR155033303100000000000520400005303458540500.005802MY5917MASJID AR RABBANI6006MELAKA6304D4D5",
+    supportedPayment: ["duitnow"],
+  },
+  {
+    id: 723,
+    name: "Masjid Jamek Kemunting",
+    category: "mosque",
+    state: "Perak",
+    city: "Kamunting",
+    qrImage: "",
+    qrContent:
+      "00020201021126580014A000000615000101065887340212MBBQR1698694031000000000005204000053034585802MY5922MASJID JAMEK KEMUNTING6005PERAK6304AB49",
     supportedPayment: ["duitnow"],
   },
 ];
