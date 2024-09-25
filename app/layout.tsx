@@ -40,7 +40,19 @@ export const metadata: Metadata = {
     description:
       "Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
     siteName: "Sedekah Je",
-    images: "https://sedekahje.com/sedekahje-og.png",
+    images: [
+      {
+        url: "https://sedekahje.com/sedekahje-og.png",
+      },
+      {
+        url: "https://sedekahje.com/sedekahje-twitter.png",
+      },
+      {
+        url: 'https://sedekahje.com/sedekahje-square.png',
+        width: 400,
+        height: 400,
+      }
+    ]
   },
   twitter: {
     card: "summary_large_image",
