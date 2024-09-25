@@ -1,11 +1,17 @@
 {
 	"$schema": "https://biomejs.dev/schemas/1.9.2/schema.json",
+	"files": {
+		"ignoreUnknown": true,
+		"ignore": [".next", "node_modules"]
+	},
 	"vcs": {
 		"enabled": false,
 		"clientKind": "git",
 		"useIgnoreFile": false
 	},
-	"organizeImports": { "enabled": true },
+	"organizeImports": {
+		"enabled": true
+	},
 	"linter": {
 		"enabled": true,
 		"rules": {
@@ -19,13 +25,11 @@
 			"a11y": {
 				"noSvgWithoutTitle": "off"
 			}
-		},
-		"ignore": [".next", "node_modules"]
+		}
 	},
 	"formatter": {
 		"enabled": true,
 		"formatWithErrors": false,
-		"ignore": [".next", "node_modules"],
 		"attributePosition": "auto",
 		"indentStyle": "tab",
 		"indentWidth": 2,
