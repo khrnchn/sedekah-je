@@ -1,6 +1,7 @@
 import { slugify } from "@/lib/utils";
 import React from "react";
 import { WhatsAppIcon, XIcon } from "./ui/icons";
+import { useTheme } from "next-themes";
 
 const SHARE_PLATFORMS = {
 	X: "x",
@@ -23,7 +24,7 @@ const isMobile = () =>
 	/(android|iphone|ipad|mobile)/i.test(navigator.userAgent);
 
 const generateShareMessage = (data: ShareData) => {
-	const baseUrl = window.location.origin;
+	const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
 	const institutionSlug = `${baseUrl}/${data.category}/${slugify(data.name)}`;
 	// Encode the message to be URL-safe
 	return encodeURIComponent(
@@ -59,6 +60,9 @@ const getShareUrl = (platform: SharePlatform, message: string) => {
 };
 
 export default function Share({ data, platform }: ShareProps) {
+	const { theme } = useTheme();
+	const isDarkMode = theme === "dark";
+
 	const handleShareClick = () => {
 		if (typeof window === "undefined") return;
 
@@ -73,8 +77,6 @@ export default function Share({ data, platform }: ShareProps) {
 		}
 	};
 
-	const PlatformIcon = platform === "X" ? XIcon : WhatsAppIcon;
-
 	return (
 		<button
 			type="button"
@@ -82,7 +84,11 @@ export default function Share({ data, platform }: ShareProps) {
 			className="flex items-center gap-2 text-sm"
 		>
 			<span>Kongsi ke</span>
-			<PlatformIcon className="w-7 h-7" />
+			{platform === "X" ? (
+				<XIcon className="w-7 h-7" darkMode={isDarkMode} />
+			) : (
+				<WhatsAppIcon className="w-7 h-7" />
+			)}
 		</button>
 	);
 }
