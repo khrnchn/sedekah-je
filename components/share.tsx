@@ -1,6 +1,6 @@
-import React from "react";
 import { slugify } from "@/lib/utils";
-import { TwitterColoredIcon, WhatsAppColoredIcon } from "./ui/icons";
+import React from "react";
+import { WhatsAppIcon, XIcon } from "./ui/icons";
 
 const SHARE_PLATFORMS = {
 	X: "x",
@@ -73,8 +73,7 @@ export default function Share({ data, platform }: ShareProps) {
 		}
 	};
 
-	const PlatformIcon =
-		platform === "X" ? TwitterColoredIcon : WhatsAppColoredIcon;
+	const PlatformIcon = platform === "X" ? XIcon : WhatsAppIcon;
 
 	return (
 		<button
