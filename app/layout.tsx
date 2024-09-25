@@ -42,6 +42,11 @@ export const metadata: Metadata = {
     siteName: "Sedekah Je",
     images: [
       {
+        url: 'https://sedekahje.com/sedekahje-v2-compressed.png',
+        width: 1200,
+        height: 630,
+      },
+      {
         url: "https://sedekahje.com/sedekahje-og.png",
       },
       {
@@ -51,11 +56,6 @@ export const metadata: Metadata = {
         url: 'https://sedekahje.com/sedekahje-256.png',
         width: 400,
         height: 400,
-      },
-      {
-        url: 'https://sedekahje.com/sedekahje-v2-compressed.png',
-        width: 1200,
-        height: 630,
       },
     ]
   },
