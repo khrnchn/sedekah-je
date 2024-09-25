@@ -16,6 +16,10 @@ export const metadata: Metadata = {
   description:
     "Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
   keywords: [
+    "sedekah",
+    "sedekah qr",
+    "sedekah jumaat",
+    "sedekah malaysia",
     "sedekahje",
     "sedekah je",
     "sedekah qr",
