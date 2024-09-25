@@ -48,7 +48,7 @@ export const metadata: Metadata = {
         url: "https://sedekahje.com/sedekahje-twitter.png",
       },
       {
-        url: 'https://sedekahje.com/sedekahje-square.png',
+        url: 'https://sedekahje.com/sedekahje-256.png',
         width: 400,
         height: 400,
       }
