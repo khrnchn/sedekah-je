@@ -1,10 +1,6 @@
 # SedekahJe
 
-this was my 16th july speedrun project in the office before going home. built using v0 + claude.
-
-had this website idea before when i came across this [pdf](https://www.muamalat.com.my/wp-content/uploads/2023/10/LIST-OF-QR-CODE-FOR-E-DERMA.pdf).
-
-currently tracking and adding qrs from [catqeel](https://x.com/catqeel)'s [twitter thread](https://x.com/catqeel/status/1822939660135645502).
+read how this project started [here](https://www.khrnchn.xyz/blog/sedekah-je-lore)
 
 ## Contribute
 
@@ -16,17 +12,12 @@ fill up this [google form](https://forms.gle/sUvn5KteEXi6Ke8G9), or
 
 ## Sponsor
 
-special thanks to [altaf](https://x.com/danielminho_?s=21&t=uaExBAqkDxtuY8KYLJBCLQ) for sponsoring 2 domains, sedekah-je.com and sedekahje.com. 
+special thanks to [altaf](https://x.com/danielminho_?s=21&t=uaExBAqkDxtuY8KYLJBCLQ) for sponsoring 2 domains, sedekah-je.com and sedekahje.com, 
+and also [farhan helmy](https://www.farhanhelmy.com/) for sponsoring analytics.
 
 ## Future Plans
 
-- [x] extract *all* qr codes from this [pdf](https://www.muamalat.com.my/wp-content/uploads/2023/10/LIST-OF-QR-CODE-FOR-E-DERMA.pdf).
-- [ ] admin panel [*coughs*](https://filamentphp.com/) for the public to contribute/ upload qr.
-- [x] extract from [rhb](https://www.rhbgroup.com/jomderma/index.html).
-- [x] extract from [rhb-boost](https://www.rhbgroup.com/-/media/Microsites/syuqr/files/Senarai_31_Institusi_Berdaftar_dgn_syuQR_02042019_V2.pdf).
-- [x] filterable by states.
-- [x] clean up inconsistent/ inaccurate data.
-- [x] share options, the link will be something like `sedekahje.com/institutions/masjid-negara` (use name as slug)
+visit [issues](https://github.com/khrnchn/sedekah-je/issues) tab
 
 and 
 
