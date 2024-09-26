@@ -3,12 +3,17 @@ import { NextRequest, NextResponse } from "next/server";
 import QRCode from "qrcode";
 
 import { institutions } from "@/app/data/institutions";
-import { env } from "@/env";
-
-const botToken = env.TELEGRAM_BOT_TOKEN;
-const chatId = env.TELEGRAM_CHANNEL_ID;
 
 export async function POST(req: NextRequest) {
+  const { botToken, chatId } = (await req.json()) as {
+    botToken?: string;
+    chatId?: string;
+  };
+
+  if (!botToken || !chatId) {
+    return NextResponse.json({ status: "not ok" });
+  }
+
   const position = Math.floor(Math.random() * (institutions.length + 1));
   const qrContent = institutions[position].qrContent!;
   const qrCodeDataUrl = await QRCode.toDataURL(qrContent, {});
