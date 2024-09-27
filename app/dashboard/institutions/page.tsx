@@ -1,18 +1,25 @@
-import React from 'react'
-import { ContentLayout } from '@/components/admin-panel/content-layout';
+import { ContentLayout } from "@/components/admin-panel/content-layout";
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
-  BreadcrumbSeparator
+  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import Link from 'next/link';
-import { Card, CardContent } from '@/components/ui/card';
-import InstitutionsTable from './institutions-table';
+import { Card } from "@/components/ui/card";
+import Link from "next/link";
+import InstitutionsTable from "./institutions-table";
+import { getInstitutions } from "./lib/actions";
 
-const InstitutionsList = () => {
+export default async function InstitutionsPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  const page = Number(searchParams["page"]) || 1;
+  const initialData = await getInstitutions(page);
+
   return (
     <ContentLayout title="Dashboard">
       <Breadcrumb>
@@ -30,12 +37,10 @@ const InstitutionsList = () => {
       </Breadcrumb>
 
       <h2 className="text-2xl font-bold my-6">List of Institutions</h2>
-      
+
       <Card className="rounded-lg border-none mt-6">
-        <InstitutionsTable />
+        <InstitutionsTable initialData={initialData} />
       </Card>
     </ContentLayout>
-  )
+  );
 }
-
-export default InstitutionsList
