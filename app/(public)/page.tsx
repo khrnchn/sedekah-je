@@ -12,8 +12,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import RawakFooter from "@/components/rawak-footer";
 import { removeDuplicateInstitutions, shuffleInstitutions } from "@/lib/utils";
 
-import { institutions } from "./data/institutions";
-import type { Institution } from "./types/institutions";
+import { institutions } from "../data/institutions";
+import type { Institution } from "../types/institutions";
 import FilterCategory from "@/components/filter-category";
 import FilterState from "@/components/filter-state";
 import Search from "@/components/search";

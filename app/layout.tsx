@@ -73,19 +73,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const nextHeaders = headers();
-  const pathname = nextHeaders.get("x-pathname");
-
-  // opt out default layout for /qr/:slug
-  const regex = /^\/qr\/([a-zA-Z0-9_-]+)$/;
-  if (pathname && regex.test(pathname)) {
-    return (
-      <html suppressHydrationWarning>
-        <body>{children}</body>
-      </html>
-    );
-  }
-
   return (
     <html lang="en" suppressHydrationWarning>
       <Script
@@ -100,12 +87,9 @@ export default function RootLayout({
         )}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Header />
-          <div className="h-24 w-full absolute top-0 left-0 bg-gradient-to-b from-orange-300 to-background -z-10 opacity-20 dark:opacity-5" />
           {children}
           <Analytics />
           <Toaster richColors />
-          {/* <Ribbon /> */}
         </ThemeProvider>
       </body>
     </html>

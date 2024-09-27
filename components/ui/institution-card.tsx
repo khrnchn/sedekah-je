@@ -393,7 +393,7 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
 									</Tooltip>
 
 									<DropdownMenu>
-										<DropdownMenuTrigger>
+										<DropdownMenuTrigger asChild>
 											<Button
 												size="icon"
 												variant="ghost"

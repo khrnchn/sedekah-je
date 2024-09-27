@@ -14,8 +14,8 @@ import { removeDuplicateInstitutions, slugify } from "@/lib/utils";
 import html2canvas from "html2canvas";
 import { Clipboard, Download, MapPin, QrCode } from "lucide-react";
 import { toast } from "sonner";
-import { institutions as rawInstitutions } from "../data/institutions";
-import type { Institution } from "../types/institutions";
+import { institutions as rawInstitutions } from "../../data/institutions";
+import type { Institution } from "../../types/institutions";
 import PageHeader from "@/components/page-header";
 
 const Rawak = () => {
