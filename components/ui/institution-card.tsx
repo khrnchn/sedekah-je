@@ -116,7 +116,7 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
 						[pngBlob.type]: pngBlob,
 					}),
 				]);
-				toast.success("Berjaya menyalin kod QR ke papan keratan.");
+				toast.success("Berjaya menyalin kod QR ke papan klipboard.");
 			} catch (error) {
 				console.error(error);
 				toast.error("Gagal menyalin kod QR.");
@@ -377,7 +377,7 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
 															link.click();
 															document.body.removeChild(link);
 														}
-														toast.success("Berjaya memuat turun kod QR!");
+														toast.success("Berjaya memuat turun kod QR.");
 													} catch (error) {
 														toast.error("Gagal memuat turun kod QR.");
 													}
