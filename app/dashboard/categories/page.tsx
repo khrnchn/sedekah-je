@@ -1,14 +1,14 @@
-import React from 'react'
-import { ContentLayout } from '@/components/admin-panel/content-layout';
+import { ContentLayout } from "@/components/admin-panel/content-layout";
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
-  BreadcrumbSeparator
+  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import Link from 'next/link';
+import { Card, CardContent } from "@/components/ui/card";
+import Link from "next/link";
 
 const Categories = () => {
   return (
@@ -26,12 +26,12 @@ const Categories = () => {
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
-      
-      <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-        layout for categories
-      </main>
-    </ContentLayout>
-  )
-}
 
-export default Categories
+      <Card className="rounded-lg border-none mt-6">
+        <CardContent className="p-6">layout for categories</CardContent>
+      </Card>
+    </ContentLayout>
+  );
+};
+
+export default Categories;

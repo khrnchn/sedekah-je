@@ -26,7 +26,6 @@ const Dashboard = () => {
               <Link href="/dashboard">Dashboard</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
-          
         </BreadcrumbList>
       </Breadcrumb>
       

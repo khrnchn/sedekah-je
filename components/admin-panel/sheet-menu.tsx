@@ -1,15 +1,16 @@
+import { MenuIcon } from "lucide-react";
 import Link from "next/link";
-import { MenuIcon, PanelsTopLeft } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { Menu } from "@/components/admin-panel/menu";
+import { Button } from "@/components/ui/button";
 import {
   Sheet,
-  SheetHeader,
   SheetContent,
+  SheetHeader,
+  SheetTitle,
   SheetTrigger,
-  SheetTitle
 } from "@/components/ui/sheet";
+import Image from "next/image";
 
 export function SheetMenu() {
   return (
@@ -27,8 +28,8 @@ export function SheetMenu() {
             asChild
           >
             <Link href="/dashboard" className="flex items-center gap-2">
-              <PanelsTopLeft className="w-6 h-6 mr-1" />
-              <SheetTitle className="font-bold text-lg">Brand</SheetTitle>
+              <Image src="/masjid.svg" alt="logo" width={32} height={32} />
+              <SheetTitle className="font-bold text-lg">SedekahJe</SheetTitle>
             </Link>
           </Button>
         </SheetHeader>

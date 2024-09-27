@@ -9,6 +9,8 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
+import { Card, CardContent } from "@/components/ui/card";
+import InstitutionForm from "./institution-form";
 
 const CreateInstitutionPage = () => {
   return (
@@ -22,7 +24,9 @@ const CreateInstitutionPage = () => {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>Institutions</BreadcrumbPage>
+          <BreadcrumbLink asChild>
+              <Link href="/dashboard/institutions">Institutions</Link>
+            </BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
@@ -31,9 +35,9 @@ const CreateInstitutionPage = () => {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-        layout for creating new institution
-      </main>
+      <Card className="rounded-lg border-none mt-6">
+        <InstitutionForm />
+      </Card>
     </ContentLayout>
   );
 };
