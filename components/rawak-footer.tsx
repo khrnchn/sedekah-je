@@ -1,6 +1,7 @@
 import Link from "next/link";
 import React from "react";
 import { Button } from "./ui/button";
+import { toast } from "sonner";
 
 const RawakFooter = () => {
 	return (
@@ -13,10 +14,14 @@ const RawakFooter = () => {
 					<p className="text-black font-medium dark:text-white">Sedekah Rawak</p>
 				</Button>
 			</Link>
-			<a href="https://forms.gle/epGv61AnEWcjYe1C8" target="_blank">
+			{/* https://forms.gle/epGv61AnEWcjYe1C8 */}
+			<a href="#">
 				<Button
 					variant="outline"
 					className="bg-gradient-to-br from-blue-500 to-blue-300 border border-blue-400 rounded-full hover:from-blue-700 hover:to-blue-500 transition-colors duration-300"
+					onClick={() => {
+						toast.message("Kami telah berhenti menerima QR daripada pengguna buat masa sekarang.")
+					}}
 				>
 					<p className="text-black font-medium bold dark:text-white">Muatnaik QR</p>
 				</Button>
