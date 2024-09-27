@@ -1,22 +1,25 @@
 "use client";
 
+import { debounce } from "lodash-es";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { debounce } from "lodash-es";
 
 import CollapsibleCustomMap from "@/components/custom-map";
+import RawakFooter from "@/components/rawak-footer";
 import { Card } from "@/components/ui/card";
 import InstitutionCard from "@/components/ui/institution-card";
 import PageSection from "@/components/ui/pageSection";
 import { Skeleton } from "@/components/ui/skeleton";
-import RawakFooter from "@/components/rawak-footer";
 import { removeDuplicateInstitutions, shuffleInstitutions } from "@/lib/utils";
 
-import { institutions } from "./data/institutions";
-import type { Institution } from "./types/institutions";
+import { institutions } from "@/app/data/institutions";
+import type { Institution } from "@/app/types/institutions";
 import FilterCategory from "@/components/filter-category";
 import FilterState from "@/components/filter-state";
 import Search from "@/components/search";
+import { Button } from "@/components/ui/button";
+import { HelpCircle } from "lucide-react";
+import Link from "next/link";
 
 const Home = () => {
 	const [query, setQuery] = useState<string>("");
@@ -128,7 +131,19 @@ const Home = () => {
 				</div>
 			</div>
 
-			<CollapsibleCustomMap />
+			<div className="flex justify-end gap-2 mb-2">
+				<CollapsibleCustomMap />
+				<Link href="/faq" passHref>
+					<Button
+						variant="outline"
+						className="bg-gradient-to-br from-blue-500 to-blue-300 border border-blue-400 rounded-full hover:from-blue-700 hover:to-blue-500 transition-colors"
+					>
+						<HelpCircle className="mr-2 h-5 w-5" />
+						<span className="hidden sm:inline ml-2">Soalan Lazim</span>
+						<span className="sm:hidden">FAQ</span>
+					</Button>
+				</Link>
+			</div>
 
 			{isLoading ? (
 				<div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
