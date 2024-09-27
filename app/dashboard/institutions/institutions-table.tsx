@@ -77,7 +77,7 @@ const InstitutionsTable = async () => {
                     </Badge>
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
-                    {formatDate(institution.createdAt)}
+                    {formatDate(institution.createdAt.toString())}
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
