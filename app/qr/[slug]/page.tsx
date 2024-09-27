@@ -1,7 +1,5 @@
-"use client";
-
 import Image from "next/image";
-import React, { useRef } from "react";
+import React from "react";
 
 import { QRCodeSVG } from "qrcode.react";
 
@@ -9,8 +7,6 @@ import { institutions } from "@/app/data/institutions";
 import { slugify } from "@/lib/utils";
 
 function QRSlug({ params }: { params: { slug: string } }) {
-  const qrCanvasRef = useRef<HTMLDivElement>(null);
-
   const selected = institutions.find((i) => slugify(i.name) === params.slug);
 
   // make typescript happy
@@ -49,7 +45,7 @@ function QRSlug({ params }: { params: { slug: string } }) {
         />
         <p className="text-sm font-bold">SedekahJe</p>
       </div>
-      <div className="h-[350px] w-[350px]" ref={qrCanvasRef}>
+      <div className="h-[350px] w-[350px]">
         <div
           className={`relative flex h-full w-full items-center justify-center rounded-2xl ${map[type].bgColor}`}
         >
@@ -62,7 +58,7 @@ function QRSlug({ params }: { params: { slug: string } }) {
               alt=""
             />
           </div>
-          <div className="overflow-clip rounded-xl bg-white p-2">
+          <div className="overflow-clip rounded-xl bg-white p-4">
             <QRCodeSVG
               value={selected?.qrContent}
               size={250}
