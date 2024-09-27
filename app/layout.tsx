@@ -1,13 +1,15 @@
+import { Analytics } from "@vercel/analytics/react";
 import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
-import "./globals.css";
+import { headers } from "next/headers";
+import Script from "next/script";
+
 import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/ui/header";
-import Ribbon from "@/components/ui/ribbon";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
-import { Analytics } from "@vercel/analytics/react";
-import Script from "next/script";
+
+import "./globals.css";
 
 const poppins = Poppins({ weight: ["400", "700", "900"], subsets: ["latin"] });
 
@@ -42,11 +44,11 @@ export const metadata: Metadata = {
     siteName: "Sedekah Je",
     images: [
       {
-        url: 'https://sedekahje.com/sedekahje-og-compressed.png',
+        url: "https://sedekahje.com/sedekahje-og-compressed.png",
         width: 1200,
         height: 630,
-      }
-    ]
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -71,6 +73,19 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const nextHeaders = headers();
+  const pathname = nextHeaders.get("x-pathname");
+
+  // opt out default layout for /qr/:slug
+  const regex = /^\/qr\/([a-zA-Z0-9_-]+)$/;
+  if (pathname && regex.test(pathname)) {
+    return (
+      <html suppressHydrationWarning>
+        <body>{children}</body>
+      </html>
+    );
+  }
+
   return (
     <html lang="en" suppressHydrationWarning>
       <Script
