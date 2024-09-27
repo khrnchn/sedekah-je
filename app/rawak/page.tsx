@@ -11,14 +11,12 @@ import PageSection from "@/components/ui/pageSection";
 import QrCodeDisplay from "@/components/ui/qrCodeDisplay";
 import useClientDimensions from "@/hooks/use-client-dimensions";
 import { removeDuplicateInstitutions, slugify } from "@/lib/utils";
-
-import PageHeader from "@/components/page-header";
+import html2canvas from "html2canvas";
 import { Clipboard, Download, MapPin, QrCode } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { institutions as rawInstitutions } from "../data/institutions";
 import type { Institution } from "../types/institutions";
-import html2canvas from "html2canvas";
+import PageHeader from "@/components/page-header";
 
 const Rawak = () => {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -92,7 +90,7 @@ const Rawak = () => {
         <div className="flex items-center justify-center gap-3">
           <Button
             disabled={!url}
-            className="bg-green-500 space-x-2 text-black dark:text-white hover:bg-green-600 transition-colors duration-300"
+            className="bg-green-500 space-x-2 text-white dark:hover:bg-green-600 transition-colors duration-300"
             onClick={async () => {
               const element = printRef.current;
               const canvas = await html2canvas(element as HTMLButtonElement);
@@ -116,7 +114,7 @@ const Rawak = () => {
 
 		  <Button
           disabled={!url}
-          className="bg-green-500 space-x-2 text-black dark:text-white hover:bg-green-600 transition-colors duration-300"
+          className="bg-green-500 space-x-2 text-white dark:hover:bg-green-600 transition-colors duration-300"
           onClick={() => {
             navigator.clipboard.writeText(url);
             toast("Pautan institusi telah disalin ke papan klipboard.");
