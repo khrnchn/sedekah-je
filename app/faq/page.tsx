@@ -7,16 +7,9 @@ import {
 	AccordionItem,
 	AccordionTrigger,
 } from "@/components/ui/accordion";
-import {
-	Breadcrumb,
-	BreadcrumbItem,
-	BreadcrumbLink,
-	BreadcrumbList,
-	BreadcrumbPage,
-	BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import PageSection from "@/components/ui/pageSection";
 import Link from "next/link";
+import PageHeader from "@/components/page-header";
 
 const faqData = [
 	{
@@ -83,21 +76,7 @@ const faqData = [
 const FAQ = () => {
 	return (
 		<PageSection>
-			<Breadcrumb>
-				<BreadcrumbList>
-					<BreadcrumbItem>
-						<BreadcrumbLink asChild>
-							<Link href="/">Laman Utama</Link>
-						</BreadcrumbLink>
-					</BreadcrumbItem>
-					<BreadcrumbSeparator />
-					<BreadcrumbItem>
-						<BreadcrumbPage>Soalan Lazim</BreadcrumbPage>
-					</BreadcrumbItem>
-				</BreadcrumbList>
-			</Breadcrumb>
-
-			<h2 className="text-lg font-bold">Soalan Lazim</h2>
+			<PageHeader pageTitle="Soalan Lazim" showHeader={true} />
 
 			<Accordion type="single" collapsible className="w-full space-y-4">
 				{faqData.map((item, index) => (

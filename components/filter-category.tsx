@@ -39,28 +39,45 @@ const FilterCategory = ({
 		).length;
 	};
 
+	const filteredInstitutionsCount = institutions.filter(
+		(institution) =>
+			(!selectedState || institution.state === selectedState) &&
+			(selectedCategories.length === 0 || selectedCategories.includes(institution.category))
+	).length;
+
 	return (
-		<div className="flex items-center justify-center flex-row flex-wrap gap-2">
-			{mappedCategories.map((category) => (
-				<button
-					type="button"
-					key={category.value}
-					onClick={() => handleCategoryClick(category.value)}
-					data-active={selectedCategories.includes(category.value)}
-					className="px-4 py-2 text-sm max-sm:text-xs font-bold data-[active=true]:bg-slate-500 data-[active=true]:text-white truncate select-none flex flex-row gap-2 items-center justify-center whitespace-nowrap bg-background w-fit border border-border rounded-full shadow-md dark:shadow-muted/50"
-				>
-					<Image
-						src={category.icon}
-						alt={category.label}
-						width={24}
-						height={24}
-					/>
-					<span className="hidden md:block">{category.label}</span>
-					<span className="rounded-full px-2 py-1 bg-slate-200 text-black">
-						{getCountForCategory(category.value)}
-					</span>
-				</button>
-			))}
+		<div>
+			<div className="flex items-center justify-center flex-row flex-wrap gap-2">
+				Pilih tapis:
+				{mappedCategories.map((category) => (
+					<button
+						type="button"
+						key={category.value}
+						onClick={() => handleCategoryClick(category.value)}
+						data-active={selectedCategories.includes(category.value)}
+						className="px-4 py-2 text-sm max-sm:text-xs font-bold data-[active=true]:bg-slate-500 data-[active=true]:text-white truncate select-none flex flex-row gap-2 items-center justify-center whitespace-nowrap bg-background w-fit border border-border rounded-full shadow-md dark:shadow-muted/50"
+					>
+						<Image
+							src={category.icon}
+							alt={category.label}
+							width={24}
+							height={24}
+							className="hidden sm:block"
+						/>
+						<span className="md:hidden">{category.label}</span> 
+						<span className="hidden md:block">{category.label}</span>
+						<span className="rounded-full px-2 py-1 bg-slate-200 text-black">
+							{getCountForCategory(category.value)}
+						</span>
+					</button>
+				))}
+			</div>
+			
+			<div className="mt-4 text-center">
+				<p className="text-sm font-semibold">
+					Jumlah institusi yang ditapis: <span className="font-bold">{filteredInstitutionsCount}</span>
+				</p>
+			</div>
 		</div>
 	);
 };
