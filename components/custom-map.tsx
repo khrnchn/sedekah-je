@@ -4,9 +4,8 @@ import type { MapMarker } from "@/components/map";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { HelpCircle, MapIcon } from "lucide-react";
+import { MapIcon } from "lucide-react";
 import dynamic from "next/dynamic";
-import Link from "next/link";
 import { useMemo, useState } from "react";
 
 const CollapsibleCustomMap = ({
@@ -39,7 +38,7 @@ const CollapsibleCustomMap = ({
 
 	return (
 		<div className="w-full">
-			<div className="flex justify-end gap-2">
+			<div className="flex justify-end">
 				<Button
 					onClick={toggleMap}
 					variant="outline"
@@ -51,16 +50,6 @@ const CollapsibleCustomMap = ({
 					</span>
 					<span className="sm:hidden">Peta</span>
 				</Button>
-				<Link href="/faq" passHref>
-					<Button
-						variant="outline"
-						className="bg-gradient-to-br from-blue-500 to-blue-300 border border-blue-400 rounded-full hover:from-blue-700 hover:to-blue-500 transition-colors"
-					>
-						<HelpCircle className="mr-2 h-5 w-5" />
-						<span className="hidden sm:inline ml-2">Soalan Lazim</span>
-						<span className="sm:hidden">FAQ</span>
-					</Button>
-				</Link>
 			</div>
 			{isMapVisible && (
 				<div className="mt-2">
