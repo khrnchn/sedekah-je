@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import Link from 'next/link';
 
-const InstitutionsList = () => {
+const Categories = () => {
   return (
     <ContentLayout title="Dashboard">
       <Breadcrumb>
@@ -22,16 +22,16 @@ const InstitutionsList = () => {
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbPage>Institutions</BreadcrumbPage>
+            <BreadcrumbPage>Categories</BreadcrumbPage>
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
       
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-        layout for list of institutions
+        layout for categories
       </main>
     </ContentLayout>
   )
 }
 
-export default InstitutionsList
+export default Categories
