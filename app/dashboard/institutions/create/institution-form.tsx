@@ -36,7 +36,6 @@ export default function InstitutionForm() {
   return (
     <Card className="rounded-lg border-none mt-6">
       <CardContent className="p-6">
-        <h2 className="text-2xl font-bold mb-6">Create New Institution</h2>
         <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-6">
             <h3 className="text-lg font-semibold">General Information</h3>

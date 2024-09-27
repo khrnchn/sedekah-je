@@ -1,13 +1,18 @@
 import { Analytics } from "@vercel/analytics/react";
 import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
-import { headers } from "next/headers";
 import Script from "next/script";
 
 import { ThemeProvider } from "@/components/theme-provider";
-import { Header } from "@/components/ui/header";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
 
 import "./globals.css";
 
@@ -74,24 +79,32 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <Script
-        defer
-        src="https://analytics.farhanhelmy.com/script.js"
-        data-website-id="c2f79734-cbe5-4b9d-afd0-75e063e0aadb"
-      />
-      <body
-        className={cn(
-          "bg-background transition-colors duration-200 ease-in-out overscroll-y-none",
-          poppins.className
-        )}
-      >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
-          <Analytics />
-          <Toaster richColors />
-        </ThemeProvider>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" suppressHydrationWarning>
+        <Script
+          defer
+          src="https://analytics.farhanhelmy.com/script.js"
+          data-website-id="c2f79734-cbe5-4b9d-afd0-75e063e0aadb"
+        />
+        <body
+          className={cn(
+            "bg-background transition-colors duration-200 ease-in-out overscroll-y-none",
+            poppins.className
+          )}
+        >
+          {/* <SignedIn>
+            <UserButton />
+          </SignedIn>
+          <SignedOut>
+            <SignInButton />
+          </SignedOut> */}
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            {children}
+            <Analytics />
+            <Toaster richColors />
+          </ThemeProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

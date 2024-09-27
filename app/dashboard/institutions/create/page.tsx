@@ -35,6 +35,8 @@ const CreateInstitutionPage = () => {
         </BreadcrumbList>
       </Breadcrumb>
 
+      <h2 className="text-2xl font-bold my-6">Create New Institution</h2>
+
       <Card className="rounded-lg border-none mt-6">
         <InstitutionForm />
       </Card>

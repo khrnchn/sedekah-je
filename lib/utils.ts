@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge";
 import type { Institution } from "../app/types/institutions";
 
 export function cn(...inputs: ClassValue[]) {
-	return twMerge(clsx(inputs));
+  return twMerge(clsx(inputs));
 }
 
 /**
@@ -12,23 +12,23 @@ export function cn(...inputs: ClassValue[]) {
  * @returns Slugified string
  */
 export const slugify = (str: string) =>
-	str
-		.toLowerCase()
-		.replace(/ /g, "-")
-		.replace(/[^a-z0-9-]/g, "");
+  str
+    .toLowerCase()
+    .replace(/ /g, "-")
+    .replace(/[^a-z0-9-]/g, "");
 
 /** Remove duplicates based on institution name
  * @param institutions Array of institutions
  * @returns Array of institutions without duplicates
  */
 export function removeDuplicateInstitutions(institutions: Institution[]) {
-	return institutions.filter(
-		(institution, index, self) =>
-			index ===
-			self.findIndex(
-				(t) => t.name.toLowerCase() === institution.name.toLowerCase(),
-			),
-	);
+  return institutions.filter(
+    (institution, index, self) =>
+      index ===
+      self.findIndex(
+        (t) => t.name.toLowerCase() === institution.name.toLowerCase()
+      )
+  );
 }
 
 /** Shuffle the institutions
@@ -36,5 +36,17 @@ export function removeDuplicateInstitutions(institutions: Institution[]) {
  * @returns Array of institutions shuffled
  */
 export function shuffleInstitutions(institutions: Institution[]) {
-	return institutions.sort(() => Math.random() - 0.5);
+  return institutions.sort(() => Math.random() - 0.5);
+}
+
+export function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  }).format(date);
 }

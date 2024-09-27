@@ -52,17 +52,17 @@ export const institutions: Institution[] = [
     supportedPayment: ["tng"],
     coords: [3.124261867632774, 101.67413567602591],
   },
-  {
-    // https://www.facebook.com/masjidlamasurafan/
-    id: 5,
-    name: "Masjid Lama Kampung Sura",
-    category: "mosque",
-    state: "Terengganu",
-    city: "Kuala Dungun",
-    qrImage: "/masjid/masjid-lama-kampung-sura-mlks.png",
-    // QR not clear
-    coords: [4.7383225224584855, 103.42684395703144],
-  },
+  // {
+  //   // https://www.facebook.com/masjidlamasurafan/
+  //   id: 5,
+  //   name: "Masjid Lama Kampung Sura",
+  //   category: "mosque",
+  //   state: "Terengganu",
+  //   city: "Kuala Dungun",
+  //   qrImage: "/masjid/masjid-lama-kampung-sura-mlks.png",
+  //   // QR not clear
+  //   coords: [4.7383225224584855, 103.42684395703144],
+  // },
   {
     // https://www.facebook.com/AsSalamKD/
     id: 6,
@@ -8115,16 +8115,16 @@ export const institutions: Institution[] = [
       "00020201021126580014A000000615000101065887340212MBBQR1692243031000000000005204000053034585802MY5920MASJID AL-MUNAWWARAH6008SELANGOR6304BDA4",
     supportedPayment: ["duitnow"],
   },
-  {
-    id: 707,
-    name: "Masjid Pekan Sepang",
-    category: "mosque",
-    state: "Selangor",
-    city: "Sepang",
-    qrImage: "",
-    qrContent: "",
-    supportedPayment: ["duitnow"],
-  },
+  // {
+  //   id: 707,
+  //   name: "Masjid Pekan Sepang",
+  //   category: "mosque",
+  //   state: "Selangor",
+  //   city: "Sepang",
+  //   qrImage: "",
+  //   qrContent: "",
+  //   supportedPayment: ["duitnow"],
+  // },
   {
     id: 708,
     name: "Masjid Jamek Kg Bharu",
