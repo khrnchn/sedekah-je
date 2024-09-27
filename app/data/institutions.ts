@@ -89,18 +89,18 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
     coords: [2.685339740395178, 101.84383824857599],
   },
-  // {
-  //   id: 8,
-  //   name: "Masjid Putra Heights",
-  //   category: "mosque",
-  //   state: "Selangor",
-  //   city: "Subang Jaya",
-  //   qrImage: "/masjid/masjid-putra-heights.png",
-  //   qrContent:
-  //     "00020101021126580014A000000615000101065887340212MBBQR117311803100000000000520400005303458540500.005802MY5920MASJID PUTRA HEIGHTS6008SELANGOR6304C677",
-  //   supportedPayment: ["duitnow"],
-  //   coords: [2.9975987081545536, 101.57625587096338],
-  // },
+  {
+    id: 8,
+    name: "Masjid Putra Heights",
+    category: "mosque",
+    state: "Selangor",
+    city: "Subang Jaya",
+    qrImage: "/masjid/masjid-putra-heights.png",
+    qrContent:
+      "00020201021126420014A000000615000101066033460210MD000105635204866153034585802MY5920MASJID PUTRA HEIGHTS6002MY6253032516451723964230096431580380520164517249832300281046304EE4D",
+    supportedPayment: ["duitnow"],
+    coords: [2.9975987081545536, 101.57625587096338],
+  },
   {
     id: 9,
     name: "Masjid Azzubair Ibnul Awwam",
