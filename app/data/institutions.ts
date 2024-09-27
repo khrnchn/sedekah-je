@@ -4224,13 +4224,13 @@ export const institutions: Institution[] = [
   },
   {
     id: 358,
-    name: "Masjid Mukim Kuala Balah",
-    category: "mosque",
-    state: "Kelantan",
-    city: "Jeli",
+    name: "Sekolah Rendah Islam Riyadhus Solihin",
+    category: "others",
+    state: "Johor",
+    city: "Batu Pahat",
     qrImage: "",
     qrContent:
-      "00020201021126610014A000000615000101065641670215QRMID0000000356031001394471485204866153034585802MY5924MASJID MUKIM KUALA BALAH6004JELI6105176106304B38B",
+      "00020201021126530014A000000615000101065641690221QRAMB00000000000768255204829953034585802MY5925SEK RENDAH ISLAM RIYADHUS6005JOHOR6105830006304CF8E",
     supportedPayment: ["duitnow", "tng"],
   },
   {
