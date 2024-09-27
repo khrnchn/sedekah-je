@@ -4,6 +4,7 @@ import puppeteer from "puppeteer-core";
 
 import { institutions } from "@/app/data/institutions";
 import { slugify } from "@/lib/utils";
+import { env } from "@/env";
 
 export async function POST(req: NextRequest) {
   const baseUrl = "http://sedekahje.com";
@@ -14,7 +15,10 @@ export async function POST(req: NextRequest) {
     chatId?: string;
   };
 
-  if (!botToken || !chatId) {
+  if (
+    botToken !== env.TELEGRAM_BOT_TOKEN ||
+    chatId !== env.TELEGRAM_CHANNEL_ID
+  ) {
     return NextResponse.json({ status: "not ok" });
   }
 
