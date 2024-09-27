@@ -1,31 +1,17 @@
 "use client";
 
 import Image from "next/image";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef } from "react";
 
-import html2canvas from "html2canvas";
-import { institutions } from "@/app/data/institutions";
 import { QRCodeSVG } from "qrcode.react";
+
+import { institutions } from "@/app/data/institutions";
 import { slugify } from "@/lib/utils";
 
 function QRSlug({ params }: { params: { slug: string } }) {
-  const [url, setUrl] = useState("");
   const qrCanvasRef = useRef<HTMLDivElement>(null);
 
   const selected = institutions.find((i) => slugify(i.name) === params.slug);
-
-  useEffect(() => {
-    if (!url) {
-      void generateDownloadUrl();
-    }
-  }, [url]);
-
-  const generateDownloadUrl = async () => {
-    if (!qrCanvasRef.current) return;
-    const canvas = await html2canvas(qrCanvasRef.current);
-    const dataUrl = canvas.toDataURL("image/png");
-    setUrl(dataUrl);
-  };
 
   // make typescript happy
   if (!selected?.qrContent) return null;
