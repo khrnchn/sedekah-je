@@ -4,6 +4,7 @@ import { institutions as rawInstitutions } from "@/app/data/institutions";
 import type { Institution } from "@/app/types/institutions";
 import FilterCategory from "@/components/filter-category";
 import FilterState from "@/components/filter-state";
+import FilteredCount from "@/components/filtered-count";
 import PageHeader from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -14,7 +15,13 @@ import { removeDuplicateInstitutions, slugify } from "@/lib/utils";
 import html2canvas from "html2canvas";
 import { Clipboard, Download, MapPin, QrCode } from "lucide-react";
 import Image from "next/image";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, {
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import { toast } from "sonner";
 
 const Rawak = () => {
@@ -23,6 +30,7 @@ const Rawak = () => {
 		useState<Institution | null>(null);
 	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
 	const [selectedState, setSelectedState] = useState<string>("");
+	const [totalFilteredCount, setTotalFilteredCount] = useState<number>(0);
 	const { width } = useClientDimensions();
 	const [url, setUrl] = useState<string>("");
 	const printRef = useRef<HTMLButtonElement>(null);
@@ -39,6 +47,10 @@ const Rawak = () => {
 			return matchesCategory && matchesState;
 		});
 	}, [institutions, selectedCategories, selectedState]);
+
+	useEffect(() => {
+		setTotalFilteredCount(filteredInstitutions.length);
+	}, [filteredInstitutions]);
 
 	const generateRandomNumber = useCallback(() => {
 		if (filteredInstitutions.length > 0) {
@@ -124,6 +136,11 @@ const Rawak = () => {
 					</Button>
 				</div>
 			</div>
+
+			{/* Rendered only when there are filters applied */}
+			{(selectedState !== "" || selectedCategories.length > 0) && (
+				<FilteredCount count={totalFilteredCount} />
+			)}
 
 			<div className="flex flex-col md:flex-row gap-8 pb-4" ref={cardRef}>
 				<Card className="w-full">
