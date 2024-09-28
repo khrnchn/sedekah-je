@@ -16,6 +16,7 @@ import { institutions } from "@/app/data/institutions";
 import type { Institution } from "@/app/types/institutions";
 import FilterCategory from "@/components/filter-category";
 import FilterState from "@/components/filter-state";
+import FilteredCount from "@/components/filtered-count";
 import Search from "@/components/search";
 import { Button } from "@/components/ui/button";
 import { HelpCircle } from "lucide-react";
@@ -38,6 +39,7 @@ const Home = () => {
 
 	const [filteredInstitutions, setFilteredInstitutions] =
 		useState<Institution[]>(_institutions);
+	const [totalFilteredCount, setTotalFilteredCount] = useState<number>(0);
 
 	const debouncedSetQuery = useMemo(
 		() => debounce((newQuery: string) => setQuery(newQuery), 300),
@@ -101,6 +103,7 @@ const Home = () => {
 
 		const filterData = new Promise((resolve) => {
 			const filteredResults = filterInstitutions();
+			setTotalFilteredCount(filteredResults.length);
 			resolve(filteredResults.slice(0, offset + limit));
 		});
 
@@ -131,18 +134,24 @@ const Home = () => {
 				</div>
 			</div>
 
-			<div className="flex justify-end gap-2 mb-2">
-				<CollapsibleCustomMap />
-				<Link href="/faq" passHref>
-					<Button
-						variant="outline"
-						className="bg-gradient-to-br from-blue-500 to-blue-300 border border-blue-400 rounded-full hover:from-blue-700 hover:to-blue-500 transition-colors"
-					>
-						<HelpCircle className="mr-2 h-5 w-5" />
-						<span className="hidden sm:inline ml-2">Soalan Lazim</span>
-						<span className="sm:hidden">FAQ</span>
-					</Button>
-				</Link>
+			<div className="space-y-4">
+				{/* Rendered only when there are filters applied */}
+				{(selectedState !== "" || selectedCategories.length > 0) && (
+					<FilteredCount count={totalFilteredCount} />
+				)}
+				<div className="flex justify-end gap-2">
+					<CollapsibleCustomMap />
+					<Link href="/faq" passHref>
+						<Button
+							variant="outline"
+							className="bg-gradient-to-br from-blue-500 to-blue-300 border border-blue-400 rounded-full hover:from-blue-700 hover:to-blue-500 transition-colors"
+						>
+							<HelpCircle className="mr-2 h-5 w-5" />
+							<span className="hidden sm:inline ml-2">Soalan Lazim</span>
+							<span className="sm:hidden">FAQ</span>
+						</Button>
+					</Link>
+				</div>
 			</div>
 
 			{isLoading ? (

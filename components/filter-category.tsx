@@ -1,4 +1,4 @@
-import { categories, type Institution } from "@/app/types/institutions";
+import { type Institution, categories } from "@/app/types/institutions";
 import Image from "next/image";
 import type React from "react";
 import { useState } from "react";
@@ -28,7 +28,7 @@ const FilterCategory = ({
 			: [...selectedCategories, categoryValue];
 
 		setSelectedCategories(newSelectedCategories);
-		onCategoryChange(newSelectedCategories); // Pass the selected categories to parent
+		onCategoryChange(newSelectedCategories);
 	};
 
 	const getCountForCategory = (category: string) => {
@@ -39,16 +39,9 @@ const FilterCategory = ({
 		).length;
 	};
 
-	const filteredInstitutionsCount = institutions.filter(
-		(institution) =>
-			(!selectedState || institution.state === selectedState) &&
-			(selectedCategories.length === 0 || selectedCategories.includes(institution.category))
-	).length;
-
 	return (
-		<div>
+		<div className="space-y-4">
 			<div className="flex items-center justify-center flex-row flex-wrap gap-2">
-				Pilih tapis:
 				{mappedCategories.map((category) => (
 					<button
 						type="button"
@@ -64,19 +57,13 @@ const FilterCategory = ({
 							height={24}
 							className="hidden sm:block"
 						/>
-						<span className="md:hidden">{category.label}</span> 
+						<span className="md:hidden">{category.label}</span>
 						<span className="hidden md:block">{category.label}</span>
 						<span className="rounded-full px-2 py-1 bg-slate-200 text-black">
 							{getCountForCategory(category.value)}
 						</span>
 					</button>
 				))}
-			</div>
-			
-			<div className="mt-4 text-center">
-				<p className="text-sm font-semibold">
-					Jumlah institusi yang ditapis: <span className="font-bold">{filteredInstitutionsCount}</span>
-				</p>
 			</div>
 		</div>
 	);
