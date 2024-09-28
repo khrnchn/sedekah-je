@@ -42,7 +42,7 @@ export function DisclaimerModal() {
             ingin menasihati anda supaya berhati-hati sebelum menderma.
           </p>
           <p className="mt-2">
-            Pihak SedekahJe sedang dalam proses untuk mengesahkan semula kesemua QR code yang pernah dimuatnaik.
+            Pihak SedekahJe sedang dalam proses untuk mengesahkan semula kesemua QR yang pernah dimuatnaik.
           </p>
           <p className="mt-4">
             Untuk maklumat lanjut mengenai isu ini, sila{" "}
@@ -53,6 +53,17 @@ export function DisclaimerModal() {
               className="text-blue-500 hover:underline"
             >
               klik di sini
+            </Link>.
+          </p>
+          <p className="mt-4">
+            Baca bagaimana SedekahJe mengesahkan QR sebelum ini:{" "}
+            <Link 
+              href="https://www.khrnchn.xyz/blog/sedekah-je-first-challenge" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-blue-500 hover:underline"
+            >
+              klik untuk baca
             </Link>.
           </p>
         </div>
