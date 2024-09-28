@@ -10,6 +10,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 
 import "./globals.css";
+import { DisclaimerModal } from "@/components/disclaimer";
 
 const poppins = Poppins({ weight: ["400", "700", "900"], subsets: ["latin"] });
 
@@ -105,7 +106,7 @@ export default function RootLayout({
           {children}
           <Analytics />
           <Toaster richColors />
-          {/* <Ribbon /> */}
+          <DisclaimerModal />
         </ThemeProvider>
       </body>
     </html>
