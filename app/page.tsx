@@ -19,7 +19,7 @@ import FilterState from "@/components/filter-state";
 import FilteredCount from "@/components/filtered-count";
 import Search from "@/components/search";
 import { Button } from "@/components/ui/button";
-import { HelpCircle } from "lucide-react";
+import { HelpCircle, MapIcon } from "lucide-react";
 import Link from "next/link";
 
 const Home = () => {
@@ -31,6 +31,12 @@ const Home = () => {
 	const [offset, setOffset] = useState<number>(0);
 	const [limit] = useState<number>(15);
 	const [allItemsLoaded, setAllItemsLoaded] = useState<boolean>(false);
+
+	// Map
+	const [isMapVisible, setIsMapVisible] = useState(false);
+	const toggleMap = () => {
+		setIsMapVisible(!isMapVisible);
+	};
 
 	// Remove duplicates based on institution name and shuffle institutions
 	const _institutions = useMemo(() => {
@@ -140,7 +146,17 @@ const Home = () => {
 					<FilteredCount count={totalFilteredCount} />
 				)}
 				<div className="flex justify-end gap-2">
-					<CollapsibleCustomMap />
+					<Button
+						onClick={toggleMap}
+						variant="outline"
+						className="bg-gradient-to-br from-orange-500 to-orange-300 border border-orange-400 rounded-full hover:from-orange-600 hover:to-orange-400 transition-colors"
+					>
+						<MapIcon className="mr-2 h-5 w-5" />
+						<span className="hidden sm:inline">
+							{isMapVisible ? "Sembunyikan Peta" : "Tunjukkan Peta"}
+						</span>
+						<span className="sm:hidden">Peta</span>
+					</Button>
 					<Link href="/faq" passHref>
 						<Button
 							variant="outline"
@@ -153,6 +169,8 @@ const Home = () => {
 					</Link>
 				</div>
 			</div>
+
+			<CollapsibleCustomMap isVisible={isMapVisible} />
 
 			{isLoading ? (
 				<div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
