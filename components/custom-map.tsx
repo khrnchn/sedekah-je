@@ -1,5 +1,4 @@
 "use client";
-
 import type { MapMarker } from "@/components/map";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -9,11 +8,13 @@ import { useMemo } from "react";
 
 interface CollapsibleCustomMapProps {
 	marker?: MapMarker;
+	showAll?: boolean;
 	isVisible: boolean;
 }
 
 const CollapsibleCustomMap = ({
 	marker,
+	showAll,
 	isVisible,
 }: CollapsibleCustomMapProps) => {
 	const LeafletMap = useMemo(
@@ -43,7 +44,11 @@ const CollapsibleCustomMap = ({
 					exit={{ opacity: 0, height: 0 }}
 					transition={{ duration: 0.3, ease: "easeInOut" }}
 				>
-					<LeafletMap marker={marker} />
+					{showAll ? (
+						<LeafletMap />
+					) : marker ? (
+						<LeafletMap marker={marker} />
+					) : null}
 				</motion.div>
 			)}
 		</AnimatePresence>

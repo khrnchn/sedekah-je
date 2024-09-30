@@ -97,6 +97,7 @@ const getMarkerIcon = (color?: MarkerColor) =>
 export default function MapLocation({
 	center = DEFAULT_CENTER,
 	zoom = DEFAULT_ZOOM,
+	marker,
 }: MapLocationProps) {
 	const router = useRouter();
 
@@ -108,6 +109,19 @@ export default function MapLocation({
 	);
 
 	const renderMarkers = useMemo(() => {
+		if (marker) {
+			// Render single marker
+			return (
+				<Marker
+					position={marker.coords as LatLngExpression}
+					icon={getMarkerIcon(marker.color)}
+				>
+					<Tooltip>{marker.name}</Tooltip>
+				</Marker>
+			);
+		}
+
+		// Render all markers
 		return institutions.map((institution, idx) => {
 			if (!institution.coords) return null;
 
@@ -122,12 +136,12 @@ export default function MapLocation({
 				</Marker>
 			);
 		});
-	}, [markerClickHandler]);
+	}, [marker, markerClickHandler]);
 
 	return (
 		<MapContainer
-			center={center}
-			zoom={zoom}
+			center={marker ? marker.coords : center}
+			zoom={marker ? 13 : zoom}
 			scrollWheelZoom={true}
 			className="w-full h-auto z-0 min-h-[240px] min-w-full rounded-md overflow-clip"
 		>
