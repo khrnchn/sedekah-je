@@ -10,7 +10,7 @@ import "leaflet.fullscreen/Control.FullScreen.css";
 import "leaflet.fullscreen";
 import { institutions } from "@/app/data/institutions";
 import { CategoryColor, type Institution } from "@/app/types/institutions";
-import L, { type LatLngBoundsExpression } from "leaflet";
+import L from "leaflet";
 
 import { slugify } from "@/lib/utils";
 import { Icon, type LatLngExpression } from "leaflet";
