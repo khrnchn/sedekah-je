@@ -10,7 +10,7 @@ import "leaflet.fullscreen/Control.FullScreen.css";
 import "leaflet.fullscreen";
 import { institutions } from "@/app/data/institutions";
 import { CategoryColor, type Institution } from "@/app/types/institutions";
-import L from "leaflet";
+import L, { type LatLngBoundsExpression } from "leaflet";
 
 import { slugify } from "@/lib/utils";
 import { Icon, type LatLngExpression } from "leaflet";
@@ -47,9 +47,8 @@ type MapLocationProps = {
 	marker?: MapMarker;
 };
 
-// Full semenanjung view coords: 3.8300, 101.4046, zoom: 7
-const DEFAULT_CENTER: LatLngExpression = [3.1685, 101.6512];
-const DEFAULT_ZOOM = 7;
+const DEFAULT_CENTER: LatLngExpression = [4.2, 108.0];
+const DEFAULT_ZOOM = 5;
 
 function AddControls() {
 	const map = useMap();
