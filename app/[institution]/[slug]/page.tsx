@@ -1,4 +1,5 @@
 "use client";
+
 import { institutions } from "@/app/data/institutions";
 import { CategoryColor } from "@/app/types/institutions";
 import CollapsibleCustomMap from "@/components/custom-map";
@@ -20,6 +21,7 @@ type Params = {
 
 const InstitutionPage = ({ params }: Params) => {
 	const [isMapVisible, setIsMapVisible] = useState(false);
+
 	const institution = institutions.find(
 		(institution) => slugify(institution.name) === params.slug,
 	);
@@ -40,24 +42,30 @@ const InstitutionPage = ({ params }: Params) => {
 			}
 		: undefined;
 
+	const hasCoordinates = !!institution.coords?.length;
+
 	return (
 		<PageSection>
 			<PageHeader pageTitle={institution.name} showHeader={false} />
 			<div className="space-y-4">
-				<div className="flex justify-end">
-					<Button
-						onClick={toggleMap}
-						variant="outline"
-						className="bg-gradient-to-br from-orange-500 to-orange-300 border border-orange-400 rounded-full hover:from-orange-600 hover:to-orange-400 transition-colors"
-					>
-						<MapIcon className="mr-2 h-5 w-5" />
-						<span className="hidden sm:inline">
-							{isMapVisible ? "Sembunyikan Peta" : "Tunjukkan Peta"}
-						</span>
-						<span className="sm:hidden">Peta</span>
-					</Button>
-				</div>
-				<CollapsibleCustomMap isVisible={isMapVisible} marker={marker} />
+				{hasCoordinates && (
+					<div className="flex justify-end">
+						<Button
+							onClick={toggleMap}
+							variant="outline"
+							className="bg-gradient-to-br from-orange-500 to-orange-300 border border-orange-400 rounded-full hover:from-orange-600 hover:to-orange-400 transition-colors"
+						>
+							<MapIcon className="mr-2 h-5 w-5" />
+							<span className="hidden sm:inline">
+								{isMapVisible ? "Sembunyikan Peta" : "Tunjukkan Peta"}
+							</span>
+							<span className="sm:hidden">Peta</span>
+						</Button>
+					</div>
+				)}
+				{hasCoordinates && (
+					<CollapsibleCustomMap isVisible={isMapVisible} marker={marker} />
+				)}
 				<InstitutionCard key={institution.id} {...institution} />
 			</div>
 		</PageSection>
