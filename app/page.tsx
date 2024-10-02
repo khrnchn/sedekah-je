@@ -128,20 +128,22 @@ const Home = () => {
 				selectedState={selectedState}
 				institutions={_institutions}
 			/>
-			<div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 w-full">
-				<div className="w-full sm:w-1/5">
-					<FilterState onStateChange={handleStateChange} className="w-full" />
-				</div>
-				<div className="w-full sm:w-4/5">
-					<Search onSearchChange={handleSearch} className="w-full" />
-				</div>
-			</div>
 
 			<div className="space-y-4">
+				<div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 w-full">
+					<div className="w-full sm:w-1/5">
+						<FilterState onStateChange={handleStateChange} className="w-full" />
+					</div>
+					<div className="w-full sm:w-4/5">
+						<Search onSearchChange={handleSearch} className="w-full" />
+					</div>
+				</div>
+
 				{/* Rendered only when there are filters applied */}
 				{(selectedState !== "" || selectedCategories.length > 0) && (
 					<FilteredCount count={filteredInstitutions.length} />
 				)}
+
 				<div className="flex justify-end gap-2">
 					<Button
 						onClick={toggleMap}
@@ -154,6 +156,7 @@ const Home = () => {
 						</span>
 						<span className="sm:hidden">Peta</span>
 					</Button>
+
 					<Link href="/faq" passHref>
 						<Button
 							variant="outline"
