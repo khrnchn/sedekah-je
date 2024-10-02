@@ -1,4 +1,6 @@
 "use client";
+
+import type { Institution } from "@/app/types/institutions";
 import type { MapMarker } from "@/components/map";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,12 +12,14 @@ interface CollapsibleCustomMapProps {
 	marker?: MapMarker;
 	showAll?: boolean;
 	isVisible: boolean;
+	filteredInstitutions: Institution[];
 }
 
 const CollapsibleCustomMap = ({
 	marker,
 	showAll,
 	isVisible,
+	filteredInstitutions,
 }: CollapsibleCustomMapProps) => {
 	const LeafletMap = useMemo(
 		() =>
@@ -45,7 +49,7 @@ const CollapsibleCustomMap = ({
 					transition={{ duration: 0.3, ease: "easeInOut" }}
 				>
 					{showAll ? (
-						<LeafletMap />
+						<LeafletMap filteredInstitutions={filteredInstitutions} />
 					) : marker ? (
 						<LeafletMap marker={marker} />
 					) : null}

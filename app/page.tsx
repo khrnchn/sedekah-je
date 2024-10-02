@@ -45,7 +45,6 @@ const Home = () => {
 
 	const [filteredInstitutions, setFilteredInstitutions] =
 		useState<Institution[]>(_institutions);
-	const [totalFilteredCount, setTotalFilteredCount] = useState<number>(0);
 
 	const debouncedSetQuery = useMemo(
 		() => debounce((newQuery: string) => setQuery(newQuery), 300),
@@ -107,22 +106,20 @@ const Home = () => {
 			});
 		};
 
-		const filterData = new Promise((resolve) => {
-			const filteredResults = filterInstitutions();
-			setTotalFilteredCount(filteredResults.length);
-			resolve(filteredResults.slice(0, offset + limit));
-		});
+		const filteredResults = filterInstitutions();
+		setFilteredInstitutions(filteredResults);
 
-		filterData.then((_results) => {
-			const results = _results as Institution[];
-			if (results.length < offset + limit) {
-				setAllItemsLoaded(true);
-			}
-			setFilteredInstitutions(results);
-			setIsLoading(false);
-			setIsLoadingMore(false);
-		});
+		if (filteredResults.length <= offset + limit) {
+			setAllItemsLoaded(true);
+		} else {
+			setAllItemsLoaded(false);
+		}
+
+		setIsLoading(false);
+		setIsLoadingMore(false);
 	}, [_institutions, query, selectedCategories, selectedState, offset, limit]);
+
+	const displayedInstitutions = filteredInstitutions.slice(0, offset + limit);
 
 	return (
 		<PageSection>
@@ -143,7 +140,7 @@ const Home = () => {
 			<div className="space-y-4">
 				{/* Rendered only when there are filters applied */}
 				{(selectedState !== "" || selectedCategories.length > 0) && (
-					<FilteredCount count={totalFilteredCount} />
+					<FilteredCount count={filteredInstitutions.length} />
 				)}
 				<div className="flex justify-end gap-2">
 					<Button
@@ -170,28 +167,32 @@ const Home = () => {
 				</div>
 			</div>
 
-			<CollapsibleCustomMap isVisible={isMapVisible} showAll={true} />
+			<CollapsibleCustomMap
+				isVisible={isMapVisible}
+				showAll={true}
+				filteredInstitutions={filteredInstitutions}
+			/>
 
 			{isLoading ? (
 				<div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-					{Array.from({ length: offset }).map((_, idx) => (
+					{Array.from({ length: limit }).map((_, idx) => (
 						<Card key={idx} className="aspect-square w-full">
 							<Skeleton className="min-h-full min-w-full" />
 						</Card>
 					))}
 				</div>
-			) : filteredInstitutions.length === 0 ? (
+			) : displayedInstitutions.length === 0 ? (
 				<div className="flex flex-wrap justify-center">
 					<p className="text-lg text-gray-500">Tiada institusi dijumpai.</p>
 				</div>
 			) : (
 				<div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-					{filteredInstitutions.map((institution, i) => (
+					{displayedInstitutions.map((institution, i) => (
 						<InstitutionCard
 							key={institution.id}
 							{...institution}
 							ref={
-								filteredInstitutions.length === i + 1
+								displayedInstitutions.length === i + 1
 									? lastPostElementRef
 									: null
 							}
