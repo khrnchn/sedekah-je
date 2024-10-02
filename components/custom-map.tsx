@@ -42,7 +42,7 @@ const CollapsibleCustomMap = ({
 		<AnimatePresence>
 			{isVisible && (
 				<motion.div
-					className="w-full mt-2"
+					className="w-full"
 					initial={{ opacity: 0, height: 0 }}
 					animate={{ opacity: 1, height: "auto" }}
 					exit={{ opacity: 0, height: 0 }}
