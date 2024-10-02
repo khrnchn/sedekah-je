@@ -45,6 +45,7 @@ type MapLocationProps = {
 	center?: LatLngExpression;
 	zoom?: number;
 	marker?: MapMarker;
+	filteredInstitutions?: Institution[];
 };
 
 const DEFAULT_CENTER: LatLngExpression = [4.2, 108.0];
@@ -97,6 +98,7 @@ export default function MapLocation({
 	center = DEFAULT_CENTER,
 	zoom = DEFAULT_ZOOM,
 	marker,
+	filteredInstitutions,
 }: MapLocationProps) {
 	const router = useRouter();
 
@@ -120,8 +122,8 @@ export default function MapLocation({
 			);
 		}
 
-		// Render all markers
-		return institutions.map((institution, idx) => {
+		// Render filtered markers
+		return filteredInstitutions?.map((institution, idx) => {
 			if (!institution.coords) return null;
 
 			return (
@@ -135,7 +137,7 @@ export default function MapLocation({
 				</Marker>
 			);
 		});
-	}, [marker, markerClickHandler]);
+	}, [marker, filteredInstitutions, markerClickHandler]);
 
 	return (
 		<MapContainer
