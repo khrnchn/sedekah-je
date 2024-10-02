@@ -12,7 +12,7 @@ interface CollapsibleCustomMapProps {
 	marker?: MapMarker;
 	showAll?: boolean;
 	isVisible: boolean;
-	filteredInstitutions: Institution[];
+	filteredInstitutions?: Institution[];
 }
 
 const CollapsibleCustomMap = ({
