@@ -8302,4 +8302,16 @@ export const institutions: Institution[] = [
       "00020201021126580014A000000615000101065887340212MBBQR1698694031000000000005204000053034585802MY5922MASJID JAMEK KEMUNTING6005PERAK6304AB49",
     supportedPayment: ["duitnow"],
   },
+  // posted by amirul abu on twitter - https://x.com/AmirulAbu/status/1842065332351205553
+  {
+    id: 724,
+    name: "Tabung Surau & Kebajikan Am Surau Jumaat Haji Mohamad",
+    category: "others",
+    state: "Johor",
+    city: "Muar",
+    qrImage: "",
+    qrContent:
+      "00020201021126470014A000000615000101065641620215PBB2024001169585204866153034585802MY5925SURAU HJ MOHAMAD KG PARIT6004MUAR6220030642272507063641386304DF19",
+    supportedPayment: ["duitnow"],
+  },
 ];
