@@ -32,13 +32,13 @@ export async function generateMetadata(
         openGraph: {
             title: institution.name,
             description: `Jom #Sedekahje untuk ${institution.name}`,
-            images: [`${baseUrl}/qr/${slug}`, ...previousImages],
+            images: [`${baseUrl}/api/og/${slug}`, ...previousImages],
         },
         twitter: {
             card: 'summary_large_image',
             title: institution.name,
             description: `Jom #Sedekahje untuk ${institution.name}`,
-            images: [`${baseUrl}/qr/${slug}`],
+            images: [`${baseUrl}/api/og/${slug}`],
         },
     };
 }
