@@ -13,13 +13,13 @@ import { notFound } from "next/navigation";
 import { useState } from "react";
 import type React from "react";
 
-type Params = {
+type Props = {
 	params: {
 		slug: string;
 	};
 };
 
-const InstitutionPage = ({ params }: Params) => {
+const InstitutionPage = ({ params }: Props) => {
 	const [isMapVisible, setIsMapVisible] = useState(false);
 
 	const institution = institutions.find(
@@ -36,10 +36,10 @@ const InstitutionPage = ({ params }: Params) => {
 
 	const marker = institution.coords?.length
 		? {
-				coords: institution.coords,
-				name: institution.name,
-				color: CategoryColor[institution.category],
-			}
+			coords: institution.coords,
+			name: institution.name,
+			color: CategoryColor[institution.category],
+		}
 		: undefined;
 
 	const hasCoordinates = !!institution.coords?.length;
