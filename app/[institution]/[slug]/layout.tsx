@@ -2,15 +2,14 @@ import { institutions } from "@/app/data/institutions";
 import { slugify } from "@/lib/utils";
 import { Metadata, ResolvingMetadata } from 'next';
 
-type Props = {
+type LayoutProps = {
     params: {
         slug: string;
     };
-    searchParams: { [key: string]: string | string[] | undefined };
 };
 
 export async function generateMetadata(
-    { params }: Props,
+    { params }: LayoutProps,
     parent: ResolvingMetadata
 ): Promise<Metadata> {
     const slug = params.slug;
