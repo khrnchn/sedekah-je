@@ -8338,6 +8338,7 @@ export const institutions: Institution[] = [
       "00020201021126560014A000000615000101068900610224602e1ef5110342ed58a79a2d5204866153034585802MY5925MASJID JAMEK AR-RAHIMA...6002MY824066f79bb832d44a4ffebdf8ae5ca6115c0e30fcf563040E46",
     supportedPayment: ["duitnow"],
   },
+  // github pr - izzat zainol - https://github.com/khrnchn/sedekah-je/pull/179
   {
     id: 727,
     name: "Masjid Daerah Seberang Perai Utara",
