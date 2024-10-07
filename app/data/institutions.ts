@@ -8314,4 +8314,40 @@ export const institutions: Institution[] = [
       "00020201021126470014A000000615000101065641620215PBB2024001169585204866153034585802MY5925SURAU HJ MOHAMAD KG PARIT6004MUAR6220030642272507063641386304DF19",
     supportedPayment: ["duitnow"],
   },
+  // instagram - syafiq haikal
+  {
+    id: 725,
+    name: "Surau Al Muslihin",
+    category: "surau",
+    state: "Selangor",
+    city: "Sungai Besi",
+    qrImage: "",
+    qrContent:
+      "00020201021126580014A000000615000101065641600226126407600000196RHBQR0410255204739953034585802MY5917SURAU AL MUSLIHIN6002MY61055710062300309ROA0849420713ALMUSLIHINSGB8264611A109743C8C5B17970CF2293D889EDA70C0278CCA0A48EC1E4695FFCB2A14963041FA3",
+    supportedPayment: ["duitnow"],
+  },
+  // instagram - catqeel
+  {
+    id: 726,
+    name: "Surau Al Akhyar",
+    category: "surau",
+    state: "Selangor",
+    city: "Rawang",
+    qrImage: "",
+    qrContent:
+      "00020201021126600014A000000615000101065892670228BRQR65f0180101d6cb62ca2502ea5204866153034585802MY5915Surau Al-Akhyar6006Rawang61054800062420310M000002467052465f01801d3f9a90682ed38d363046890",
+    supportedPayment: ["duitnow"],
+  },
+  // instagram - catqeel
+  {
+    id: 727,
+    name: "Masjid Jamek Ar Rahimah",
+    category: "mosque",
+    state: "Selangor",
+    city: "Kuala Kubu Bharu",
+    qrImage: "",
+    qrContent:
+      "00020201021126560014A000000615000101068900610224602e1ef5110342ed58a79a2d5204866153034585802MY5925MASJID JAMEK AR-RAHIMA...6002MY824066f79bb832d44a4ffebdf8ae5ca6115c0e30fcf563040E46",
+    supportedPayment: ["duitnow"],
+  },
 ];
