@@ -8329,18 +8329,6 @@ export const institutions: Institution[] = [
   // instagram - catqeel
   {
     id: 726,
-    name: "Surau Al Akhyar",
-    category: "surau",
-    state: "Selangor",
-    city: "Rawang",
-    qrImage: "",
-    qrContent:
-      "00020201021126600014A000000615000101065892670228BRQR65f0180101d6cb62ca2502ea5204866153034585802MY5915Surau Al-Akhyar6006Rawang61054800062420310M000002467052465f01801d3f9a90682ed38d363046890",
-    supportedPayment: ["duitnow"],
-  },
-  // instagram - catqeel
-  {
-    id: 727,
     name: "Masjid Jamek Ar Rahimah",
     category: "mosque",
     state: "Selangor",
