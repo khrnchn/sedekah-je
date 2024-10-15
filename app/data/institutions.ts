@@ -8350,7 +8350,7 @@ export const institutions: Institution[] = [
       "00020201021126420014A000000615000101066033460210MD000008085204866153034585802MY5934MASJID DAERAH SEBERANG PERAI UTARA6002MY62530325162884462734400915247568605201628844639718007384163044A47",
     supportedPayment: ["duitnow"],
   },
-  // ijat member kc
+  // izzat rizal, member kc. masjid area office dia
   {
     id: 728,
     name: "Masjid At Taqwa Desa Subang Permai",
@@ -8361,5 +8361,29 @@ export const institutions: Institution[] = [
     qrContent:
       "00020201021126420014A000000615000101066033460210MD000939555204866153034585802MY5915MASJID AT-TAQWA6002MY62730325167539387089200266298329105201675393898626002297207161675393397593005630492DC",
     supportedPayment: ["duitnow"],
+  },
+  // afrie irham, whatsapp
+  {
+    id: 729,
+    name: "Surau Al Barakah, Menara Kembar Bank Rakyat",
+    category: "surau",
+    state: "W.P. Kuala Lumpur",
+    city: "Brickfields",
+    qrImage: "",
+    qrContent:
+      "00020201021126600014A000000615000101065892670228BRQR65407a9aa888876fbe72c3095204866153034585802MY5923Tabung Surau Al-Barakah6012Kuala Lumpur61055047062420310M000000019052465407b575c6c063cc3b8a98a63046F35",
+    supportedPayment: ["duitnow", "tng"],
+  },
+  // adha sahar, whatsapp
+  {
+    id: 730,
+    name: "Surau Ar-Raudhah (Surau Jumaat) Saujana Impian",
+    category: "surau",
+    state: "Selangor",
+    city: "Kajang",
+    qrImage: "",
+    qrContent:
+      "00020201021126420014A000000615000101066033460210MD000087585204866153034585802MY5916SURAU AR RAUDHAH6002MY6253032516430903836820080026396640520164336566128800575146304BB4B",
+    supportedPayment: ["duitnow", "tng"],
   },
 ];
