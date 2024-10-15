@@ -8398,4 +8398,42 @@ export const institutions: Institution[] = [
       "00020201021126920014A000000615000101065893730221MJAISELPAIDSUPM0300110319Agrobank's Merchant0412+601767001665204839853034585802MY5922JPPM KARIAH TMN DAHLIA6006SEPANG6105439006304D576",
     supportedPayment: ["duitnow", "tng"],
   },
+  // afiq ktm, whatsapp
+  {
+    id: 732,
+    name: "Masjid Saidatina Aisyah",
+    category: "mosque",
+    state: "Negeri Sembilan",
+    city: "Seremban",
+    qrImage: "",
+    qrContent:
+      "00020201021126800014A000000615000101065893730209MSBN000570319Agrobank's Merchant0412+601725983285204866153034585802MY5924MASJID SAIDATINA AISYAH 6008SEREMBAN61057000063048425",
+    supportedPayment: ["duitnow", "tng"],
+  },
+  // hazqeel, whatsapp
+  {
+    id: 733,
+    name: "Masjid Jamek Kampung Payamas",
+    category: "mosque",
+    state: "Johor",
+    city: "Tangkak",
+    qrImage: "",
+    qrContent:
+      "00020201021126580014A000000615000101065887340212MBBQR2162762031000000000005204729953034585802MY5924MASJID JAMIK KG.PAYA MAS6005JOHOR6304589E",
+    supportedPayment: ["duitnow", "tng"],
+    coords: [2.284620476376925, 102.5511054992771],
+  },
+  // hazqeel, whatsapp
+  {
+    id: 734,
+    name: "Masjid Jamek Ar Raudhah",
+    category: "mosque",
+    state: "Johor",
+    city: "Batu Pahat",
+    qrImage: "",
+    qrContent:
+      "00020201021126610014A000000615000101065641670215QRMID0000010266041001278613555204866153034585802MY5922MASJID JAMEK ARRAUDHAH6010BATU PAHAT610583000630437B4",
+    supportedPayment: ["duitnow", "tng"],
+    coords: [1.849866078166957, 102.90360875315643],
+  },
 ];
