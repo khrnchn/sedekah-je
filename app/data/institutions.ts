@@ -8386,4 +8386,16 @@ export const institutions: Institution[] = [
       "00020201021126420014A000000615000101066033460210MD000087585204866153034585802MY5916SURAU AR RAUDHAH6002MY6253032516430903836820080026396640520164336566128800575146304BB4B",
     supportedPayment: ["duitnow", "tng"],
   },
+  // posted by Awis Alkarni - https://x.com/awis/status/1846000481388450034
+  {
+    id: 731,
+    name: "Sumbangan Dana Pembinaan Masjid Kariah Taman Dahlia",
+    category: "others",
+    state: "Selangor",
+    city: "Sepang",
+    qrImage: "",
+    qrContent:
+      "00020201021126920014A000000615000101065893730221MJAISELPAIDSUPM0300110319Agrobank's Merchant0412+601767001665204839853034585802MY5922JPPM KARIAH TMN DAHLIA6006SEPANG6105439006304D576",
+    supportedPayment: ["duitnow", "tng"],
+  },
 ];
