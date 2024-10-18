@@ -3,6 +3,7 @@
 import { institutions } from "@/app/data/institutions";
 import { CategoryColor } from "@/app/types/institutions";
 import CollapsibleCustomMap from "@/components/custom-map";
+import PageFooter from "@/components/page-footer";
 import PageHeader from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import InstitutionCard from "@/components/ui/institution-card";
@@ -68,6 +69,7 @@ const InstitutionPage = ({ params }: Props) => {
 				)}
 				<InstitutionCard key={institution.id} {...institution} />
 			</div>
+			{/* <PageFooter /> */}
 		</PageSection>
 	);
 };

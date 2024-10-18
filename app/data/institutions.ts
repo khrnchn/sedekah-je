@@ -520,17 +520,18 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
     coords: [3.189769843531015, 101.77167954472107],
   },
+  // adha sahar, whatsapp
   {
     id: 44,
-    name: "Masjid Al-Mustaqim Ampang",
+    name: "Masjid Nurul Hidayah",
     category: "mosque",
-    state: "Selangor",
-    city: "Ampang",
+    state: "W.P. Kuala Lumpur",
+    city: "Kampung Pandan Dalam",
     qrImage: "",
     qrContent:
-      "00020201021126620014A000000615000101065641670215QRMID00000003890311011100924415204866153034585802MY5925MASJID AL MUSTAQIM AMPANG6006AMPANG6105680006304F9D2",
+      "00020201021126420014A000000615000101066033460210MD000002775204866153034585802MY5920MASJID NURUL HIDAYAH6002MY6253032516201029502890053431324980520162010298799500624156304B5C3",
     supportedPayment: ["duitnow", "tng"],
-    coords: [3.149841822927756, 101.75193007120077],
+    coords: [3.145924641946743, 101.74824516136792],
   },
   {
     id: 45,
