@@ -6467,15 +6467,16 @@ export const institutions: Institution[] = [
       "00020201021126610014A000000615000101065641670215QRMID0000000183031001977025415204866153034585802MY5922MASJID JAMEK KG TENGAH6006KLUANG6105860006304B1A1",
     supportedPayment: ["duitnow", "tng"],
   },
+  // hakimi hamdan, whatsapp
   {
     id: 563,
-    name: "Mdrsh India Muslim Kluang",
-    category: "others",
-    state: "Johor",
-    city: "Kluang",
+    name: "Masjid UMPSA (Yayasan UMPSA)",
+    category: "mosque",
+    state: "Pahang",
+    city: "Pekan",
     qrImage: "",
     qrContent:
-      "00020201021126610014A000000615000101065641670215QRMID0000000184031001977460925204866153034585802MY5925MDRSH INDIA MUSLIM KLUANG6006KLUANG6105860006304C8A4",
+      "00020201021126580014A000000615000101065887340212MBBQR2089319031000000000005204729953034585802MY5913YAYASAN UMPSA6006PAHANG6304E1D9",
     supportedPayment: ["duitnow", "tng"],
   },
   {
@@ -8436,5 +8437,17 @@ export const institutions: Institution[] = [
       "00020201021126610014A000000615000101065641670215QRMID0000010266041001278613555204866153034585802MY5922MASJID JAMEK ARRAUDHAH6010BATU PAHAT610583000630437B4",
     supportedPayment: ["duitnow", "tng"],
     coords: [1.849866078166957, 102.90360875315643],
+  },
+  // khairin, solat jumaat @ menara tm
+  {
+    id: 735,
+    name: "Surau Jumaat Menara TM",
+    category: "surau",
+    state: "W.P. Kuala Lumpur",
+    city: "W.P. Kuala Lumpur",
+    qrImage: "",
+    qrContent:
+      "00020201021126420014A000000615000101066033460210MD000631595204866153034585802MY5915Surau Menara TM6002MY6273032516499851489250011099121720520170687610223400943070716164998479170800263048D34",
+    supportedPayment: ["duitnow", "tng"],
   },
 ];
