@@ -16,7 +16,11 @@ const Search = ({ onSearchChange, className }: SearchProps) => {
 	};
 
 	const inputRef = useRef<HTMLInputElement>(null);
-	useHotkeys("mod+k", () => inputRef.current?.focus());
+	
+	useHotkeys(["ctrl+k", "cmd+k"], (e) => {
+		e.preventDefault();
+		inputRef.current?.focus();
+	});
 
 	return (
 		<div className={cn("w-full", className)}>
