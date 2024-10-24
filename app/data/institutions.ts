@@ -8450,4 +8450,28 @@ export const institutions: Institution[] = [
       "00020201021126420014A000000615000101066033460210MD000631595204866153034585802MY5915Surau Menara TM6002MY6273032516499851489250011099121720520170687610223400943070716164998479170800263048D34",
     supportedPayment: ["duitnow", "tng"],
   },
+  // khairin
+  {
+    id: 736,
+    name: "Masjid Kolej Islam Malaya",
+    category: "mosque",
+    state: "Selangor",
+    city: "Petaling Jaya",
+    qrImage: "",
+    qrContent:
+      "00020201021126520014A000000615000101068900530220MDN163134082800383475204866153034585802MY5922MASJIDKOLEJISLAMMALAYA6012PETALINGJAYA63043642",
+    supportedPayment: ["duitnow", "tng"],
+  },
+  // khairin
+  {
+    id: 737,
+    name: "Masjid Bukit Aman",
+    category: "mosque",
+    state: "W.P. Kuala Lumpur",
+    city: "Kuala Lumpur",
+    qrImage: "",
+    qrContent:
+      "https://qr.tngdigital.com.my/m/281011052028379747348769052",
+    supportedPayment: ["tng"],
+  },
 ];
