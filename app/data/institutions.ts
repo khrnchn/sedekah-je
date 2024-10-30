@@ -8606,6 +8606,7 @@ export const institutions: Institution[] = [
       "https://qr.tngdigital.com.my/m/281011057194809055896448165",
     supportedPayment: ["tng"],
   },
+  // ammar azman
   {
     id: 749,
     name: "Masjid Al-Sultan Abdullah",
