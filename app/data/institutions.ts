@@ -8606,4 +8606,17 @@ export const institutions: Institution[] = [
       "https://qr.tngdigital.com.my/m/281011057194809055896448165",
     supportedPayment: ["tng"],
   },
+  {
+    id: 749,
+    name: "Masjid Al-Sultan Abdullah",
+    category: "mosque",
+    state: "W.P. Kuala Lumpur",
+    city: "Kuala Lumpur",
+    qrImage: "",
+    qrContent:
+      "00020201021126580014A000000615000101065887340212MBBQR2133794031000000000005204729953034585802MY5925MASJID AL-SULTAN ABDULLAH6015WP KUALA LUMPUR62250721MBBQR2133794SHAHMI1186304C5FC",
+    supportedPayment: ["duitnow"],
+    coords: [3.1399948278192484, 101.69935955202898],
+  },
+  
 ];
