@@ -11,12 +11,14 @@ import { cn } from "@/lib/utils";
 
 import "./globals.css";
 import { DisclaimerModal } from "@/components/disclaimer";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const poppins = Poppins({ weight: ["400", "700", "900"], subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Sedekah Je",
-  description: "Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
+  description:
+    "Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
   keywords: [
     "sedekah",
     "sedekah qr",
@@ -39,7 +41,8 @@ export const metadata: Metadata = {
     type: "website",
     url: "https://sedekah.je",
     title: "Sedekah Je",
-    description: "Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
+    description:
+      "Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
     siteName: "Sedekah Je",
     images: [
       {
@@ -54,7 +57,8 @@ export const metadata: Metadata = {
     site: "@asdfghjkhairin",
     creator: "@asdfghjkhairin",
     title: "Sedekah Je",
-    description: "Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
+    description:
+      "Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
     images: "https://sedekah.je/sedekahje-twitter.png",
   },
 };
@@ -87,27 +91,29 @@ export default function RootLayout({
   }
 
   return (
-    <html lang="en" suppressHydrationWarning>
-      <Script
-        defer
-        src="https://analytics.farhanhelmy.com/script.js"
-        data-website-id="c2f79734-cbe5-4b9d-afd0-75e063e0aadb"
-      />
-      <body
-        className={cn(
-          "bg-background transition-colors duration-200 ease-in-out overscroll-y-none",
-          poppins.className
-        )}
-      >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {!isDashboardPage && <Header />}
-          <div className="h-24 w-full absolute top-0 left-0 bg-gradient-to-b from-orange-300 to-background -z-10 opacity-20 dark:opacity-5" />
-          {children}
-          <Analytics />
-          <Toaster richColors />
-          <DisclaimerModal />
-        </ThemeProvider>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" suppressHydrationWarning>
+        <Script
+          defer
+          src="https://analytics.farhanhelmy.com/script.js"
+          data-website-id="c2f79734-cbe5-4b9d-afd0-75e063e0aadb"
+        />
+        <body
+          className={cn(
+            "bg-background transition-colors duration-200 ease-in-out overscroll-y-none",
+            poppins.className
+          )}
+        >
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            {!isDashboardPage && <Header />}
+            <div className="h-24 w-full absolute top-0 left-0 bg-gradient-to-b from-orange-300 to-background -z-10 opacity-20 dark:opacity-5" />
+            {children}
+            <Analytics />
+            <Toaster richColors />
+            <DisclaimerModal />
+          </ThemeProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

@@ -1,16 +1,12 @@
 // app/dashboard/layout.tsx
-import React, { ReactNode } from 'react';
+import React, { ReactNode } from "react";
 
 interface DashboardLayoutProps {
-    children: ReactNode;
+  children: ReactNode;
 }
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
-    return (
-        <div>
-            <main>{children}</main>
-        </div>
-    );
+  return <main>{children}</main>;
 };
 
 export default DashboardLayout;
