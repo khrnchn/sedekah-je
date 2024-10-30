@@ -16,8 +16,7 @@ const poppins = Poppins({ weight: ["400", "700", "900"], subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Sedekah Je",
-  description:
-    "Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
+  description: "Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
   keywords: [
     "sedekah",
     "sedekah qr",
@@ -35,17 +34,16 @@ export const metadata: Metadata = {
     "qr sedekah malaysia",
     "qr code sedekah malaysia",
   ],
-  metadataBase: new URL("https://sedekahje.com"),
+  metadataBase: new URL("https://sedekah.je"),
   openGraph: {
     type: "website",
-    url: "https://sedekahje.com",
+    url: "https://sedekah.je",
     title: "Sedekah Je",
-    description:
-      "Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
+    description: "Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
     siteName: "Sedekah Je",
     images: [
       {
-        url: "https://sedekahje.com/sedekahje-og-compressed.png",
+        url: "https://sedekah.je/sedekahje-og-compressed.png",
         width: 1200,
         height: 630,
       },
@@ -56,9 +54,8 @@ export const metadata: Metadata = {
     site: "@asdfghjkhairin",
     creator: "@asdfghjkhairin",
     title: "Sedekah Je",
-    description:
-      "Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
-    images: "https://sedekahje.com/sedekahje-twitter.png",
+    description: "Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
+    images: "https://sedekah.je/sedekahje-twitter.png",
   },
 };
 
@@ -77,9 +74,11 @@ export default function RootLayout({
   const nextHeaders = headers();
   const pathname = nextHeaders.get("x-pathname");
 
-  // opt out default layout for /qr/:slug
-  const regex = /^\/qr\/([a-zA-Z0-9_-]+)$/;
-  if (pathname && regex.test(pathname)) {
+  // Opt out default layout for /qr/:slug
+  const isQRPage = pathname && /^\/qr\/([a-zA-Z0-9_-]+)$/.test(pathname);
+  const isDashboardPage = pathname?.startsWith("/dashboard");
+
+  if (isQRPage) {
     return (
       <html suppressHydrationWarning>
         <body>{children}</body>
@@ -101,7 +100,7 @@ export default function RootLayout({
         )}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Header />
+          {!isDashboardPage && <Header />}
           <div className="h-24 w-full absolute top-0 left-0 bg-gradient-to-b from-orange-300 to-background -z-10 opacity-20 dark:opacity-5" />
           {children}
           <Analytics />

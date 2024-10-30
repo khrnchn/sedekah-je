@@ -36,7 +36,7 @@ export async function GET(
     await page.setViewport({ width: 1200, height: 630 });
 
     // Navigate to the QR page
-    await page.goto(`https://sedekahje.com/qr/${slug}`, {
+    await page.goto(`https://sedekah.je/qr/${slug}`, {
       waitUntil: "networkidle2",
     });
 

@@ -5,7 +5,7 @@ import { slugify } from "@/lib/utils";
 export default function sitemap(): MetadataRoute.Sitemap {
 	const institutionPages = institutions.map((institution) => {
 		return {
-			url: `https://sedekahje.com/${institution.category}/${slugify(institution.name)}`,
+			url: `https://sedekah.je/${institution.category}/${slugify(institution.name)}`,
 			lastModified: new Date(),
 			changeFrequency: "monthly",
 			priority: 0.8,
@@ -14,13 +14,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
 	const pages = [
 		{
-			url: "https://sedekahje.com",
+			url: "https://sedekah.je",
 			lastModified: new Date(),
 			changeFrequency: "yearly",
 			priority: 1,
 		},
 		{
-			url: "https://sedekahje.com/rawak",
+			url: "https://sedekah.je/rawak",
 			lastModified: new Date(),
 			changeFrequency: "monthly",
 			priority: 0.8,

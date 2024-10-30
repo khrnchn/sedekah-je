@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
 			userAgent: "*",
 			allow: "/",
 		},
-		sitemap: "https://sedekahje.com/sitemap.xml",
+		sitemap: "https://sedekah.je/sitemap.xml",
 	};
 }

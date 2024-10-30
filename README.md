@@ -12,7 +12,7 @@ fill up this [google form](https://forms.gle/sUvn5KteEXi6Ke8G9), or
 
 ## Sponsor
 
-special thanks to [altaf](https://x.com/danielminho_?s=21&t=uaExBAqkDxtuY8KYLJBCLQ) for sponsoring 2 domains, sedekah-je.com and sedekahje.com, 
+special thanks to [altaf](https://x.com/danielminho_?s=21&t=uaExBAqkDxtuY8KYLJBCLQ) for sponsoring 3 domains, sedekah-je.com, sedekahje.com and sedekah.je, 
 and also [farhan helmy](https://www.farhanhelmy.com/) for sponsoring analytics.
 
 ## Future Plans

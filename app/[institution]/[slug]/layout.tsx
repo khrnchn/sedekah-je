@@ -25,7 +25,7 @@ export async function generateMetadata(
     }
 
     const previousImages = (await parent).openGraph?.images || [];
-    const baseUrl = 'http://sedekahje.com';
+    const baseUrl = 'http://sedekah.je';
 
     return {
         title: institution.name,

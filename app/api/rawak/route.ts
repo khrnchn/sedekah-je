@@ -7,7 +7,7 @@ import { slugify } from "@/lib/utils";
 import { env } from "@/env";
 
 export async function POST(req: NextRequest) {
-  const baseUrl = "http://sedekahje.com";
+  const baseUrl = "http://sedekah.je";
   const random = Math.floor(Math.random() * (institutions.length + 1));
 
   const { botToken, chatId } = (await req.json()) as {
