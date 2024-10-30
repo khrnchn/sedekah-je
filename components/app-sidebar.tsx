@@ -1,16 +1,18 @@
 "use client"
 
 import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  SquareTerminal
-} from "lucide-react"
+  Building2, 
+  Users, 
+  Trophy, 
+  User, 
+  HomeIcon, 
+  ChurchIcon, 
+  LandmarkIcon, 
+  BuildingIcon, 
+  ListIcon, 
+  PlusCircleIcon,
+  ClipboardList, 
+} from 'lucide-react';
 import * as React from "react"
 
 import { NavMain } from "@/components/nav-main"
@@ -23,6 +25,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import { NavProjects } from './nav-projects';
 
 // This is sample data.
 const data = {
@@ -34,63 +37,68 @@ const data = {
   teams: [
     {
       name: "SedekahJe",
-      logo: GalleryVerticalEnd,
+      logo: Users,
       plan: "Admin",
     },
     {
       name: "Admins",
-      logo: AudioWaveform,
+      logo: User,
       plan: "Startup",
     },
     {
       name: "Public",
-      logo: Command,
+      logo: Users,
       plan: "Free",
     },
   ],
   navMain: [
     {
       title: "Institutions",
-      url: "#",
-      icon: SquareTerminal,
+      url: "/institutions",
+      icon: Building2,
       isActive: true,
       items: [
         {
           title: "Mosque",
           url: "#",
+          icon: ChurchIcon,
         },
         {
           title: "Surau",
           url: "#",
+          icon: LandmarkIcon,
         },
         {
           title: "Others",
           url: "#",
+          icon: BuildingIcon,
         },
       ],
     },
     {
       title: "Categories",
       url: "#",
-      icon: Bot,
+      icon: ClipboardList,
       items: [
         {
           title: "View all categories",
           url: "#",
+          icon: ListIcon,
         },
         {
           title: "Create category",
           url: "#",
+          icon: PlusCircleIcon,
         },
       ],
     },
     {
       title: "Leaderboard",
       url: "#",
-      icon: BookOpen,
+      icon: Trophy,
     },
   ],
-}
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
