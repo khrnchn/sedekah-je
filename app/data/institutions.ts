@@ -8474,4 +8474,136 @@ export const institutions: Institution[] = [
       "https://qr.tngdigital.com.my/m/281011052028379747348769052",
     supportedPayment: ["tng"],
   },
+  // khairin, facebook - https://www.facebook.com/MasjidNurulKhair/posts/duitnow-qr-codealternatif-baru-yang-lebih-memudahkan-untuk-dermawan-serta-simpat/809772409815834/
+  {
+    id: 738,
+    name: "Masjid Nurul Khair",
+    category: "mosque",
+    state: "Sarawak",
+    city: "Kuching",
+    qrImage: "",
+    qrContent:
+      "00020201021126580014A000000615000101065641600226121125460006466RHBQR0051455204739953034585802MY5912MASJID NURUL6002MY61059305062230309ROA0055360706083469826457337C91F73CD4E703003FC65C93C2E9FB80C908603C05311EF18C59E6FB61566304F15C",
+    supportedPayment: ["duitnow"],
+  },
+  // khairin, instagram - https://www.instagram.com/masjiduitmshahalam/p/Chi3LVpP0gw/
+  {
+    id: 739,
+    name: "Masjid UITM Shah Alam",
+    category: "mosque",
+    state: "Selangor",
+    city: "Shah Alam",
+    qrImage: "",
+    qrContent:
+      "00020201021126420014A000000615000101066033460210MD000107365204829953034585802MY5925UNIVERSITI TEKNOLOGI MARA6002MY6273032516454255664470013494767310520165709489441200410210716165709471023500963049E67",
+    supportedPayment: ["duitnow"],
+  },
+  // khairin, website - https://baiturrahman.my/ & https://www.facebook.com/photo.php?fbid=792445273082490&set=p.792445273082490&type=3
+  {
+    id: 740,
+    name: "Masjid Baiturrahman Alam Sari",
+    category: "mosque",
+    state: "Selangor",
+    city: "Bangi",
+    qrImage: "",
+    qrContent:
+      "00020201021126580014A000000615000101065887340212MBBQR1516178031000000000005204000053034585802MY5919MASJID BAITURRAHMAN6008SELANGOR63044004",
+    supportedPayment: ["duitnow"],
+  },
+  // khairin, website - https://www.masjidalbukhary.com.my/home/einfaq.php
+  {
+    id: 741,
+    name: "Masjid Al Bukhary Alor Malai",
+    category: "mosque",
+    state: "Kedah",
+    city: "Alor Setar",
+    qrImage: "",
+    qrContent:
+      "00020101021126610014A000000615000101065641670215QRMID000000027603100194441307520430005303458540500.005802MY5917MASJID AL BUKHARY6010ALOR SETAR61050546063044141",
+    supportedPayment: ["duitnow"],
+  },
+  // khairin, instagram - https://www.instagram.com/sickchild72/p/C4zEFO6v1mT/?img_index=2
+  {
+    id: 742,
+    name: "Perbadanan Wakaf Selangor",
+    category: "others",
+    state: "Selangor",
+    city: "Shah Alam",
+    qrImage: "",
+    qrContent:
+      "00020201021126420014A000000615000101066033460210MD000120575204866153034585802MY5932PERBADANAN WAKAF SELANGOR (PWS) 6002MY6253032516485389114430088888240050520164880316855200747596304D837",
+    supportedPayment: ["duitnow"],
+  },
+  // khairin, facebook - https://www.facebook.com/photo.php?fbid=618271545529488&id=290481364975176&set=a.290810261608953&locale=ms_MY
+  {
+    id: 743,
+    name: "Masjid Al Huda Kampung Punggai",
+    category: "mosque",
+    state: "Johor",
+    city: "Bandar Penawar",
+    qrImage: "",
+    qrContent:
+      "00020201021126530014A000000615000101065641690221QRAMB00000000021613145204866153034585802MY5925MASJID AL HUDA KAMPUNG PU6005JOHOR61058162063040546",
+    supportedPayment: ["duitnow"],
+  },
+  // khairin, instagram - https://www.instagram.com/sickchild72/p/C4zEFO6v1mT/?img_index=2
+  {
+    id: 744,
+    name: "Masjid Daerah Kerian",
+    category: "mosque",
+    state: "Perak",
+    city: "Parit Buntar",
+    qrImage: "",
+    qrContent:
+      "https://qr.tngdigital.com.my/m/281011053374212449552221716",
+    supportedPayment: ["tng"],
+  },
+  // khairin, google/toyyibpay - https://toyyibpay.com/INFAQ-MASJID-TAHFIZ-AL-AYUBI
+  {
+    id: 745,
+    name: "Maahad Tahfiz Al Ayubi",
+    category: "others",
+    state: "Kelantan",
+    city: "Pasir Mas",
+    qrImage: "",
+    qrContent:
+      "00020201021126420014A000000615000101066033460210MD000023825204866153034585802MY5922MASJID TAHFIZ AL-AYUBI6002MY62530325163283841542600678163343505201633711491910005885763048C3B",
+    supportedPayment: ["duitnow"],
+  },
+  // khairin, facebook - https://www.facebook.com/asysyujaah02/posts/pfbid04LeKDM4RgiAyhgxxVC7kLiFntfXQUMLum27Mfx255efsFCyqhgnK2G6VUZTRaSDJl?locale=ms_MY
+  {
+    id: 746,
+    name: "Masjid Asy Syuja'ah",
+    category: "mosque",
+    state: "Melaka",
+    city: "Merlimau Utara",
+    qrImage: "",
+    qrContent:
+      "00020201021126420014A000000615000101066033460210MD000023825204866153034585802MY5922MASJID TAHFIZ AL-AYUBI6002MY62530325163283841542600678163343505201633711491910005885763048C3B",
+    supportedPayment: ["duitnow"],
+  },
+  // khairin, twitter - https://x.com/zzdnrj/status/1271294833944977408
+  {
+    id: 747,
+    name: "Masjid Taman Puncak Jalil",
+    category: "mosque",
+    state: "Selangor",
+    city: "Seri Kembangan",
+    qrImage: "",
+    qrContent:
+      "https://qr.tngdigital.com.my/m/281011053384543285583523815",
+    supportedPayment: ["tng"],
+  },
+  // khairin, facebook - https://www.facebook.com/maqtsskl/posts/infaq-lebih-mudah-dengan-aplikasi-qr-code-di-smartphone-andahanya-dengan-scan/559290838265541/
+  {
+    id: 748,
+    name: "Masjid Al Qurtubi",
+    category: "mosque",
+    state: "W.P. Kuala Lumpur",
+    city: "Segambut",
+    qrImage: "",
+    qrContent:
+      "https://qr.tngdigital.com.my/m/281011057194809055896448165",
+    supportedPayment: ["tng"],
+  },
 ];
