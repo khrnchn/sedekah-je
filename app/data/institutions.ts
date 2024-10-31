@@ -8687,7 +8687,7 @@ export const institutions: Institution[] = [
   // Fareez #183 - FB https://www.facebook.com/iera.aqila.3/posts/pfbid02kuuKrSq2both4vHJZg5SCZBp3oWp7cvhQSc9KmgAbit6KjXWu7nGMWfkBXWbqzHBl
   {
     id: 755,
-    name: "Surau Ar Rahmah Chempakapuri, Bdr Baru Nilai",
+    name: "Surau Ar Rahmah Chempakapuri",
     category: "surau",
     state: "Negeri Sembilan",
     city: "Nilai",
