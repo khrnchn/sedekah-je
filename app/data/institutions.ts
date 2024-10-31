@@ -8619,5 +8619,83 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
     coords: [3.1399948278192484, 101.69935955202898],
   },
-  
+  // Fareez #183 - FB https://www.facebook.com/iera.aqila.3/posts/pfbid02kuuKrSq2both4vHJZg5SCZBp3oWp7cvhQSc9KmgAbit6KjXWu7nGMWfkBXWbqzHBl
+  {
+    id: 750,
+    name: "Surau Darussa'adah",
+    category: "surau",
+    state: "W.P. Kuala Lumpur",
+    city: "Keramat",
+    qrImage: "",
+    qrContent:
+      "00020201021126580014A000000615000101065887340212MBBQR2120580031000000000005204729953034585802MY5919SURAU DARUSSA'ADAH 6015WP KUALA LUMPUR63046012",
+    supportedPayment: ["duitnow", "tng"],
+    coords: [3.1747864781518444, 101.73970440455942],
+  },
+  // Fareez #183 - FB https://www.facebook.com/iera.aqila.3/posts/pfbid02kuuKrSq2both4vHJZg5SCZBp3oWp7cvhQSc9KmgAbit6KjXWu7nGMWfkBXWbqzHBl
+  {
+    id: 751,
+    name: "Surau Darussa'adah",
+    category: "surau",
+    state: "W.P. Kuala Lumpur",
+    city: "Keramat",
+    qrImage: "",
+    qrContent:
+      "00020201021126580014A000000615000101065887340212MBBQR2120580031000000000005204729953034585802MY5919SURAU DARUSSA'ADAH 6015WP KUALA LUMPUR63046012",
+    supportedPayment: ["duitnow", "tng"],
+    coords: [3.1747864781518444, 101.73970440455942],
+  },
+  // Fareez #183 - FB https://www.facebook.com/iera.aqila.3/posts/pfbid02kuuKrSq2both4vHJZg5SCZBp3oWp7cvhQSc9KmgAbit6KjXWu7nGMWfkBXWbqzHBl
+  {
+    id: 752,
+    name: "Masjid Bandar Seri Putra",
+    category: "mosque",
+    state: "Selangor",
+    city: "Bangi",
+    qrImage: "",
+    qrContent:
+      "00020101021126580014A000000615000101065887340212MBBQR120681403100000000000520400005303458540500.005802MY5921MASJID BDR SERI PUTRA6008SELANGOR62270723MBBQR1206814FAUZISHAFIE630483BE",
+    supportedPayment: ["duitnow", "tng"],
+    coords: [2.88768015908422, 101.78847436481918],
+  },
+  // Fareez #183 - FB https://www.facebook.com/iera.aqila.3/posts/pfbid02kuuKrSq2both4vHJZg5SCZBp3oWp7cvhQSc9KmgAbit6KjXWu7nGMWfkBXWbqzHBl
+  {
+    id: 753,
+    name: "Musolla Pangsapuri Aranda",
+    category: "surau",
+    state: "Selangor",
+    city: "Shah Alam",
+    qrImage: "",
+    qrContent:
+      "00020201021126600014A000000615000101065892670228BRQR65dd650e01d6cb62ca2456d95204866153034585802MY5925Musolla Pangsapuri Aranda6009shah alam61054046062420310M000002194052465dd650fd3f9a90682eaed6b6304A837",
+    supportedPayment: ["duitnow", "tng"],
+    coords: [3.007094574417354, 101.5460361742598],
+  },
+  // Fareez #183 - FB https://www.facebook.com/iera.aqila.3/posts/pfbid02kuuKrSq2both4vHJZg5SCZBp3oWp7cvhQSc9KmgAbit6KjXWu7nGMWfkBXWbqzHBl
+  {
+    id: 754,
+    name: "Masjid Jamik Sabak Bernam",
+    category: "mosque",
+    state: "Selangor",
+    city: "Sabak Bernam",
+    qrImage: "",
+    qrContent:
+      "00020201021126580014A000000615000101065887340212MBBQR1145580031000000000005204729953034585802MY5925MASJID JAMIK SABAK BERNAM6008SELANGOR63041A77",
+    supportedPayment: ["duitnow", "tng"],
+    coords: [3.7705597859656037, 100.98524301147323],
+  },
+  // Fareez #183 - FB https://www.facebook.com/iera.aqila.3/posts/pfbid02kuuKrSq2both4vHJZg5SCZBp3oWp7cvhQSc9KmgAbit6KjXWu7nGMWfkBXWbqzHBl
+  {
+    id: 755,
+    name: "Surau Ar Rahmah Chempakapuri, Bdr Baru Nilai",
+    category: "surau",
+    state: "Negeri Sembilan",
+    city: "Nilai",
+    qrImage: "",
+    qrContent:
+      "00020201021126420014A000000615000101066033460210MD000048725204866153034585802MY5926SURAU ARRAHMAH CEMPAKAPURI6002MY6253032516373107252290011462184580520163731073888200807956304EBD5",
+    supportedPayment: ["duitnow", "tng"],
+    coords: [2.8027726697064232, 101.77330528403158],
+  }
+
 ];
