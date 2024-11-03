@@ -8697,7 +8697,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
     coords: [2.8027726697064232, 101.77330528403158],
   },
-  // Fareez #183 - FB https://www.facebook.com/iera.aqila.3/posts/pfbid02kuuKrSq2both4vHJZg5SCZBp3oWp7cvhQSc9KmgAbit6KjXWu7nGMWfkBXWbqzHBl
+  // Fareez
   {
     id: 756,
     name: "Masjid Peket 100",
