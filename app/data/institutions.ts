@@ -8304,7 +8304,7 @@ export const institutions: Institution[] = [
       "00020201021126580014A000000615000101065887340212MBBQR1698694031000000000005204000053034585802MY5922MASJID JAMEK KEMUNTING6005PERAK6304AB49",
     supportedPayment: ["duitnow"],
   },
-  // posted by amirul abu on twitter - https://x.com/AmirulAbu/status/1842065332351205553
+  // amirul abu, twitter - https://x.com/AmirulAbu/status/1842065332351205553
   {
     id: 724,
     name: "Tabung Surau & Kebajikan Am Surau Jumaat Haji Mohamad",
@@ -8316,7 +8316,7 @@ export const institutions: Institution[] = [
       "00020201021126470014A000000615000101065641620215PBB2024001169585204866153034585802MY5925SURAU HJ MOHAMAD KG PARIT6004MUAR6220030642272507063641386304DF19",
     supportedPayment: ["duitnow"],
   },
-  // instagram - syafiq haikal
+  // syafiq haikal, instagram
   {
     id: 725,
     name: "Surau Al Muslihin",
@@ -8328,7 +8328,7 @@ export const institutions: Institution[] = [
       "00020201021126580014A000000615000101065641600226126407600000196RHBQR0410255204739953034585802MY5917SURAU AL MUSLIHIN6002MY61055710062300309ROA0849420713ALMUSLIHINSGB8264611A109743C8C5B17970CF2293D889EDA70C0278CCA0A48EC1E4695FFCB2A14963041FA3",
     supportedPayment: ["duitnow"],
   },
-  // instagram - catqeel
+  // catqeel, instagram
   {
     id: 726,
     name: "Masjid Jamek Ar Rahimah",
@@ -8340,7 +8340,7 @@ export const institutions: Institution[] = [
       "00020201021126560014A000000615000101068900610224602e1ef5110342ed58a79a2d5204866153034585802MY5925MASJID JAMEK AR-RAHIMA...6002MY824066f79bb832d44a4ffebdf8ae5ca6115c0e30fcf563040E46",
     supportedPayment: ["duitnow"],
   },
-  // github pr - izzat zainol - https://github.com/khrnchn/sedekah-je/pull/179
+  // izzat zainol, github pr - https://github.com/khrnchn/sedekah-je/pull/179
   {
     id: 727,
     name: "Masjid Daerah Seberang Perai Utara",
@@ -8352,7 +8352,7 @@ export const institutions: Institution[] = [
       "00020201021126420014A000000615000101066033460210MD000008085204866153034585802MY5934MASJID DAERAH SEBERANG PERAI UTARA6002MY62530325162884462734400915247568605201628844639718007384163044A47",
     supportedPayment: ["duitnow"],
   },
-  // izzat rizal, member kc. masjid area office dia
+  // izzat rizal, masjid area office dia
   {
     id: 728,
     name: "Masjid At Taqwa Desa Subang Permai",
@@ -8388,7 +8388,7 @@ export const institutions: Institution[] = [
       "00020201021126420014A000000615000101066033460210MD000087585204866153034585802MY5916SURAU AR RAUDHAH6002MY6253032516430903836820080026396640520164336566128800575146304BB4B",
     supportedPayment: ["duitnow", "tng"],
   },
-  // posted by Awis Alkarni - https://x.com/awis/status/1846000481388450034
+  // awis alkarni, twitter - https://x.com/awis/status/1846000481388450034
   {
     id: 731,
     name: "Sumbangan Dana Pembinaan Masjid Kariah Taman Dahlia",
@@ -8709,5 +8709,17 @@ export const institutions: Institution[] = [
       "00020201021126420014A000000615000101066033460210MD001404035204866153034585802MY5925MASJID PEKET 100 SG NIPAH6002MY62730325172905046021700914327433905201729050469097007069807161729050094729002630474F6",
     supportedPayment: ["duitnow"],
     coords: [3.6400306607571618, 101.05552127229177],
-  }
+  },
+  // belle, instagram
+  {
+    id: 757,
+    name: "Masjid Selat Melaka",
+    category: "mosque",
+    state: "Melaka",
+    city: "Kampung Bandar Hilir",
+    qrImage: "",
+    qrContent:
+      "00020201021126580014A000000615000101065887340212MBBQR1874817031000000000005204729953034585802MY5919MASJID SELAT MELAKA6006MELAKA63040054",
+    supportedPayment: ["duitnow", "tng"],
+  },
 ];
