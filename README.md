@@ -18,6 +18,8 @@ or do bulk contribution
 
 or through [issue](https://github.com/khrnchn/sedekah-je/issues/new?assignees=&labels=addQR&projects=&template=add_qr_code.md&title=%5BaddQR%5D+Add+New+QR+Code)
 - Replace placeholder
+- replace [put your name here] with your name
+- add additional info like coords
 - submit
   
 ## Sponsor
