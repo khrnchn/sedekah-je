@@ -8470,8 +8470,7 @@ export const institutions: Institution[] = [
     state: "W.P. Kuala Lumpur",
     city: "Kuala Lumpur",
     qrImage: "",
-    qrContent:
-      "https://qr.tngdigital.com.my/m/281011052028379747348769052",
+    qrContent: "https://qr.tngdigital.com.my/m/281011052028379747348769052",
     supportedPayment: ["tng"],
   },
   // khairin, facebook - https://www.facebook.com/MasjidNurulKhair/posts/duitnow-qr-codealternatif-baru-yang-lebih-memudahkan-untuk-dermawan-serta-simpat/809772409815834/
@@ -8554,8 +8553,7 @@ export const institutions: Institution[] = [
     state: "Perak",
     city: "Parit Buntar",
     qrImage: "",
-    qrContent:
-      "https://qr.tngdigital.com.my/m/281011053374212449552221716",
+    qrContent: "https://qr.tngdigital.com.my/m/281011053374212449552221716",
     supportedPayment: ["tng"],
   },
   // khairin, google/toyyibpay - https://toyyibpay.com/INFAQ-MASJID-TAHFIZ-AL-AYUBI
@@ -8590,8 +8588,7 @@ export const institutions: Institution[] = [
     state: "Selangor",
     city: "Seri Kembangan",
     qrImage: "",
-    qrContent:
-      "https://qr.tngdigital.com.my/m/281011053384543285583523815",
+    qrContent: "https://qr.tngdigital.com.my/m/281011053384543285583523815",
     supportedPayment: ["tng"],
   },
   // khairin, facebook - https://www.facebook.com/maqtsskl/posts/infaq-lebih-mudah-dengan-aplikasi-qr-code-di-smartphone-andahanya-dengan-scan/559290838265541/
@@ -8602,8 +8599,7 @@ export const institutions: Institution[] = [
     state: "W.P. Kuala Lumpur",
     city: "Segambut",
     qrImage: "",
-    qrContent:
-      "https://qr.tngdigital.com.my/m/281011057194809055896448165",
+    qrContent: "https://qr.tngdigital.com.my/m/281011057194809055896448165",
     supportedPayment: ["tng"],
   },
   // ammar azman
@@ -8721,5 +8717,19 @@ export const institutions: Institution[] = [
     qrContent:
       "00020201021126580014A000000615000101065887340212MBBQR1874817031000000000005204729953034585802MY5919MASJID SELAT MELAKA6006MELAKA63040054",
     supportedPayment: ["duitnow", "tng"],
+  },
+  // kuasawan #1 - FB https://www.facebook.com/photo/?fbid=10231252069421006&set=pcb.10231238536122682
+  // https://maps.app.goo.gl/N3JKvLjjotisbHYv8
+  {
+    id: 758,
+    name: "Musolla An-Nur",
+    category: "surau",
+    state: "Selangor",
+    city: "Hulu Langat",
+    qrImage: "",
+    qrContent:
+      "00020201021126420014A000000615000101066033460210MD001301815204866153034585802MY5915MUSOLLA AN-NUR 6002MY6273032517072029477130091939813630520170720464403900269640716170720168107000563045D47",
+    supportedPayment: ["duitnow"],
+    coords: [3.155902981030715, 101.8984143286516],
   },
 ];
