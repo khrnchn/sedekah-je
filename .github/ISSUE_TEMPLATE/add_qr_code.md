@@ -11,7 +11,7 @@ labels: addQR
 - Others
 
 **Name of the Masjid:**
-_(e.g., Masjid Al-Fatih)_
+_(e.g., Masjid Kuala Lumpur)_
 
 **Name of the City:**
 _(e.g., Kuala Lumpur)_
@@ -35,4 +35,4 @@ _(e.g., Kuala Lumpur)_
 - Others
 
 **QR Code Image:**
-_(Upload the QR code image here. The image must be clear and well-lit.)_
+_(put public qr code image link here, must have http or https)_
