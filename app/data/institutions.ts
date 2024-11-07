@@ -8722,7 +8722,7 @@ export const institutions: Institution[] = [
       "00020201021126580014A000000615000101065887340212MBBQR1874817031000000000005204729953034585802MY5919MASJID SELAT MELAKA6006MELAKA63040054",
     supportedPayment: ["duitnow", "tng"],
   },
-  // [put your name here]
+  // fyruz ismat, whatsapp
   {
     id: 758,
     name: "Surau Al Bayan",
@@ -8730,7 +8730,7 @@ export const institutions: Institution[] = [
     state: "Selangor",
     city: "Rawang",
     qrImage: "https://ibb.co/wWDVCsc",
-    qrContent: "",
+    qrContent: "00020201021126470014A000000615000101065641620215PBB2024001100575204866153034585802MY5916SURAU AL - BAYAN6006RAWANG6220030639910407063446176304499C",
     supportedPayment: ["duitnow", "tng"]
   }
 ];
