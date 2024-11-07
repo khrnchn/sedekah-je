@@ -15,6 +15,12 @@ or do bulk contribution
 - click File > Save a copy in Drive
 - follow the notebook instruction
 - get the qr info and paste in institutions.ts
+
+or through [issue](https://github.com/khrnchn/sedekah-je/issues/new?assignees=&labels=addQR&projects=&template=add_qr_code.md&title=%5BaddQR%5D+Add+New+QR+Code)
+- replace placeholder
+- replace [put your name here] with your name
+- add additional info like coords
+- submit
   
 ## Sponsor
 
