@@ -8722,7 +8722,7 @@ export const institutions: Institution[] = [
       "00020201021126580014A000000615000101065887340212MBBQR1874817031000000000005204729953034585802MY5919MASJID SELAT MELAKA6006MELAKA63040054",
     supportedPayment: ["duitnow", "tng"],
   },
-  // [put your name here]
+  // fyruz, whatsapp
   {
     id: 758,
     name: "Surau Al Bayan",
