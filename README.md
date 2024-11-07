@@ -10,6 +10,12 @@ fill up this [google form](https://forms.gle/sUvn5KteEXi6Ke8G9), or
 - extract qr value using [this tool](https://qrcoderaptor.com/) and insert it into qrContent
 - create pull request
 
+or do bulk contribution
+- click this notebook [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1ObRdwFqF9Ug6f1UjvDPB0X7m3hAyMaQj?usp=sharing) (no local setup require)
+- click File > Save a copy in Drive
+- follow the notebook instruction
+- get the qr info and paste in institutions.ts
+  
 ## Sponsor
 
 special thanks to [altaf](https://x.com/danielminho_?s=21&t=uaExBAqkDxtuY8KYLJBCLQ) for sponsoring 2 domains, sedekah-je.com and sedekahje.com, 
