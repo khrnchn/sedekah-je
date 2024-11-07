@@ -7,7 +7,7 @@ on:
 jobs:
   add-qrcode:
     runs-on: ubuntu-latest
-
+    
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -61,26 +61,37 @@ jobs:
           rm -rf extractedFields.json input.data
           git checkout package.json
 
-      - name: Create, Commit, and Push New Branch
+      - name: Fetch and Create Branch
         id: create_branch
         run: |
+          # Fetch all branches and tags
+          git fetch origin
+          
+          # Ensure we're up to date with main
+          git checkout main
+          git pull origin main
+          
+          # Create and switch to new branch
           BRANCH_NAME="add-institution-${{ github.event.issue.number }}"
-          echo "Creating branch: $BRANCH_NAME"
           git checkout -b "$BRANCH_NAME"
-
+          
+          # Configure git
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
+          
+          # Stage and commit changes
           git add app/data/institutions.ts
-          git commit -m "Add new institution from issue #${{ github.event.issue.number }}"
-
-          echo "Pushing branch $BRANCH_NAME to origin..."
-          git push origin "$BRANCH_NAME" --verbose
+          git commit -m ":memo: add new institution from issue #${{ github.event.issue.number }}"
+          
+          # Push with force-with-lease for safety
+          git push origin "$BRANCH_NAME" --force-with-lease
+          
           echo "branch=$BRANCH_NAME" >> $GITHUB_OUTPUT
 
-      - name: create pull request
+      - name: Create Pull Request
         run: |
-          gh pr create -B main -H ${{ steps.create_branch.outputs.branch }} --title 'Merge ${{ steps.create_branch.outputs.branch }} into main' --body "resolve \#${{ github.event.issue.number }}
+          gh pr create -B main -H ${{ steps.create_branch.outputs.branch }} --title ':memo: add new institution from #${{ github.event.issue.number }}' --body "Resolves #${{ github.event.issue.number }}
 
           ${{ github.event.issue.body }}"
         env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
