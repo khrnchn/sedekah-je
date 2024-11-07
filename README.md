@@ -17,7 +17,7 @@ or do bulk contribution
 - get the qr info and paste in institutions.ts
 
 or through [issue](https://github.com/khrnchn/sedekah-je/issues/new?assignees=&labels=addQR&projects=&template=add_qr_code.md&title=%5BaddQR%5D+Add+New+QR+Code)
-- Replace placeholder
+- replace placeholder
 - replace [put your name here] with your name
 - add additional info like coords
 - submit
