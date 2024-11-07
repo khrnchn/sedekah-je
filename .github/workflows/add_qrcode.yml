@@ -78,18 +78,9 @@ jobs:
           echo "branch=$BRANCH_NAME" >> $GITHUB_OUTPUT
 
       - name: create pull request
-        run: gh pr create -B main -H ${{ steps.create_branch.outputs.branch }} --title 'Merge ${{ steps.create_branch.outputs.branch }} into main' --body "Add new institution from issue \#${{ github.event.issue.number }}"
+        run: |
+          gh pr create -B main -H ${{ steps.create_branch.outputs.branch }} --title 'Merge ${{ steps.create_branch.outputs.branch }} into main' --body "resolve \#${{ github.event.issue.number }}
+
+          ${{ github.event.issue.body }}"
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # - name: Close Issue
-      #   uses: actions/github-script@v6
-      #   with:
-      #     script: |
-      #       github.rest.issues.update({
-      #         owner: context.repo.owner,
-      #         repo: context.repo.repo,
-      #         issue_number: context.issue.number,
-      #         state: 'closed',
-      #         body: context.issue.body + "\n\n---\nThis issue has been processed and a PR has been created."
-      #       })
