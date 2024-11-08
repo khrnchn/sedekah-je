@@ -34,7 +34,7 @@ e.g., Kuala Lumpur
 - W.P. Putrajaya
 - W.P. Labuan
 - Perak
-- Others
+- Pulau Pinang
 
 **QR Code Image:**
 http or https something
