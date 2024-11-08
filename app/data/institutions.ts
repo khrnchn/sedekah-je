@@ -8876,4 +8876,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126420014A000000615000101066033460210MD000944755204866153034585802MY5925MASJID AL-QUDDUS TAMAN SR6002MY62530325167626529824900101992397605201678959218269005186463047549",
     supportedPayment: ["duitnow", "tng"]
   },
+  // khairin, google - https://ppdhadis.edu.my/page/pagedetail.php?schid=1581&schname=SUMBANGAN%20KE%20DARUL%20HADIS%20LEBIH%20MUDAH%20MELALUI%20DUITNOW%20QR%20KOD
+  {
+    id: 772,
+    name: "Pusat Pengajian Darul Hadis",
+    category: "others",
+    state: "Kedah",
+    city: "Alor Setar",
+    qrImage: "https://tahfiz.awfatech.com/hadis/content/news/staticcontent1_DH039_1689133530.jpg",
+    qrContent: "00020201021126420014A000000615000101066033460210MD000009505204829953034585802MY5941Pusat pengajian Darul Hadis Yayasan Paksi6002MY6253032516292721734360075194541050520162927871375900171326304A968",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
