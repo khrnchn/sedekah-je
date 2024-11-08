@@ -86,7 +86,7 @@ jobs:
         run: |
           pr_body="## new institution addition
           
-          - institution Name: ${{ steps.extract.outputs.nameOfMasjid }}
+          - institution name: ${{ steps.extract.outputs.nameOfMasjid }}
           - city: ${{ steps.extract.outputs.nameOfTheCity }}
           - state: ${{ steps.extract.outputs.state }}
           
