@@ -8832,4 +8832,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126580014A000000615000101065887340212MBBQR2049437031000000000005204000053034585802MY5919SURAU AL-MUHAJIRIN 6008SELANGOR6304CFC9",
     supportedPayment: ["duitnow", "tng"]
   },
+  // [put your name here]
+  {
+    id: 768,
+    name: "Maahad Tahfiz Integrasi Nadi Huffaz",
+    category: "others",
+    state: "Selangor",
+    city: "Rawang",
+    qrImage: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwTEAzNDHoTuO5TEXH8NKBGge4psxxp3GReg&s",
+    qrContent: "",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
