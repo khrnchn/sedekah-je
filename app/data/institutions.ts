@@ -8821,4 +8821,15 @@ export const institutions: Institution[] = [
     qrContent: "00020101021126580014A000000615000101065887340212MBBQR119240203100000000000520400005303458540500.005802MY5938MASJID SULTAN ISKANDAR BANDAR DATO ONN6005JOHOR6304EDDE",
     supportedPayment: ["duitnow", "tng"]
   },
+  // [put your name here]
+  {
+    id: 767,
+    name: "Surau Al-Muhajirin Kajang Utama",
+    category: "surau",
+    state: "Selangor",
+    city: "Kajang",
+    qrImage: "https://almuhajirinkjgutama.com/images/mae01.jpg",
+    qrContent: "00020201021126580014A000000615000101065887340212MBBQR2049437031000000000005204000053034585802MY5919SURAU AL-MUHAJIRIN 6008SELANGOR6304CFC9",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
