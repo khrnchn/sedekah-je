@@ -8917,7 +8917,7 @@ export const institutions: Institution[] = [
     state: "Selangor",
     city: "Sepang",
     qrImage: "https://www.raudhahautisme.org/wp-content/uploads/2023/08/image1.png.webp",
-    qrContent: "",
+    qrContent: "00020201021126580014A000000615000101065887340212MBBQR1992126031000000000005204731153034585802MY5915RAUDHAH AUTISME6008SELANGOR630406B8",
     supportedPayment: ["duitnow", "tng"]
   },
 ];
