@@ -8843,4 +8843,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126580014A000000615000101065887340212MBBQR1684472031000000000005204829953034585802MY5921NADI HUFFAZ RESOURCES6008SELANGOR630499C3",
     supportedPayment: ["duitnow", "tng"]
   },
+  // [put your name here]
+  {
+    id: 769,
+    name: "Masjid Al I'tisam",
+    category: "mosque",
+    state: "Selangor",
+    city: "Shah Alam",
+    qrImage: "https://pbs.twimg.com/media/GKErY6MasAAcn_5?format=jpg&name=large",
+    qrContent: "",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
