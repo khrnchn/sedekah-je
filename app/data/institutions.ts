@@ -8777,4 +8777,15 @@ export const institutions: Institution[] = [
     qrContent: "00020101021126580014A000000615000101065887340212MBBQR130885403100000000000520400005303458540500.005802MY5924MASJID DAERAH BARAT DAYA6012PULAU PINANG63046C4A",
     supportedPayment: ["duitnow", "tng"]
   },
+  // [put your name here]
+  {
+    id: 763,
+    name: "Surau Al-Jannah",
+    category: "surau",
+    state: "Selangor",
+    city: "Bandar Rimbayu",
+    qrImage: "https://scontent.fkul19-1.fna.fbcdn.net/v/t1.6435-9/93795276_3171511412880547_4774018529332559872_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=f7fc3c&_nc_ohc=ojgkPbjelAsQ7kNvgE_ejC6&_nc_zt=23&_nc_ht=scontent.fkul19-1.fna&_nc_gid=Ae_QsqqMXV_6jkxuMa4R-uz&oh=00_AYBVqJK7zQmyWDOrv8CPKRVG2hBD0sznvv07iO9y2hyjdw&oe=6754F1CC",
+    qrContent: "00020101021126580014A000000615000101065887340212MBBQR148083503100000000000520400005303458540500.005802MY5918SURAU AL-JANNAH BR6008SELANGOR6304E8EE",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
