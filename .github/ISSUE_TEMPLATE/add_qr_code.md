@@ -1,7 +1,7 @@
 ---
 name: Add New QR Code
 about: Submit a request to add a new institution's QR code
-title: "[addQR] Add New QR Code"
+title: "[addQR] add new qr code for {institution name}"
 labels: addQR
 ---
 
@@ -24,13 +24,13 @@ _(e.g., Kuala Lumpur)_
 - Sabah
 - Sarawak
 - Pahang
-- Kuala Lumpur
+- W.P. Kuala Lumpur
 - Negeri Sembilan
 - Johor
 - Melaka
 - Perlis
-- Putrajaya
-- Labuan
+- W.P. Putrajaya
+- W.P. Labuan
 - Perak
 - Others
 
