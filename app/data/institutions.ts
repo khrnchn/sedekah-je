@@ -8909,4 +8909,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126580014A000000615000101065887340212MBBQR2105535031000000000005204729953034585802MY5923YAYASAN MURTADHA BERHAD6005KEDAH63048D2E",
     supportedPayment: ["duitnow", "tng"]
   },
+  // khairin, google - https://www.facebook.com/MasjidJamekShaikEusoffDhobyGhaut/posts/pfbid0w23G4D4pfWvr8824bzi2atSsbhZFgMgTR9RVEoP3VBh8hPY6Tv7s27k2xSRYN1EJl
+  {
+    id: 775,
+    name: "Masjid Jamek Shaik Eusoff",
+    category: "mosque",
+    state: "Pulau Pinang",
+    city: "George Town",
+    qrImage: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0wGXzzvemgbKd3NPSj7i5UnqazqV2aE2HTnFSzBGKYkCEd1yt9BSf6IwMf7BRFUiW0JA&usqp=CAU",
+    qrContent: "00020201021126580014A000000615000101065887340212MBBQR1634647031000000000005204000053034585802MY5919MASJID SHAIK EUSOFF6012PULAU PINANG6304D8FD",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
