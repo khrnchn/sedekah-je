@@ -8810,7 +8810,7 @@ export const institutions: Institution[] = [
     qrContent: "00020101021126580014A000000615000101065887340212MBBQR150879603100000000000520400005303458540500.005802MY5915SURAU SRI EMBUN6008SELANGOR630408F2",
     supportedPayment: ["duitnow", "tng"]
   },
-  // [put your name here]
+  // khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/694910011283695/
   {
     id: 766,
     name: "Masjid Sultan Iskandar",
