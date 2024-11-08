@@ -8854,4 +8854,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126420014A000000615000101066033460210MD000046635204556153034585802MY5921SURAU TENAGA NASIONAL6002MY62530325163704396056300357405129705201637225399907004971063044AB9",
     supportedPayment: ["duitnow", "tng"]
   },
+  // [put your name here]
+  {
+    id: 770,
+    name: "Madrasah As-Salam",
+    category: "surau",
+    state: "Melaka",
+    city: "Alai",
+    qrImage: "https://files.fm/f/mktss945e5",
+    qrContent: "",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
