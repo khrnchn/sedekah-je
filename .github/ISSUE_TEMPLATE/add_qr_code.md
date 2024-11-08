@@ -40,4 +40,4 @@ e.g., Kuala Lumpur
 http or https something
 
 **Remarks:**
-nama | facebook.com/something
+{name}, {source} - {url} (eg: khairin, facebook - facebook.com/something)
