@@ -8942,4 +8942,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126580014A000000615000101065016640226100105040001582O0076ZA00015204839853034585802MY5918MASJID AL-MUTTAQIN6002MY62150311O0076ZA00018264BB97560062E756CF3E95D75882E814E6EEEA250A9AE7113653F8318E007F447E63041BB3",
     supportedPayment: ["duitnow", "tng"]
   },
+  // khairin, google - https://toyyibpay.com/INFAQ-HARI-JUMAAT
+  {
+    id: 778,
+    name: "Masjid Baitul Mahabbah",
+    category: "mosque",
+    state: "Selangor",
+    city: "Shah Alam",
+    qrImage: "https://toyyibpay.com/asset/img/usr/21674/product/e58b77ad61c4014b08d937befb6dfc0aa2c7f5a943d55eb0b4b1ac75aeea1bb4.png",
+    qrContent: "",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
