@@ -8744,7 +8744,7 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126420014A000000615000101066033460210MD000008655204866153034585802MY5923Masjid Sharifah Fatimah6002MY62530325162909342749900115505598605201668568514085007832263043961",
     supportedPayment: ["duitnow", "tng"]
   },
-  // [put your name here]
+  // khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/1394277821346907/
   {
     id: 760,
     name: "Surau Taman Seri Alam",
