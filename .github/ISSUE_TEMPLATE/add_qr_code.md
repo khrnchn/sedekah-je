@@ -2,7 +2,9 @@
 name: Add New QR Code
 about: Submit a request to add a new institution's QR code
 title: "[addQR] add new qr code for {institution name}"
-labels: addQR
+labels: ''
+assignees: ''
+
 ---
 
 **Type of Institute:**
