@@ -8898,4 +8898,15 @@ export const institutions: Institution[] = [
     qrContent: "https://qr.tngdigital.com.my/m/281011058732047763398424782",
     supportedPayment: ["duitnow", "tng"]
   },
+  // khairin, google - https://yayasanmurtadha.onpay.my/order/form/mdd-mdd-infaq1
+  {
+    id: 774,
+    name: "Yayasan Murtadha Berhad",
+    category: "others",
+    state: "Kedah",
+    city: "Sungai Petani",
+    qrImage: "https://cdn.onpay.my/users/yayasanmurtadha/media/uploads/WhatsApp%20Image%202024-08-28%20at%2011.17.37%20AM.jpg",
+    qrContent: "00020201021126580014A000000615000101065887340212MBBQR2105535031000000000005204729953034585802MY5923YAYASAN MURTADHA BERHAD6005KEDAH63048D2E",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
