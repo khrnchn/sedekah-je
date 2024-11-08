@@ -13,10 +13,10 @@ assignees: ''
 - Others
 
 **Name of the Masjid:**
-_(e.g., Masjid Kuala Lumpur)_
+e.g., Masjid ABC
 
 **Name of the City:**
-_(e.g., Kuala Lumpur)_
+e.g., Kuala Lumpur
 
 **State:**
 - Selangor
@@ -37,4 +37,7 @@ _(e.g., Kuala Lumpur)_
 - Others
 
 **QR Code Image:**
-_(put public qr code image link here, must have http or https)_
+http or https something
+
+**Remarks:**
+nama | facebook.com/something
