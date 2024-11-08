@@ -8732,7 +8732,7 @@ export const institutions: Institution[] = [
     qrImage: "https://i.ibb.co/FwG2JVH/SURAU-AL-BAYAN-KHK-STICKER.jpg",
     qrContent: "00020201021126470014A000000615000101065641620215PBB2024001100575204866153034585802MY5916SURAU AL - BAYAN6006RAWANG6220030639910407063446176304499C",
     supportedPayment: ["duitnow", "tng"]
-  }
+  },
   // [put your name here]
   {
     id: 759,
