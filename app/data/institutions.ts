@@ -8777,7 +8777,7 @@ export const institutions: Institution[] = [
     qrContent: "00020101021126580014A000000615000101065887340212MBBQR130885403100000000000520400005303458540500.005802MY5924MASJID DAERAH BARAT DAYA6012PULAU PINANG63046C4A",
     supportedPayment: ["duitnow", "tng"]
   },
-  // [put your name here]
+  // khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/695085587932804/
   {
     id: 763,
     name: "Surau Al-Jannah",
