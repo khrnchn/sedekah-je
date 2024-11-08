@@ -8887,4 +8887,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126420014A000000615000101066033460210MD000009505204829953034585802MY5941Pusat pengajian Darul Hadis Yayasan Paksi6002MY6253032516292721734360075194541050520162927871375900171326304A968",
     supportedPayment: ["duitnow", "tng"]
   },
+  // khairin, twitter - https://twitter.com/saranidollah/status/1246258615830233088
+  {
+    id: 773,
+    name: "Surau Al Iman Taman Arked",
+    category: "surau",
+    state: "Selangor",
+    city: "Dengkil",
+    qrImage: "https://pbs.twimg.com/media/EUuZmQ0UMAA_E_J.jpg",
+    qrContent: "https://qr.tngdigital.com.my/m/281011058732047763398424782",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
