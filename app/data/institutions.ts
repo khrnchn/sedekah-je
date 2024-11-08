@@ -8843,7 +8843,7 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126580014A000000615000101065887340212MBBQR1684472031000000000005204829953034585802MY5921NADI HUFFAZ RESOURCES6008SELANGOR630499C3",
     supportedPayment: ["duitnow", "tng"]
   },
-  // [put your name here]
+  // khairin, twitter - https://x.com/maxburnz/status/1774747440069140772
   {
     id: 769,
     name: "Masjid Al I'tisam",
