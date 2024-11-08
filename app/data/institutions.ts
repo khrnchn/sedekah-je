@@ -8909,4 +8909,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126580014A000000615000101065887340212MBBQR2105535031000000000005204729953034585802MY5923YAYASAN MURTADHA BERHAD6005KEDAH63048D2E",
     supportedPayment: ["duitnow", "tng"]
   },
+  // khairin, google - https://www.raudhahautisme.org/jom-infaq-derma/
+  {
+    id: 775,
+    name: "Pertubuhan Raudhah Autisme Islam Selangor",
+    category: "others",
+    state: "Selangor",
+    city: "Sepang",
+    qrImage: "https://www.raudhahautisme.org/wp-content/uploads/2023/08/image1.png.webp",
+    qrContent: "",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
