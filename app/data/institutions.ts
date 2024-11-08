@@ -8788,4 +8788,15 @@ export const institutions: Institution[] = [
     qrContent: "00020101021126580014A000000615000101065887340212MBBQR148083503100000000000520400005303458540500.005802MY5918SURAU AL-JANNAH BR6008SELANGOR6304E8EE",
     supportedPayment: ["duitnow", "tng"]
   },
+  // [put your name here]
+  {
+    id: 764,
+    name: "Surau Sri Embun Sutera Damansara",
+    category: "surau",
+    state: "Selangor",
+    city: "Petaling Jaya",
+    qrImage: "https://scontent.fkul19-1.fna.fbcdn.net/v/t1.6435-9/93159593_3171107502920938_8296346781017440256_n.jpg?stp=dst-jpg_s600x600&_nc_cat=105&ccb=1-7&_nc_sid=f7fc3c&_nc_ohc=5IzOb3ngPH4Q7kNvgH3v_ym&_nc_zt=23&_nc_ht=scontent.fkul19-1.fna&_nc_gid=Ae_QsqqMXV_6jkxuMa4R-uz&oh=00_AYBZi_FH2_lrlxUTZkdoiAzENO6wWHsdO4G2daAY5O4gFA&oe=6754C02E",
+    qrContent: "00020101021126580014A000000615000101065887340212MBBQR150879603100000000000520400005303458540500.005802MY5915SURAU SRI EMBUN6008SELANGOR630408F2",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
