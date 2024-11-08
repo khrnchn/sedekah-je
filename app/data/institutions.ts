@@ -8950,7 +8950,7 @@ export const institutions: Institution[] = [
     state: "Selangor",
     city: "Shah Alam",
     qrImage: "https://toyyibpay.com/asset/img/usr/21674/product/e58b77ad61c4014b08d937befb6dfc0aa2c7f5a943d55eb0b4b1ac75aeea1bb4.png",
-    qrContent: "",
+    qrContent: "00020201021126580014A000000615000101065016640226100105630003466OAE901A00015204597353034585802MY5922MASJID BAITUL MAHABBAH6002MY62150311OAE901A00018264FDF274EC8694A5C4CB9553E25199F77F65EA2262DAFD19327AFB1CA5DD3B39F06304364D",
     supportedPayment: ["duitnow", "tng"]
   },
 ];
