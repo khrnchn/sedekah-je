@@ -8788,9 +8788,20 @@ export const institutions: Institution[] = [
     qrContent: "00020101021126580014A000000615000101065887340212MBBQR148083503100000000000520400005303458540500.005802MY5918SURAU AL-JANNAH BR6008SELANGOR6304E8EE",
     supportedPayment: ["duitnow", "tng"]
   },
-  // [put your name here]
+  // khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/694978877943475/
   {
     id: 764,
+    name: "Surau Baiturrahman Seksyen 9",
+    category: "surau",
+    state: "Selangor",
+    city: "Putra Heights",
+    qrImage: "https://scontent.fkul19-1.fna.fbcdn.net/v/t1.6435-9/93382220_3171138872917801_3368109548182175744_n.jpg?stp=dst-jpg_p370x247&_nc_cat=106&ccb=1-7&_nc_sid=f7fc3c&_nc_ohc=5cvSh4W14dMQ7kNvgG60ZX_&_nc_zt=23&_nc_ht=scontent.fkul19-1.fna&_nc_gid=Ae_QsqqMXV_6jkxuMa4R-uz&oh=00_AYBEtoIULQuWVOqaIEcTJ8qGBRcuLGfsbi0EO4PUJQUcwg&oe=6754C81D",
+    qrContent: "00020101021126580014A000000615000101065887340212MBBQR143498203100000000000520400005303458540500.005802MY5921SURAU BAITURRAHMAN PH6008SELANGOR6304A996",
+    supportedPayment: ["duitnow", "tng"]
+  },
+    // khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/694967647944598/
+  {
+    id: 765,
     name: "Surau Sri Embun Sutera Damansara",
     category: "surau",
     state: "Selangor",
