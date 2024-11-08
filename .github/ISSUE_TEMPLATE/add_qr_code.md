@@ -40,4 +40,4 @@ e.g., Kuala Lumpur
 http or https something
 
 **Remarks:**
-{name}, {source} - {url} (eg: khairin, facebook - facebook.com/something)
+{name}, {source} - {url} (eg: khairin, facebook - facebook.com/something) example: https://github.com/khrnchn/sedekah-je/blob/main/app/data/institutions.ts#L8835
