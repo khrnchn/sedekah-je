@@ -8744,9 +8744,20 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126420014A000000615000101066033460210MD000008655204866153034585802MY5923Masjid Sharifah Fatimah6002MY62530325162909342749900115505598605201668568514085007832263043961",
     supportedPayment: ["duitnow", "tng"]
   },
-  // khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/1394277821346907/
+  // khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/1601885200586167/
   {
     id: 760,
+    name: "Surau Taman Seri Alam",
+    category: "surau",
+    state: "Selangor",
+    city: "Sungai Buloh",
+    qrImage: "https://scontent.fkul19-2.fna.fbcdn.net/v/t39.30808-6/431913919_7650374361660874_1054193890271509798_n.jpg?stp=dst-jpg_p180x540&_nc_cat=111&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=23TjrpPkUXsQ7kNvgGZDU9t&_nc_zt=23&_nc_ht=scontent.fkul19-2.fna&_nc_gid=A79HeEWQsVlN6Wcm3dgTcRG&oh=00_AYBi4AgW-eNabGIew1sRpluPBlKbxZIKFnO2c5Y8RqLtQQ&oe=67334D04",
+    qrContent: "00020201021126610014A000000615000101065641670215QRMID0000011748041001938056685204866153034585802MY5921SURAU TAMAN SERI ALAM6008SG BULOH6105470006304E676",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/1394277821346907/
+  {
+    id: 761,
     name: "Masjid Jamek Kamunting Taiping",
     category: "mosque",
     state: "Perak",
