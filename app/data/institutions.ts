@@ -8788,10 +8788,10 @@ export const institutions: Institution[] = [
     qrContent: "00020101021126580014A000000615000101065887340212MBBQR148083503100000000000520400005303458540500.005802MY5918SURAU AL-JANNAH BR6008SELANGOR6304E8EE",
     supportedPayment: ["duitnow", "tng"]
   },
-  // [put your name here]
+  // khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/694978877943475/
   {
     id: 764,
-    name: "Surau Baiturrahman",
+    name: "Surau Baiturrahman Seksyen 9",
     category: "surau",
     state: "Selangor",
     city: "Putra Heights",
