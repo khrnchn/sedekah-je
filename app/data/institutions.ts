@@ -8865,4 +8865,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126610014A000000615000101065641670215QRMID0000015122041001262903185204866153034585802MY5917MADRASAH AS-SALAM6006MELAKA610575400630433B5",
     supportedPayment: ["duitnow", "tng"]
   },
+  // khairin, google - https://www.maqtsw.net/infaq/infaq-dengan-qr-code-1
+  {
+    id: 771,
+    name: "Masjid Al-Quddus Taman Sri Wangi",
+    category: "mosque",
+    state: "Sarawak",
+    city: "Kuching",
+    qrImage: "https://files.cdn-files-a.com/uploads/9802126/400_6708d056be541.jpg",
+    qrContent: "00020201021126420014A000000615000101066033460210MD000944755204866153034585802MY5925MASJID AL-QUDDUS TAMAN SR6002MY62530325167626529824900101992397605201678959218269005186463047549",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
