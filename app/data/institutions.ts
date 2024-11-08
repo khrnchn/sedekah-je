@@ -8861,8 +8861,8 @@ export const institutions: Institution[] = [
     category: "surau",
     state: "Melaka",
     city: "Alai",
-    qrImage: "https://files.fm/f/mktss945e5",
-    qrContent: "",
+    qrImage: "https://fv5-4.files.fm/thumb_show.php?i=mktss945e5&view&v=1&PHPSESSID=978de0b8b4f3820d446ad0920290a12230cf1a61",
+    qrContent: "00020201021126610014A000000615000101065641670215QRMID0000015122041001262903185204866153034585802MY5917MADRASAH AS-SALAM6006MELAKA610575400630433B5",
     supportedPayment: ["duitnow", "tng"]
   },
 ];
