@@ -8810,4 +8810,15 @@ export const institutions: Institution[] = [
     qrContent: "00020101021126580014A000000615000101065887340212MBBQR150879603100000000000520400005303458540500.005802MY5915SURAU SRI EMBUN6008SELANGOR630408F2",
     supportedPayment: ["duitnow", "tng"]
   },
+  // [put your name here]
+  {
+    id: 766,
+    name: "Masjid Sultan Iskandar",
+    category: "mosque",
+    state: "Johor",
+    city: "Bandar Dato Onn",
+    qrImage: "https://scontent.fkul19-1.fna.fbcdn.net/v/t1.6435-9/93954904_3170929469605408_655147220340834304_n.jpg?stp=dst-jpg_p480x480&_nc_cat=105&ccb=1-7&_nc_sid=f7fc3c&_nc_ohc=syKesY3GKswQ7kNvgH5lXIJ&_nc_zt=23&_nc_ht=scontent.fkul19-1.fna&_nc_gid=AjZI4MC_8epa0FfY8Z4_qgO&oh=00_AYBpdNdfp59s9u_9Udfd-mBGbvLJotYe4fEEAlY2Oic-ZA&oe=6754BDF4",
+    qrContent: "00020101021126580014A000000615000101065887340212MBBQR119240203100000000000520400005303458540500.005802MY5938MASJID SULTAN ISKANDAR BANDAR DATO ONN6005JOHOR6304EDDE",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
