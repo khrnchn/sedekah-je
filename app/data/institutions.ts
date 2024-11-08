@@ -8744,4 +8744,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126420014A000000615000101066033460210MD000008655204866153034585802MY5923Masjid Sharifah Fatimah6002MY62530325162909342749900115505598605201668568514085007832263043961",
     supportedPayment: ["duitnow", "tng"]
   },
+  // [put your name here]
+  {
+    id: 760,
+    name: "Masjid Daerah Barat Daya",
+    category: "mosque",
+    state: "Pulau Pinang",
+    city: "Balik Pulau",
+    qrImage: "https://scontent.fkul19-3.fna.fbcdn.net/v/t1.6435-9/93841187_3171566812875007_7956271249045323776_n.jpg?stp=dst-jpg_p350x350&_nc_cat=103&ccb=1-7&_nc_sid=f7fc3c&_nc_ohc=TFf3zbysoC4Q7kNvgH1aKck&_nc_zt=23&_nc_ht=scontent.fkul19-3.fna&_nc_gid=AFRNGFg2tDItF3p4IaiHN0V&oh=00_AYD-U3YlHkTWryVXTOnuLY3aefiO2RydwPVnFkIB1rvBxA&oe=6754C424",
+    qrContent: "00020101021126580014A000000615000101065887340212MBBQR130885403100000000000520400005303458540500.005802MY5924MASJID DAERAH BARAT DAYA6012PULAU PINANG63046C4A",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
