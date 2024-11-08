@@ -8843,4 +8843,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126580014A000000615000101065887340212MBBQR1684472031000000000005204829953034585802MY5921NADI HUFFAZ RESOURCES6008SELANGOR630499C3",
     supportedPayment: ["duitnow", "tng"]
   },
+  // khairin, solat jumaat @ tnb hq (merchant name is surau tenaga nasional)
+  {
+    id: 769,
+    name: "Masjid TNB HQ",
+    category: "mosque",
+    state: "W.P. Kuala Lumpur",
+    city: "Bangsar",
+    qrImage: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwTEAzNDHoTuO5TEXH8NKBGge4psxxp3GReg&s",
+    qrContent: "00020201021126420014A000000615000101066033460210MD000046635204556153034585802MY5921SURAU TENAGA NASIONAL6002MY62530325163704396056300357405129705201637225399907004971063044AB9",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
