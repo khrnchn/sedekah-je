@@ -8744,9 +8744,31 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126420014A000000615000101066033460210MD000008655204866153034585802MY5923Masjid Sharifah Fatimah6002MY62530325162909342749900115505598605201668568514085007832263043961",
     supportedPayment: ["duitnow", "tng"]
   },
-  // [put your name here]
+  // khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/1601885200586167/
   {
     id: 760,
+    name: "Surau Taman Seri Alam",
+    category: "surau",
+    state: "Selangor",
+    city: "Sungai Buloh",
+    qrImage: "https://scontent.fkul19-2.fna.fbcdn.net/v/t39.30808-6/431913919_7650374361660874_1054193890271509798_n.jpg?stp=dst-jpg_p180x540&_nc_cat=111&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=23TjrpPkUXsQ7kNvgGZDU9t&_nc_zt=23&_nc_ht=scontent.fkul19-2.fna&_nc_gid=A79HeEWQsVlN6Wcm3dgTcRG&oh=00_AYBi4AgW-eNabGIew1sRpluPBlKbxZIKFnO2c5Y8RqLtQQ&oe=67334D04",
+    qrContent: "00020201021126610014A000000615000101065641670215QRMID0000011748041001938056685204866153034585802MY5921SURAU TAMAN SERI ALAM6008SG BULOH6105470006304E676",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/1394277821346907/
+  {
+    id: 761,
+    name: "Masjid Jamek Kamunting Taiping",
+    category: "mosque",
+    state: "Perak",
+    city: "Taiping",
+    qrImage: "https://scontent.fkul19-3.fna.fbcdn.net/v/t39.30808-6/335475774_164077083116781_2432501458972385248_n.jpg?stp=dst-jpg_s600x600&_nc_cat=102&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=myik9rhjaxUQ7kNvgGca3iH&_nc_zt=23&_nc_ht=scontent.fkul19-3.fna&_nc_gid=AsgS4YYbNHUcgCNKNPmmbPu&oh=00_AYDw20s0mIUTKkBOIFFo0If3VzKDgvUflih0qrGFsXDiXw&oe=67332C94",
+    qrContent: "00020201021126580014A000000615000101065887340212MBBQR1698694031000000000005204000053034585802MY5922MASJID JAMEK KEMUNTING6005PERAK6304AB49",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/695100714597958/
+  {
+    id: 762,
     name: "Masjid Daerah Barat Daya",
     category: "mosque",
     state: "Pulau Pinang",
