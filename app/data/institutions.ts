@@ -8732,5 +8732,16 @@ export const institutions: Institution[] = [
     qrImage: "https://i.ibb.co/FwG2JVH/SURAU-AL-BAYAN-KHK-STICKER.jpg",
     qrContent: "00020201021126470014A000000615000101065641620215PBB2024001100575204866153034585802MY5916SURAU AL - BAYAN6006RAWANG6220030639910407063446176304499C",
     supportedPayment: ["duitnow", "tng"]
-  }
+  },
+  // khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/1601882700586417/
+  {
+    id: 759,
+    name: "Masjid Sharifah Fatimah",
+    category: "mosque",
+    state: "Kedah",
+    city: "Jitra",
+    qrImage: "https://scontent.fkul19-3.fna.fbcdn.net/v/t39.30808-6/430854388_7650361004995543_1422030267128984310_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=4S6DD55adCwQ7kNvgE-eiPx&_nc_zt=23&_nc_ht=scontent.fkul19-3.fna&_nc_gid=AEpIqP_QPmo4MHF9127_rqj&oh=00_AYD9oU00BZUXuw5uy5r43m6jO-GETqVkMpV9DqMYFc284A&oe=673331B1",
+    qrContent: "00020201021126420014A000000615000101066033460210MD000008655204866153034585802MY5923Masjid Sharifah Fatimah6002MY62530325162909342749900115505598605201668568514085007832263043961",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];

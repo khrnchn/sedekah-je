@@ -65,7 +65,7 @@ async function decodeQRCode(url) {
     qrImage: "${qrCodeImage}",
     qrContent: "${escapedQrContent}",
     supportedPayment: ${supportedPayment}
-  }
+  },
 `;
 
     // Insert the new institution before the closing bracket of the array
