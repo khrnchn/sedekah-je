@@ -8821,7 +8821,7 @@ export const institutions: Institution[] = [
     qrContent: "00020101021126580014A000000615000101065887340212MBBQR119240203100000000000520400005303458540500.005802MY5938MASJID SULTAN ISKANDAR BANDAR DATO ONN6005JOHOR6304EDDE",
     supportedPayment: ["duitnow", "tng"]
   },
-  // [put your name here]
+  // khairin, facebook - https://almuhajirinkjgutama.com/b1form.php
   {
     id: 767,
     name: "Surau Al-Muhajirin Kajang Utama",
