@@ -3727,7 +3727,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 313,
-    name: "Masjid Annur",
+    name: "Masjid An-Nur",
     category: "mosque",
     state: "Selangor",
     city: "Batu Caves",
@@ -4025,7 +4025,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 340,
-    name: "Surau Annur Dwiputra",
+    name: "Surau An-Nur Dwiputra",
     category: "surau",
     state: "W.P. Putrajaya",
     city: "Putrajaya",
@@ -7057,7 +7057,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 616,
-    name: "Masjid Annur Felda Jelai 2",
+    name: "Masjid An-Nur Felda Jelai 2",
     category: "mosque",
     state: "Negeri Sembilan",
     city: "Gemas",
@@ -7567,7 +7567,7 @@ export const institutions: Institution[] = [
   {
     // https://www.facebook.com/annurpresint11/
     id: 660,
-    name: "Surau An Nur Presint 11 Putrajaya",
+    name: "Surau An-Nur Presint 11 Putrajaya",
     category: "surau",
     state: "W.P. Putrajaya",
     city: "Putrajaya",
