@@ -4,7 +4,7 @@ const axios = require('axios');
 
 // Load extracted fields from JSON
 const extractedFields = JSON.parse(fs.readFileSync('extractedFields.json', 'utf8'));
-const { typeOfInstitute, nameOfTheMasjid, nameOfTheCity, state, qrCodeImage } = extractedFields;
+const { typeOfInstitute, nameOfTheMasjid, nameOfTheCity, state, qrCodeImage,remarks } = extractedFields;
 
 // Determine category based on institute type
 const category = typeOfInstitute.toLowerCase() === "masjid" ? "mosque" : typeOfInstitute.toLowerCase();
@@ -55,7 +55,7 @@ async function decodeQRCode(url) {
 
     // Create a new institution entry with qrContent
     const newInstitution =
-  `  // [put your name here]
+  `  // ${remarks}
   {
     id: ${nextId},
     name: "${nameOfTheMasjid}",
@@ -65,7 +65,7 @@ async function decodeQRCode(url) {
     qrImage: "${qrCodeImage}",
     qrContent: "${escapedQrContent}",
     supportedPayment: ${supportedPayment}
-  }
+  },
 `;
 
     // Insert the new institution before the closing bracket of the array

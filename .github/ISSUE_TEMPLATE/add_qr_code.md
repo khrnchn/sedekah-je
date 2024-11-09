@@ -3,6 +3,8 @@ name: Add New QR Code
 about: Submit a request to add a new institution's QR code
 title: "[addQR] add new qr code for {institution name}"
 labels: addQR
+assignees: ''
+
 ---
 
 **Type of Institute:**
@@ -11,10 +13,10 @@ labels: addQR
 - Others
 
 **Name of the Masjid:**
-_(e.g., Masjid Kuala Lumpur)_
+e.g., Masjid ABC
 
 **Name of the City:**
-_(e.g., Kuala Lumpur)_
+e.g., Kuala Lumpur
 
 **State:**
 - Selangor
@@ -32,7 +34,10 @@ _(e.g., Kuala Lumpur)_
 - W.P. Putrajaya
 - W.P. Labuan
 - Perak
-- Others
+- Pulau Pinang
 
 **QR Code Image:**
-_(put public qr code image link here, must have http or https)_
+http or https something
+
+**Remarks:**
+{name}, {source} - {url} (eg: khairin, facebook - facebook.com/something) example: https://github.com/khrnchn/sedekah-je/blob/main/app/data/institutions.ts#L8835
