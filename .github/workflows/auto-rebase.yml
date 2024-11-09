@@ -1,0 +1,49 @@
+name: Auto Rebase
+
+on:
+  pull_request:
+    types: [synchronize, opened]
+  push:
+    branches:
+      - main
+
+jobs:
+  rebase:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged != true
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+      - name: Rebase onto main
+        run: |
+          # Fetch the latest main branch
+          git fetch origin main
+
+          # If this is a PR event, get the PR branch
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            # Checkout the PR branch
+            git checkout "${{ github.event.pull_request.head.ref }}"
+            
+            # Try to rebase onto main
+            if git rebase origin/main; then
+              # Push the rebased branch with force-with-lease
+              git push --force-with-lease
+            else
+              # If rebase fails, abort and comment on PR
+              git rebase --abort
+              echo "Rebase failed. Manual intervention required."
+              gh pr comment "${{ github.event.pull_request.number }}" --body "⚠️ Automatic rebase failed. Please resolve conflicts manually."
+              exit 1
+            fi
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
