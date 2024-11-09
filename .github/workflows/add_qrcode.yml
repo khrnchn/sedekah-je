@@ -7,10 +7,6 @@ on:
 jobs:
   add-qrcode:
     runs-on: ubuntu-latest
-    # Add concurrency to prevent conflicts if multiple issues are opened simultaneously
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.event.issue.number }}
-      cancel-in-progress: true
 
     steps:
       - name: Checkout Repository
@@ -33,7 +29,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "16"
-          cache: 'npm'  # Add caching for faster builds
 
       - name: Install Dependencies
         run: |
@@ -84,17 +79,8 @@ jobs:
 
       - name: Create Pull Request
         run: |
-          pr_body="## new institution addition
-          
-          - institution Name: ${{ steps.extract.outputs.nameOfMasjid }}
-          - city: ${{ steps.extract.outputs.nameOfTheCity }}
-          - state: ${{ steps.extract.outputs.state }}
-          
-          closes #${{ github.event.issue.number }}"
-          
-          gh pr create -B main -H ${{ steps.create_branch.outputs.branch }} \
-            --title ':memo: add new institution from #${{ github.event.issue.number }}' \
-            --body "$pr_body"
-      
+          gh pr create -B main -H ${{ steps.create_branch.outputs.branch }} --title ':memo: add new institution from #${{ github.event.issue.number }}' --body "closes \#${{ github.event.issue.number }}
+
+          ${{ github.event.issue.body }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
