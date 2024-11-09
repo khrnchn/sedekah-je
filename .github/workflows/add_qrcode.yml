@@ -61,6 +61,27 @@ jobs:
           rm -rf extractedFields.json input.data
           git checkout package.json
 
+      - name: Get Issue Author Details
+        id: author
+        run: |
+          AUTHOR_NAME=$(gh api /users/${{ github.event.issue.user.login }} --jq .name)
+          AUTHOR_EMAIL=$(gh api /users/${{ github.event.issue.user.login }} --jq .email)
+          
+          # If name is null, use login
+          if [ "$AUTHOR_NAME" = "null" ]; then
+            AUTHOR_NAME="${{ github.event.issue.user.login }}"
+          fi
+          
+          # If email is null or private, construct a no-reply email
+          if [ "$AUTHOR_EMAIL" = "null" ]; then
+            AUTHOR_EMAIL="${{ github.event.issue.user.login }}@users.noreply.github.com"
+          fi
+          
+          echo "name=$AUTHOR_NAME" >> $GITHUB_OUTPUT
+          echo "email=$AUTHOR_EMAIL" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create, Commit, and Push New Branch
         id: create_branch
         run: |
@@ -68,8 +89,10 @@ jobs:
           echo "Creating branch: $BRANCH_NAME"
           git checkout -b "$BRANCH_NAME"
 
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
+          # Configure git with issue author's details
+          git config user.name "${{ steps.author.outputs.name }}"
+          git config user.email "${{ steps.author.outputs.email }}"
+
           git add app/data/institutions.ts
           git commit -m ":memo: add new institution from #${{ github.event.issue.number }}"
 
@@ -79,8 +102,13 @@ jobs:
 
       - name: Create Pull Request
         run: |
-          gh pr create -B main -H ${{ steps.create_branch.outputs.branch }} --title ':memo: add new institution from #${{ github.event.issue.number }}' --body "closes \#${{ github.event.issue.number }}
+          gh pr create \
+            -B main \
+            -H ${{ steps.create_branch.outputs.branch }} \
+            --title ':memo: add new institution from #${{ github.event.issue.number }}' \
+            --body "closes \#${{ github.event.issue.number }}
 
-          ${{ github.event.issue.body }}"
+          ${{ github.event.issue.body }}" \
+            --author "${{ github.event.issue.user.login }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
