@@ -8964,4 +8964,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126420014A000000615000101066033460210MD000805435204866153034585802MY5920SURAU ELMINA GARDENS6002MY627303251661826550957007879923240052016618265783810010011071616618259979110096304953D",
     supportedPayment: ["duitnow", "tng"]
   }
+  // khairin, facebook - https://www.facebook.com/photo.php?fbid=2049969782028767&set=p.2049969782028767&type=3
+  {
+    id: 780,
+    name: "Surau Riyadhul Jannah",
+    category: "surau",
+    state: "Johor",
+    city: "Bandar Penawar",
+    qrImage: "https://scontent.fkul18-3.fna.fbcdn.net/v/t39.30808-6/433471771_2049969775362101_5589151800591524197_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=bd9a62&_nc_ohc=gsP7yMeI2LsQ7kNvgFIn9pT&_nc_zt=23&_nc_ht=scontent.fkul18-3.fna&_nc_gid=A7lwGd2LbuqbJwuqNbRLqqH&oh=00_AYBBHkg2bxDcCXyMczYf4sAj1RpWTSfYTal0WztkcGal2g&oe=6734C64C",
+    qrContent: "00020201021126420014A000000615000101066033460210MD000831555204866153034585802MY5925Dana Surau Riyadhul Janna6002MY6273032516631636623520086941402140520166319885146800299010716166316115304200863041036",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
