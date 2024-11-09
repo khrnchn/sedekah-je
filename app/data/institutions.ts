@@ -8997,4 +8997,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126420014A000000615000101066033460210MD001301815204866153034585802MY5915MUSOLLA AN-NUR 6002MY6273032517072029477130091939813630520170720464403900269640716170720168107000563045D47",
     supportedPayment: ["duitnow", "tng"]
   },
+  // khairin, facebook - https://www.facebook.com/photo.php?fbid=7667341323284756&set=p.7667341323284756&type=3
+  {
+    id: 783,
+    name: "Masjid Darul Amilin",
+    category: "mosque",
+    state: "Sarawak",
+    city: "Sibu",
+    qrImage: "https://scontent.fkul18-1.fna.fbcdn.net/v/t39.30808-6/433513876_7667341309951424_1083547628065933058_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=bd9a62&_nc_ohc=OSKOZHa3BQsQ7kNvgGO6J5w&_nc_zt=23&_nc_ht=scontent.fkul18-1.fna&_nc_gid=ArTgo-o0frWRbSsw9Q6e6eq&oh=00_AYAGB0fwcU7GnaOmK8bA4ubNrOQSvyjuaVoypFfVyZK6Xw&oe=6734EE7A",
+    qrContent: "00020201021126420014A000000615000101066033460210MD001313975204866153034585802MY5919MASJID DARUL AMILIN6002MY62730325171014311885800166953951505201710143802077003477007161710142819714008630403CC",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
