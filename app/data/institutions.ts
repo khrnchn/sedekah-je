@@ -9008,4 +9008,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126420014A000000615000101066033460210MD001313975204866153034585802MY5919MASJID DARUL AMILIN6002MY62730325171014311885800166953951505201710143802077003477007161710142819714008630403CC",
     supportedPayment: ["duitnow", "tng"]
   },
+  // khairin, facebook - https://www.facebook.com/photo.php?fbid=940218854377395&set=p.940218854377395&type=3
+  {
+    id: 784,
+    name: "Masjid An-Nur Kolej Matrikulasi Johor",
+    category: "mosque",
+    state: "Johor",
+    city: "Tangkak",
+    qrImage: "https://scontent.fkul18-3.fna.fbcdn.net/v/t39.30808-6/433462267_940218851044062_1027396050689052378_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=bd9a62&_nc_ohc=wyELLMePqxcQ7kNvgEuerYa&_nc_zt=23&_nc_ht=scontent.fkul18-3.fna&_nc_gid=At8lRU4Udn5aOwhfAF_vKp3&oh=00_AYCg85GcVkvt24zmHIf3afwIUDhyhOH63wI06dlsWsMpgQ&oe=6734DEAE",
+    qrContent: "00020201021126580014A000000615000101065887340212MBBQR2004736031000000000005204000053034585802MY5917MASJID AN NUR KMJ6005JOHOR6304BFE3",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
