@@ -8986,4 +8986,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126420014A000000615000101066033460210MD000678795204829953034585802MY5939PUSAT PENGAJIAN ISLAM MOHD NOR AL BAKRI6002MY627303251650938409355001102236062052016509384127240021923071616509382169000046304474D",
     supportedPayment: ["duitnow", "tng"]
   },
+  // khairin, facebook - https://www.facebook.com/photo.php?fbid=10228973039684008&set=p.10228973039684008&type=3
+  {
+    id: 782,
+    name: "Musolla An-Nur Space U8",
+    category: "surau",
+    state: "Selangor",
+    city: "Shah Alam",
+    qrImage: "https://scontent.fkul18-3.fna.fbcdn.net/v/t39.30808-6/433472109_10228973039644007_2903566317594804875_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=bd9a62&_nc_ohc=zFt9cVcvt38Q7kNvgF14Q9X&_nc_zt=23&_nc_ht=scontent.fkul18-3.fna&_nc_gid=AJ4tJ_GXxfrlPtVyk69Y6NT&oh=00_AYD_qH35TcMthQqlyrnf9_mf580Zi1LpiCT_KZcxS3RPnA&oe=6734EC63",
+    qrContent: "00020201021126420014A000000615000101066033460210MD001301815204866153034585802MY5915MUSOLLA AN-NUR 6002MY6273032517072029477130091939813630520170720464403900269640716170720168107000563045D47",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
