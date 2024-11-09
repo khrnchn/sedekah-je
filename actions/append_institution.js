@@ -39,6 +39,12 @@ async function decodeQRCode(url) {
     // Read the existing institutions.ts file
     let fileContent = fs.readFileSync(filePath, 'utf8');
 
+    // Find all existing IDs to determine the next ID
+    const idMatches = fileContent.match(/id:\s*(\d+),/g);
+    const nextId = idMatches
+      ? Math.max(...idMatches.map(id => parseInt(id.match(/\d+/)[0]))) + 1
+      : 1;
+
     // Escape double quotes in qrContent to prevent syntax errors
     const escapedQrContent = qrContent.replace(/"/g, '\\"');
 
@@ -51,7 +57,7 @@ async function decodeQRCode(url) {
     const newInstitution =
   `  // ${remarks}
   {
-    id: ${parseInt(issueId)+1000},
+    id: ${nextId},
     name: "${nameOfTheMasjid}",
     category: "${category}",
     state: "${state}",
