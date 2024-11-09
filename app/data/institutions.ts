@@ -9019,4 +9019,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126580014A000000615000101065887340212MBBQR2004736031000000000005204000053034585802MY5917MASJID AN NUR KMJ6005JOHOR6304BFE3",
     supportedPayment: ["duitnow", "tng"]
   },
+  // khairin, facebook - https://www.facebook.com/photo.php?fbid=7415483425173294&set=p.7415483425173294&type=3
+  {
+    id: 785,
+    name: "Maahad Tahfiz Al Muqri",
+    category: "others",
+    state: "Selangor",
+    city: "Puchong",
+    qrImage: "https://scontent.fszb2-1.fna.fbcdn.net/v/t39.30808-6/433435717_7415483415173295_1544661700646098608_n.jpg?stp=dst-jpg_p75x225&_nc_cat=106&ccb=1-7&_nc_sid=bd9a62&_nc_ohc=-GmdI3FGAmEQ7kNvgGbuLst&_nc_zt=23&_nc_ht=scontent.fszb2-1.fna&_nc_gid=AKx6XAUoza_KNwj24NA5GMg&oh=00_AYAL3IBcyxEZvx37KEZIg-HYeRI5dA5Apaya7xhFzBOvRw&oe=6735038C",
+    qrContent: "00020201021126560014A000000615000101068900610224602e2603111384ff303f98105204000053034585802MY5922MAAHAD TAHFIZ AL MUQRI6002MY8240031438df2ffc917ac0792a14b7173238ac7f5697630459EC",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
