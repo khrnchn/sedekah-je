@@ -8963,7 +8963,7 @@ export const institutions: Institution[] = [
     qrImage: "",
     qrContent: "00020201021126420014A000000615000101066033460210MD000805435204866153034585802MY5920SURAU ELMINA GARDENS6002MY627303251661826550957007879923240052016618265783810010011071616618259979110096304953D",
     supportedPayment: ["duitnow", "tng"]
-  }
+  },
   // khairin, facebook - https://www.facebook.com/photo.php?fbid=2049969782028767&set=p.2049969782028767&type=3
   {
     id: 780,
