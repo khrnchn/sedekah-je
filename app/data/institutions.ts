@@ -8975,4 +8975,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126420014A000000615000101066033460210MD000831555204866153034585802MY5925Dana Surau Riyadhul Janna6002MY6273032516631636623520086941402140520166319885146800299010716166316115304200863041036",
     supportedPayment: ["duitnow", "tng"]
   },
+  // khairin, facebook - https://www.facebook.com/photo.php?fbid=10225513212878800&set=p.10225513212878800&type=3
+  {
+    id: 781,
+    name: "Pusat Pengajian Islam Mohd Nor Al Bakri Masjid Lama Lebak",
+    category: "others",
+    state: "Pahang",
+    city: "Temerloh",
+    qrImage: "https://scontent.fkul18-1.fna.fbcdn.net/v/t39.30808-6/433479585_10225513212838799_8796668774375921950_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=bd9a62&_nc_ohc=wAVfqEWFwVQQ7kNvgFgNkfV&_nc_zt=23&_nc_ht=scontent.fkul18-1.fna&_nc_gid=AhiBjByFC0MVRki8hYRQ1iU&oh=00_AYB6bx2jj9SjCLqEtSwzxsvMn5BW7Aicmf1kG8j35cTw3A&oe=6734F4D5",
+    qrContent: "00020201021126420014A000000615000101066033460210MD000678795204829953034585802MY5939PUSAT PENGAJIAN ISLAM MOHD NOR AL BAKRI6002MY627303251650938409355001102236062052016509384127240021923071616509382169000046304474D",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
