@@ -4,7 +4,7 @@ const axios = require('axios');
 
 // Load extracted fields from JSON
 const extractedFields = JSON.parse(fs.readFileSync('extractedFields.json', 'utf8'));
-const { typeOfInstitute, nameOfTheMasjid, nameOfTheCity, state, qrCodeImage,remarks } = extractedFields;
+const { typeOfInstitute, nameOfTheMasjid, nameOfTheCity, state, qrCodeImage, remarks, issueId } = extractedFields;
 
 // Determine category based on institute type
 const category = typeOfInstitute.toLowerCase() === "masjid" ? "mosque" : typeOfInstitute.toLowerCase();
@@ -39,25 +39,19 @@ async function decodeQRCode(url) {
     // Read the existing institutions.ts file
     let fileContent = fs.readFileSync(filePath, 'utf8');
 
-    // Find all existing IDs to determine the next ID
-    const idMatches = fileContent.match(/id:\s*(\d+),/g);
-    const nextId = idMatches
-      ? Math.max(...idMatches.map(id => parseInt(id.match(/\d+/)[0]))) + 1
-      : 1;
-
     // Escape double quotes in qrContent to prevent syntax errors
     const escapedQrContent = qrContent.replace(/"/g, '\\"');
 
     let supportedPayment = '["duitnow", "tng"]'
-    if (qrCodeImage.includes("tngdigital")){
-      supportedPayment = '["tng"]'
+    if (qrCodeImage.includes("tngdigital")) {
+      supportedPayment = '["tng"]';
     }
 
     // Create a new institution entry with qrContent
     const newInstitution =
   `  // ${remarks}
   {
-    id: ${nextId},
+    id: ${parseInt(issueId)+1000},
     name: "${nameOfTheMasjid}",
     category: "${category}",
     state: "${state}",

@@ -3,6 +3,7 @@ const path = require('path');
 
 // Read the input file from the environment
 const inputFilePath = path.resolve(process.env.INPUT_FILE || 'input.data');
+const issueId = process.env.ISSUE_ID; // Get the GitHub issue ID
 
 // Read and normalize input data
 let inputText;
@@ -49,6 +50,9 @@ function extractFields(text) {
     return fields;
 }
 
+// Extract fields and add the issue ID
 const extracted = extractFields(inputText);
+extracted.issueId = issueId;  // Add issue ID to extracted fields
+
 fs.writeFileSync('extractedFields.json', JSON.stringify(extracted, null, 2));
 console.log('Fields extracted:', extracted);
