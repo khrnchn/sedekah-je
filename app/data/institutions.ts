@@ -9030,4 +9030,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126560014A000000615000101068900610224602e2603111384ff303f98105204000053034585802MY5922MAAHAD TAHFIZ AL MUQRI6002MY8240031438df2ffc917ac0792a14b7173238ac7f5697630459EC",
     supportedPayment: ["duitnow", "tng"]
   },
+  // khairin, facebook - https://www.facebook.com/masjidbetinglintangbesutterengganu/posts/pfbid02s2x8sr4rKd8yF3Pu5xtS6e3zyzfFneVfbpFnafKh1eUP6qsJfKUR7CPp4oPu2RGcl
+  {
+    id: 786,
+    name: "Masjid Kampung Benting Lintang",
+    category: "mosque",
+    state: "Terengganu",
+    city: "Besut",
+    qrImage: "https://scontent.fkul10-1.fna.fbcdn.net/v/t39.30808-6/466130866_540127702116123_1822136165249870384_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=127cfc&_nc_ohc=2DjEOTrj86wQ7kNvgHnxnbF&_nc_zt=23&_nc_ht=scontent.fkul10-1.fna&_nc_gid=ASqiXJ8UKR6TkL1vAGzBvTw&oh=00_AYBJpMsVGsxhk_ceFMBboeD4tFsRSiZCKFuHEd5220M9UQ&oe=67373DD4",
+    qrContent: "00020201021126420014A000000615000101066033460210MD001362085204866153034585802MY5925Masjid Kampung Benting Li6002MY627303251720604842776009353789862052017206048464640047334071617206045296140046304F54A",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
