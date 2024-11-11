@@ -9052,4 +9052,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126610014A000000615000101065018540215000001224042051031000000000005204866153034585802MY5921MASJID AL ISLAHIAH-QR6006RAWANG61054805062150111101921300006304DE0E",
     supportedPayment: ["duitnow", "tng"]
   },
+  // khairin, facebook - https://www.facebook.com/photo/?fbid=1600343810731801&set=pcb.1600318917400957
+  {
+    id: 788,
+    name: "Masjid Ali Imran Kampung Ulu Pauh",
+    category: "mosque",
+    state: "Perlis",
+    city: "Arau",
+    qrImage: "https://scontent.fkul10-1.fna.fbcdn.net/v/t39.30808-6/434361342_1600347030731479_547479795939317864_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=833d8c&_nc_ohc=SoFsfJrAeoMQ7kNvgG4ooEa&_nc_zt=23&_nc_ht=scontent.fkul10-1.fna&_nc_gid=ADYiDqtkoItjk9hBer78gzh&oh=00_AYCYkTZ_xhSpIuP_lzRGncCZfsxmE_Jtz1pmWvKjnRVv6A&oe=67372EB9",
+    qrContent: "00020201021126420014A000000615000101066033460210MD000803925204866153034585802MY5916MASJID ALI IMRAN6002MY6273032516617648610040024596377100520166176486818400101210716166176396494400263040006",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
