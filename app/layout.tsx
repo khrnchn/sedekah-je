@@ -89,10 +89,11 @@ export default function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning>
+      {/* sedekahje.com - c2f79734-cbe5-4b9d-afd0-75e063e0aadb*/}
       <Script
         defer
         src="https://analytics.farhanhelmy.com/script.js"
-        data-website-id="c2f79734-cbe5-4b9d-afd0-75e063e0aadb"
+        data-website-id="bf87f5c8-4fa1-4348-a453-6047a0c00636"
       />
       <body
         className={cn(
