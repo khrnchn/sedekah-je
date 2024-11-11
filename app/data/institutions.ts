@@ -9044,7 +9044,7 @@ export const institutions: Institution[] = [
   // khairin, facebook - https://www.facebook.com/photo?fbid=1600343667398482&set=pcb.1600318917400957
   {
     id: 787,
-    name: "Masjid Al Islahiah",
+    name: "Masjid Al Islahiah Kuang",
     category: "mosque",
     state: "Selangor",
     city: "Sungai Buloh",
