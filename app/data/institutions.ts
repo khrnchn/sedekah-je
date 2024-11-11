@@ -7827,7 +7827,7 @@ export const institutions: Institution[] = [
     name: "Masjid Bandar Tasik Puteri",
     category: "mosque",
     state: "Selangor",
-    city: "Cheras",
+    city: "Rawang",
     qrImage: "",
     qrContent:
       "00020201021126530014A000000615000101065641690221QRAMB00000000003754575204866153034585802MY5925MASJID BANDAR TASIK PUTER6008SELANGOR61054802062360317MASJID BTP RAWANG0711019-930004063043B8E",
