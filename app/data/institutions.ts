@@ -9030,4 +9030,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126560014A000000615000101068900610224602e2603111384ff303f98105204000053034585802MY5922MAAHAD TAHFIZ AL MUQRI6002MY8240031438df2ffc917ac0792a14b7173238ac7f5697630459EC",
     supportedPayment: ["duitnow", "tng"]
   },
+  // khairin, facebook - https://www.facebook.com/masjidbetinglintangbesutterengganu/posts/pfbid02s2x8sr4rKd8yF3Pu5xtS6e3zyzfFneVfbpFnafKh1eUP6qsJfKUR7CPp4oPu2RGcl
+  {
+    id: 786,
+    name: "Masjid Kampung Benting Lintang",
+    category: "mosque",
+    state: "Terengganu",
+    city: "Besut",
+    qrImage: "https://www.facebook.com/photo/?fbid=540127695449457&set=a.128292946632936&__cft__[0]=AZW6CVqY22s2BCrGmZ4Iw9td_IFTlX7oejnoqm9Cs4Md5MUHxktkv_-wu59ArHAd-p4hWt1P0n2IqjBl3Drn0K1a9UrGNTzW8EAmSEqMknFfVw4_38l4_ht_9oWg27rSA3CmZKtcnGi9yQdFv12suxC_H4NEllJh15gjba2IPw5dXzcXRz6SArwbaqOiReC8N5U&__tn__=EH-R",
+    qrContent: "",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
