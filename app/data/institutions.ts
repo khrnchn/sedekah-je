@@ -9041,4 +9041,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126420014A000000615000101066033460210MD001362085204866153034585802MY5925Masjid Kampung Benting Li6002MY627303251720604842776009353789862052017206048464640047334071617206045296140046304F54A",
     supportedPayment: ["duitnow", "tng"]
   },
+  // khairin, facebook - https://www.facebook.com/photo?fbid=1600343667398482&set=pcb.1600318917400957
+  {
+    id: 787,
+    name: "Masjid Al Islahiah",
+    category: "mosque",
+    state: "Selangor",
+    city: "Sungai Buloh",
+    qrImage: "https://scontent.fkul10-1.fna.fbcdn.net/v/t39.30808-6/434320686_1600346474064868_2584054906764951256_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=833d8c&_nc_ohc=MifyBn_1eZQQ7kNvgE0AJvv&_nc_zt=23&_nc_ht=scontent.fkul10-1.fna&_nc_gid=AzP77yNxKPIgWil2XY5Ib10&oh=00_AYCl58nxdN1O41eEM4FM9F6_ghlAlekUuSui2y0eCjg_6w&oe=67373654",
+    qrContent: "00020201021126610014A000000615000101065018540215000001224042051031000000000005204866153034585802MY5921MASJID AL ISLAHIAH-QR6006RAWANG61054805062150111101921300006304DE0E",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
