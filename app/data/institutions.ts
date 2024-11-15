@@ -8799,7 +8799,7 @@ export const institutions: Institution[] = [
     qrContent: "00020101021126580014A000000615000101065887340212MBBQR143498203100000000000520400005303458540500.005802MY5921SURAU BAITURRAHMAN PH6008SELANGOR6304A996",
     supportedPayment: ["duitnow", "tng"]
   },
-    // khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/694967647944598/
+  // khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/694967647944598/
   {
     id: 765,
     name: "Surau Sri Embun Sutera Damansara",
@@ -8931,7 +8931,7 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126580014A000000615000101065887340212MBBQR1634647031000000000005204000053034585802MY5919MASJID SHAIK EUSOFF6012PULAU PINANG6304D8FD",
     supportedPayment: ["duitnow", "tng"]
   },
-      // khairin, google - https://www.instagram.com/masjidalmuttaqin/p/C-ZDkACS3nN/
+  // khairin, google - https://www.instagram.com/masjidalmuttaqin/p/C-ZDkACS3nN/
   {
     id: 777,
     name: "Masjid Al-Muttaqin Wangsa Melawati",
@@ -9062,5 +9062,38 @@ export const institutions: Institution[] = [
     qrImage: "https://scontent.fkul10-1.fna.fbcdn.net/v/t39.30808-6/434361342_1600347030731479_547479795939317864_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=833d8c&_nc_ohc=SoFsfJrAeoMQ7kNvgG4ooEa&_nc_zt=23&_nc_ht=scontent.fkul10-1.fna&_nc_gid=ADYiDqtkoItjk9hBer78gzh&oh=00_AYCYkTZ_xhSpIuP_lzRGncCZfsxmE_Jtz1pmWvKjnRVv6A&oe=67372EB9",
     qrContent: "00020201021126420014A000000615000101066033460210MD000803925204866153034585802MY5916MASJID ALI IMRAN6002MY6273032516617648610040024596377100520166176486818400101210716166176396494400263040006",
     supportedPayment: ["duitnow", "tng"]
+  },
+  {
+    id: 789,
+    name: "Masjid Al-Raudah",
+    category: "mosque",
+    state: "Pahang",
+    city: "Bandar Tun Abdul Razak",
+    qrImage: "",
+    qrContent: "00020201021126630014A000000615000101065893730208MBTR11600319Agrobank's Merchant5204739953034585802MY5917MASJID AL-RAUDAH 6015BANDAR TUN ABDU61052690063048C25",
+    supportedPayment: ["duitnow", "tng"],
+    coords: [2.9011975683890894, 102.88847540570958],
+  },
+  {
+    id: 790,
+    name: "Masjid Al-Makmuriah",
+    category: "mosque",
+    state: "Pahang",
+    city: "Bandar Tun Abdul Razak",
+    qrImage: "",
+    qrContent: "00020201021126600014A000000615000101065892670228BRQR6650017271c83663c27b5dd15204866153034585802MY5919MASJID AL-MAKMURIAH6015BANDAR TUN ABDU61052690062420310M00000339305246650017b6d9eca5efff8c62163047F6D",
+    supportedPayment: ["duitnow", "tng"],
+    coords: [2.90770306354755, 102.87699397630429],
+  },
+  {
+    id: 791,
+    name: "Badan Khairat Kematian Felda Keratong 2",
+    category: "others",
+    state: "Pahang",
+    city: "Bandar Tun Abdul Razak",
+    qrImage: "",
+    qrContent: "00020201021126600014A000000615000101065892670228BRQR664ffee448ea907710470df65204866153034585802MY5924BADAN KHAIRAT KERATONG 26015BANDAR TUN ABDU61052690062420310M0000033930524664fffaf6d9eca5efff8c5c06304E5FB",
+    supportedPayment: ["duitnow", "tng"],
+    coords: [2.90770306354755, 102.87699397630429],
   },
 ];
