@@ -7275,7 +7275,7 @@ export const institutions: Institution[] = [
 
   {
     id: 636,
-    name: "Masjid As-Syakirin Kota Bharu",
+    name: "Masjid As-Syakirin Kota Bharu (Mukim Semut Api)",
     category: "mosque",
     state: "Kelantan",
     city: "Kota Bharu",
@@ -8470,8 +8470,7 @@ export const institutions: Institution[] = [
     state: "W.P. Kuala Lumpur",
     city: "Kuala Lumpur",
     qrImage: "",
-    qrContent:
-      "https://qr.tngdigital.com.my/m/281011052028379747348769052",
+    qrContent: "https://qr.tngdigital.com.my/m/281011052028379747348769052",
     supportedPayment: ["tng"],
   },
   // khairin, facebook - https://www.facebook.com/MasjidNurulKhair/posts/duitnow-qr-codealternatif-baru-yang-lebih-memudahkan-untuk-dermawan-serta-simpat/809772409815834/
@@ -8554,8 +8553,7 @@ export const institutions: Institution[] = [
     state: "Perak",
     city: "Parit Buntar",
     qrImage: "",
-    qrContent:
-      "https://qr.tngdigital.com.my/m/281011053374212449552221716",
+    qrContent: "https://qr.tngdigital.com.my/m/281011053374212449552221716",
     supportedPayment: ["tng"],
   },
   // khairin, google/toyyibpay - https://toyyibpay.com/INFAQ-MASJID-TAHFIZ-AL-AYUBI
@@ -8590,8 +8588,7 @@ export const institutions: Institution[] = [
     state: "Selangor",
     city: "Seri Kembangan",
     qrImage: "",
-    qrContent:
-      "https://qr.tngdigital.com.my/m/281011053384543285583523815",
+    qrContent: "https://qr.tngdigital.com.my/m/281011053384543285583523815",
     supportedPayment: ["tng"],
   },
   // khairin, facebook - https://www.facebook.com/maqtsskl/posts/infaq-lebih-mudah-dengan-aplikasi-qr-code-di-smartphone-andahanya-dengan-scan/559290838265541/
@@ -8602,8 +8599,7 @@ export const institutions: Institution[] = [
     state: "W.P. Kuala Lumpur",
     city: "Segambut",
     qrImage: "",
-    qrContent:
-      "https://qr.tngdigital.com.my/m/281011057194809055896448165",
+    qrContent: "https://qr.tngdigital.com.my/m/281011057194809055896448165",
     supportedPayment: ["tng"],
   },
   // ammar azman
@@ -9097,4 +9093,70 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
     coords: [2.90770306354755, 102.87699397630429],
   },
+   // kuasawan #1 - FB https://www.facebook.com/photo/?fbid=10231252069421006&set=pcb.10231238536122682
+  // https://maps.app.goo.gl/N3JKvLjjotisbHYv8
+  {
+    id: 792,
+    name: "Musolla An-Nur",
+    category: "surau",
+    state: "Selangor",
+    city: "Hulu Langat",
+    qrImage: "",
+    qrContent:
+      "00020201021126420014A000000615000101066033460210MD001301815204866153034585802MY5915MUSOLLA AN-NUR 6002MY6273032517072029477130091939813630520170720464403900269640716170720168107000563045D47",
+    supportedPayment: ["duitnow"],
+    coords: [3.155902981030715, 101.8984143286516],
+  },
+  {
+    // kuasawan #2 - FB https://www.facebook.com/photo/?fbid=10231252106341929&set=pcb.10231238536122682
+    id: 793,
+    name: "Masjid An-Nur",
+    category: "mosque",
+    state: "Johor",
+    city: "Tangkak",
+    qrImage: "",
+    qrContent:
+      "00020201021126580014A000000615000101065887340212MBBQR2004736031000000000005204000053034585802MY5917MASJID AN NUR KMJ6005JOHOR6304BFE3",
+    supportedPayment: ["duitnow"],
+    coords: [2.2850534954286306, 102.56438834182241],
+  },
+  {
+    // kuasawan #3 - FB https://www.facebook.com/SurauRaudhatulSalam/
+    // https://surauraudhatulsalam.com/
+    id: 794,
+    name: "Surau Raudhatul Salam",
+    category: "surau",
+    state: "Negeri Sembilan",
+    city: "Seremban",
+    qrImage: "",
+    qrContent:
+      "00020201021126420014A000000615000101066033460210MD001295775204866153034585802MY5925Surau Raudhatul Salam Tam6002MY627303251705028364458003653696092052017050284004450010000071617050279327500016304F021",
+    supportedPayment: ["duitnow"],
+    coords: [2.65543941208627, 101.89854765519695],
+  },
+  {
+    // kuasawan #4 - FB https://www.facebook.com/SurauBM/?locale=ms_MY
+    id: 795,
+    name: "Surau Baitul Majid",
+    category: "surau",
+    state: "Selangor",
+    city: "Puncak Alam",
+    qrImage: "",
+    qrContent:
+      "00020201021126580014A000000615000101065887340212MBBQR2077119031000000000005204000053034585802MY5918SURAU BAITUL MAJID6008SELANGOR6304DBA0",
+    supportedPayment: ["duitnow"],
+    coords: [3.256309116498691, 101.4564148996543],
+  },
+  {
+    // kuasawan #5 - FB https://www.facebook.com/p/Masjid-Sabilal-Muhtadin-Parit-Betong-Mukim-7-Tg-Sembrong-100067321512717/
+    id: 796,
+    name: "Masjid Sabilal Muhtadin Parit Betong",
+    category: "mosque",
+    state: "Johor",
+    city: "Ayer Hitam",
+    qrImage: "",
+    qrContent: "",
+    supportedPayment: ["duitnow"],
+    coords: [1.902816761451705, 103.0722078952398],
+  }
 ];
