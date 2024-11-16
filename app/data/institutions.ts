@@ -3727,7 +3727,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 313,
-    name: "Masjid Annur",
+    name: "Masjid An-Nur",
     category: "mosque",
     state: "Selangor",
     city: "Batu Caves",
@@ -4025,7 +4025,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 340,
-    name: "Surau Annur Dwiputra",
+    name: "Surau An-Nur Dwiputra",
     category: "surau",
     state: "W.P. Putrajaya",
     city: "Putrajaya",
@@ -7057,7 +7057,7 @@ export const institutions: Institution[] = [
   },
   {
     id: 616,
-    name: "Masjid Annur Felda Jelai 2",
+    name: "Masjid An-Nur Felda Jelai 2",
     category: "mosque",
     state: "Negeri Sembilan",
     city: "Gemas",
@@ -7567,7 +7567,7 @@ export const institutions: Institution[] = [
   {
     // https://www.facebook.com/annurpresint11/
     id: 660,
-    name: "Surau An Nur Presint 11 Putrajaya",
+    name: "Surau An-Nur Presint 11 Putrajaya",
     category: "surau",
     state: "W.P. Putrajaya",
     city: "Putrajaya",
@@ -7827,7 +7827,7 @@ export const institutions: Institution[] = [
     name: "Masjid Bandar Tasik Puteri",
     category: "mosque",
     state: "Selangor",
-    city: "Cheras",
+    city: "Rawang",
     qrImage: "",
     qrContent:
       "00020201021126530014A000000615000101065641690221QRAMB00000000003754575204866153034585802MY5925MASJID BANDAR TASIK PUTER6008SELANGOR61054802062360317MASJID BTP RAWANG0711019-930004063043B8E",
@@ -8718,10 +8718,385 @@ export const institutions: Institution[] = [
       "00020201021126580014A000000615000101065887340212MBBQR1874817031000000000005204729953034585802MY5919MASJID SELAT MELAKA6006MELAKA63040054",
     supportedPayment: ["duitnow", "tng"],
   },
-  // kuasawan #1 - FB https://www.facebook.com/photo/?fbid=10231252069421006&set=pcb.10231238536122682
-  // https://maps.app.goo.gl/N3JKvLjjotisbHYv8
+  // fyruz, whatsapp
   {
     id: 758,
+    name: "Surau Al Bayan",
+    category: "surau",
+    state: "Selangor",
+    city: "Rawang",
+    qrImage: "https://i.ibb.co/FwG2JVH/SURAU-AL-BAYAN-KHK-STICKER.jpg",
+    qrContent: "00020201021126470014A000000615000101065641620215PBB2024001100575204866153034585802MY5916SURAU AL - BAYAN6006RAWANG6220030639910407063446176304499C",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/1601882700586417/
+  {
+    id: 759,
+    name: "Masjid Sharifah Fatimah",
+    category: "mosque",
+    state: "Kedah",
+    city: "Jitra",
+    qrImage: "https://scontent.fkul19-3.fna.fbcdn.net/v/t39.30808-6/430854388_7650361004995543_1422030267128984310_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=4S6DD55adCwQ7kNvgE-eiPx&_nc_zt=23&_nc_ht=scontent.fkul19-3.fna&_nc_gid=AEpIqP_QPmo4MHF9127_rqj&oh=00_AYD9oU00BZUXuw5uy5r43m6jO-GETqVkMpV9DqMYFc284A&oe=673331B1",
+    qrContent: "00020201021126420014A000000615000101066033460210MD000008655204866153034585802MY5923Masjid Sharifah Fatimah6002MY62530325162909342749900115505598605201668568514085007832263043961",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/1601885200586167/
+  {
+    id: 760,
+    name: "Surau Taman Seri Alam",
+    category: "surau",
+    state: "Selangor",
+    city: "Sungai Buloh",
+    qrImage: "https://scontent.fkul19-2.fna.fbcdn.net/v/t39.30808-6/431913919_7650374361660874_1054193890271509798_n.jpg?stp=dst-jpg_p180x540&_nc_cat=111&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=23TjrpPkUXsQ7kNvgGZDU9t&_nc_zt=23&_nc_ht=scontent.fkul19-2.fna&_nc_gid=A79HeEWQsVlN6Wcm3dgTcRG&oh=00_AYBi4AgW-eNabGIew1sRpluPBlKbxZIKFnO2c5Y8RqLtQQ&oe=67334D04",
+    qrContent: "00020201021126610014A000000615000101065641670215QRMID0000011748041001938056685204866153034585802MY5921SURAU TAMAN SERI ALAM6008SG BULOH6105470006304E676",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/1394277821346907/
+  {
+    id: 761,
+    name: "Masjid Jamek Kamunting Taiping",
+    category: "mosque",
+    state: "Perak",
+    city: "Taiping",
+    qrImage: "https://scontent.fkul19-3.fna.fbcdn.net/v/t39.30808-6/335475774_164077083116781_2432501458972385248_n.jpg?stp=dst-jpg_s600x600&_nc_cat=102&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=myik9rhjaxUQ7kNvgGca3iH&_nc_zt=23&_nc_ht=scontent.fkul19-3.fna&_nc_gid=AsgS4YYbNHUcgCNKNPmmbPu&oh=00_AYDw20s0mIUTKkBOIFFo0If3VzKDgvUflih0qrGFsXDiXw&oe=67332C94",
+    qrContent: "00020201021126580014A000000615000101065887340212MBBQR1698694031000000000005204000053034585802MY5922MASJID JAMEK KEMUNTING6005PERAK6304AB49",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/695100714597958/
+  {
+    id: 762,
+    name: "Masjid Daerah Barat Daya",
+    category: "mosque",
+    state: "Pulau Pinang",
+    city: "Balik Pulau",
+    qrImage: "https://scontent.fkul19-3.fna.fbcdn.net/v/t1.6435-9/93841187_3171566812875007_7956271249045323776_n.jpg?stp=dst-jpg_p350x350&_nc_cat=103&ccb=1-7&_nc_sid=f7fc3c&_nc_ohc=TFf3zbysoC4Q7kNvgH1aKck&_nc_zt=23&_nc_ht=scontent.fkul19-3.fna&_nc_gid=AFRNGFg2tDItF3p4IaiHN0V&oh=00_AYD-U3YlHkTWryVXTOnuLY3aefiO2RydwPVnFkIB1rvBxA&oe=6754C424",
+    qrContent: "00020101021126580014A000000615000101065887340212MBBQR130885403100000000000520400005303458540500.005802MY5924MASJID DAERAH BARAT DAYA6012PULAU PINANG63046C4A",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/695085587932804/
+  {
+    id: 763,
+    name: "Surau Al-Jannah",
+    category: "surau",
+    state: "Selangor",
+    city: "Bandar Rimbayu",
+    qrImage: "https://scontent.fkul19-1.fna.fbcdn.net/v/t1.6435-9/93795276_3171511412880547_4774018529332559872_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=f7fc3c&_nc_ohc=ojgkPbjelAsQ7kNvgE_ejC6&_nc_zt=23&_nc_ht=scontent.fkul19-1.fna&_nc_gid=Ae_QsqqMXV_6jkxuMa4R-uz&oh=00_AYBVqJK7zQmyWDOrv8CPKRVG2hBD0sznvv07iO9y2hyjdw&oe=6754F1CC",
+    qrContent: "00020101021126580014A000000615000101065887340212MBBQR148083503100000000000520400005303458540500.005802MY5918SURAU AL-JANNAH BR6008SELANGOR6304E8EE",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/694978877943475/
+  {
+    id: 764,
+    name: "Surau Baiturrahman Seksyen 9",
+    category: "surau",
+    state: "Selangor",
+    city: "Putra Heights",
+    qrImage: "https://scontent.fkul19-1.fna.fbcdn.net/v/t1.6435-9/93382220_3171138872917801_3368109548182175744_n.jpg?stp=dst-jpg_p370x247&_nc_cat=106&ccb=1-7&_nc_sid=f7fc3c&_nc_ohc=5cvSh4W14dMQ7kNvgG60ZX_&_nc_zt=23&_nc_ht=scontent.fkul19-1.fna&_nc_gid=Ae_QsqqMXV_6jkxuMa4R-uz&oh=00_AYBEtoIULQuWVOqaIEcTJ8qGBRcuLGfsbi0EO4PUJQUcwg&oe=6754C81D",
+    qrContent: "00020101021126580014A000000615000101065887340212MBBQR143498203100000000000520400005303458540500.005802MY5921SURAU BAITURRAHMAN PH6008SELANGOR6304A996",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/694967647944598/
+  {
+    id: 765,
+    name: "Surau Sri Embun Sutera Damansara",
+    category: "surau",
+    state: "Selangor",
+    city: "Petaling Jaya",
+    qrImage: "https://scontent.fkul19-1.fna.fbcdn.net/v/t1.6435-9/93159593_3171107502920938_8296346781017440256_n.jpg?stp=dst-jpg_s600x600&_nc_cat=105&ccb=1-7&_nc_sid=f7fc3c&_nc_ohc=5IzOb3ngPH4Q7kNvgH3v_ym&_nc_zt=23&_nc_ht=scontent.fkul19-1.fna&_nc_gid=Ae_QsqqMXV_6jkxuMa4R-uz&oh=00_AYBZi_FH2_lrlxUTZkdoiAzENO6wWHsdO4G2daAY5O4gFA&oe=6754C02E",
+    qrContent: "00020101021126580014A000000615000101065887340212MBBQR150879603100000000000520400005303458540500.005802MY5915SURAU SRI EMBUN6008SELANGOR630408F2",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/694910011283695/
+  {
+    id: 766,
+    name: "Masjid Sultan Iskandar",
+    category: "mosque",
+    state: "Johor",
+    city: "Bandar Dato Onn",
+    qrImage: "https://scontent.fkul19-1.fna.fbcdn.net/v/t1.6435-9/93954904_3170929469605408_655147220340834304_n.jpg?stp=dst-jpg_p480x480&_nc_cat=105&ccb=1-7&_nc_sid=f7fc3c&_nc_ohc=syKesY3GKswQ7kNvgH5lXIJ&_nc_zt=23&_nc_ht=scontent.fkul19-1.fna&_nc_gid=AjZI4MC_8epa0FfY8Z4_qgO&oh=00_AYBpdNdfp59s9u_9Udfd-mBGbvLJotYe4fEEAlY2Oic-ZA&oe=6754BDF4",
+    qrContent: "00020101021126580014A000000615000101065887340212MBBQR119240203100000000000520400005303458540500.005802MY5938MASJID SULTAN ISKANDAR BANDAR DATO ONN6005JOHOR6304EDDE",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, facebook - https://almuhajirinkjgutama.com/b1form.php
+  {
+    id: 767,
+    name: "Surau Al-Muhajirin Kajang Utama",
+    category: "surau",
+    state: "Selangor",
+    city: "Kajang",
+    qrImage: "https://almuhajirinkjgutama.com/images/mae01.jpg",
+    qrContent: "00020201021126580014A000000615000101065887340212MBBQR2049437031000000000005204000053034585802MY5919SURAU AL-MUHAJIRIN 6008SELANGOR6304CFC9",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, facebook - https://www.instagram.com/mtinh.official/p/C0DFGvSvXut/
+  {
+    id: 768,
+    name: "Maahad Tahfiz Integrasi Nadi Huffaz",
+    category: "others",
+    state: "Selangor",
+    city: "Rawang",
+    qrImage: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTwTEAzNDHoTuO5TEXH8NKBGge4psxxp3GReg&s",
+    qrContent: "00020201021126580014A000000615000101065887340212MBBQR1684472031000000000005204829953034585802MY5921NADI HUFFAZ RESOURCES6008SELANGOR630499C3",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, solat jumaat @ tnb hq (merchant name is surau tenaga nasional)
+  {
+    id: 769,
+    name: "Masjid TNB HQ",
+    category: "mosque",
+    state: "W.P. Kuala Lumpur",
+    city: "Bangsar",
+    qrImage: "",
+    qrContent: "00020201021126420014A000000615000101066033460210MD000046635204556153034585802MY5921SURAU TENAGA NASIONAL6002MY62530325163704396056300357405129705201637225399907004971063044AB9",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // sitisarahaqilah, github pr - https://github.com/khrnchn/sedekah-je/pull/225
+  {
+    id: 770,
+    name: "Madrasah As-Salam",
+    category: "surau",
+    state: "Melaka",
+    city: "Alai",
+    qrImage: "https://fv5-4.files.fm/thumb_show.php?i=mktss945e5&view&v=1&PHPSESSID=978de0b8b4f3820d446ad0920290a12230cf1a61",
+    qrContent: "00020201021126610014A000000615000101065641670215QRMID0000015122041001262903185204866153034585802MY5917MADRASAH AS-SALAM6006MELAKA610575400630433B5",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, google - https://www.maqtsw.net/infaq/infaq-dengan-qr-code-1
+  {
+    id: 771,
+    name: "Masjid Al-Quddus Taman Sri Wangi",
+    category: "mosque",
+    state: "Sarawak",
+    city: "Kuching",
+    qrImage: "https://files.cdn-files-a.com/uploads/9802126/400_6708d056be541.jpg",
+    qrContent: "00020201021126420014A000000615000101066033460210MD000944755204866153034585802MY5925MASJID AL-QUDDUS TAMAN SR6002MY62530325167626529824900101992397605201678959218269005186463047549",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, google - https://ppdhadis.edu.my/page/pagedetail.php?schid=1581&schname=SUMBANGAN%20KE%20DARUL%20HADIS%20LEBIH%20MUDAH%20MELALUI%20DUITNOW%20QR%20KOD
+  {
+    id: 772,
+    name: "Pusat Pengajian Darul Hadis",
+    category: "others",
+    state: "Kedah",
+    city: "Alor Setar",
+    qrImage: "https://tahfiz.awfatech.com/hadis/content/news/staticcontent1_DH039_1689133530.jpg",
+    qrContent: "00020201021126420014A000000615000101066033460210MD000009505204829953034585802MY5941Pusat pengajian Darul Hadis Yayasan Paksi6002MY6253032516292721734360075194541050520162927871375900171326304A968",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, twitter - https://twitter.com/saranidollah/status/1246258615830233088
+  {
+    id: 773,
+    name: "Surau Al Iman Taman Arked",
+    category: "surau",
+    state: "Selangor",
+    city: "Dengkil",
+    qrImage: "https://pbs.twimg.com/media/EUuZmQ0UMAA_E_J.jpg",
+    qrContent: "https://qr.tngdigital.com.my/m/281011058732047763398424782",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, google - https://yayasanmurtadha.onpay.my/order/form/mdd-mdd-infaq1
+  {
+    id: 774,
+    name: "Yayasan Murtadha Berhad",
+    category: "others",
+    state: "Kedah",
+    city: "Sungai Petani",
+    qrImage: "https://cdn.onpay.my/users/yayasanmurtadha/media/uploads/WhatsApp%20Image%202024-08-28%20at%2011.17.37%20AM.jpg",
+    qrContent: "00020201021126580014A000000615000101065887340212MBBQR2105535031000000000005204729953034585802MY5923YAYASAN MURTADHA BERHAD6005KEDAH63048D2E",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, google - https://www.raudhahautisme.org/jom-infaq-derma/
+  {
+    id: 775,
+    name: "Pertubuhan Raudhah Autisme Islam Selangor",
+    category: "others",
+    state: "Selangor",
+    city: "Sepang",
+    qrImage: "https://www.raudhahautisme.org/wp-content/uploads/2023/08/image1.png.webp",
+    qrContent: "00020201021126580014A000000615000101065887340212MBBQR1992126031000000000005204731153034585802MY5915RAUDHAH AUTISME6008SELANGOR630406B8",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, google - https://www.facebook.com/MasjidJamekShaikEusoffDhobyGhaut/posts/pfbid0w23G4D4pfWvr8824bzi2atSsbhZFgMgTR9RVEoP3VBh8hPY6Tv7s27k2xSRYN1EJl
+  {
+    id: 776,
+    name: "Masjid Jamek Shaik Eusoff",
+    category: "mosque",
+    state: "Pulau Pinang",
+    city: "George Town",
+    qrImage: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR0wGXzzvemgbKd3NPSj7i5UnqazqV2aE2HTnFSzBGKYkCEd1yt9BSf6IwMf7BRFUiW0JA&usqp=CAU",
+    qrContent: "00020201021126580014A000000615000101065887340212MBBQR1634647031000000000005204000053034585802MY5919MASJID SHAIK EUSOFF6012PULAU PINANG6304D8FD",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, google - https://www.instagram.com/masjidalmuttaqin/p/C-ZDkACS3nN/
+  {
+    id: 777,
+    name: "Masjid Al-Muttaqin Wangsa Melawati",
+    category: "mosque",
+    state: "W.P. Kuala Lumpur",
+    city: "Kuala Lumpur",
+    qrImage: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDqnT3WrhMHObMt5gPeZvaf2UGoMU3HriNGA&s",
+    qrContent: "00020201021126580014A000000615000101065016640226100105040001582O0076ZA00015204839853034585802MY5918MASJID AL-MUTTAQIN6002MY62150311O0076ZA00018264BB97560062E756CF3E95D75882E814E6EEEA250A9AE7113653F8318E007F447E63041BB3",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, google - https://toyyibpay.com/INFAQ-HARI-JUMAAT
+  {
+    id: 778,
+    name: "Masjid Baitul Mahabbah",
+    category: "mosque",
+    state: "Selangor",
+    city: "Shah Alam",
+    qrImage: "https://toyyibpay.com/asset/img/usr/21674/product/e58b77ad61c4014b08d937befb6dfc0aa2c7f5a943d55eb0b4b1ac75aeea1bb4.png",
+    qrContent: "00020201021126580014A000000615000101065016640226100105630003466OAE901A00015204597353034585802MY5922MASJID BAITUL MAHABBAH6002MY62150311OAE901A00018264FDF274EC8694A5C4CB9553E25199F77F65EA2262DAFD19327AFB1CA5DD3B39F06304364D",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // aniq, instagram
+  {
+    id: 779,
+    name: "Surau Elmina Gardens",
+    category: "surau",
+    state: "Selangor",
+    city: "Shah Alam",
+    qrImage: "",
+    qrContent: "00020201021126420014A000000615000101066033460210MD000805435204866153034585802MY5920SURAU ELMINA GARDENS6002MY627303251661826550957007879923240052016618265783810010011071616618259979110096304953D",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, facebook - https://www.facebook.com/photo.php?fbid=2049969782028767&set=p.2049969782028767&type=3
+  {
+    id: 780,
+    name: "Surau Riyadhul Jannah",
+    category: "surau",
+    state: "Johor",
+    city: "Bandar Penawar",
+    qrImage: "https://scontent.fkul18-3.fna.fbcdn.net/v/t39.30808-6/433471771_2049969775362101_5589151800591524197_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=bd9a62&_nc_ohc=gsP7yMeI2LsQ7kNvgFIn9pT&_nc_zt=23&_nc_ht=scontent.fkul18-3.fna&_nc_gid=A7lwGd2LbuqbJwuqNbRLqqH&oh=00_AYBBHkg2bxDcCXyMczYf4sAj1RpWTSfYTal0WztkcGal2g&oe=6734C64C",
+    qrContent: "00020201021126420014A000000615000101066033460210MD000831555204866153034585802MY5925Dana Surau Riyadhul Janna6002MY6273032516631636623520086941402140520166319885146800299010716166316115304200863041036",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, facebook - https://www.facebook.com/photo.php?fbid=10225513212878800&set=p.10225513212878800&type=3
+  {
+    id: 781,
+    name: "Pusat Pengajian Islam Mohd Nor Al Bakri Masjid Lama Lebak",
+    category: "others",
+    state: "Pahang",
+    city: "Temerloh",
+    qrImage: "https://scontent.fkul18-1.fna.fbcdn.net/v/t39.30808-6/433479585_10225513212838799_8796668774375921950_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=bd9a62&_nc_ohc=wAVfqEWFwVQQ7kNvgFgNkfV&_nc_zt=23&_nc_ht=scontent.fkul18-1.fna&_nc_gid=AhiBjByFC0MVRki8hYRQ1iU&oh=00_AYB6bx2jj9SjCLqEtSwzxsvMn5BW7Aicmf1kG8j35cTw3A&oe=6734F4D5",
+    qrContent: "00020201021126420014A000000615000101066033460210MD000678795204829953034585802MY5939PUSAT PENGAJIAN ISLAM MOHD NOR AL BAKRI6002MY627303251650938409355001102236062052016509384127240021923071616509382169000046304474D",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, facebook - https://www.facebook.com/photo.php?fbid=10228973039684008&set=p.10228973039684008&type=3
+  {
+    id: 782,
+    name: "Musolla An-Nur Space U8",
+    category: "surau",
+    state: "Selangor",
+    city: "Shah Alam",
+    qrImage: "https://scontent.fkul18-3.fna.fbcdn.net/v/t39.30808-6/433472109_10228973039644007_2903566317594804875_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=bd9a62&_nc_ohc=zFt9cVcvt38Q7kNvgF14Q9X&_nc_zt=23&_nc_ht=scontent.fkul18-3.fna&_nc_gid=AJ4tJ_GXxfrlPtVyk69Y6NT&oh=00_AYD_qH35TcMthQqlyrnf9_mf580Zi1LpiCT_KZcxS3RPnA&oe=6734EC63",
+    qrContent: "00020201021126420014A000000615000101066033460210MD001301815204866153034585802MY5915MUSOLLA AN-NUR 6002MY6273032517072029477130091939813630520170720464403900269640716170720168107000563045D47",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, facebook - https://www.facebook.com/photo.php?fbid=7667341323284756&set=p.7667341323284756&type=3
+  {
+    id: 783,
+    name: "Masjid Darul Amilin",
+    category: "mosque",
+    state: "Sarawak",
+    city: "Sibu",
+    qrImage: "https://scontent.fkul18-1.fna.fbcdn.net/v/t39.30808-6/433513876_7667341309951424_1083547628065933058_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=bd9a62&_nc_ohc=OSKOZHa3BQsQ7kNvgGO6J5w&_nc_zt=23&_nc_ht=scontent.fkul18-1.fna&_nc_gid=ArTgo-o0frWRbSsw9Q6e6eq&oh=00_AYAGB0fwcU7GnaOmK8bA4ubNrOQSvyjuaVoypFfVyZK6Xw&oe=6734EE7A",
+    qrContent: "00020201021126420014A000000615000101066033460210MD001313975204866153034585802MY5919MASJID DARUL AMILIN6002MY62730325171014311885800166953951505201710143802077003477007161710142819714008630403CC",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, facebook - https://www.facebook.com/photo.php?fbid=940218854377395&set=p.940218854377395&type=3
+  {
+    id: 784,
+    name: "Masjid An-Nur Kolej Matrikulasi Johor",
+    category: "mosque",
+    state: "Johor",
+    city: "Tangkak",
+    qrImage: "https://scontent.fkul18-3.fna.fbcdn.net/v/t39.30808-6/433462267_940218851044062_1027396050689052378_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=bd9a62&_nc_ohc=wyELLMePqxcQ7kNvgEuerYa&_nc_zt=23&_nc_ht=scontent.fkul18-3.fna&_nc_gid=At8lRU4Udn5aOwhfAF_vKp3&oh=00_AYCg85GcVkvt24zmHIf3afwIUDhyhOH63wI06dlsWsMpgQ&oe=6734DEAE",
+    qrContent: "00020201021126580014A000000615000101065887340212MBBQR2004736031000000000005204000053034585802MY5917MASJID AN NUR KMJ6005JOHOR6304BFE3",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, facebook - https://www.facebook.com/photo.php?fbid=7415483425173294&set=p.7415483425173294&type=3
+  {
+    id: 785,
+    name: "Maahad Tahfiz Al Muqri",
+    category: "others",
+    state: "Selangor",
+    city: "Puchong",
+    qrImage: "https://scontent.fszb2-1.fna.fbcdn.net/v/t39.30808-6/433435717_7415483415173295_1544661700646098608_n.jpg?stp=dst-jpg_p75x225&_nc_cat=106&ccb=1-7&_nc_sid=bd9a62&_nc_ohc=-GmdI3FGAmEQ7kNvgGbuLst&_nc_zt=23&_nc_ht=scontent.fszb2-1.fna&_nc_gid=AKx6XAUoza_KNwj24NA5GMg&oh=00_AYAL3IBcyxEZvx37KEZIg-HYeRI5dA5Apaya7xhFzBOvRw&oe=6735038C",
+    qrContent: "00020201021126560014A000000615000101068900610224602e2603111384ff303f98105204000053034585802MY5922MAAHAD TAHFIZ AL MUQRI6002MY8240031438df2ffc917ac0792a14b7173238ac7f5697630459EC",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, facebook - https://www.facebook.com/masjidbetinglintangbesutterengganu/posts/pfbid02s2x8sr4rKd8yF3Pu5xtS6e3zyzfFneVfbpFnafKh1eUP6qsJfKUR7CPp4oPu2RGcl
+  {
+    id: 786,
+    name: "Masjid Kampung Benting Lintang",
+    category: "mosque",
+    state: "Terengganu",
+    city: "Besut",
+    qrImage: "https://scontent.fkul10-1.fna.fbcdn.net/v/t39.30808-6/466130866_540127702116123_1822136165249870384_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=127cfc&_nc_ohc=2DjEOTrj86wQ7kNvgHnxnbF&_nc_zt=23&_nc_ht=scontent.fkul10-1.fna&_nc_gid=ASqiXJ8UKR6TkL1vAGzBvTw&oh=00_AYBJpMsVGsxhk_ceFMBboeD4tFsRSiZCKFuHEd5220M9UQ&oe=67373DD4",
+    qrContent: "00020201021126420014A000000615000101066033460210MD001362085204866153034585802MY5925Masjid Kampung Benting Li6002MY627303251720604842776009353789862052017206048464640047334071617206045296140046304F54A",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, facebook - https://www.facebook.com/photo?fbid=1600343667398482&set=pcb.1600318917400957
+  {
+    id: 787,
+    name: "Masjid Al Islahiah Kuang",
+    category: "mosque",
+    state: "Selangor",
+    city: "Sungai Buloh",
+    qrImage: "https://scontent.fkul10-1.fna.fbcdn.net/v/t39.30808-6/434320686_1600346474064868_2584054906764951256_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=833d8c&_nc_ohc=MifyBn_1eZQQ7kNvgE0AJvv&_nc_zt=23&_nc_ht=scontent.fkul10-1.fna&_nc_gid=AzP77yNxKPIgWil2XY5Ib10&oh=00_AYCl58nxdN1O41eEM4FM9F6_ghlAlekUuSui2y0eCjg_6w&oe=67373654",
+    qrContent: "00020201021126610014A000000615000101065018540215000001224042051031000000000005204866153034585802MY5921MASJID AL ISLAHIAH-QR6006RAWANG61054805062150111101921300006304DE0E",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // khairin, facebook - https://www.facebook.com/photo/?fbid=1600343810731801&set=pcb.1600318917400957
+  {
+    id: 788,
+    name: "Masjid Ali Imran Kampung Ulu Pauh",
+    category: "mosque",
+    state: "Perlis",
+    city: "Arau",
+    qrImage: "https://scontent.fkul10-1.fna.fbcdn.net/v/t39.30808-6/434361342_1600347030731479_547479795939317864_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=833d8c&_nc_ohc=SoFsfJrAeoMQ7kNvgG4ooEa&_nc_zt=23&_nc_ht=scontent.fkul10-1.fna&_nc_gid=ADYiDqtkoItjk9hBer78gzh&oh=00_AYCYkTZ_xhSpIuP_lzRGncCZfsxmE_Jtz1pmWvKjnRVv6A&oe=67372EB9",
+    qrContent: "00020201021126420014A000000615000101066033460210MD000803925204866153034585802MY5916MASJID ALI IMRAN6002MY6273032516617648610040024596377100520166176486818400101210716166176396494400263040006",
+    supportedPayment: ["duitnow", "tng"]
+  },
+  // fareez - masjid
+  {
+    id: 789,
+    name: "Masjid Al-Raudah",
+    category: "mosque",
+    state: "Pahang",
+    city: "Bandar Tun Abdul Razak",
+    qrImage: "",
+    qrContent: "00020201021126630014A000000615000101065893730208MBTR11600319Agrobank's Merchant5204739953034585802MY5917MASJID AL-RAUDAH 6015BANDAR TUN ABDU61052690063048C25",
+    supportedPayment: ["duitnow", "tng"],
+    coords: [2.9011975683890894, 102.88847540570958],
+  },
+  {
+    id: 790,
+    name: "Masjid Al-Makmuriah",
+    category: "mosque",
+    state: "Pahang",
+    city: "Bandar Tun Abdul Razak",
+    qrImage: "",
+    qrContent: "00020201021126600014A000000615000101065892670228BRQR6650017271c83663c27b5dd15204866153034585802MY5919MASJID AL-MAKMURIAH6015BANDAR TUN ABDU61052690062420310M00000339305246650017b6d9eca5efff8c62163047F6D",
+    supportedPayment: ["duitnow", "tng"],
+    coords: [2.90770306354755, 102.87699397630429],
+  },
+  {
+    id: 791,
+    name: "Badan Khairat Kematian Felda Keratong 2",
+    category: "others",
+    state: "Pahang",
+    city: "Bandar Tun Abdul Razak",
+    qrImage: "",
+    qrContent: "00020201021126600014A000000615000101065892670228BRQR664ffee448ea907710470df65204866153034585802MY5924BADAN KHAIRAT KERATONG 26015BANDAR TUN ABDU61052690062420310M0000033930524664fffaf6d9eca5efff8c5c06304E5FB",
+    supportedPayment: ["duitnow", "tng"],
+    coords: [2.90770306354755, 102.87699397630429],
+  },
+   // kuasawan #1 - FB https://www.facebook.com/photo/?fbid=10231252069421006&set=pcb.10231238536122682
+  // https://maps.app.goo.gl/N3JKvLjjotisbHYv8
+  {
+    id: 792,
     name: "Musolla An-Nur",
     category: "surau",
     state: "Selangor",
@@ -8734,7 +9109,7 @@ export const institutions: Institution[] = [
   },
   {
     // kuasawan #2 - FB https://www.facebook.com/photo/?fbid=10231252106341929&set=pcb.10231238536122682
-    id: 759,
+    id: 793,
     name: "Masjid An-Nur",
     category: "mosque",
     state: "Johor",
@@ -8748,7 +9123,7 @@ export const institutions: Institution[] = [
   {
     // kuasawan #3 - FB https://www.facebook.com/SurauRaudhatulSalam/
     // https://surauraudhatulsalam.com/
-    id: 759,
+    id: 794,
     name: "Surau Raudhatul Salam",
     category: "surau",
     state: "Negeri Sembilan",
@@ -8761,7 +9136,7 @@ export const institutions: Institution[] = [
   },
   {
     // kuasawan #4 - FB https://www.facebook.com/SurauBM/?locale=ms_MY
-    id: 760,
+    id: 795,
     name: "Surau Baitul Majid",
     category: "surau",
     state: "Selangor",
@@ -8774,7 +9149,7 @@ export const institutions: Institution[] = [
   },
   {
     // kuasawan #5 - FB https://www.facebook.com/p/Masjid-Sabilal-Muhtadin-Parit-Betong-Mukim-7-Tg-Sembrong-100067321512717/
-    id: 761,
+    id: 796,
     name: "Masjid Sabilal Muhtadin Parit Betong",
     category: "mosque",
     state: "Johor",
@@ -8783,5 +9158,5 @@ export const institutions: Institution[] = [
     qrContent: "",
     supportedPayment: ["duitnow"],
     coords: [1.902816761451705, 103.0722078952398],
-  },
+  }
 ];
