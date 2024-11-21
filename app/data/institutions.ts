@@ -9167,7 +9167,7 @@ export const institutions: Institution[] = [
     state: "Selangor",
     city: "Petaling Jaya",
     qrImage: "https://scontent.fkul19-3.fna.fbcdn.net/v/t39.30808-6/434279104_924149493047962_446451129013946566_n.jpg?stp=dst-jpg_s960x960&_nc_cat=103&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=vTXH7Ra8l5kQ7kNvgEjfb9X&_nc_zt=23&_nc_ht=scontent.fkul19-3.fna&_nc_gid=AYTJOsRHfkFkOMn8FzjbXck&oh=00_AYAre8LTWPgfK2PYO6i8iq_exjcqno6mWHbeydZ69XuuCw&oe=674506D1",
-    qrContent: "",
+    qrContent: "00020101021126580014A000000615000101065887340212MBBQR1163409031000000000005204000053034585802MY5907MDHK51A6008SELANGOR63045C63",
     supportedPayment: ["duitnow", "tng"]
   },
 ];
