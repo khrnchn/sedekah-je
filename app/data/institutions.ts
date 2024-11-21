@@ -9159,4 +9159,15 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow"],
     coords: [1.902816761451705, 103.0722078952398],
   }
+  // khairin, facebook - https://www.facebook.com/MDHK51a/?locale=ms_MY
+  {
+    id: 797,
+    name: "Masjid Dato Haji Kamaruddin",
+    category: "mosque",
+    state: "Selangor",
+    city: "Petaling Jaya",
+    qrImage: "https://scontent.fkul19-3.fna.fbcdn.net/v/t39.30808-6/434279104_924149493047962_446451129013946566_n.jpg?stp=dst-jpg_s960x960&_nc_cat=103&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=vTXH7Ra8l5kQ7kNvgEjfb9X&_nc_zt=23&_nc_ht=scontent.fkul19-3.fna&_nc_gid=AYTJOsRHfkFkOMn8FzjbXck&oh=00_AYAre8LTWPgfK2PYO6i8iq_exjcqno6mWHbeydZ69XuuCw&oe=674506D1",
+    qrContent: "",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
