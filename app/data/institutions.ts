@@ -9158,7 +9158,7 @@ export const institutions: Institution[] = [
     qrContent: "",
     supportedPayment: ["duitnow"],
     coords: [1.902816761451705, 103.0722078952398],
-  }
+  },
   // khairin, facebook - https://www.facebook.com/MDHK51a/?locale=ms_MY
   {
     id: 797,
