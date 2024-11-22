@@ -9178,7 +9178,6 @@ export const institutions: Institution[] = [
     state: "Selangor",
     city: "Petaling Jaya",
     qrImage: "**Remarks:**
-afiq che man, twitter",
     qrContent: "00020201021126420014A000000615000101066033460210MD001416885204866153034585802MY5925MASJID AR RAHMAH SEKSYEN 6002MY627303251731567975990001885630318052017315680016270060474071617315676779690076304C0C5",
     supportedPayment: ["duitnow", "tng"]
   },
