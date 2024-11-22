@@ -9170,4 +9170,16 @@ export const institutions: Institution[] = [
     qrContent: "00020101021126580014A000000615000101065887340212MBBQR1163409031000000000005204000053034585802MY5907MDHK51A6008SELANGOR63045C63",
     supportedPayment: ["duitnow", "tng"]
   },
+  // undefined
+  {
+    id: 798,
+    name: "Masjid Ar-Rahmah Seksyen 17A",
+    category: "mosque",
+    state: "Selangor",
+    city: "Petaling Jaya",
+    qrImage: "**Remarks:**
+afiq che man, twitter",
+    qrContent: "",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
