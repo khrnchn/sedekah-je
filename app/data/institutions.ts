@@ -9181,4 +9181,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126420014A000000615000101066033460210MD001416885204866153034585802MY5925MASJID AR RAHMAH SEKSYEN 6002MY627303251731567975990001885630318052017315680016270060474071617315676779690076304C0C5",
     supportedPayment: ["duitnow", "tng"]
   },
+  // afiq che man, twitter
+  {
+    id: 799,
+    name: "Masjid At-Taqwa TTDI",
+    category: "mosque",
+    state: "Selangor",
+    city: "Petaling Jaya",
+    qrImage: "",
+    qrContent: "https://qr.tngdigital.com.my/m/281011057662659784149750818",
+    supportedPayment: ["tng"]
+  },
 ];
