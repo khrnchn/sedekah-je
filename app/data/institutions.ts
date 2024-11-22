@@ -9170,4 +9170,15 @@ export const institutions: Institution[] = [
     qrContent: "00020101021126580014A000000615000101065887340212MBBQR1163409031000000000005204000053034585802MY5907MDHK51A6008SELANGOR63045C63",
     supportedPayment: ["duitnow", "tng"]
   },
+  // afiq che man, twitter
+  {
+    id: 798,
+    name: "Masjid Ar-Rahmah Seksyen 17A",
+    category: "mosque",
+    state: "Selangor",
+    city: "Petaling Jaya",
+    qrImage: "",
+    qrContent: "00020201021126420014A000000615000101066033460210MD001416885204866153034585802MY5925MASJID AR RAHMAH SEKSYEN 6002MY627303251731567975990001885630318052017315680016270060474071617315676779690076304C0C5",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
