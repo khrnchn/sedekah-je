@@ -9192,4 +9192,15 @@ export const institutions: Institution[] = [
     qrContent: "https://qr.tngdigital.com.my/m/281011057662659784149750818",
     supportedPayment: ["tng"]
   },
+  // {luqman}, {nadiahlotfi-twitter}
+  {
+    id: 800,
+    name: "Masjid An-Nur UTP",
+    category: "mosque",
+    state: "Perak",
+    city: "Seri Iskandar",
+    qrImage: "https://github.com/user-attachments/assets/3165a984-45da-422a-bab6-8d600d6c341e",
+    qrContent: "00020201021126420014A000000615000101066033460210MD000090825204866153034585802MY5923JAWATANKUASA MASJID UTP6002MY6253032516432796812750095443242570520164327971048800359546304E5EB",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
