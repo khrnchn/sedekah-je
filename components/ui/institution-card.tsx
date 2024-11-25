@@ -384,7 +384,6 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
 												}}
 											>
 												<DownloadIcon className="h-5 w-5 text-foreground" />
-												<span className="sr-only">Muat turun kod QR</span>
 											</Button>
 										</TooltipTrigger>
 										<TooltipContent>
@@ -448,11 +447,10 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
 												}}
 											>
 												<Eye className="h-5 w-5 text-foreground" />
-												<span className="sr-only">Muat turun kod QR</span>
 											</Button>
 										</TooltipTrigger>
 										<TooltipContent>
-											<p>Pergi ke halaman QR</p>
+											<p>Perbesarkan kod QR</p>
 										</TooltipContent>
 									</Tooltip>
 								</div>
