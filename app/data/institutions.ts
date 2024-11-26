@@ -9203,4 +9203,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126420014A000000615000101066033460210MD000090825204866153034585802MY5923JAWATANKUASA MASJID UTP6002MY6253032516432796812750095443242570520164327971048800359546304E5EB",
     supportedPayment: ["duitnow", "tng"]
   },
+  // hnish, twitter - https://x.com/Hnish_t/status/1861001444113191003
+  {
+    id: 801,
+    name: "Surau Tengah Kampung Batu 30",
+    category: "surau",
+    state: "Perak",
+    city: "Kuala Lumpur",
+    qrImage: "https://pbs.twimg.com/media/GdOa8sNboAAAJZd?format=jpg&name=medium",
+    qrContent: "",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
