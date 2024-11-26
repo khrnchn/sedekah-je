@@ -9214,4 +9214,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126610014A000000615000101065018540215000001248429797031000000000005204866153034585802MY5923SURAU TENGAH KG BT30-QR6011BATANG KALI610544300621501111023508000063044CFF",
     supportedPayment: ["duitnow", "tng"]
   },
+  // luqman, self from masjid
+  {
+    id: 802,
+    name: "Masjid Ar-Raudhah Sitiawan",
+    category: "mosque",
+    state: "Perak",
+    city: "Sitiawan",
+    qrImage: "https://github.com/user-attachments/assets/85e29d09-1d68-4bbf-965b-7c8112e6e810",
+    qrContent: "",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
