@@ -9208,8 +9208,8 @@ export const institutions: Institution[] = [
     id: 801,
     name: "Surau Tengah Kampung Batu 30",
     category: "surau",
-    state: "Perak",
-    city: "Kuala Lumpur",
+    state: "Serendah",
+    city: "Selangor",
     qrImage: "https://pbs.twimg.com/media/GdOa8sNboAAAJZd?format=jpg&name=medium",
     qrContent: "00020201021126610014A000000615000101065018540215000001248429797031000000000005204866153034585802MY5923SURAU TENGAH KG BT30-QR6011BATANG KALI610544300621501111023508000063044CFF",
     supportedPayment: ["duitnow", "tng"]
@@ -9222,7 +9222,7 @@ export const institutions: Institution[] = [
     state: "Perak",
     city: "Sitiawan",
     qrImage: "https://github.com/user-attachments/assets/85e29d09-1d68-4bbf-965b-7c8112e6e810",
-    qrContent: "",
+    qrContent: "00020201021126610014A000000615000101065641670215QRMID0000011905041001945429255204866153034585802MY5917MASJID AR-RAUDHAH6008SETIAWAN6105320206304D502",
     supportedPayment: ["duitnow", "tng"]
   },
 ];
