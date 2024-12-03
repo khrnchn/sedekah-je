@@ -9225,4 +9225,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126610014A000000615000101065641670215QRMID0000011905041001945429255204866153034585802MY5917MASJID AR-RAUDHAH6008SETIAWAN6105320206304D502",
     supportedPayment: ["duitnow", "tng"]
   },
+  // {name}, {source} - {url} (eg: khairin, facebook - facebook.com/something) example: https://github.com/khrnchn/sedekah-je/blob/main/app/data/institutions.ts#L8835
+  {
+    id: 803,
+    name: "e.g., Pusat Islam UiTM Tapah",
+    category: "others",
+    state: "Perak",
+    city: "e.g., Tapah Road",
+    qrImage: "http or https something",
+    qrContent: "",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
