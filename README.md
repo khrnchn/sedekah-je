@@ -34,6 +34,8 @@ to upload qr, you have three options:
 1. thank you [altaf](https://x.com/danielminho_?s=21&t=uaExBAqkDxtuY8KYLJBCLQ) for sponsoring 3 domains: `sedekah.je`, `sedekahje.com`, and `sedekah-je.com`.
 2. thank you [farhan helmy](https://www.farhanhelmy.com/) for sponsoring [analytics](https://analytics.farhanhelmy.com/teams/bf87f5c8-4fa1-4348-a453-6047a0c00636/websites/c2f79734-cbe5-4b9d-afd0-75e063e0aadb).
 
-## future plans
+## contributors
 
-you may refer [issues](https://github.com/khrnchn/sedekah-je/issues), and create a new issue if you have any suggestions.
+<a href="https://github.com/khrnchn/sedekah-je/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=khrnchn/sedekah-je" />
+</a>
