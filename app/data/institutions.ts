@@ -9228,11 +9228,11 @@ export const institutions: Institution[] = [
   // {name}, {source} - {url} (eg: khairin, facebook - facebook.com/something) example: https://github.com/khrnchn/sedekah-je/blob/main/app/data/institutions.ts#L8835
   {
     id: 803,
-    name: "e.g., Pusat Islam UiTM Tapah",
+    name: "Pusat Islam UiTM Tapah",
     category: "others",
     state: "Perak",
-    city: "e.g., Tapah Road",
-    qrImage: "http or https something",
+    city: Tapah Road",
+    qrImage: "",
     qrContent: "",
     supportedPayment: ["duitnow", "tng"]
   },
