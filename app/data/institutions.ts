@@ -9093,7 +9093,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
     coords: [2.90770306354755, 102.87699397630429],
   },
-   // kuasawan #1 - FB https://www.facebook.com/photo/?fbid=10231252069421006&set=pcb.10231238536122682
+  // kuasawan #1 - FB https://www.facebook.com/photo/?fbid=10231252069421006&set=pcb.10231238536122682
   // https://maps.app.goo.gl/N3JKvLjjotisbHYv8
   {
     id: 792,
@@ -9225,13 +9225,26 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126610014A000000615000101065641670215QRMID0000011905041001945429255204866153034585802MY5917MASJID AR-RAUDHAH6008SETIAWAN6105320206304D502",
     supportedPayment: ["duitnow", "tng"]
   },
-  // {name}, {source} - {url} (eg: khairin, facebook - facebook.com/something) example: https://github.com/khrnchn/sedekah-je/blob/main/app/data/institutions.ts#L8835
+  // fareez, self from masjid
   {
     id: 803,
+    name: "Masjid As-Salam",
+    category: "mosque",
+    state: "Selangor",
+    city: "Petaling Jaya",
+    qrImage: "",
+    qrContent:
+      "00020201021126420014A000000615000101066033460210MD000822065204866153034585802MY5915MASJID AS-SALAM6002MY6273032516625381789830037665322610520166253818275800535960716166253788900000363043F4A",
+    supportedPayment: ["duitnow"],
+    coords: [3.0779893957983484, 101.64406122472302],
+  },
+  // sykrwasd, github pr - https://github.com/khrnchn/sedekah-je/pull/284
+  {
+    id: 804,
     name: "Pusat Islam UiTM Tapah",
     category: "others",
     state: "Perak",
-    city: Tapah Road",
+    city: "Tapah Road",
     qrImage: "",
     qrContent: "",
     supportedPayment: ["duitnow", "tng"]
