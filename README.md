@@ -39,3 +39,7 @@ to upload qr, you have three options:
 <a href="https://github.com/khrnchn/sedekah-je/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=khrnchn/sedekah-je" />
 </a>
+
+## stats for fun
+
+![Alt](https://repobeats.axiom.co/api/embed/292c8dd710c08ca32acea85fd0247a1c68a252f8.svg "Repobeats analytics image")
