@@ -94,7 +94,7 @@ export default function PageFooter() {
                                     key={item.name}
                                     href={item.href}
                                     target="_blank"
-                                    className="text-gray-400 hover:text-gray-500"
+                                    className="text-gray-400 hover:text-gray-500" rel="noreferrer"
                                 >
                                     <span className="sr-only">{item.name}</span>
                                     <item.icon aria-hidden="true" className="h-6 w-6" />
@@ -108,13 +108,13 @@ export default function PageFooter() {
                                 <h3 className="text-sm font-semibold leading-6 text-gray-900">
                                     Rujukan
                                 </h3>
-                                <ul role="list" className="mt-6 space-y-4">
+                                <ul className="mt-6 space-y-4">
                                     {navigation.resources.map((item) => (
                                         <li key={item.name}>
                                             <a
                                                 href={item.href}
                                                 target="_blank"
-                                                className="text-sm leading-6 text-gray-600 hover:text-gray-900"
+                                                className="text-sm leading-6 text-gray-600 hover:text-gray-900" rel="noreferrer"
                                             >
                                                 {item.name}
                                             </a>
@@ -126,13 +126,13 @@ export default function PageFooter() {
                                 <h3 className="text-sm font-semibold leading-6 text-gray-900">
                                     Lawati Juga
                                 </h3>
-                                <ul role="list" className="mt-6 space-y-4">
+                                <ul className="mt-6 space-y-4">
                                     {navigation.partners.map((item) => (
                                         <li key={item.name}>
                                             <a
-                                                href={item.href + "?ref=kelasmengaji.online"}
+                                                href={`${item.href}?ref=kelasmengaji.online`}
                                                 target="_blank"
-                                                className="text-sm leading-6 text-gray-600 hover:text-gray-900"
+                                                className="text-sm leading-6 text-gray-600 hover:text-gray-900" rel="noreferrer"
                                             >
                                                 {item.name}
                                             </a>
@@ -146,13 +146,13 @@ export default function PageFooter() {
                                 <h3 className="text-sm font-semibold leading-6 text-gray-900">
                                     Projek Lain
                                 </h3>
-                                <ul role="list" className="mt-6 space-y-4">
+                                <ul className="mt-6 space-y-4">
                                     {navigation.projects.map((item) => (
                                         <li key={item.name}>
                                             <a
-                                                href={item.href + "?ref=kelasmengaji.online"}
+                                                href={`${item.href}?ref=kelasmengaji.online`}
                                                 target="_blank"
-                                                className="text-sm leading-6 text-gray-600 hover:text-gray-900"
+                                                className="text-sm leading-6 text-gray-600 hover:text-gray-900" rel="noreferrer"
                                             >
                                                 {item.name}
                                             </a>
@@ -170,7 +170,7 @@ export default function PageFooter() {
                     <a
                         href="https://github.com/khrnchn/sedekah-je/graphs/contributors"
                         target="_blank"
-                        className="text-xs leading-5 text-gray-500 hover:underline"
+                        className="text-xs leading-5 text-gray-500 hover:underline" rel="noreferrer"
                     >
                         Dibina oleh <span className="text-blue-500">Khairin Chan dan 22 Penyumbang Lain</span>
                     </a>

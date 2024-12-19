@@ -1,6 +1,6 @@
 import { institutions } from "@/app/data/institutions";
 import { slugify } from "@/lib/utils";
-import { Metadata, ResolvingMetadata } from 'next';
+import type { Metadata, ResolvingMetadata } from 'next';
 
 type LayoutProps = {
     params: {

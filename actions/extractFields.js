@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 // Read the input file from the environment
 const inputFilePath = path.resolve(process.env.INPUT_FILE || 'input.data');
@@ -21,7 +21,7 @@ function extractFields(text) {
     let match;
 
     while ((match = fieldRegex.exec(text)) !== null) {
-        let key = match[1].trim();
+        const key = match[1].trim();
         let value = match[2].trim();
 
         if (value.startsWith('- ')) {

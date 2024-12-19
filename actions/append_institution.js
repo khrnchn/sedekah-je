@@ -1,5 +1,5 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 const axios = require('axios');
 
 // Load extracted fields from JSON
@@ -19,12 +19,11 @@ async function decodeQRCode(url) {
     const response = await axios.get(apiUrl);
 
     const qrData = response.data;
-    if (qrData && qrData[0].symbol && qrData[0].symbol[0].data) {
+    if (qrData?.[0].symbol?.[0].data) {
       return qrData[0].symbol[0].data;
-    } else {
+    }
       console.error("No QR code data found in the response.");
       return "";
-    }
   } catch (error) {
     console.error(`Error decoding QR code from URL "${url}":`, error.message);
     return "";
@@ -42,7 +41,7 @@ async function decodeQRCode(url) {
     // Find all existing IDs to determine the next ID
     const idMatches = fileContent.match(/id:\s*(\d+),/g);
     const nextId = idMatches
-      ? Math.max(...idMatches.map(id => parseInt(id.match(/\d+/)[0]))) + 1
+      ? Math.max(...idMatches.map(id => Number.parseInt(id.match(/\d+/)[0]))) + 1
       : 1;
 
     // Escape double quotes in qrContent to prevent syntax errors
