@@ -11,105 +11,107 @@ import { cn } from "@/lib/utils";
 
 import "./globals.css";
 import { DisclaimerModal } from "@/components/disclaimer";
+import { QueryProvider } from "@/components/providers/query-provider";
 
 const poppins = Poppins({ weight: ["400", "700", "900"], subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Sedekah Je",
-  description:
-    "Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
-  keywords: [
-    "sedekah",
-    "sedekah qr",
-    "sedekah jumaat",
-    "sedekah malaysia",
-    "sedekahje",
-    "sedekah je",
-    "sedekah qr",
-    "sedekah je qr",
-    "opensource sedekah qr",
-    "sedekah malaysia",
-    "sedekah malaysia qr",
-    "sedekah malaysia qr codes",
-    "senarai qr sedekah malaysia",
-    "qr sedekah malaysia",
-    "qr code sedekah malaysia",
-  ],
-  metadataBase: new URL("https://sedekahje.com"),
-  openGraph: {
-    type: "website",
-    url: "https://sedekahje.com",
-    title: "Sedekah Je",
-    description:
-      "Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
-    siteName: "Sedekah Je",
-    images: [
-      {
-        url: "https://sedekahje.com/sedekahje-og-compressed.png",
-        width: 1200,
-        height: 630,
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    site: "@asdfghjkhairin",
-    creator: "@asdfghjkhairin",
-    title: "Sedekah Je",
-    description:
-      "Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
-    images: "https://sedekahje.com/sedekahje-twitter.png",
-  },
+	title: "Sedekah Je",
+	description:
+		"Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
+	keywords: [
+		"sedekah",
+		"sedekah qr",
+		"sedekah jumaat",
+		"sedekah malaysia",
+		"sedekahje",
+		"sedekah je",
+		"sedekah qr",
+		"sedekah je qr",
+		"opensource sedekah qr",
+		"sedekah malaysia",
+		"sedekah malaysia qr",
+		"sedekah malaysia qr codes",
+		"senarai qr sedekah malaysia",
+		"qr sedekah malaysia",
+		"qr code sedekah malaysia",
+	],
+	metadataBase: new URL("https://sedekahje.com"),
+	openGraph: {
+		type: "website",
+		url: "https://sedekahje.com",
+		title: "Sedekah Je",
+		description:
+			"Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
+		siteName: "Sedekah Je",
+		images: [
+			{
+				url: "https://sedekahje.com/sedekahje-og-compressed.png",
+				width: 1200,
+				height: 630,
+			},
+		],
+	},
+	twitter: {
+		card: "summary_large_image",
+		site: "@asdfghjkhairin",
+		creator: "@asdfghjkhairin",
+		title: "Sedekah Je",
+		description:
+			"Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
+		images: "https://sedekahje.com/sedekahje-twitter.png",
+	},
 };
 
 export const viewport: Viewport = {
-  initialScale: 1,
-  width: "device-width",
-  maximumScale: 1,
-  viewportFit: "cover",
+	initialScale: 1,
+	width: "device-width",
+	maximumScale: 1,
+	viewportFit: "cover",
 };
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  const nextHeaders = headers();
-  const pathname = nextHeaders.get("x-pathname");
+	const nextHeaders = headers();
+	const pathname = nextHeaders.get("x-pathname");
 
-  // opt out default layout for /qr/:slug
-  const regex = /^\/qr\/([a-zA-Z0-9_-]+)$/;
-  if (pathname && regex.test(pathname)) {
-    return (
-      <html suppressHydrationWarning>
-        <body>{children}</body>
-      </html>
-    );
-  }
+	// opt out default layout for /qr/:slug
+	const regex = /^\/qr\/([a-zA-Z0-9_-]+)$/;
+	if (pathname && regex.test(pathname)) {
+		return (
+			<html suppressHydrationWarning lang="en">
+				<body>{children}</body>
+			</html>
+		);
+	}
 
-  return (
-    <html lang="en" suppressHydrationWarning>
-      {/* sedekahje.com - c2f79734-cbe5-4b9d-afd0-75e063e0aadb*/}
-      <Script
-        defer
-        src="https://analytics.farhanhelmy.com/script.js"
-        data-website-id="bf87f5c8-4fa1-4348-a453-6047a0c00636"
-      />
-      <body
-        className={cn(
-          "bg-background transition-colors duration-200 ease-in-out overscroll-y-none",
-          poppins.className
-        )}
-      >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Header />
-          <div className="h-24 w-full absolute top-0 left-0 bg-gradient-to-b from-orange-300 to-background -z-10 opacity-20 dark:opacity-5" />
-          {children}
-          <Analytics />
-          <Toaster richColors />
-          <DisclaimerModal />
-        </ThemeProvider>
-      </body>
-    </html>
-  );
+	return (
+		<html lang="en" suppressHydrationWarning>
+			<Script
+				defer
+				src="https://analytics.farhanhelmy.com/script.js"
+				data-website-id="bf87f5c8-4fa1-4348-a453-6047a0c00636"
+			/>
+			<body
+				className={cn(
+					"bg-background transition-colors duration-200 ease-in-out overscroll-y-none",
+					poppins.className,
+				)}
+			>
+				<QueryProvider>
+					<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+						<Header />
+						<div className="h-24 w-full absolute top-0 left-0 bg-gradient-to-b from-orange-300 to-background -z-10 opacity-20 dark:opacity-5" />
+						{children}
+						<Analytics />
+						<Toaster richColors />
+						<DisclaimerModal />
+					</ThemeProvider>
+				</QueryProvider>
+			</body>
+		</html>
+	);
 }

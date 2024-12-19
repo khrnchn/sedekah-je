@@ -99,8 +99,7 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
 
 		useOutsideClick(innerRef, () => setActive(false));
 
-		// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-		const createImage = (options: any) => {
+		const createImage = (options: { src: string }) => {
 			const img = document.createElement("img");
 			if (options.src) {
 				img.src = options.src;
@@ -392,7 +391,7 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
 									</Tooltip>
 
 									<DropdownMenu>
-										<DropdownMenuTrigger>
+										<DropdownMenuTrigger asChild>
 											<Button
 												size="icon"
 												variant="ghost"
