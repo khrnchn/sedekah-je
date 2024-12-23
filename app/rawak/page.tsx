@@ -5,6 +5,7 @@ import type { Institution } from "@/app/types/institutions";
 import FilterCategory from "@/components/filter-category";
 import FilterState from "@/components/filter-state";
 import FilteredCount from "@/components/filtered-count";
+import GetdoaFooter from "@/components/getdoa-footer";
 import PageHeader from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -202,6 +203,7 @@ const Rawak = () => {
 					)}
 				</Card>
 			</div>
+			<GetdoaFooter />
 		</PageSection>
 	);
 };
