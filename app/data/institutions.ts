@@ -9249,4 +9249,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126420014A000000615000101066033460210MD000107365204829953034585802MY5925UNIVERSITI TEKNOLOGI MARA6002MY627303251710229667631001959204014052017102300522780092269071617102186891180096304ED73",
     supportedPayment: ["duitnow", "tng"]
   },
+  // Gambar dari masjid
+  {
+    id: 805,
+    name: "MASJID SIMPANG ENAM",
+    category: "mosque",
+    state: "Pulau Pinang",
+    city: "Georgetown",
+    qrImage: "https://ibb.co/hdxTSS6",
+    qrContent: "",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
