@@ -9252,7 +9252,7 @@ export const institutions: Institution[] = [
 // fathikhalid, github - https://github.com/khrnchn/sedekah-je/issues/286. taken from masjid
   {
     id: 805,
-    name: "MASJID SIMPANG ENAM",
+    name: "Masjid Simpang Enam",
     category: "mosque",
     state: "Pulau Pinang",
     city: "Georgetown",
