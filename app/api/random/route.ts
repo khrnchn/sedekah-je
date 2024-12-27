@@ -1,8 +1,13 @@
 import { NextResponse } from 'next/server';
 import { institutions } from '@/app/data/institutions';
 
-// add this export to disable Next.js response caching
+// by default, Next.js caches route handlers for better performance.
+// 'force-dynamic' tells Next.js to skip static optimization and always run the code dynamically.
+// this ensures we get a new random institution on every request instead of serving a cached response.
 export const dynamic = 'force-dynamic';
+
+// setting revalidate to 0 disables incremental static regeneration (ISR)
+// and prevents Next.js from caching the response
 export const revalidate = 0;
 
 export async function GET() {
