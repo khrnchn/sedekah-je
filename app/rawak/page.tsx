@@ -51,7 +51,7 @@ const Rawak = () => {
 			const category = filteredInstitutions[randomNumber].category;
 			const slug = slugify(filteredInstitutions[randomNumber].name);
 
-			setUrl(`https://www.sedekahje.com/${category}/${slug}`);
+			setUrl(`https://www.sedekah.je/${category}/${slug}`);
 
 			cardRef.current?.scrollIntoView({ behavior: "smooth" });
 		}

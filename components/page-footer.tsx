@@ -56,7 +56,7 @@ const navigation = {
         },
         {
             name: "Data Trafik",
-            href: "https://analytics.farhanhelmy.com/share/OrlbJdQSaPiFFLqT/sedekahje.com",
+            href: "https://analytics.farhanhelmy.com/share/OrlbJdQSaPiFFLqT/sedekah.je",
         },
         { name: "Logo", href: "https://www.flaticon.com/free-icons/holy" },
     ],
