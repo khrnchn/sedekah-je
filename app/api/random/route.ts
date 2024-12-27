@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import puppeteer from 'puppeteer-core';
+import chrome from '@sparticuz/chromium';
 import { institutions } from '@/app/data/institutions';
 import { slugify } from '@/lib/utils';
 
@@ -12,26 +13,36 @@ export async function GET() {
       );
     }
 
-    // get random institution
     const randomIndex = Math.floor(Math.random() * institutions.length);
     const randomInstitution = institutions[randomIndex];
 
     const baseUrl = process.env.BASE_URL || 'http://localhost:3001';
 
-    // launch browser
-    const browser = await puppeteer.launch({ channel: 'chrome' });
-    // create new page
+    // configure browser for vercel environment
+    const executablePath = process.env.CHROME_EXECUTABLE_PATH || await chrome.executablePath();
+
+    const browser = await puppeteer.launch({
+      args: chrome.args,
+      executablePath,
+      headless: chrome.headless,
+    });
+
     const page = await browser.newPage();
-    // navigate to qr page
+
+    // set viewport for consistent screenshots
+    await page.setViewport({
+      width: 1200,
+      height: 630,
+      deviceScaleFactor: 1,
+    });
+
     await page.goto(`${baseUrl}/qr/${slugify(randomInstitution.name)}`, {
       waitUntil: 'networkidle2',
     });
-    // take screenshot
+
     const screenshot = await page.screenshot();
-    // close browser
     await browser.close();
 
-    // return image response
     return new NextResponse(screenshot, {
       headers: {
         'Content-Type': 'image/png',
