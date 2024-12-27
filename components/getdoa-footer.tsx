@@ -8,10 +8,10 @@ const GetdoaFooter = () => {
     <footer className="bg-card w-full p-3 pb-12 sm:p-5 sm:pb-14 md:p-10 md:pb-16 flex flex-col items-center justify-center shadow-lg dark:shadow-muted/50 hover:shadow-xl transition-shadow duration-200 ease-in-out relative rounded-lg overflow-hidden">
       {isFetching ? (
         <div className="flex flex-col items-center w-full">
-          <div className="self-start animate-pulse w-48 sm:w-64 md:w-96 h-4 sm:h-6 bg-zinc-400 rounded-md mb-2" />
-          <div className="self-end animate-pulse w-48 sm:w-64 md:w-96 h-4 sm:h-6 bg-zinc-400 rounded-md mb-2" />
-          <div className="self-start animate-pulse w-48 sm:w-64 md:w-96 h-4 sm:h-6 bg-zinc-400 rounded-md mb-2" />
-          <div className="self-start animate-pulse w-48 sm:w-64 md:w-96 h-4 sm:h-6 bg-zinc-400 rounded-md mb-2" />
+          <div className="self-start animate-pulse w-48 sm:w-64 md:w-96 h-4 sm:h-6 bg-gray-200 dark:bg-gray-700 rounded-md mb-2" />
+          <div className="self-end animate-pulse w-48 sm:w-64 md:w-96 h-4 sm:h-6 bg-gray-200 dark:bg-gray-700 rounded-md mb-2" />
+          <div className="self-start animate-pulse w-48 sm:w-64 md:w-96 h-4 sm:h-6 bg-gray-200 dark:bg-gray-700 rounded-md mb-2" />
+          <div className="self-start animate-pulse w-48 sm:w-64 md:w-96 h-4 sm:h-6 bg-gray-200 dark:bg-gray-700 rounded-md mb-2" />
         </div>
       ) : data ? (
         <div className={`flex flex-col w-full gap-1.5 sm:gap-2 ${hasLabel ? 'pt-6 sm:pt-7' : ''}`}>
