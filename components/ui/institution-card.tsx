@@ -277,11 +277,11 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution & {isClosest?: bo
 							onClick={() => navigateToItem(category, slugify(name))}
 						>
 							<CardContent className="flex flex-col items-center gap-2 p-4 h-full">
-                {isClosest && (
-                  <div className="absolute top-2 left-2 bg-yellow-500 dark:bg-yellow-400 text-black p-1 px-2 rounded-full text-xs font-semibold">
-                    Closest to you{distanceToCurrentUserInMeter && distanceToCurrentUserInMeter > 1000 ? ` • ${(distanceToCurrentUserInMeter / 1000).toFixed(2)} KM` : ` • ${distanceToCurrentUserInMeter} M`}
-                  </div>
-                )}
+								{isClosest && (
+									<div className="absolute top-2 left-2 bg-yellow-500 dark:bg-yellow-400 text-black p-1 px-2 rounded-full text-xs font-semibold">
+										Closest to you{distanceToCurrentUserInMeter && distanceToCurrentUserInMeter > 1000 ? ` • ${(distanceToCurrentUserInMeter / 1000).toFixed(2)} KM` : ` • ${distanceToCurrentUserInMeter} M`}
+									</div>
+								)}
 								<div className="flex flex-col items-center gap-1 mb-2 w-full">
 									<motion.div>
 										<Image
