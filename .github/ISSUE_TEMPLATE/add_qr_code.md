@@ -37,7 +37,9 @@ e.g., Kuala Lumpur
 - Pulau Pinang
 
 **QR Code Image:**
-http or https something
+Use a direct image URL instead of an image hosting site. Make sure the image is clear and large enough.
+Good: https://i.ibb.co/FwG2JVH/SURAU-AL-BAYAN-KHK-STICKER.jpg
+Bad : https://imgbb.com/wWDVCsc
 
 **Remarks:**
 {name}, {source} - {url} (eg: khairin, facebook - facebook.com/something) example: https://github.com/khrnchn/sedekah-je/blob/main/app/data/institutions.ts#L8835
