@@ -128,7 +128,7 @@ const Home = () => {
 
 	const displayedInstitutions = filteredInstitutions.slice(0, offset + limit);
   const isFiltered = useMemo(()=>query !== "" || selectedCategories.length > 0 || selectedState !== "",[query, selectedCategories, selectedState])
-  const displayedInstitutionsContainsClosest = useMemo(()=>displayedInstitutions.findIndex(i=>i.id===closestInstitution?.id) !== -1, [displayedInstitutions, closestInstitution])
+  const filteredInstitutionsContainsClosest = useMemo(()=>filteredInstitutions.findIndex(i=>i.id===closestInstitution?.id) !== -1, [filteredInstitutions, closestInstitution])
 
 	useEffect(() => {
 		getLocation();
@@ -146,33 +146,32 @@ const Home = () => {
 	}
 
 	useEffect(() => {
-    if (isFiltered) return;
+    if (isFiltered || !currentUserCoordinate || closestInstitution) return;
 
-		let listOfCoords: { latitude: number; longitude: number; id: number }[] = [];
-		if (currentUserCoordinate) {
-			filteredInstitutions.forEach((i) => {
-				if (i.coords && i.coords.length === 2) {
-					listOfCoords.push({
-						latitude: i.coords[0],
-						longitude: i.coords[1],
-						...i,
-					});
-				}
-			});
+    let listOfCoords: { latitude: number; longitude: number; id: number }[] = [];
 
-			const closestCoordinate = findNearest(
-				currentUserCoordinate,
-				listOfCoords,
-			);
-			const distanceToCurrentUserInKM = getDistance(
-				currentUserCoordinate,
-				closestCoordinate,
-			);
+    filteredInstitutions.forEach((i) => {
+      if (i.coords && i.coords.length === 2) {
+        listOfCoords.push({
+          latitude: i.coords[0],
+          longitude: i.coords[1],
+          ...i,
+        });
+      }
+    });
 
-      const c = {...closestCoordinate, distanceToCurrentUserInKM} as unknown as Institution & { distanceToCurrentUserInKM: number }
+    const closestCoordinate = findNearest(
+      currentUserCoordinate,
+      listOfCoords,
+    );
+    const distanceToCurrentUserInKM = getDistance(
+      currentUserCoordinate,
+      closestCoordinate,
+    );
 
-      setClosestInstitution(c);
-		}
+    const c = {...closestCoordinate, distanceToCurrentUserInKM} as unknown as Institution & { distanceToCurrentUserInKM: number }
+
+    setClosestInstitution(c);
 	}, [currentUserCoordinate, filteredInstitutions]);
 
 	return (
@@ -244,7 +243,7 @@ const Home = () => {
 				</div>
 			) : (
 				<div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-					{(closestInstitution && displayedInstitutionsContainsClosest) && (
+					{(closestInstitution && filteredInstitutionsContainsClosest) && (
 						<InstitutionCard
 							key={closestInstitution.id}
 							{...closestInstitution}
@@ -256,7 +255,7 @@ const Home = () => {
               isClosest
 						/>
 					)}
-					{displayedInstitutions.filter((i)=>(displayedInstitutionsContainsClosest && closestInstitution) ? i.id !== closestInstitution.id : true).map((institution, i) => (
+					{displayedInstitutions.filter((i)=>(filteredInstitutionsContainsClosest && closestInstitution) ? i.id !== closestInstitution.id : true).map((institution, i) => (
 						<InstitutionCard
 							key={institution.id}
 							{...institution}
