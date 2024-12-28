@@ -51,7 +51,7 @@ const capitalizeWords = (str: string): string => {
 	});
 };
 
-const InstitutionCard = forwardRef<HTMLDivElement, Institution & {isClosest?: boolean; distanceToCurrentUserInKM?: number}>(
+const InstitutionCard = forwardRef<HTMLDivElement, Institution & {isClosest?: boolean; distanceToCurrentUserInMeter?: number}>(
 	(
 		{
 			id,
@@ -65,7 +65,7 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution & {isClosest?: bo
 			category,
 			coords,
       isClosest,
-      distanceToCurrentUserInKM,
+      distanceToCurrentUserInMeter,
 		},
 		ref,
 	) => {
@@ -279,7 +279,7 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution & {isClosest?: bo
 							<CardContent className="flex flex-col items-center gap-2 p-4 h-full">
                 {isClosest && (
                   <div className="absolute top-2 left-2 bg-yellow-500 dark:bg-yellow-400 text-black p-1 px-2 rounded-full text-xs font-semibold">
-                    Closest to you{distanceToCurrentUserInKM && distanceToCurrentUserInKM > 1000 ? ` • ${(distanceToCurrentUserInKM / 1000).toFixed(2)} KM` : ` • ${distanceToCurrentUserInKM} M`}
+                    Closest to you{distanceToCurrentUserInMeter && distanceToCurrentUserInMeter > 1000 ? ` • ${(distanceToCurrentUserInMeter / 1000).toFixed(2)} KM` : ` • ${distanceToCurrentUserInMeter} M`}
                   </div>
                 )}
 								<div className="flex flex-col items-center gap-1 mb-2 w-full">
