@@ -127,49 +127,58 @@ const Home = () => {
 	}, [_institutions, query, selectedCategories, selectedState, offset, limit]);
 
 	const displayedInstitutions = filteredInstitutions.slice(0, offset + limit);
-  const isFiltered = useMemo(()=>query !== "" || selectedCategories.length > 0 || selectedState !== "",[query, selectedCategories, selectedState])
-  const filteredInstitutionsContainsClosest = useMemo(()=>filteredInstitutions.findIndex(i=>i.id===closestInstitution?.id) !== -1, [filteredInstitutions, closestInstitution])
+	const isFiltered = useMemo(
+		() => query !== "" || selectedCategories.length > 0 || selectedState !== "",
+		[query, selectedCategories, selectedState],
+	);
+	const filteredInstitutionsContainsClosest = useMemo(
+		() =>
+			filteredInstitutions.findIndex((i) => i.id === closestInstitution?.id) !==
+			-1,
+		[filteredInstitutions, closestInstitution],
+	);
 
 	useEffect(() => {
 		getLocation();
 	}, []);
 
 	async function getLocation() {
-			navigator.geolocation.getCurrentPosition((p) => {
-				setCurrentUserCoordinate({
-					latitude: p.coords.latitude,
-					longitude: p.coords.longitude,
-				});
+		navigator.geolocation.getCurrentPosition((p) => {
+			setCurrentUserCoordinate({
+				latitude: p.coords.latitude,
+				longitude: p.coords.longitude,
 			});
+		});
 	}
 
 	useEffect(() => {
-    if (isFiltered || !currentUserCoordinate || closestInstitution) return;
+		if (isFiltered || !currentUserCoordinate || closestInstitution) return;
 
-    let listOfCoords: { latitude: number; longitude: number; id: number }[] = [];
+		let listOfCoords: { latitude: number; longitude: number; id: number }[] =
+			[];
 
-    filteredInstitutions.forEach((i) => {
-      if (i.coords && i.coords.length === 2) {
-        listOfCoords.push({
-          latitude: i.coords[0],
-          longitude: i.coords[1],
-          ...i,
-        });
-      }
-    });
+		filteredInstitutions.forEach((i) => {
+			if (i.coords && i.coords.length === 2) {
+				listOfCoords.push({
+					latitude: i.coords[0],
+					longitude: i.coords[1],
+					...i,
+				});
+			}
+		});
 
-    const closestCoordinate = findNearest(
-      currentUserCoordinate,
-      listOfCoords,
-    );
-    const distanceToCurrentUserInMeter = getDistance(
-      currentUserCoordinate,
-      closestCoordinate,
-    );
+		const closestCoordinate = findNearest(currentUserCoordinate, listOfCoords);
+		const distanceToCurrentUserInMeter = getDistance(
+			currentUserCoordinate,
+			closestCoordinate,
+		);
 
-    const c = {...closestCoordinate, distanceToCurrentUserInMeter} as unknown as Institution & { distanceToCurrentUserInMeter: number }
+		const c = {
+			...closestCoordinate,
+			distanceToCurrentUserInMeter,
+		} as unknown as Institution & { distanceToCurrentUserInMeter: number };
 
-    setClosestInstitution(c);
+		setClosestInstitution(c);
 	}, [currentUserCoordinate, filteredInstitutions]);
 
 	return (
@@ -241,29 +250,33 @@ const Home = () => {
 				</div>
 			) : (
 				<div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-					{(closestInstitution && filteredInstitutionsContainsClosest) && (
+					{closestInstitution && filteredInstitutionsContainsClosest && (
 						<InstitutionCard
 							key={closestInstitution.id}
 							{...closestInstitution}
 							ref={
-								displayedInstitutions.length === 1
-									? lastPostElementRef
-									: null
+								displayedInstitutions.length === 1 ? lastPostElementRef : null
 							}
-              isClosest
+							isClosest
 						/>
 					)}
-					{displayedInstitutions.filter((i)=>(filteredInstitutionsContainsClosest && closestInstitution) ? i.id !== closestInstitution.id : true).map((institution, i) => (
-						<InstitutionCard
-							key={institution.id}
-							{...institution}
-							ref={
-								displayedInstitutions.length === i + 1
-									? lastPostElementRef
-									: null
-							}
-						/>
-					))}
+					{displayedInstitutions
+						.filter((i) =>
+							filteredInstitutionsContainsClosest && closestInstitution
+								? i.id !== closestInstitution.id
+								: true,
+						)
+						.map((institution, i) => (
+							<InstitutionCard
+								key={institution.id}
+								{...institution}
+								ref={
+									displayedInstitutions.length === i + 1
+										? lastPostElementRef
+										: null
+								}
+							/>
+						))}
 				</div>
 			)}
 
