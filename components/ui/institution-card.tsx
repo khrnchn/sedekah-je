@@ -64,8 +64,8 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution & {isClosest?: bo
 			supportedPayment,
 			category,
 			coords,
-      isClosest,
-      distanceToCurrentUserInMeter,
+			isClosest,
+			distanceToCurrentUserInMeter,
 		},
 		ref,
 	) => {
