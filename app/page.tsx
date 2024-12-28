@@ -3,6 +3,8 @@
 import { debounce } from "lodash-es";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { findNearest, getDistance } from "geolib";
+import { GeolibInputCoordinates } from "geolib/es/types";
 
 import CollapsibleCustomMap from "@/components/custom-map";
 import RawakFooter from "@/components/rawak-footer";
@@ -31,6 +33,11 @@ const Home = () => {
 	const [offset, setOffset] = useState<number>(0);
 	const [limit] = useState<number>(15);
 	const [allItemsLoaded, setAllItemsLoaded] = useState<boolean>(false);
+	const [currentUserCoordinate, setCurrentUserCoordinate] =
+		useState<GeolibInputCoordinates | null>(null);
+	const [closestInstitution, setClosestInstitution] = useState<
+		(Institution & { distanceToCurrentUserInKM: number }) | null
+	>(null);
 
 	// Map
 	const [isMapVisible, setIsMapVisible] = useState(false);
@@ -120,6 +127,53 @@ const Home = () => {
 	}, [_institutions, query, selectedCategories, selectedState, offset, limit]);
 
 	const displayedInstitutions = filteredInstitutions.slice(0, offset + limit);
+  const isFiltered = useMemo(()=>query !== "" || selectedCategories.length > 0 || selectedState !== "",[query, selectedCategories, selectedState])
+  const displayedInstitutionsContainsClosest = useMemo(()=>displayedInstitutions.findIndex(i=>i.id===closestInstitution?.id) !== -1, [displayedInstitutions, closestInstitution])
+
+	useEffect(() => {
+		getLocation();
+	}, []);
+
+	async function getLocation() {
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition((p) => {
+				setCurrentUserCoordinate({
+					latitude: p.coords.latitude,
+					longitude: p.coords.longitude,
+				});
+			});
+		}
+	}
+
+	useEffect(() => {
+    if (isFiltered) return;
+
+		let listOfCoords: { latitude: number; longitude: number; id: number }[] = [];
+		if (currentUserCoordinate) {
+			filteredInstitutions.forEach((i) => {
+				if (i.coords && i.coords.length === 2) {
+					listOfCoords.push({
+						latitude: i.coords[0],
+						longitude: i.coords[1],
+						...i,
+					});
+				}
+			});
+
+			const closestCoordinate = findNearest(
+				currentUserCoordinate,
+				listOfCoords,
+			);
+			const distanceToCurrentUserInKM = getDistance(
+				currentUserCoordinate,
+				closestCoordinate,
+			);
+
+      const c = {...closestCoordinate, distanceToCurrentUserInKM} as unknown as Institution & { distanceToCurrentUserInKM: number }
+
+      setClosestInstitution(c);
+		}
+	}, [currentUserCoordinate, filteredInstitutions]);
 
 	return (
 		<PageSection>
@@ -190,7 +244,19 @@ const Home = () => {
 				</div>
 			) : (
 				<div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-					{displayedInstitutions.map((institution, i) => (
+					{(closestInstitution && displayedInstitutionsContainsClosest) && (
+						<InstitutionCard
+							key={closestInstitution.id}
+							{...closestInstitution}
+							ref={
+								displayedInstitutions.length === 1
+									? lastPostElementRef
+									: null
+							}
+              isClosest
+						/>
+					)}
+					{displayedInstitutions.filter((i)=>(displayedInstitutionsContainsClosest && closestInstitution) ? i.id !== closestInstitution.id : true).map((institution, i) => (
 						<InstitutionCard
 							key={institution.id}
 							{...institution}

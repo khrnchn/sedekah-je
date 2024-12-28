@@ -18,7 +18,7 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useOutsideClick } from "@/hooks/use-outside-click";
-import { slugify } from "@/lib/utils";
+import { cn, slugify } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import html2canvas from "html2canvas";
 import { DownloadIcon, Eye, Share2 } from "lucide-react";
@@ -51,7 +51,7 @@ const capitalizeWords = (str: string): string => {
 	});
 };
 
-const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
+const InstitutionCard = forwardRef<HTMLDivElement, Institution & {isClosest?: boolean; distanceToCurrentUserInKM?: number}>(
 	(
 		{
 			id,
@@ -64,6 +64,8 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
 			supportedPayment,
 			category,
 			coords,
+      isClosest,
+      distanceToCurrentUserInKM,
 		},
 		ref,
 	) => {
@@ -271,10 +273,15 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution>(
 				<TooltipProvider>
 					<motion.div ref={ref} layoutId={`card-${name}-${id}`}>
 						<Card
-							className="group border-0 shadow-lg dark:shadow-muted/50 cursor-pointer hover:shadow-xl transition-shadow duration-200 ease-in-out hover:bg-gray-100 dark:hover:bg-zinc-900"
+							className={cn("relative group border-4 border-transparent shadow-lg dark:shadow-muted/50 cursor-pointer hover:shadow-xl transition-shadow duration-200 ease-in-out hover:bg-gray-100 dark:hover:bg-zinc-900", isClosest && "border-yellow-500 dark:border-yellow-400")}
 							onClick={() => navigateToItem(category, slugify(name))}
 						>
 							<CardContent className="flex flex-col items-center gap-2 p-4 h-full">
+                {isClosest && (
+                  <div className="absolute top-2 left-2 bg-yellow-500 dark:bg-yellow-400 text-black p-1 px-2 rounded-full text-xs font-semibold">
+                    Closest to you{distanceToCurrentUserInKM && distanceToCurrentUserInKM > 1000 ? ` • ${(distanceToCurrentUserInKM / 1000).toFixed(2)} KM` : ` • ${distanceToCurrentUserInKM} M`}
+                  </div>
+                )}
 								<div className="flex flex-col items-center gap-1 mb-2 w-full">
 									<motion.div>
 										<Image
