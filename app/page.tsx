@@ -4,7 +4,7 @@ import { debounce } from "lodash-es";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { findNearest, getDistance } from "geolib";
-import { GeolibInputCoordinates } from "geolib/es/types";
+import type { GeolibInputCoordinates } from "geolib/es/types";
 
 import CollapsibleCustomMap from "@/components/custom-map";
 import RawakFooter from "@/components/rawak-footer";
