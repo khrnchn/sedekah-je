@@ -36,7 +36,7 @@ const Home = () => {
 	const [currentUserCoordinate, setCurrentUserCoordinate] =
 		useState<GeolibInputCoordinates | null>(null);
 	const [closestInstitution, setClosestInstitution] = useState<
-		(Institution & { distanceToCurrentUserInKM: number }) | null
+		(Institution & { distanceToCurrentUserInMeter: number }) | null
 	>(null);
 
 	// Map
@@ -135,14 +135,12 @@ const Home = () => {
 	}, []);
 
 	async function getLocation() {
-		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition((p) => {
 				setCurrentUserCoordinate({
 					latitude: p.coords.latitude,
 					longitude: p.coords.longitude,
 				});
 			});
-		}
 	}
 
 	useEffect(() => {
@@ -164,12 +162,12 @@ const Home = () => {
       currentUserCoordinate,
       listOfCoords,
     );
-    const distanceToCurrentUserInKM = getDistance(
+    const distanceToCurrentUserInMeter = getDistance(
       currentUserCoordinate,
       closestCoordinate,
     );
 
-    const c = {...closestCoordinate, distanceToCurrentUserInKM} as unknown as Institution & { distanceToCurrentUserInKM: number }
+    const c = {...closestCoordinate, distanceToCurrentUserInMeter} as unknown as Institution & { distanceToCurrentUserInMeter: number }
 
     setClosestInstitution(c);
 	}, [currentUserCoordinate, filteredInstitutions]);
