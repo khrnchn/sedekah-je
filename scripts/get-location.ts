@@ -8,13 +8,12 @@ const apiKey = ""
 
 // Function to get coordinates from OpenStreetMap
 async function getCoordinates(name: string, city: string, state: string) {
-  const query = `${name}, ${city}, ${state}, Malaysia`;
+  const query = `${name}, ${city}, ${state}`;
   const url = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${encodeURIComponent(query)}&inputtype=textquery&fields=geometry&key=${apiKey}`;
 
   try {
     const response = await fetch(url);
     const data = await response.json();
-    console.log({ data })
     if (data.candidates && data.candidates.length > 0) {
       const { lat, lng } = data.candidates[0].geometry.location;
       return [Number.parseFloat(lat), Number.parseFloat(lng)];
@@ -53,9 +52,10 @@ async function updateInstitutions() {
         const state = stateMatch[1];
 
         const coords = await getCoordinates(name, city, state);
+        console.log({ name, coords })
         if (coords) {
           const coordsString = `coords: [${coords[0]}, ${coords[1]}],`;
-          const updatedInstitution = institution.replace(/(supportedPayment: \[[^\]]*\],)/, `$1\n    ${coordsString}`);
+          const updatedInstitution = institution.replace(/(supportedPayment: \[[^\]]*\])(,?)/, `$1,\n    ${coordsString}`);
           institutions[index] = updatedInstitution;
         }
       }
