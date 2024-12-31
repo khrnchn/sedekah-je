@@ -5,6 +5,7 @@ import {
   AudioWaveform,
   BookOpen,
   Bot,
+  Building2,
   Command,
   Frame,
   GalleryVerticalEnd,
@@ -12,6 +13,7 @@ import {
   PieChart,
   Settings2,
   SquareTerminal,
+  UserCog,
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
@@ -34,16 +36,16 @@ const data = {
   },
   teams: [
     {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
+      name: "SedekahJe",
+      logo: UserCog,
+      plan: "Admin",
     },
   ],
   navMain: [
     {
       title: "Institutions",
       url: "#",
-      icon: SquareTerminal,
+      icon: Building2,
       isActive: true,
       items: [
         {
