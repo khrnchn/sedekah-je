@@ -139,8 +139,6 @@ export default function RootLayout({
 			>
 				<QueryProvider>
 					<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-						<Header />
-						<div className="h-24 w-full absolute top-0 left-0 bg-gradient-to-b from-orange-300 to-background -z-10 opacity-20 dark:opacity-5" />
 						{children}
 						<Analytics />
 						<Toaster richColors />
