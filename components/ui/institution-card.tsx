@@ -273,31 +273,13 @@ const InstitutionCard = forwardRef<HTMLDivElement, Institution & {isClosest?: bo
 				<TooltipProvider>
 					<motion.div ref={ref} layoutId={`card-${name}-${id}`}>
 						<Card
-							className={cn(
-								"relative group border-4 border-transparent shadow-lg dark:shadow-muted/50 cursor-pointer hover:shadow-xl transition-all duration-200 ease-in-out hover:bg-gray-100 dark:hover:bg-zinc-900",
-								isClosest && "border-[hsl(var(--primary))] animate-pulse-subtle"
-							)}
+							className={cn("relative group border-4 border-transparent shadow-lg dark:shadow-muted/50 cursor-pointer hover:shadow-xl transition-shadow duration-200 ease-in-out hover:bg-gray-100 dark:hover:bg-zinc-900", isClosest && "border-yellow-500 dark:border-yellow-400")}
 							onClick={() => navigateToItem(category, slugify(name))}
 						>
 							<CardContent className="flex flex-col items-center gap-2 p-4 h-full">
 								{isClosest && (
-									<div className="absolute -top-3 left-4 shadow-lg">
-										<div className="relative">
-											<div className="absolute inset-0 blur-sm bg-[hsl(var(--primary)/0.9)] rounded-full" />
-											<div className="relative bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] py-1 px-3 rounded-full text-xs font-semibold flex items-center gap-1.5 text-white">
-												<span className="animate-ping absolute h-2 w-2 rounded-full bg-[hsl(var(--primary)/0.7)] opacity-75" />
-												<span className="relative h-2 w-2 rounded-full bg-[hsl(var(--primary)/0.9)]" />
-												Yang terdekat
-												{distanceToCurrentUserInMeter && (
-													<span className="font-medium">
-														•{" "}
-														{distanceToCurrentUserInMeter > 1000
-															? `${(distanceToCurrentUserInMeter / 1000).toFixed(1)}km`
-															: `${Math.round(distanceToCurrentUserInMeter)}m`}
-													</span>
-												)}
-											</div>
-										</div>
+									<div className="absolute top-2 left-2 bg-yellow-500 dark:bg-yellow-400 text-black p-1 px-2 rounded-full text-xs font-semibold">
+										Closest to you{distanceToCurrentUserInMeter && distanceToCurrentUserInMeter > 1000 ? ` • ${(distanceToCurrentUserInMeter / 1000).toFixed(2)} KM` : ` • ${distanceToCurrentUserInMeter} M`}
 									</div>
 								)}
 								<div className="flex flex-col items-center gap-1 mb-2 w-full">
