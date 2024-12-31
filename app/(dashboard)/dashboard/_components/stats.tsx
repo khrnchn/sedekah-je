@@ -1,5 +1,6 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { institutions } from "@/app/data/institutions";
 
 const Stats = () => {
   return (
@@ -10,7 +11,9 @@ const Stats = () => {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-2">
-            <p className="text-4xl font-semibold">0</p>
+            <p className="text-4xl font-semibold">
+              {institutions.filter((i) => i.category === "mosque").length}
+            </p>
             <p className="text-sm text-muted-foreground">
               Places of worship registered as mosques
             </p>
@@ -23,7 +26,10 @@ const Stats = () => {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-2">
-            <p className="text-4xl font-semibold">0</p>
+            <p className="text-4xl font-semibold">
+              {" "}
+              {institutions.filter((i) => i.category === "surau").length}
+            </p>
             <p className="text-sm text-muted-foreground">
               Places of worship registered as surau
             </p>
@@ -36,7 +42,10 @@ const Stats = () => {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-2">
-            <p className="text-4xl font-semibold">0</p>
+            <p className="text-4xl font-semibold">
+              {" "}
+              {institutions.filter((i) => i.category === "others").length}
+            </p>
             <p className="text-sm text-muted-foreground">
               Places of worship registered as others
             </p>
