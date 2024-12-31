@@ -5,19 +5,18 @@ import { headers } from "next/headers";
 import Script from "next/script";
 
 import { ThemeProvider } from "@/components/theme-provider";
-import { Header } from "@/components/ui/header";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 
-import "./globals.css";
 import { DisclaimerModal } from "@/components/disclaimer";
 import { QueryProvider } from "@/components/providers/query-provider";
+import "./globals.css";
 
 const poppins = Poppins({ weight: ["400", "700", "900"], subsets: ["latin"] });
 
 export const metadata: Metadata = {
     title: {
-        default: "Sedekah Je - Platform Sedekah Digital Malaysia",
+        default: "Sedekah Je - Platform Sedekah QR Malaysia",
         template: "%s | Sedekah Je"
     },
     description: "Platform digital untuk memudahkan sedekah ke masjid, surau dan institusi di Malaysia, dengan hanya satu imbasan QR.",
