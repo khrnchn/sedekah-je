@@ -26,11 +26,10 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 
-// This is sample data.
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
+    name: "khairin",
+    email: "khairin@sedekahje.com",
     avatar: "/avatars/shadcn.jpg",
   },
   teams: [
@@ -38,16 +37,6 @@ const data = {
       name: "Acme Inc",
       logo: GalleryVerticalEnd,
       plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
     },
   ],
   navMain: [
@@ -62,53 +51,18 @@ const data = {
           url: "#",
         },
         {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
+          title: "Create Institution",
           url: "#",
         },
       ],
     },
     {
-      title: "Models",
+      title: "Contributors",
       url: "#",
       icon: Bot,
       items: [
         {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
+          title: "Leaderboard",
           url: "#",
         },
       ],
@@ -119,19 +73,7 @@ const data = {
       icon: Settings2,
       items: [
         {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
+          title: "Categories",
           url: "#",
         },
       ],
