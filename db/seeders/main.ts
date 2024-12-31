@@ -1,4 +1,6 @@
 import { seedCategories } from "./categories";
+import { seedStates } from "./states";
+import { seedCities } from "./cities";
 
 async function main() {
   try {
@@ -6,6 +8,8 @@ async function main() {
     
     // Run seeders in order of dependencies
     await seedCategories();
+    await seedStates();
+    await seedCities();
     
     console.log("✅ Database seeding completed successfully");
     process.exit(0);
