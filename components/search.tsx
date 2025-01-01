@@ -16,7 +16,7 @@ const Search = ({ onSearchChange, className }: SearchProps) => {
 	};
 
 	const inputRef = useRef<HTMLInputElement>(null);
-	
+
 	useHotkeys(["ctrl+k", "cmd+k"], (e) => {
 		e.preventDefault();
 		inputRef.current?.focus();

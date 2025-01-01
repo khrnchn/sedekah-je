@@ -15,72 +15,73 @@ import "./globals.css";
 const poppins = Poppins({ weight: ["400", "700", "900"], subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: {
-        default: "Sedekah Je - Platform Sedekah QR Malaysia",
-        template: "%s | Sedekah Je"
-    },
-    description: "Platform digital untuk memudahkan sedekah ke masjid, surau dan institusi di Malaysia, dengan hanya satu imbasan QR.",
-    keywords: [
-        "sedekah",
-        "sedekah qr",
-        "sedekah jumaat",
-        "sedekah malaysia",
-        "sedekahje",
-        "sedekah je",
-        "sedekah qr",
-        "sedekah je qr",
-        "opensource sedekah qr",
-        "sedekah malaysia",
-        "sedekah malaysia qr",
-        "sedekah malaysia qr codes",
-        "senarai qr sedekah malaysia",
-        "qr sedekah malaysia",
-        "qr code sedekah malaysia",
-        "derma digital",
-        "pembayaran digital masjid",
-        "sumbangan digital"
-    ],
-    metadataBase: new URL("https://sedekah.je"),
-    alternates: {
-        canonical: "https://sedekah.je"
-    },
-    robots: {
-        index: true,
-        follow: true,
-        googleBot: {
-            index: true,
-            follow: true,
-            'max-video-preview': -1,
-            'max-image-preview': 'large',
-            'max-snippet': -1,
-        },
-    },
-    openGraph: {
-        type: "website",
-        url: "https://sedekah.je",
-        title: "Sedekah Je",
-        description:
-            "Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
-        siteName: "Sedekah Je",
-        images: [
-            {
-                url: "https://sedekah.je/sedekahje-og-compressed.png",
-                width: 1200,
-                height: 630,
-            },
-        ],
-        locale: 'ms_MY',
-        countryName: 'Malaysia',
-    },
-    twitter: {
-        card: "summary_large_image",
-        site: "@asdfghjkhairin",
-        creator: "@asdfghjkhairin",
-        title: "Sedekah Je",
-        description:
-            "Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
-        images: "https://sedekah.je/sedekahje-twitter.png",
-    },
+	title: {
+		default: "Sedekah Je - Platform Sedekah QR Malaysia",
+		template: "%s | Sedekah Je",
+	},
+	description:
+		"Platform digital untuk memudahkan sedekah ke masjid, surau dan institusi di Malaysia, dengan hanya satu imbasan QR.",
+	keywords: [
+		"sedekah",
+		"sedekah qr",
+		"sedekah jumaat",
+		"sedekah malaysia",
+		"sedekahje",
+		"sedekah je",
+		"sedekah qr",
+		"sedekah je qr",
+		"opensource sedekah qr",
+		"sedekah malaysia",
+		"sedekah malaysia qr",
+		"sedekah malaysia qr codes",
+		"senarai qr sedekah malaysia",
+		"qr sedekah malaysia",
+		"qr code sedekah malaysia",
+		"derma digital",
+		"pembayaran digital masjid",
+		"sumbangan digital",
+	],
+	metadataBase: new URL("https://sedekah.je"),
+	alternates: {
+		canonical: "https://sedekah.je",
+	},
+	robots: {
+		index: true,
+		follow: true,
+		googleBot: {
+			index: true,
+			follow: true,
+			"max-video-preview": -1,
+			"max-image-preview": "large",
+			"max-snippet": -1,
+		},
+	},
+	openGraph: {
+		type: "website",
+		url: "https://sedekah.je",
+		title: "Sedekah Je",
+		description:
+			"Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
+		siteName: "Sedekah Je",
+		images: [
+			{
+				url: "https://sedekah.je/sedekahje-og-compressed.png",
+				width: 1200,
+				height: 630,
+			},
+		],
+		locale: "ms_MY",
+		countryName: "Malaysia",
+	},
+	twitter: {
+		card: "summary_large_image",
+		site: "@asdfghjkhairin",
+		creator: "@asdfghjkhairin",
+		title: "Sedekah Je",
+		description:
+			"Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
+		images: "https://sedekah.je/sedekahje-twitter.png",
+	},
 };
 
 export const viewport: Viewport = {
@@ -119,14 +120,15 @@ export default function RootLayout({
 							"@context": "https://schema.org",
 							"@type": "WebSite",
 							name: "Sedekah Je",
-							description: "Platform digital untuk memudahkan sedekah ke masjid, surau dan institusi di Malaysia",
+							description:
+								"Platform digital untuk memudahkan sedekah ke masjid, surau dan institusi di Malaysia",
 							url: "https://sedekah.je",
 							potentialAction: {
 								"@type": "SearchAction",
 								target: "https://sedekah.je/search?q={search_term_string}",
-								"query-input": "required name=search_term_string"
-							}
-						})
+								"query-input": "required name=search_term_string",
+							},
+						}),
 					}}
 				/>
 			</head>

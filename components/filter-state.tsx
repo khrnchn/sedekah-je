@@ -1,6 +1,3 @@
-import type React from "react";
-import { useState } from "react";
-import Image from "next/image";
 import {
 	Select,
 	SelectContent,
@@ -10,6 +7,9 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
+import type React from "react";
+import { useState } from "react";
 
 const ALL_STATES = "all_states";
 

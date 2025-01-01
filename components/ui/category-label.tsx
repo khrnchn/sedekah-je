@@ -1,7 +1,7 @@
-import React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
-import { categories, type Category } from "@/app/types/institutions";
+import { type Category, categories } from "@/app/types/institutions";
 import { cn } from "@/lib/utils";
+import { type VariantProps, cva } from "class-variance-authority";
+import React from "react";
 
 const labelVariants = cva("px-2 py-1 rounded text-sm font-bold", {
 	variants: {
