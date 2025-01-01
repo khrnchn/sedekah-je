@@ -1,12 +1,12 @@
 "use client"
 
 import { institutions, type Institution } from "@/db/schema"
-import { type DataTableRowAction } from "@/types"
+import { type DataTableRowAction } from "@/app/types"
 import { type ColumnDef } from "@tanstack/react-table"
 import { Ellipsis } from "lucide-react"
 import * as React from "react"
 
-import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
+import { DataTableColumnHeader } from "@/components/datatable/data-table-column-header"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
