@@ -1,7 +1,8 @@
+import { PoolClient } from "pg";
 import { db } from "..";
 import { socialPlatforms } from "../schema";
 
-export async function seedSocials() {
+export async function seedSocials(client: PoolClient) {
   const socialData = [
     { name: 'Facebook', url: 'https://www.facebook.com' },
     { name: 'Twitter', url: 'https://www.twitter.com' },

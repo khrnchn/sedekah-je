@@ -38,7 +38,7 @@ export const institutions = t.pgTable("institutions", {
     .references(() => malaysianCities.id)
     .notNull(),
 
-  qrImagePath: t.varchar("qr_image_path", { length: 255 }),
+  qrImagePath: t.text("qr_image_path"),
   qrContent: t.text("qr_content"),
 
   latitude: t.decimal("latitude", { precision: 10, scale: 8 }).notNull(),

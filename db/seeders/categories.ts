@@ -1,7 +1,8 @@
 import { categories } from "@/db/schema";
 import { db } from "..";
+import { PoolClient } from "pg";
 
-export async function seedCategories() {
+export async function seedCategories(client: PoolClient) {
   const categoryData = [
     {
       name: "mosque",
@@ -17,10 +18,19 @@ export async function seedCategories() {
         "Badan kebajikan - Welfare organizations and charitable bodies",
     },
     {
+      name: "maahad",
+      description:
+        "Maahad tahfiz - Islamic boarding schools or tahfiz centers",
+    },
+    {
       name: "others",
       description:
         "Other Islamic institutions like madrasah, tahfiz centers, or charitable organizations",
     },
+    {
+      name: 'placeholder',
+      description: 'Placeholder category for institutions without a category'
+    }
   ];
 
   console.log("🌱 Seeding categories...");

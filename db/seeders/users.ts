@@ -1,7 +1,8 @@
 import { users } from "@/db/schema";
 import { db } from "..";
+import { PoolClient } from "pg";
 
-export async function seedUsers() {
+export async function seedUsers(client: PoolClient) {
 const data = [
     {
         clerkId: "test",

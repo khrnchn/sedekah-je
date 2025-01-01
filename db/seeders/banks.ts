@@ -1,7 +1,8 @@
 import { banks } from "../schema";
 import { db } from "..";
+import { PoolClient } from "pg";
 
-export async function seedBanks() {
+export async function seedBanks(client: PoolClient) {
   const bankData = [
     { code: "ABB0232", name: "Affin Bank Berhad" },
     { code: "ABB0233", name: "Affin Bank Berhad B2C" },

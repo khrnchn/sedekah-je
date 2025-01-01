@@ -1179,6 +1179,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
     coords: [6.0306565, 102.2403461],
   },
+  // TODO: find coords
   {
     id: 97,
     name: "Khairat Kematian Islam",
@@ -1189,6 +1190,7 @@ export const institutions: Institution[] = [
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000660031001797108895204533153034585802MY5922KHAIRAT KEMATIAN ISLAM6010KOTA BHARU61051510063041334",
     supportedPayment: ["duitnow", "tng"],
+    coords: [0, 0],
   },
   {
     // https://www.facebook.com/p/Masjid-Mukim-Pangkal-Meleret-100064302567170/
@@ -2047,7 +2049,7 @@ export const institutions: Institution[] = [
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000001444031001945703555204866153034585802MY5922TABUNG MJD BAYAN LEPAS6011BAYAN LEPAS610511900630406F2",
     supportedPayment: ["duitnow", "tng"],
-    // coords: [5.296114513937864, 100.25942012815462], // Might be wrong, mosque name too vague, need to check
+    coords: [5.296114513937864, 100.25942012815462], // Might be wrong, mosque name too vague, need to check
   },
   {
     id: 168,
@@ -6966,6 +6968,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
     coords: [2.0387216, 103.3280851],
   },
+  // TODO: find coords
   {
     id: 574,
     name: "Masjid Al Muhajirin Felda Selancar 2",
@@ -6976,6 +6979,7 @@ export const institutions: Institution[] = [
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000279031001370401975204866153034585802MY5925MJD AL-MUHAJIRIN F.SLCR 26012MUADZAM SHAH61052670063049B8B",
     supportedPayment: ["duitnow", "tng"],
+    coords: [0, 0]
   },
   {
     id: 575,
@@ -7133,6 +7137,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
     coords: [2.0663562, 102.5812014],
   },
+  // TODO: find coords
   {
     id: 588,
     name: "Surau Al Barakah Bakri B2",
@@ -7143,6 +7148,7 @@ export const institutions: Institution[] = [
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000665031001975056005204866153034585802MY5925SURAU AL BARAKAH BAKRI B26004MUAR6105840006304F5A4",
     supportedPayment: ["duitnow", "tng"],
+    coords: [0, 0],
   },
   {
     id: 589,
@@ -7601,6 +7607,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
     coords: [2.1791205, 102.2737763],
   },
+  // TODO: find coords
   {
     id: 628,
     name: "Pembangunan Surau Taman Bukit Cheng 2",
@@ -7611,6 +7618,7 @@ export const institutions: Institution[] = [
     qrContent:
       "00020201021126610014A000000615000101065641670215QRMID0000000321031001762459575204866153034585802MY5925PBN SURAU TMN BKT CHENG 26015TAMAN BUKIT CHE6105752506304C22D",
     supportedPayment: ["duitnow", "tng"],
+    coords: [0, 0],
   },
   {
     // https://www.facebook.com/MasjidAlAbrarSemabok/
@@ -9534,6 +9542,7 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
     coords: [3.3894139, 102.4349279],
   },
+  // TODO: add coords
   // khairin, facebook - https://www.facebook.com/photo.php?fbid=10228973039684008&set=p.10228973039684008&type=3
   {
     id: 782,

@@ -1,13 +1,29 @@
+import { PoolClient } from "pg";
 import { db } from "..";
 import { malaysianCities, malaysianStates } from "../schema";
+import { eq } from "drizzle-orm";
 
-export async function seedCities() {
+export async function seedCities(client: PoolClient) {
   console.log("🌱 Seeding Malaysian cities...");
 
   try {
+    const placeholderState = await db.query.malaysianStates.findFirst({
+      where: eq(malaysianStates.name, "placeholder"),
+    });
+
+    if (placeholderState) {
+      await db.insert(malaysianCities).values({
+        name: "placeholder",
+        stateId: placeholderState.id
+      });
+      console.log("✅ Placeholder city seeded");
+    }
+
     const states = await db.select().from(malaysianStates);
     
     for (const state of states) {
+      if (state.name === 'placeholder') continue;
+
       // special handling for Labuan and Putrajaya
       if (state.name === 'Labuan') {
         await db.insert(malaysianCities).values({
