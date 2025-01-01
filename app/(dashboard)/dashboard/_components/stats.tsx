@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getMosquesCount, getOthersCount, getSurauCount } from "../_lib/actions";
+import { getMosqueCount, getOthersCount, getSurauCount } from "../_lib/actions";
 
 const Stats = () => {
   return (
@@ -11,7 +11,7 @@ const Stats = () => {
         <CardContent>
           <div className="flex flex-col gap-2">
             <p className="text-4xl font-semibold">
-              {getMosquesCount()}
+              {getMosqueCount()}
             </p>
             <p className="text-sm text-muted-foreground">
               Places of worship registered as mosques

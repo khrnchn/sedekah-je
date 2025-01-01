@@ -9,10 +9,12 @@ export async function getInstitutionsCount(): Promise<number> {
   return Number(result[0].count);
 }
 
-export async function getMosquesCount(): Promise<number> {
+export async function getMosqueCount(): Promise<number> {
   const category = await db.query.categories.findFirst({
     where: eq(categories.name, "mosque"),
   });
+
+  if (!category) return 0;
 
   const result = await db
     .select({ count: sql`count(*)` })
@@ -27,6 +29,8 @@ export async function getSurauCount(): Promise<number> {
     where: eq(categories.name, "surau"),
   });
 
+  if (!category) return 0;
+
   const result = await db
     .select({ count: sql`count(*)` })
     .from(institutions)
@@ -39,6 +43,8 @@ export async function getOthersCount(): Promise<number> {
   const category = await db.query.categories.findFirst({
     where: or(eq(categories.name, "others"), eq(categories.name, "welfare")),
   });
+
+  if (!category) return 0;
 
   const result = await db
     .select({ count: sql`count(*)` })
