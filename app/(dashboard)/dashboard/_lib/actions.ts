@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { categories, institutions } from "@/db/schema";
-import { and, eq, or, sql } from "drizzle-orm";
+import { and, eq, inArray, or, sql } from "drizzle-orm";
 
 export async function getInstitutionsCount(): Promise<number> {
   const result = await db.select({ count: sql`count(*)` }).from(institutions);
@@ -16,12 +16,10 @@ export async function getMosqueCount(): Promise<number> {
 
   if (!category) return 0;
 
-  const result = await db
-    .select({ count: sql`count(*)` })
-    .from(institutions)
-    .where(eq(institutions.categoryId, category!.id));
+  const count = await db
+    .$count(institutions, eq(institutions.categoryId, category!.id))
 
-  return Number(result[0].count);
+  return count;
 }
 
 export async function getSurauCount(): Promise<number> {
@@ -31,25 +29,27 @@ export async function getSurauCount(): Promise<number> {
 
   if (!category) return 0;
 
-  const result = await db
-    .select({ count: sql`count(*)` })
-    .from(institutions)
-    .where(eq(institutions.categoryId, category!.id));
+  const count = await db
+  .$count(institutions, eq(institutions.categoryId, category!.id))
 
-  return Number(result[0].count);
+  return count;
 }
 
 export async function getOthersCount(): Promise<number> {
-  const category = await db.query.categories.findFirst({
-    where: or(eq(categories.name, "others"), eq(categories.name, "welfare")),
-  });
+  const categoryIds = await db.select({
+    id: categories.id,
+  }).from(categories).where(
+    or(
+      eq(categories.name, "others"),
+      eq(categories.name, "welfare"),
+      eq(categories.name, "maahad"),
+    )
+  );
 
-  if (!category) return 0;
+  if (categoryIds.length === 0) return 0;
 
-  const result = await db
-    .select({ count: sql`count(*)` })
-    .from(institutions)
-    .where(eq(institutions.categoryId, category!.id));
+  const count = await db
+    .$count(institutions, inArray(institutions.categoryId, categoryIds.map((c) => c.id)));
 
-  return Number(result[0].count);
+  return count;
 }

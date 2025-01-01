@@ -46,7 +46,7 @@ const Stats = () => {
               {getOthersCount()}
             </p>
             <p className="text-sm text-muted-foreground">
-              Places of worship registered as others
+                Badan kebajikan, maahad, and others.
             </p>
           </div>
         </CardContent>
