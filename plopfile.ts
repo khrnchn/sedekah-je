@@ -1,3 +1,5 @@
+// this plopfile is copied over from other project, there may be some unnecessary questions
+
 import type { NodePlopAPI } from "plop";
 
 /**
@@ -110,20 +112,20 @@ export default function (plop: NodePlopAPI) {
 			{
 				type: "addMany",
 				destination:
-					"app/(dashboard)/dashboard/{{department}}/{{toKebabCase module}}s/_components",
+					"app/(dashboard)/dashboard/{{toKebabCase module}}s/_components",
 				templateFiles: "utils/datatable/templates/components/*.hbs",
 				base: "utils/datatable/templates/components",
 			},
 			{
 				type: "addMany",
 				destination:
-					"app/(dashboard)/dashboard/{{department}}/{{toKebabCase module}}s/_lib",
+					"app/(dashboard)/dashboard/{{toKebabCase module}}s/_lib",
 				templateFiles: "utils/datatable/templates/lib/*.hbs",
 				base: "utils/datatable/templates/lib",
 			},
 			{
 				type: "addMany",
-				destination: "app/(dashboard)/dashboard/{{department}}/{{toKebabCase module}}s",
+				destination: "app/(dashboard)/dashboard/{{toKebabCase module}}s",
 				templateFiles: "utils/datatable/templates/pages/*.hbs",
 				base: "utils/datatable/templates/pages",
 			},
