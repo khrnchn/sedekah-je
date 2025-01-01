@@ -1,6 +1,5 @@
-import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { institutions } from "@/app/data/institutions";
+import { getMosquesCount, getOthersCount, getSurauCount } from "../_lib/actions";
 
 const Stats = () => {
   return (
@@ -12,7 +11,7 @@ const Stats = () => {
         <CardContent>
           <div className="flex flex-col gap-2">
             <p className="text-4xl font-semibold">
-              {institutions.filter((i) => i.category === "mosque").length}
+              {getMosquesCount()}
             </p>
             <p className="text-sm text-muted-foreground">
               Places of worship registered as mosques
@@ -28,7 +27,7 @@ const Stats = () => {
           <div className="flex flex-col gap-2">
             <p className="text-4xl font-semibold">
               {" "}
-              {institutions.filter((i) => i.category === "surau").length}
+              {getSurauCount()}
             </p>
             <p className="text-sm text-muted-foreground">
               Places of worship registered as surau
@@ -44,7 +43,7 @@ const Stats = () => {
           <div className="flex flex-col gap-2">
             <p className="text-4xl font-semibold">
               {" "}
-              {institutions.filter((i) => i.category === "others").length}
+              {getOthersCount()}
             </p>
             <p className="text-sm text-muted-foreground">
               Places of worship registered as others

@@ -1,23 +1,18 @@
 "use client"
 
-import * as React from "react"
 import {
-  AudioWaveform,
-  BookOpen,
   Bot,
   Building2,
-  Command,
   Frame,
-  GalleryVerticalEnd,
   Map,
   PieChart,
   Settings2,
-  SquareTerminal,
-  UserCog,
+  UserCog
 } from "lucide-react"
+import * as React from "react"
 
+import { getInstitutionsCount } from "@/app/(dashboard)/dashboard/_lib/actions"
 import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
 import { NavUser } from "@/components/nav-user"
 import { TeamSwitcher } from "@/components/team-switcher"
 import {
@@ -51,6 +46,7 @@ const data = {
         {
           title: "List of Institutions",
           url: "#",
+          badge: async () => await getInstitutionsCount()
         },
         {
           title: "Create Institution",
