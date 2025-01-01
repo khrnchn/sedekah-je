@@ -1,6 +1,7 @@
 "use client"
 
 import { ChevronRight, type LucideIcon } from "lucide-react"
+import { useEffect, useState } from "react"
 
 import {
   Collapsible,
@@ -29,9 +30,27 @@ export function NavMain({
     items?: {
       title: string
       url: string
+      badge?: () => Promise<number>
     }[]
   }[]
 }) {
+  const [badges, setBadges] = useState<Record<string, number>>({})
+
+  useEffect(() => {
+    const loadBadges = async () => {
+      const newBadges: Record<string, number> = {}
+      for (const item of items) {
+        for (const subItem of item.items || []) {
+          if (subItem.badge) {
+            newBadges[`${item.title}-${subItem.title}`] = await subItem.badge()
+          }
+        }
+      }
+      setBadges(newBadges)
+    }
+    loadBadges()
+  }, [items])
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Manage</SidebarGroupLabel>
@@ -58,6 +77,11 @@ export function NavMain({
                       <SidebarMenuSubButton asChild>
                         <a href={subItem.url}>
                           <span>{subItem.title}</span>
+                          {badges[`${item.title}-${subItem.title}`] !== undefined && (
+                            <span className="ml-auto rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">
+                              {badges[`${item.title}-${subItem.title}`]}
+                            </span>
+                          )}
                         </a>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
