@@ -1,0 +1,159 @@
+"use server"
+
+import { db } from "@/db/index"
+import { {{toPascalCase module}}, {{module}}s } from "@/db/schema"
+import { eq, inArray } from "drizzle-orm"
+import { revalidateTag, unstable_noStore } from "next/cache"
+
+import { getErrorMessage } from "@/lib/handle-error"
+import { Update{{toPascalCase module}}Schema } from "./validations"
+import { takeFirstOrThrow } from "@/db/utils"
+
+// export async function create{{toPascalCase module}}(input: Create{{toPascalCase module}}Schema) {
+//   unstable_noStore()
+
+//   try {
+//     await db.transaction(async (tx) => {
+//       const new{{toPascalCase module}} = await tx
+//         .insert({{module}}s)
+//         .values({
+//           orderNumber: input.orderNumber,
+//           customerId: input.customerId,
+//           orderStatus: input.orderStatus ?? "pending",
+//           other fields here...
+//         })
+//         .returning({
+//           id: {{module}}s.id,
+//         })
+//         .then(takeFirstOrThrow)
+//     })
+
+//     revalidateTag("{{module}}s")
+//     // revalidateTag("order-status-counts")
+
+//     return {
+//       data: null,
+//       error: null,
+//     }
+//   } catch (err) {
+//     return {
+//       data: null,
+//       error: getErrorMessage(err),
+//     }
+//   }
+// }
+
+export async function update{{toPascalCase module}}(input: Update{{toPascalCase module}}Schema & { id: number }) {
+  unstable_noStore()
+
+  try {
+    const data = await db
+      .update({{module}}s)
+      .set({
+        // eg: note: input.note,
+        // eg: deliveryStatus: input.deliveryStatus,
+      })
+      .where(eq({{module}}s.id, input.id))
+      .returning({
+        // eg: deliveryStatus: {{module}}s.deliveryStatus,
+      })
+      .then(takeFirstOrThrow)
+
+    revalidateTag("{{module}}s")
+
+    // if (data.deliveryStatus === input.deliveryStatus) {
+    //   revalidateTag("order-status-counts")
+    // }
+
+    return {
+      data: null,
+      error: null,
+    }
+  } catch (err) {
+    return {
+      data: null,
+      error: getErrorMessage(err),
+    }
+  }
+}
+
+export async function update{{toPascalCase module}}s(input: {
+  ids: number[]
+  // eg: note?: {{toPascalCase module}}["note"]
+  // eg: deliveryStatus?: {{toPascalCase module}}["deliveryStatus"]
+}) {
+  unstable_noStore()
+
+  try {
+    const data = await db
+      .update({{module}}s)
+      .set({
+        // eg: note: input.note,
+        // eg: deliveryStatus: input.deliveryStatus,
+      })
+      .where(inArray({{module}}s.id, input.ids))
+      .returning({
+        // eg: deliveryStatus: {{module}}s.deliveryStatus,
+      })
+      .then(takeFirstOrThrow)
+
+    revalidateTag("{{module}}s")
+    // if (data.deliveryStatus === input.deliveryStatus) {
+    //   revalidateTag("order-status-counts")
+    // }
+
+    return {
+      data: null,
+      error: null,
+    }
+  } catch (err) {
+    return {
+      data: null,
+      error: getErrorMessage(err),
+    }
+  }
+}
+
+export async function delete{{toPascalCase module}}(input: { id: number }) {
+  unstable_noStore()
+  try {
+    await db.transaction(async (tx) => {
+      await tx.delete({{module}}s).where(eq({{module}}s.id, input.id))
+    })
+
+    revalidateTag("{{module}}s")
+    // revalidateTag("order-status-counts")
+
+    return {
+      data: null,
+      error: null,
+    }
+  } catch (err) {
+    return {
+      data: null,
+      error: getErrorMessage(err),
+    }
+  }
+}
+
+export async function delete{{toPascalCase module}}s(input: { ids: number[] }) {
+  unstable_noStore()
+  try {
+    await db.transaction(async (tx) => {
+      await tx.delete({{module}}s).where(inArray({{module}}s.id, input.ids))
+    })
+
+    revalidateTag("{{module}}s")
+    // revalidateTag("order-status-counts")
+
+    return {
+      data: null,
+      error: null,
+    }
+  } catch (err) {
+    return {
+      data: null,
+      error: getErrorMessage(err),
+    }
+  }
+}

@@ -1,0 +1,47 @@
+import BloomCrumb from '@/components/custom/bloom-crumb'
+import { BloomHeader } from '@/components/custom/bloom-header'
+import { Layout, LayoutBody } from '@/components/ui/layout'
+import { getValidFilters } from '@/lib/data-table'
+import { SearchParams } from '@/types'
+import { {{toPascalCase module}}sTable } from './_components/{{toKebabCase module}}s-table'
+import { get{{toPascalCase module}}s, get{{toPascalCase module}}StatusCounts } from './_lib/queries'
+import { searchParamsCache } from './_lib/validations'
+
+interface IndexPageProps {
+    searchParams: Promise<SearchParams>
+}
+
+export default async function {{toPascalCase module}}sPage(props: IndexPageProps) {
+    const searchParams = await props.searchParams;
+    const search = searchParamsCache.parse(searchParams);
+
+    const validFilters = getValidFilters(search.filters);
+
+    const promises = Promise.all([
+        get{{toPascalCase module}}s({
+            ...search,
+            filters: validFilters,
+        }),
+        get{{toPascalCase module}}StatusCounts(),
+    ])
+
+    return (
+        <Layout>
+            <BloomCrumb
+                items={[
+                    { label: '{{toPascalCase department}}', href: '#' },
+                    { label: 'List of {{toPascalCase module}}s', href: '/dashboard/{{department}}/{{module}}s' },
+                ]}
+            />
+            <LayoutBody>
+                <div className="max-w-7xl mx-auto">
+                    <BloomHeader title='List of {{toPascalCase module}}s' description='Monitor {{module}}s here' />
+                    {/* uncomment the provider to use advanced filtering */}
+                    {/* <FeatureFlagsProvider> */}
+                    <{{toPascalCase module}}sTable promises={promises} />
+                    {/* </FeatureFlagsProvider > */}
+                </div>
+            </LayoutBody>
+        </Layout>
+    )
+}
