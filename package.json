@@ -77,7 +77,8 @@
   ],
   "config": {
     "commitizen": {
-      "path": "git cz"
+      "path": "node_modules/git-cz",
+      "useEmoji": true
     }
   }
 }
