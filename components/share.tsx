@@ -1,7 +1,7 @@
 import { slugify } from "@/lib/utils";
+import { useTheme } from "next-themes";
 import React from "react";
 import { WhatsAppIcon, XIcon } from "./ui/icons";
-import { useTheme } from "next-themes";
 
 const SHARE_PLATFORMS = {
 	X: "x",

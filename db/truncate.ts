@@ -1,18 +1,18 @@
 import { Pool } from "pg";
 
 async function truncateAll() {
-  const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-  });
+	const pool = new Pool({
+		connectionString: process.env.DATABASE_URL,
+	});
 
-  const client = await pool.connect();
+	const client = await pool.connect();
 
-  try {
-    await client.query('BEGIN');
-    console.log("🧹 Starting database cleanup...");
+	try {
+		await client.query("BEGIN");
+		console.log("🧹 Starting database cleanup...");
 
-    // Truncate all tables in reverse order of dependencies
-    await client.query(`
+		// Truncate all tables in reverse order of dependencies
+		await client.query(`
       TRUNCATE TABLE 
         institution_payment_methods,
         institution_bank_accounts,
@@ -29,20 +29,20 @@ async function truncateAll() {
       CASCADE;
     `);
 
-    await client.query('COMMIT');
-    console.log("✅ Database cleanup completed successfully");
-  } catch (error) {
-    await client.query('ROLLBACK');
-    console.error("❌ Database cleanup failed:", error);
-    throw error;
-  } finally {
-    client.release();
-    await pool.end();
-    process.exit(0);
-  }
+		await client.query("COMMIT");
+		console.log("✅ Database cleanup completed successfully");
+	} catch (error) {
+		await client.query("ROLLBACK");
+		console.error("❌ Database cleanup failed:", error);
+		throw error;
+	} finally {
+		client.release();
+		await pool.end();
+		process.exit(0);
+	}
 }
 
 truncateAll().catch((error) => {
-  console.error(error);
-  process.exit(1);
+	console.error(error);
+	process.exit(1);
 });

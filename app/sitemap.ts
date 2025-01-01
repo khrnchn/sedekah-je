@@ -1,6 +1,6 @@
-import type { MetadataRoute } from "next";
 import { institutions } from "@/app/data/institutions";
 import { slugify } from "@/lib/utils";
+import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
 	const institutionPages = institutions.map((institution) => {

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import React from "react";
-import { Button } from "./ui/button";
 import { toast } from "sonner";
+import { Button } from "./ui/button";
 
 const RawakFooter = () => {
 	return (
@@ -11,7 +11,9 @@ const RawakFooter = () => {
 					variant="outline"
 					className="bg-gradient-to-br from-orange-500 to-orange-300 border border-orange-400 rounded-full hover:from-orange-600 hover:to-orange-400 transition-colors"
 				>
-					<p className="text-black font-medium dark:text-white">Sedekah Rawak</p>
+					<p className="text-black font-medium dark:text-white">
+						Sedekah Rawak
+					</p>
 				</Button>
 			</Link>
 			{/* https://forms.gle/epGv61AnEWcjYe1C8 */}
@@ -20,15 +22,18 @@ const RawakFooter = () => {
 					variant="outline"
 					className="bg-gradient-to-br from-blue-500 to-blue-300 border border-blue-400 rounded-full hover:from-blue-700 hover:to-blue-500 transition-colors duration-300"
 					onClick={() => {
-						toast.message("Kami telah berhenti menerima QR daripada pengguna buat masa sekarang.")
+						toast.message(
+							"Kami telah berhenti menerima QR daripada pengguna buat masa sekarang.",
+						);
 					}}
 				>
-					<p className="text-black font-medium bold dark:text-white">Muatnaik QR</p>
+					<p className="text-black font-medium bold dark:text-white">
+						Muatnaik QR
+					</p>
 				</Button>
 			</a>
 		</footer>
 	);
 };
-
 
 export default RawakFooter;

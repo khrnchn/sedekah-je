@@ -1,25 +1,25 @@
 import { users } from "@/db/schema";
+import type { PoolClient } from "pg";
 import { db } from "..";
-import { PoolClient } from "pg";
 
 export async function seedUsers(client: PoolClient) {
-const data = [
-    {
-        clerkId: "test",
-        name: "SedekahJe Admin",
-        email: "admin@admin.com",
-        password: await Bun.password.hash("password"),
-        isAdmin: true,
-    },
-];
+	const data = [
+		{
+			clerkId: "test",
+			name: "SedekahJe Admin",
+			email: "admin@admin.com",
+			password: await Bun.password.hash("password"),
+			isAdmin: true,
+		},
+	];
 
-  console.log("🌱 Seeding users...");
+	console.log("🌱 Seeding users...");
 
-  try {
-    await db.insert(users).values(data);
-    console.log("✅ Users seeded successfully");
-  } catch (error) {
-    console.error("❌ Error seeding users:", error);
-    throw error;
-  }
+	try {
+		await db.insert(users).values(data);
+		console.log("✅ Users seeded successfully");
+	} catch (error) {
+		console.error("❌ Error seeding users:", error);
+		throw error;
+	}
 }
