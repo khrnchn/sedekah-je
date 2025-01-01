@@ -1,0 +1,35 @@
+import { type {{toPascalCase module}} } from "@/db/schema"
+import {
+  CheckCheck,
+  CheckCircle2,
+  Clock,
+  MapPin,
+  Package,
+  RefreshCw,
+  Repeat,
+  RotateCcw,
+  Truck,
+  XCircle
+} from "lucide-react"
+
+/**
+ * Returns the appropriate status icon based on the provided status.
+ * @param deliveryStatus - The delivery status of the {{module}}.
+ * @returns A React component representing the status icon.
+ */
+export function getDeliveryStatusIcon(deliveryStatus: {{toPascalCase module}}["deliveryStatus"]) {
+  const statusIcons = {
+    "PENDING": Clock,           // Clock icon suggests waiting/initial state
+    "PREPARING": Package,       // Package icon represents {{module}} being prepared
+    "PREPARED": CheckCircle2,   // Checkmark circle indicates ready state
+    "IN_TRANSIT": Truck,        // Truck icon for delivery in progress
+    "DELIVERED": MapPin,        // Map pin suggests successful delivery
+    "COMPLETED": CheckCheck,    // Double checkmark for final completion
+    "DELIVERY_FAILED": XCircle, // X circle for failed delivery
+    "RETURNING": Repeat,        // Repeat icon for return process
+    "RETURNED": RotateCcw,      // Rotate counter-clockwise for returned
+    "REDELIVERY": RefreshCw     // Refresh clockwise for redelivery attempt
+  }
+
+  return statusIcons[deliveryStatus] || Clock // Default to Clock if status not found
+} 
