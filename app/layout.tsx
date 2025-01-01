@@ -5,19 +5,18 @@ import { headers } from "next/headers";
 import Script from "next/script";
 
 import { ThemeProvider } from "@/components/theme-provider";
-import { Header } from "@/components/ui/header";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 
-import "./globals.css";
 import { DisclaimerModal } from "@/components/disclaimer";
 import { QueryProvider } from "@/components/providers/query-provider";
+import "./globals.css";
 
 const poppins = Poppins({ weight: ["400", "700", "900"], subsets: ["latin"] });
 
 export const metadata: Metadata = {
     title: {
-        default: "Sedekah Je - Platform Sedekah Digital Malaysia",
+        default: "Sedekah Je - Platform Sedekah QR Malaysia",
         template: "%s | Sedekah Je"
     },
     description: "Platform digital untuk memudahkan sedekah ke masjid, surau dan institusi di Malaysia, dengan hanya satu imbasan QR.",
@@ -139,8 +138,6 @@ export default function RootLayout({
 			>
 				<QueryProvider>
 					<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-						<Header />
-						<div className="h-24 w-full absolute top-0 left-0 bg-gradient-to-b from-orange-300 to-background -z-10 opacity-20 dark:opacity-5" />
 						{children}
 						<Analytics />
 						<Toaster richColors />
