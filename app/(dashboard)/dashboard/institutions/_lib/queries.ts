@@ -1,67 +1,76 @@
-import "server-only"
+import "server-only";
 
-import { db } from "@/db"
-import { categories, institutions, malaysianCities, malaysianStates, type Institution } from "@/db/schema"
+import { db } from "@/db";
 import {
-  and,
-  asc,
-  count,
-  desc,
-  eq,
-  gt,
-  gte,
-  ilike,
-  lte
-} from "drizzle-orm"
+  categories,
+  institutions,
+  InstitutionWithRelations,
+  malaysianCities,
+  malaysianStates,
+  type Institution,
+} from "@/db/schema";
+import { and, asc, count, desc, eq, gt, gte, ilike, lte } from "drizzle-orm";
 
-import { filterColumns } from "@/lib/filter-columns"
-import { unstable_cache } from "@/lib/unstable-cache"
+import { filterColumns } from "@/lib/filter-columns";
+import { unstable_cache } from "@/lib/unstable-cache";
 
-import { type GetInstitutionsSchema } from "./validations"
+import { type GetInstitutionsSchema } from "./validations";
 
 export async function getInstitutions(input: GetInstitutionsSchema) {
   return await unstable_cache(
     async () => {
       try {
-        const offset = (input.page - 1) * input.perPage
-        const fromDate = input.from ? new Date(input.from) : undefined
-        const toDate = input.to ? new Date(input.to) : undefined
-        const advancedTable = input.flags.includes("advancedTable")
+        const offset = (input.page - 1) * input.perPage;
+        const fromDate = input.from ? new Date(input.from) : undefined;
+        const toDate = input.to ? new Date(input.to) : undefined;
+        const advancedTable = input.flags.includes("advancedTable");
 
         const advancedWhere = filterColumns({
           table: institutions,
           filters: input.filters,
           joinOperator: input.joinOperator,
-        })
+        });
 
         const where = advancedTable
           ? advancedWhere
           : and(
-            input.name ? ilike(institutions.name, `%${input.name}%`) : undefined,
+              input.name
+                ? ilike(institutions.name, `%${input.name}%`)
+                : undefined,
 
-            input.categoryId ? eq(institutions.categoryId, input.categoryId) : undefined,
-            input.stateId ? eq(institutions.stateId, input.stateId) : undefined,
-            input.cityId ? eq(institutions.cityId, input.cityId) : undefined,
+              input.categoryId
+                ? eq(institutions.categoryId, input.categoryId)
+                : undefined,
+              input.stateId
+                ? eq(institutions.stateId, input.stateId)
+                : undefined,
+              input.cityId ? eq(institutions.cityId, input.cityId) : undefined,
 
-            fromDate ? gte(institutions.createdAt, fromDate) : undefined,
-            toDate ? lte(institutions.createdAt, toDate) : undefined
-          )
+              fromDate ? gte(institutions.createdAt, fromDate) : undefined,
+              toDate ? lte(institutions.createdAt, toDate) : undefined
+            );
 
         const orderBy =
           input.sort.length > 0
             ? input.sort.map((item) =>
-              item.desc ? desc(institutions[item.id]) : asc(institutions[item.id])
-            )
-            : [asc(institutions.createdAt)]
+                item.desc
+                  ? desc(institutions[item.id])
+                  : asc(institutions[item.id])
+              )
+            : [asc(institutions.createdAt)];
 
         const { data, total } = await db.transaction(async (tx) => {
-          const data = await tx
-            .select()
-            .from(institutions)
-            .limit(input.perPage)
-            .offset(offset)
-            .where(where)
-            .orderBy(...orderBy)
+          const data = await tx.query.institutions.findMany({
+            limit: input.perPage,
+            offset,
+            where,
+            orderBy,
+            with: {
+              category: true,
+              state: true,
+              city: true,
+            },
+          });
 
           const total = await tx
             .select({
@@ -70,18 +79,18 @@ export async function getInstitutions(input: GetInstitutionsSchema) {
             .from(institutions)
             .where(where)
             .execute()
-            .then((res) => res[0]?.count ?? 0)
+            .then((res) => res[0]?.count ?? 0);
 
           return {
             data,
             total,
-          }
-        })
+          };
+        });
 
-        const pageCount = Math.ceil(total / input.perPage)
-        return { data, pageCount }
+        const pageCount = Math.ceil(total / input.perPage);
+        return { data, pageCount };
       } catch (err) {
-        return { data: [], pageCount: 0 }
+        return { data: [], pageCount: 0 };
       }
     },
     [JSON.stringify(input)],
@@ -89,7 +98,7 @@ export async function getInstitutions(input: GetInstitutionsSchema) {
       revalidate: 3600,
       tags: ["institutions"],
     }
-  )()
+  )();
 }
 
 export async function getCategoryCounts() {
@@ -105,23 +114,20 @@ export async function getCategoryCounts() {
           .groupBy(institutions.categoryId)
           .having(gt(count(), 0))
           .then((res) =>
-            res.reduce(
-              (acc, { categoryId, count }) => {
-                acc[categoryId] = count
-                return acc
-              },
-              {} as Record<Institution["categoryId"], number>
-            )
-          )
+            res.reduce((acc, { categoryId, count }) => {
+              acc[categoryId] = count;
+              return acc;
+            }, {} as Record<Institution["categoryId"], number>)
+          );
       } catch (err) {
-        return {} as Record<Institution["categoryId"], number>
+        return {} as Record<Institution["categoryId"], number>;
       }
     },
     ["category-counts"],
     {
       revalidate: 3600,
     }
-  )()
+  )();
 }
 
 export async function getCategories() {
@@ -134,9 +140,9 @@ export async function getCategories() {
             name: categories.name,
           })
           .from(categories)
-          .orderBy(asc(categories.name))
+          .orderBy(asc(categories.name));
       } catch (err) {
-        return []
+        return [];
       }
     },
     ["categories"],
@@ -144,7 +150,7 @@ export async function getCategories() {
       revalidate: 3600,
       tags: ["categories"],
     }
-  )()
+  )();
 }
 
 export async function getStates() {
@@ -157,9 +163,9 @@ export async function getStates() {
             name: malaysianStates.name,
           })
           .from(malaysianStates)
-          .orderBy(asc(malaysianStates.name))
+          .orderBy(asc(malaysianStates.name));
       } catch (err) {
-        return []
+        return [];
       }
     },
     ["states"],
@@ -167,7 +173,7 @@ export async function getStates() {
       revalidate: 3600,
       tags: ["states"],
     }
-  )()
+  )();
 }
 
 export async function getCities(stateId?: number) {
@@ -182,9 +188,9 @@ export async function getCities(stateId?: number) {
           })
           .from(malaysianCities)
           .where(stateId ? eq(malaysianCities.stateId, stateId) : undefined)
-          .orderBy(asc(malaysianCities.name))
+          .orderBy(asc(malaysianCities.name));
       } catch (err) {
-        return []
+        return [];
       }
     },
     [`cities-${stateId ?? "all"}`],
@@ -192,5 +198,5 @@ export async function getCities(stateId?: number) {
       revalidate: 3600,
       tags: ["cities"],
     }
-  )()
+  )();
 }

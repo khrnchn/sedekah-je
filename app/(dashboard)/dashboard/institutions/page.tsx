@@ -38,11 +38,9 @@ export default async function InstitutionsPage(props: IndexPageProps) {
           }}
         />
         <div className="container mx-auto p-4">
-          <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            {/* <FeatureFlagsProvider> */}
-            <InstitutionsTable promises={promises} />
-            {/* </FeatureFlagsProvider > */}
-          </div>
+          {/* <FeatureFlagsProvider> */}
+          <InstitutionsTable promises={promises} />
+          {/* </FeatureFlagsProvider > */}
         </div>
       </SidebarInset>
     </SidebarProvider>

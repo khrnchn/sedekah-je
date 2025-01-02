@@ -1,6 +1,6 @@
 "use client"
 
-import { type Institution } from "@/db/schema"
+import { InstitutionWithRelations, type Institution } from "@/db/schema"
 import { type Row } from "@tanstack/react-table"
 import { Loader, Trash } from "lucide-react"
 import * as React from "react"
@@ -79,9 +79,9 @@ export function DeleteInstitutionsDialog({
           <DialogHeader>
             <DialogTitle>Are you absolutely sure?</DialogTitle>
             <DialogDescription>
-              This action cannot be undone. This will permanently delete your{" "}
+              This action cannot be undone. This will permanently delete {" "}
               <span className="font-medium">{ institutions.length }</span>
-              { institutions.length === 1 ? "institution" : "institutions" }
+              { institutions.length === 1 ? " institution" : " institutions" }
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:space-x-0">
@@ -122,9 +122,9 @@ export function DeleteInstitutionsDialog({
         <DrawerHeader>
           <DrawerTitle>Are you absolutely sure?</DrawerTitle>
           <DrawerDescription>
-            This action cannot be undone. This will permanently delete your{" "}
+            This action cannot be undone. This will permanently delete {" "}
             <span className="font-medium">{ institutions.length }</span>
-            { institutions.length === 1 ? "institution" : "institutions" }
+            { institutions.length === 1 ? " institution" : " institutions" }
           </DrawerDescription>
         </DrawerHeader>
         <DrawerFooter className="gap-2 sm:space-x-0">

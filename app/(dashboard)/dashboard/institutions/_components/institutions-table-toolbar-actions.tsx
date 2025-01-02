@@ -1,6 +1,6 @@
 "use client"
 
-import { type Institution } from "@/db/schema"
+import { InstitutionWithRelations, type Institution } from "@/db/schema"
 import { type Table } from "@tanstack/react-table"
 import { Download } from "lucide-react"
 
