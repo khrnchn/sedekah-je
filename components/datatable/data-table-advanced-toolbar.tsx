@@ -1,13 +1,13 @@
 "use client";
 
 import * as React from "react";
-import type { DataTableAdvancedFilterField } from "@/types";
 import { type Table } from "@tanstack/react-table";
 
 import { cn } from "@/lib/utils";
-import { DataTableFilterList } from "@/components/data-table/data-table-filter-list";
-import { DataTableSortList } from "@/components/data-table/data-table-sort-list";
-import { DataTableViewOptions } from "@/components/data-table/data-table-view-options";
+import { DataTableFilterList } from "@/components/datatable/data-table-filter-list";
+import { DataTableSortList } from "@/components/datatable/data-table-sort-list";
+import { DataTableViewOptions } from "@/components/datatable/data-table-view-options";
+import { DataTableAdvancedFilterField } from "@/app/types";
 
 interface DataTableAdvancedToolbarProps<TData>
   extends React.HTMLAttributes<HTMLDivElement> {

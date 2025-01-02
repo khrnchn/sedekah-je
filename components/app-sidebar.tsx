@@ -45,7 +45,7 @@ const data = {
 			items: [
 				{
 					title: "List of Institutions",
-					url: "#",
+					url: "/dashboard/institutions",
 					badge: async () => await getInstitutionsCount(),
 				},
 				{

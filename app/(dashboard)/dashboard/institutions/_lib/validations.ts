@@ -1,14 +1,14 @@
-import { institutions, type Institution } from "@/db/schema"
+import { institutions, type Institution } from "@/db/schema";
 import {
   createSearchParamsCache,
   parseAsArrayOf,
   parseAsInteger,
   parseAsString,
   parseAsStringEnum,
-} from "nuqs/server"
-import * as z from "zod"
+} from "nuqs/server";
+import * as z from "zod";
 
-import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers"
+import { getFiltersStateParser, getSortingStateParser } from "@/lib/parsers";
 
 export const searchParamsCache = createSearchParamsCache({
   flags: parseAsArrayOf(z.enum(["advancedTable", "floatingBar"])).withDefault(
@@ -20,8 +20,11 @@ export const searchParamsCache = createSearchParamsCache({
     { id: "createdAt", desc: true },
   ]),
 
-  institutionNumber: parseAsString.withDefault(""),
-  deliveryStatus: parseAsArrayOf(z.enum(institutions.deliveryStatus.enumValues)).withDefault([]),
+  name: parseAsString.withDefault(""),
+
+  categoryId: parseAsInteger,
+  stateId: parseAsInteger,
+  cityId: parseAsInteger,
 
   from: parseAsString.withDefault(""),
   to: parseAsString.withDefault(""),
@@ -29,23 +32,42 @@ export const searchParamsCache = createSearchParamsCache({
   // advanced filter
   filters: getFiltersStateParser().withDefault([]),
   joinOperator: parseAsStringEnum(["and", "or"]).withDefault("and"),
-})
+});
 
 export const createInstitutionSchema = z.object({
-  // eg: institutionNumber: z.number().int().positive(),
+  name: z.string().min(1).max(100),
+  description: z.string().optional(),
 
-  // eg: customerId: z.bigint().optional(),
+  categoryId: z.bigint(),
+  stateId: z.bigint(),
+  cityId: z.bigint(),
 
-  // eg: institutionStatus: z.string().optional().default("pending"),
+  latitude: z.number(),
+  longitude: z.number(),
 
-  // and other fields here...
+  // social links
+  socialLinks: z.array(z.object({ platformId: z.bigint(), url: z.string() }))
+    .optional(),
 });
 
 export const updateInstitutionSchema = z.object({
-  // eg: note: z.string().optional(),
-  // eg: deliveryStatus: z.enum(institutions.deliveryStatus.enumValues).default("PENDING"),
-})
+  name: z.string().min(1).max(100).optional(),
+  description: z.string().optional(),
 
-export type GetInstitutionsSchema = Awaited<ReturnType<typeof searchParamsCache.parse>>
-export type CreateInstitutionSchema = z.infer<typeof createInstitutionSchema>
-export type UpdateInstitutionSchema = z.infer<typeof updateInstitutionSchema>
+  categoryId: z.bigint().optional(),
+  stateId: z.bigint().optional(),
+  cityId: z.bigint().optional(),
+
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
+
+  // social links
+  socialLinks: z.array(z.object({ platformId: z.bigint(), url: z.string() }))
+    .optional(),
+});
+
+export type GetInstitutionsSchema = Awaited<
+  ReturnType<typeof searchParamsCache.parse>
+>;
+export type CreateInstitutionSchema = z.infer<typeof createInstitutionSchema>;
+export type UpdateInstitutionSchema = z.infer<typeof updateInstitutionSchema>;

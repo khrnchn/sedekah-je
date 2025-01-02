@@ -7,7 +7,7 @@ import type {
   FilterOperator,
   JoinOperator,
   StringKeyOf,
-} from "@/types";
+} from "@/app/types";
 import { type Table } from "@tanstack/react-table";
 import {
   CalendarIcon,

@@ -4,8 +4,8 @@ import { type Institution } from "@/db/schema"
 import { type Table } from "@tanstack/react-table"
 import { Download } from "lucide-react"
 
-import { exportTableToCSV } from "@/lib/export"
 import { Button } from "@/components/ui/button"
+import { exportTableToCSV } from "@/lib/export"
 
 import { DeleteInstitutionsDialog } from "./delete-institutions-dialog"
 

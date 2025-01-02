@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { institutions, type Institution } from "@/db/schema"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Loader } from "lucide-react"
-import { useForm } from "react-hook-form"
-import { toast } from "sonner"
+import { type Institution } from "@/db/schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader } from "lucide-react";
+import * as React from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -15,7 +15,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
@@ -23,7 +23,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import {
   Sheet,
   SheetClose,
@@ -32,54 +32,109 @@ import {
   SheetFooter,
   SheetHeader,
   SheetTitle,
-} from "@/components/ui/sheet"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/components/ui/sheet";
+import { Textarea } from "@/components/ui/textarea";
 
-import { updateInstitution } from "../_lib/actions"
-import { updateInstitutionSchema, type UpdateInstitutionSchema } from "../_lib/validations"
-import { toTitleCase } from "@/lib/utils"
+import { updateInstitution } from "../_lib/actions";
+import { getCategories, getCities, getStates } from "../_lib/queries";
+import {
+  updateInstitutionSchema,
+  type UpdateInstitutionSchema,
+} from "../_lib/validations";
+import { useCallback, useEffect, useState, useTransition } from "react";
 
 interface UpdateInstitutionSheetProps
   extends React.ComponentPropsWithRef<typeof Sheet> {
-  institution: Institution | null
+  institution: Institution | null;
 }
 
-export function UpdateInstitutionSheet({ institution, ...props }: UpdateInstitutionSheetProps) {
-  const [isUpdatePending, startUpdateTransition] = React.useTransition()
+export function UpdateInstitutionSheet({
+  institution,
+  ...props
+}: UpdateInstitutionSheetProps) {
+  const [categories, setCategories] = useState<
+    { id: number; name: string }[]
+  >([]);
+  const [states, setStates] = useState<{ id: number; name: string }[]>(
+    []
+  );
+  const [cities, setCities] = useState<
+    { id: number; name: string; stateId: number }[]
+  >([]);
+  const [isUpdatePending, startUpdateTransition] = useTransition();
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch initial data
+  useEffect(() => {
+    if (!institution) return;
+
+    setIsLoading(true);
+    fetch(`/api/institutions?stateId=${institution.stateId}`)
+      .then((res) => res.json())
+      .then(({ categories, states, cities }) => {
+        setCategories(categories);
+        setStates(states);
+        setCities(cities);
+      })
+      .catch(() => {
+        toast.error("Failed to fetch initial data");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }, [institution]);
+
+  // Fetch cities when state changes
+  const handleStateChange = useCallback(async (stateId: string) => {
+    const response = await fetch(`/api/institutions?stateId=${stateId}`);
+    const { cities } = await response.json();
+    setCities(cities);
+    form.setValue("cityId", undefined); // Reset city when state changes
+  }, []);
 
   const form = useForm<UpdateInstitutionSchema>({
     resolver: zodResolver(updateInstitutionSchema),
     defaultValues: {
-      note: institution?.note ?? "",
-      deliveryStatus: institution?.deliveryStatus,
+      name: institution?.name ?? "",
+
+      categoryId: institution?.categoryId
+        ? BigInt(institution.categoryId)
+        : undefined,
+      stateId: institution?.stateId ? BigInt(institution.stateId) : undefined,
+      cityId: institution?.cityId ? BigInt(institution.cityId) : undefined,
     },
-  })
+  });
 
   React.useEffect(() => {
     form.reset({
-      note: institution?.note ?? "",
-      deliveryStatus: institution?.deliveryStatus,
-    })
-  }, [institution, form])
+      name: institution?.name ?? "",
+
+      categoryId: institution?.categoryId
+        ? BigInt(institution.categoryId)
+        : undefined,
+      stateId: institution?.stateId ? BigInt(institution.stateId) : undefined,
+      cityId: institution?.cityId ? BigInt(institution.cityId) : undefined,
+    });
+  }, [institution, form]);
 
   function onSubmit(input: UpdateInstitutionSchema) {
     startUpdateTransition(async () => {
-      if (!institution) return
+      if (!institution) return;
 
       const { error } = await updateInstitution({
         id: institution.id,
         ...input,
-      })
+      });
 
       if (error) {
-        toast.error(error)
-        return
+        toast.error(error);
+        return;
       }
 
-      form.reset()
-      props.onOpenChange?.(false)
-      toast.success("Institution updated")
-    })
+      form.reset();
+      props.onOpenChange?.(false);
+      toast.success("Institution updated");
+    });
   }
 
   return (
@@ -98,10 +153,10 @@ export function UpdateInstitutionSheet({ institution, ...props }: UpdateInstitut
           >
             <FormField
               control={form.control}
-              name="note"
+              name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Note</FormLabel>
+                  <FormLabel>Institution Name</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Do a kickflip"
@@ -115,27 +170,92 @@ export function UpdateInstitutionSheet({ institution, ...props }: UpdateInstitut
             />
             <FormField
               control={form.control}
-              name="deliveryStatus"
+              name="categoryId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Delivery Status</FormLabel>
+                  <FormLabel>Category</FormLabel>
                   <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    onValueChange={(value) => field.onChange(BigInt(value))}
+                    value={field.value?.toString()}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a status" />
+                        <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       <SelectGroup>
-                        { institutions.deliveryStatus.enumValues.map((item) => (
+                        {categories.map((category) => (
                           <SelectItem
-                            key={item}
-                            value={item}
+                            key={category.id}
+                            value={category.id.toString()}
                           >
-                            {toTitleCase(item)}
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="stateId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>State</FormLabel>
+                  <Select
+                    onValueChange={(value) => {
+                      field.onChange(BigInt(value));
+                      handleStateChange(value);
+                    }}
+                    value={field.value?.toString()}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a state" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectGroup>
+                        {states.map((state) => (
+                          <SelectItem
+                            key={state.id}
+                            value={state.id.toString()}
+                          >
+                            {state.name}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="cityId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>City</FormLabel>
+                  <Select
+                    onValueChange={(value) => field.onChange(BigInt(value))}
+                    value={field.value?.toString()}
+                    disabled={!form.watch("stateId")}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a city" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectGroup>
+                        {cities.map((city) => (
+                          <SelectItem key={city.id} value={city.id.toString()}>
+                            {city.name}
                           </SelectItem>
                         ))}
                       </SelectGroup>
@@ -165,5 +285,5 @@ export function UpdateInstitutionSheet({ institution, ...props }: UpdateInstitut
         </Form>
       </SheetContent>
     </Sheet>
-  )
+  );
 }

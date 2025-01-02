@@ -1,7 +1,7 @@
 "use client";
 
-import { DataTableFacetedFilter } from "@/components/data-table/data-table-faceted-filter";
-import { DataTableViewOptions } from "@/components/data-table/data-table-view-options";
+import { DataTableFacetedFilter } from "@/components/datatable/data-table-faceted-filter";
+import { DataTableViewOptions } from "@/components/datatable/data-table-view-options";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import type { DataTableFilterField } from "@/types";
+import type { DataTableFilterField } from "@/app/types";
 import type { Table } from "@tanstack/react-table";
 import { PlusCircle, X } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";

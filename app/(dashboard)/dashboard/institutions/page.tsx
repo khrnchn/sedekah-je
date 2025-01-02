@@ -1,47 +1,50 @@
-import BloomCrumb from '@/components/custom/bloom-crumb'
-import { BloomHeader } from '@/components/custom/bloom-header'
-import { Layout, LayoutBody } from '@/components/ui/layout'
-import { getValidFilters } from '@/lib/data-table'
-import { SearchParams } from '@/app/types'
-import { InstitutionsTable } from './_components/institutions-table'
-import { getInstitutions, getInstitutionStatusCounts } from './_lib/queries'
-import { searchParamsCache } from './_lib/validations'
+import { SearchParams } from "@/app/types";
+import { AppSidebar } from "@/components/app-sidebar";
+import { DashboardHeader } from "@/components/dashboard/header";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { getValidFilters } from "@/lib/data-table";
+import { InstitutionsTable } from "./_components/institutions-table";
+import { getCategoryCounts, getInstitutions } from "./_lib/queries";
+import { searchParamsCache } from "./_lib/validations";
 
 interface IndexPageProps {
-    searchParams: Promise<SearchParams>
+  searchParams: Promise<SearchParams>;
 }
 
 export default async function InstitutionsPage(props: IndexPageProps) {
-    const searchParams = await props.searchParams;
-    const search = searchParamsCache.parse(searchParams);
+  const searchParams = await props.searchParams;
+  const search = searchParamsCache.parse(searchParams);
 
-    const validFilters = getValidFilters(search.filters);
+  const validFilters = getValidFilters(search.filters);
 
-    const promises = Promise.all([
-        getInstitutions({
-            ...search,
-            filters: validFilters,
-        }),
-        getInstitutionStatusCounts(),
-    ])
+  const promises = Promise.all([
+    getInstitutions({
+      ...search,
+      filters: validFilters,
+    }),
+    getCategoryCounts(),
+  ]);
 
-    return (
-        <Layout>
-            <BloomCrumb
-                items={[
-                    { label: 'Institutions', href: '#' },
-                    { label: 'List of Institutions', href: '/dashboard/institutions/institutions' },
-                ]}
-            />
-            <LayoutBody>
-                <div className="max-w-7xl mx-auto">
-                    <BloomHeader title='List of Institutions' description='Monitor institutions here' />
-                    {/* uncomment the provider to use advanced filtering */}
-                    {/* <FeatureFlagsProvider> */}
-                    <InstitutionsTable promises={promises} />
-                    {/* </FeatureFlagsProvider > */}
-                </div>
-            </LayoutBody>
-        </Layout>
-    )
+  return (
+    // TODO: extract this into a layout component
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
+        <DashboardHeader
+          currentPage="List of Institutions"
+          parentPage={{
+            title: "Institutions",
+            href: "#",
+          }}
+        />
+        <div className="container mx-auto p-4">
+          <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+            {/* <FeatureFlagsProvider> */}
+            <InstitutionsTable promises={promises} />
+            {/* </FeatureFlagsProvider > */}
+          </div>
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
+  );
 }

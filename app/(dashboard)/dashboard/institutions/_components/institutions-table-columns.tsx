@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { formatDate, toTitleCase } from "@/lib/utils"
-import { getDeliveryStatusIcon } from "../_lib/utils"
+import { getCategoryColors } from "../_lib/utils"
 
 interface GetColumnsProps {
   setRowAction: React.Dispatch<
@@ -54,54 +54,14 @@ export function getColumns({
       enableHiding: false,
     },
     {
-      accessorKey: "institutionNumber",
+      accessorKey: "name",
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Institution Number" />
+        <DataTableColumnHeader column={column} title="Institution Name" />
       ),
       cell: ({ row }) => (
-        <div className="font-medium">{row.getValue("institutionNumber")}</div>
+        <div className="font-medium">{row.getValue("name")}</div>
       ),
     },
-    {
-      accessorKey: "shopifyInstitutionId",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Shopify Institution ID" />
-      ),
-      cell: ({ row }) => (
-        <div className="truncate">{row.getValue("shopifyInstitutionId")}</div>
-      ),
-    },
-    {
-      accessorKey: "deliveryStatus",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Delivery Status" />
-      ),
-      cell: ({ row }) => {
-        const deliveryStatus = institutions.deliveryStatus.enumValues.find(
-          (status) => status === row.original.deliveryStatus
-        )
-
-        if (!deliveryStatus) return null
-
-        const Icon = getDeliveryStatusIcon(deliveryStatus);
-
-        return (
-          <div className="flex w-[6.25rem] items-center">
-            <Icon
-              className="mr-2 size-4 text-muted-foreground"
-              aria-hidden="true"
-            />
-            <span>{toTitleCase(deliveryStatus)}</span>
-          </div>
-        )
-      },
-      filterFn: (row, id, value) => {
-        return Array.isArray(value) && value.includes(row.getValue(id))
-      },
-    },
-    
-    // and other fields here...
-    
     {
       id: "actions",
       cell: function Cell({ row }) {
