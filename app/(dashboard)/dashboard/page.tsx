@@ -1,5 +1,5 @@
 import { AppSidebar } from "@/components/app-sidebar";
-import { DashboardHeader } from "@/components/dashboard/header";
+import { DashboardHeader } from "@/components/dashboard/sj-breadcrumbs";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Hello } from "./_components/hello";
 import Stats from "./_components/stats";

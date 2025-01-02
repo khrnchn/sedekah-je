@@ -17,7 +17,7 @@ interface DashboardHeaderProps {
 	};
 }
 
-export function DashboardHeader({
+export function SJBreadcrumbs({
 	currentPage,
 	parentPage,
 }: DashboardHeaderProps) {
