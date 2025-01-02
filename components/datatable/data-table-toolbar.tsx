@@ -35,13 +35,9 @@ export function DataTableToolbar<TData>({
   const router = useRouter();
 
   const handleCreateAction = (type?: string) => {
-    if (pathname.includes("/recipes")) {
-      router.push("/dashboard/products/recipe/create");
-    } else if (pathname.includes("/stock-transfers")) {
-      if (type === "start-of-day") {
-        router.push("/dashboard/production/stock-transfers/create");
-      }
-    }
+    if (pathname.includes("/institutions")) {
+      router.push("/dashboard/institutions/create");
+    } 
   };
 
   const isFiltered = table.getState().columnFilters.length > 0;
@@ -123,23 +119,10 @@ export function DataTableToolbar<TData>({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          {pathname.includes("/recipes") && (
+          {pathname.includes("/institutions") && (
             <DropdownMenuItem onClick={() => handleCreateAction}>
-              Create recipe
+              Create new institution
             </DropdownMenuItem>
-          )}
-          {pathname.includes("/stock-transfers") && (
-            <>
-              <DropdownMenuLabel className="text-xs font-medium text-muted-foreground">
-                Create ST
-              </DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => handleCreateAction("start-of-day")}
-              >
-                Start of day ST
-              </DropdownMenuItem>
-              <DropdownMenuItem>Mini ST</DropdownMenuItem>
-            </>
           )}
         </DropdownMenuContent>
       </DropdownMenu>
