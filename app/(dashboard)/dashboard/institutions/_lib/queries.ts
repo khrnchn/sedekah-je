@@ -7,6 +7,8 @@ import {
   InstitutionWithRelations,
   malaysianCities,
   malaysianStates,
+  socialPlatforms,
+  paymentMethods,
   type Institution,
 } from "@/db/schema";
 import { and, asc, count, desc, eq, gt, gte, ilike, lte } from "drizzle-orm";
@@ -135,10 +137,7 @@ export async function getCategories() {
     async () => {
       try {
         return await db
-          .select({
-            id: categories.id,
-            name: categories.name,
-          })
+          .select()
           .from(categories)
           .orderBy(asc(categories.name));
       } catch (err) {
@@ -158,10 +157,7 @@ export async function getStates() {
     async () => {
       try {
         return await db
-          .select({
-            id: malaysianStates.id,
-            name: malaysianStates.name,
-          })
+          .select()
           .from(malaysianStates)
           .orderBy(asc(malaysianStates.name));
       } catch (err) {
@@ -181,11 +177,7 @@ export async function getCities(stateId?: number) {
     async () => {
       try {
         return await db
-          .select({
-            id: malaysianCities.id,
-            name: malaysianCities.name,
-            stateId: malaysianCities.stateId,
-          })
+          .select()
           .from(malaysianCities)
           .where(stateId ? eq(malaysianCities.stateId, stateId) : undefined)
           .orderBy(asc(malaysianCities.name));
@@ -197,6 +189,28 @@ export async function getCities(stateId?: number) {
     {
       revalidate: 3600,
       tags: ["cities"],
+    }
+  )();
+}
+
+export async function getSocialPlatforms() {
+  const platforms = await db.select().from(socialPlatforms);
+  return platforms;
+}
+
+export async function getPaymentMethods() {
+  return await unstable_cache(
+    async () => {
+      try {
+        return await db.select().from(paymentMethods).orderBy(asc(paymentMethods.name));
+      } catch (err) {
+        return [];
+      }
+    },
+    ["payment-methods"],
+    {
+      revalidate: 3600,
+      tags: ["payment-methods"],
     }
   )();
 }

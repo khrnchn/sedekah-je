@@ -46,6 +46,7 @@ export const institutions = t.pgTable("institutions", {
 
   qrImagePath: t.text("qr_image_path"),
   qrContent: t.text("qr_content"),
+  // source: t.varchar("source", { length: 255 }), // social media, taken from institution
 
   latitude: t.decimal("latitude", { precision: 10, scale: 8 }).notNull(),
   longitude: t.decimal("longitude", { precision: 11, scale: 8 }).notNull(),
@@ -85,7 +86,7 @@ export const malaysianStates = t.pgTable("malaysian_states", {
   ...timestamps,
 });
 
-export type City = typeof malaysianStates.$inferSelect;
+export type City = typeof malaysianCities.$inferSelect;
 
 export const malaysianCities = t.pgTable("malaysian_cities", {
   id: t.serial("id").primaryKey(),
