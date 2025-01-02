@@ -51,7 +51,7 @@ const data = {
 				},
 				{
 					title: "Create Institution",
-					url: "#",
+					url: "/dashboard/institutions/create",
 				},
 			],
 		},
