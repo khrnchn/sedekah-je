@@ -5,7 +5,7 @@ import type {
   ExtendedColumnSort,
   ExtendedSortingState,
   StringKeyOf,
-} from "@/types";
+} from "@/app/types";
 import type { SortDirection, Table } from "@tanstack/react-table";
 import {
   ArrowDownUp,
