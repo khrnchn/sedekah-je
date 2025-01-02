@@ -1,6 +1,6 @@
 "use client";
 
-import { type Institution } from "@/db/schema";
+import { InstitutionWithRelations, type Institution } from "@/db/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "lucide-react";
 import * as React from "react";
@@ -52,12 +52,10 @@ export function UpdateInstitutionSheet({
   institution,
   ...props
 }: UpdateInstitutionSheetProps) {
-  const [categories, setCategories] = useState<
-    { id: number; name: string }[]
-  >([]);
-  const [states, setStates] = useState<{ id: number; name: string }[]>(
+  const [categories, setCategories] = useState<{ id: number; name: string }[]>(
     []
   );
+  const [states, setStates] = useState<{ id: number; name: string }[]>([]);
   const [cities, setCities] = useState<
     { id: number; name: string; stateId: number }[]
   >([]);
@@ -97,11 +95,9 @@ export function UpdateInstitutionSheet({
     defaultValues: {
       name: institution?.name ?? "",
 
-      categoryId: institution?.categoryId
-        ? BigInt(institution.categoryId)
-        : undefined,
-      stateId: institution?.stateId ? BigInt(institution.stateId) : undefined,
-      cityId: institution?.cityId ? BigInt(institution.cityId) : undefined,
+      categoryId: institution?.categoryId ? institution.categoryId : undefined,
+      stateId: institution?.stateId ? institution.stateId : undefined,
+      cityId: institution?.cityId ? institution.cityId : undefined,
     },
   });
 
@@ -109,11 +105,9 @@ export function UpdateInstitutionSheet({
     form.reset({
       name: institution?.name ?? "",
 
-      categoryId: institution?.categoryId
-        ? BigInt(institution.categoryId)
-        : undefined,
-      stateId: institution?.stateId ? BigInt(institution.stateId) : undefined,
-      cityId: institution?.cityId ? BigInt(institution.cityId) : undefined,
+      categoryId: institution?.categoryId ? institution.categoryId : undefined,
+      stateId: institution?.stateId ? institution.stateId : undefined,
+      cityId: institution?.cityId ? institution.cityId : undefined,
     });
   }, [institution, form]);
 

@@ -31,7 +31,7 @@ export function getCategoryColors(
   category: Institution["categoryId"],
 ): BadgeColors {
   const categoryColors: Record<Institution["categoryId"], BadgeColors> = {
-    1: {
+    4: {
       background:
         "bg-yellow-100 dark:bg-yellow-900 hover:bg-yellow-200 dark:hover:bg-yellow-800",
       text: "text-yellow-800 dark:text-yellow-200",
@@ -46,7 +46,7 @@ export function getCategoryColors(
         "bg-purple-100 dark:bg-purple-900 hover:bg-purple-200 dark:hover:bg-purple-800",
       text: "text-purple-800 dark:text-purple-200",
     },
-    4: {
+    1: {
       background:
         "bg-green-100 dark:bg-green-900 hover:bg-green-200 dark:hover:bg-green-800",
       text: "text-green-800 dark:text-green-200",

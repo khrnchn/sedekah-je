@@ -36,33 +36,45 @@ export const searchParamsCache = createSearchParamsCache({
 
 export const createInstitutionSchema = z.object({
   name: z.string().min(1).max(100),
-  description: z.string().optional(),
+  description: z.string().max(500).optional(),
 
-  categoryId: z.bigint(),
-  stateId: z.bigint(),
-  cityId: z.bigint(),
+  categoryId: z.number(),
+  stateId: z.number(),
+  cityId: z.number(),
 
   latitude: z.number(),
   longitude: z.number(),
 
   // social links
-  socialLinks: z.array(z.object({ platformId: z.bigint(), url: z.string() }))
+  socialLinks: z
+    .array(
+      z.object({
+        platformId: z.number().positive(), // Ensure platformId is a positive number
+        url: z.string().url(), // Ensure url is a valid URL
+      })
+    )
     .optional(),
 });
 
 export const updateInstitutionSchema = z.object({
   name: z.string().min(1).max(100).optional(),
-  description: z.string().optional(),
+  description: z.string().max(500).optional(),
 
-  categoryId: z.bigint().optional(),
-  stateId: z.bigint().optional(),
-  cityId: z.bigint().optional(),
+  categoryId: z.number().optional(),
+  stateId: z.number().optional(),
+  cityId: z.number().optional(),
 
   latitude: z.number().optional(),
   longitude: z.number().optional(),
 
   // social links
-  socialLinks: z.array(z.object({ platformId: z.bigint(), url: z.string() }))
+  socialLinks: z
+    .array(
+      z.object({
+        platformId: z.number().positive(),
+        url: z.string().url(),
+      })
+    )
     .optional(),
 });
 

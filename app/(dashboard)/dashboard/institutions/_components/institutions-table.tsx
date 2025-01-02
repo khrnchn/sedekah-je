@@ -1,27 +1,25 @@
 "use client";
 
-import { institutions, type Institution } from "@/db/schema";
 import type {
   DataTableAdvancedFilterField,
   DataTableFilterField,
   DataTableRowAction,
 } from "@/app/types";
+import { Institution, InstitutionWithRelations } from "@/db/schema";
 import * as React from "react";
 
 import { DataTable } from "@/components/datatable/data-table";
 import { DataTableAdvancedToolbar } from "@/components/datatable/data-table-advanced-toolbar";
 import { DataTableToolbar } from "@/components/datatable/data-table-toolbar";
 import { useDataTable } from "@/hooks/use-data-table";
-import { toSentenceCase, toTitleCase } from "@/lib/utils";
 
 import type {
   getCategoryCounts,
   getInstitutions,
 } from "../_lib/queries";
 
-import { getCategoryColors } from "../_lib/utils";
-import { DeleteInstitutionsDialog } from "./delete-institutions-dialog";
 import { useFeatureFlags } from "../../../../../components/datatable/feature-flags-provider";
+import { DeleteInstitutionsDialog } from "./delete-institutions-dialog";
 import { getColumns } from "./institutions-table-columns";
 import { InstitutionsTableFloatingBar } from "./institutions-table-floating-bar";
 import { InstitutionsTableToolbarActions } from "./institutions-table-toolbar-actions";
