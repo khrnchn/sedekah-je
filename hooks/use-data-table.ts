@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import type { DataTableFilterField, ExtendedSortingState } from "@/types";
+import type { DataTableFilterField, ExtendedSortingState } from "@/app/types";
 import {
   getCoreRowModel,
   getFacetedRowModel,
