@@ -1,7 +1,7 @@
 import "server-only"
 
 import { db } from "@/db"
-import { institutions, type Institution } from "@/db/schema"
+import { categories, institutions, malaysianCities, malaysianStates, type Institution } from "@/db/schema"
 import {
   and,
   asc,
@@ -10,9 +10,7 @@ import {
   eq,
   gt,
   gte,
-  ilike,
-  inArray,
-  lte,
+  lte
 } from "drizzle-orm"
 
 import { filterColumns } from "@/lib/filter-columns"
@@ -38,10 +36,12 @@ export async function getInstitutions(input: GetInstitutionsSchema) {
         const where = advancedTable
           ? advancedWhere
           : and(
-            input.institutionNumber ? eq(institutions.institutionNumber, Number(input.institutionNumber)) : undefined,
-            input.deliveryStatus.length > 0
-              ? inArray(institutions.deliveryStatus, input.deliveryStatus)
-              : undefined,
+            input.name ? eq(institutions.name, input.name) : undefined,
+
+            input.categoryId ? eq(institutions.categoryId, input.categoryId) : undefined,
+            input.stateId ? eq(institutions.stateId, input.stateId) : undefined,
+            input.cityId ? eq(institutions.cityId, input.cityId) : undefined,
+
             fromDate ? gte(institutions.createdAt, fromDate) : undefined,
             toDate ? lte(institutions.createdAt, toDate) : undefined
           )
@@ -91,34 +91,105 @@ export async function getInstitutions(input: GetInstitutionsSchema) {
   )()
 }
 
-export async function getInstitutionStatusCounts() {
+export async function getCategoryCounts() {
   return unstable_cache(
     async () => {
       try {
         return await db
           .select({
-            deliveryStatus: institutions.deliveryStatus,
+            categoryId: institutions.categoryId,
             count: count(),
           })
           .from(institutions)
-          .groupBy(institutions.deliveryStatus)
+          .groupBy(institutions.categoryId)
           .having(gt(count(), 0))
           .then((res) =>
             res.reduce(
-              (acc, { deliveryStatus, count }) => {
-                acc[deliveryStatus] = count
+              (acc, { categoryId, count }) => {
+                acc[categoryId] = count
                 return acc
               },
-              {} as Record<Institution["deliveryStatus"], number>
+              {} as Record<Institution["categoryId"], number>
             )
           )
       } catch (err) {
-        return {} as Record<Institution["deliveryStatus"], number>
+        return {} as Record<Institution["categoryId"], number>
       }
     },
-    ["institution-status-counts"],
+    ["category-counts"],
     {
       revalidate: 3600,
+    }
+  )()
+}
+
+export async function getCategories() {
+  return await unstable_cache(
+    async () => {
+      try {
+        return await db
+          .select({
+            id: categories.id,
+            name: categories.name,
+          })
+          .from(categories)
+          .orderBy(asc(categories.name))
+      } catch (err) {
+        return []
+      }
+    },
+    ["categories"],
+    {
+      revalidate: 3600,
+      tags: ["categories"],
+    }
+  )()
+}
+
+export async function getStates() {
+  return await unstable_cache(
+    async () => {
+      try {
+        return await db
+          .select({
+            id: malaysianStates.id,
+            name: malaysianStates.name,
+          })
+          .from(malaysianStates)
+          .orderBy(asc(malaysianStates.name))
+      } catch (err) {
+        return []
+      }
+    },
+    ["states"],
+    {
+      revalidate: 3600,
+      tags: ["states"],
+    }
+  )()
+}
+
+export async function getCities(stateId?: number) {
+  return await unstable_cache(
+    async () => {
+      try {
+        return await db
+          .select({
+            id: malaysianCities.id,
+            name: malaysianCities.name,
+            stateId: malaysianCities.stateId,
+          })
+          .from(malaysianCities)
+          .where(stateId ? eq(malaysianCities.stateId, stateId) : undefined)
+          .orderBy(asc(malaysianCities.name))
+      } catch (err) {
+        return []
+      }
+    },
+    [`cities-${stateId ?? "all"}`],
+    {
+      revalidate: 3600,
+      tags: ["cities"],
     }
   )()
 }

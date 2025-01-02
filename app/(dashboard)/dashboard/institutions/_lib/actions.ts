@@ -50,20 +50,24 @@ export async function updateInstitution(input: UpdateInstitutionSchema & { id: n
     const data = await db
       .update(institutions)
       .set({
-        // eg: note: input.note,
-        // eg: deliveryStatus: input.deliveryStatus,
+        name: input.name,
+        categoryId: input.categoryId ? Number(input.categoryId) : undefined,
+        stateId: input.stateId ? Number(input.stateId) : undefined,
+        cityId: input.cityId ? Number(input.cityId) : undefined,
       })
       .where(eq(institutions.id, input.id))
       .returning({
-        // eg: deliveryStatus: institutions.deliveryStatus,
+        categoryId: institutions.categoryId,
+        stateId: institutions.stateId,
+        cityId: institutions.cityId,
       })
       .then(takeFirstOrThrow)
 
     revalidateTag("institutions")
-
-    // if (data.deliveryStatus === input.deliveryStatus) {
-    //   revalidateTag("order-status-counts")
-    // }
+    
+    if (data.categoryId === Number(input.categoryId)) {
+      revalidateTag("category-counts")
+    }
 
     return {
       data: null,
@@ -122,7 +126,7 @@ export async function deleteInstitution(input: { id: number }) {
     })
 
     revalidateTag("institutions")
-    // revalidateTag("order-status-counts")
+    revalidateTag("category-counts")
 
     return {
       data: null,
@@ -144,7 +148,7 @@ export async function deleteInstitutions(input: { ids: number[] }) {
     })
 
     revalidateTag("institutions")
-    // revalidateTag("order-status-counts")
+    revalidateTag("category-counts")
 
     return {
       data: null,

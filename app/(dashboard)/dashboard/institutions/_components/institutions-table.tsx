@@ -15,11 +15,11 @@ import { useDataTable } from "@/hooks/use-data-table";
 import { toSentenceCase, toTitleCase } from "@/lib/utils";
 
 import type {
-  getInstitutionStatusCounts,
+  getCategoryCounts,
   getInstitutions,
 } from "../_lib/queries";
 
-import { getDeliveryStatusIcon } from "../_lib/utils";
+import { getCategoryColors } from "../_lib/utils";
 import { DeleteInstitutionsDialog } from "./delete-institutions-dialog";
 import { useFeatureFlags } from "../../../../../components/datatable/feature-flags-provider";
 import { getColumns } from "./institutions-table-columns";
@@ -31,7 +31,7 @@ interface InstitutionsTableProps {
   promises: Promise<
     [
       Awaited<ReturnType<typeof getInstitutions>>,
-      Awaited<ReturnType<typeof getInstitutionStatusCounts>>
+      Awaited<ReturnType<typeof getCategoryCounts>>
     ]
   >;
 }
@@ -64,19 +64,9 @@ export function InstitutionsTable({ promises }: InstitutionsTableProps) {
   const filterFields: DataTableFilterField<Institution>[] = [
     // for normal searching, this only works on string columns
     {
-      id: "institutionNumber",
-      label: "Institution Number",
-      placeholder: "Filter institution number...",
-    },
-    {
-      id: "deliveryStatus",
-      label: "Delivery Status",
-      options: institutions.deliveryStatus.enumValues.map((status) => ({
-        label: toPascalCase(status),
-        value: status,
-        icon: getDeliveryStatusIcon(status),
-        count: statusCounts[status],
-      })),
+      id: "name",
+      label: "Institution Name",
+      placeholder: "Filter institution name...",
     },
   ];
 
@@ -92,20 +82,9 @@ export function InstitutionsTable({ promises }: InstitutionsTableProps) {
    */
   const advancedFilterFields: DataTableAdvancedFilterField<Institution>[] = [
     {
-      id: "institutionNumber",
-      label: "Institution Number",
-      type: "number",
-    },
-    {
-      id: "deliveryStatus",
-      label: "Delivery Status",
-      type: "multi-select",
-      options: institutions.deliveryStatus.enumValues.map((status) => ({
-        label: toSentenceCase(status),
-        value: status,
-        icon: getDeliveryStatusIcon(status),
-        count: statusCounts[status],
-      })),
+      id: "name",
+      label: "Institution Name",
+      type: "text"
     },
     {
       id: "createdAt",

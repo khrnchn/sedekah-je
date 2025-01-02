@@ -1,7 +1,5 @@
 import { QueryProvider } from "@/components/providers/query-provider";
-import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
-import { cn } from "@/lib/utils";
 import { Analytics } from "@vercel/analytics/react";
 import { Poppins } from "next/font/google";
 
