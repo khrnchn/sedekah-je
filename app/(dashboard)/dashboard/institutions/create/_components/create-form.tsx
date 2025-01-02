@@ -15,6 +15,7 @@ import { Location } from "./sections/location";
 import { Social } from "./sections/social";
 import { Payment } from "./sections/payment";
 import { Category, City, PaymentMethod, State } from "@/db/schema";
+import QRSkeleton from "./sections/qr";
 
 interface CreateInstitutionFormProps {
   categories: Category[];
@@ -112,6 +113,7 @@ export function CreateInstitutionForm({
                   socialPlatforms={socialPlatforms}
                 />
                 <Payment paymentMethods={paymentMethods} />
+                <QRSkeleton />
               </div>
             </div>
 
