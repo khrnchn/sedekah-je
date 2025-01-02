@@ -10,6 +10,7 @@ import {
   eq,
   gt,
   gte,
+  ilike,
   lte
 } from "drizzle-orm"
 
@@ -36,7 +37,7 @@ export async function getInstitutions(input: GetInstitutionsSchema) {
         const where = advancedTable
           ? advancedWhere
           : and(
-            input.name ? eq(institutions.name, input.name) : undefined,
+            input.name ? ilike(institutions.name, `%${input.name}%`) : undefined,
 
             input.categoryId ? eq(institutions.categoryId, input.categoryId) : undefined,
             input.stateId ? eq(institutions.stateId, input.stateId) : undefined,
