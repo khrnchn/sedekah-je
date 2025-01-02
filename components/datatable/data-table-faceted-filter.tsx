@@ -1,4 +1,4 @@
-import type { Option } from "@/types";
+import type { Option } from "@/app/types";
 import type { Column } from "@tanstack/react-table";
 import { Check, PlusCircle } from "lucide-react";
 
