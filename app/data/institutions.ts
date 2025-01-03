@@ -9862,5 +9862,17 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 		coords: [5.4144763, 100.3281073],
 	},
-	// TODO: add masjid bulat
+	// khairin, taken from masjid
+	{
+		id: 806, 
+		name: "Masjid Tun Abdul Aziz",
+		category: "mosque",
+		state: "Selangor",
+		city: "Petaling Jaya",
+		qrImage: "",
+		qrContent:
+			"00020201021126600014A000000615000101065892670228BRQR65e7e15601d6cb62ca24b6045204922253034585802MY5921Masjid Tun Abdul Aziz6013Petaling Jaya61054610062420310M000002352052465e7e159d3f9a90682ec0b796304B10A",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [3.112268283143902, 101.63392168186432],
+	}
 ];
