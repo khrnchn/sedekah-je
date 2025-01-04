@@ -79,10 +79,10 @@ export function NavMain({
 													<span>{subItem.title}</span>
 													{badges[`${item.title}-${subItem.title}`] !==
 														undefined && (
-														<span className="ml-auto rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">
-															{badges[`${item.title}-${subItem.title}`]}
-														</span>
-													)}
+															<span className="ml-auto rounded-full bg-primary px-2 py-0.5 text-xs text-primary-foreground">
+																{badges[`${item.title}-${subItem.title}`]}
+															</span>
+														)}
 												</a>
 											</SidebarMenuSubButton>
 										</SidebarMenuSubItem>

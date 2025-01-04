@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Header } from "@/components/ui/header";
 import { HelpCircle, MapIcon } from "lucide-react";
 import Link from "next/link";
+import RamadanCountdown from "@/components/countdown";
 
 const Home = () => {
 	const [query, setQuery] = useState<string>("");
@@ -186,6 +187,7 @@ const Home = () => {
 		<>
 			<Header />
 			<PageSection>
+				<RamadanCountdown />
 				<FilterCategory
 					onCategoryChange={handleCategoryChange}
 					selectedState={selectedState}

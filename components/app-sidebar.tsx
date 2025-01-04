@@ -7,14 +7,14 @@ import {
 	Map,
 	PieChart,
 	Settings2,
-	UserCog,
-} from "lucide-react";
-import type * as React from "react";
+	UserCog
+} from "lucide-react"
+import * as React from "react"
 
-import { getInstitutionsCount } from "@/app/(dashboard)/dashboard/_lib/actions";
-import { NavMain } from "@/components/nav-main";
-import { NavUser } from "@/components/nav-user";
-import { TeamSwitcher } from "@/components/team-switcher";
+import { getInstitutionsCount } from "@/app/(dashboard)/dashboard/_lib/actions"
+import { NavMain } from "@/components/nav-main"
+import { NavUser } from "@/components/nav-user"
+import { TeamSwitcher } from "@/components/team-switcher"
 import {
 	Sidebar,
 	SidebarContent,
@@ -46,12 +46,12 @@ const data = {
 			items: [
 				{
 					title: "List of Institutions",
-					url: "/dashboard/institutions",
-					badge: async () => await getInstitutionsCount(),
+					url: "#",
+					badge: async () => await getInstitutionsCount()
 				},
 				{
 					title: "Create Institution",
-					url: "/dashboard/institutions/create",
+					url: "#",
 				},
 			],
 		},
@@ -95,7 +95,7 @@ const data = {
 			icon: Map,
 		},
 	],
-};
+}
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	return (
