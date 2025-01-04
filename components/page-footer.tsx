@@ -63,7 +63,7 @@ const navigation = {
     ],
     projects: [
         {
-            name: "Portfolio Khairin",
+            name: "Portfolio Saya",
             href: "https://khrnchn.xyz",
         },
     ],
@@ -151,7 +151,7 @@ export default function PageFooter() {
 									{navigation.partners.map((item) => (
 										<li key={item.name}>
 											<a
-												href={`${item.href}?ref=kelasmengaji.online`}
+												href={`${item.href}?ref=sedekah.je`}
 												target="_blank"
 												className="text-sm leading-6 hover:text-gray-900"
 												rel="noreferrer"
@@ -172,7 +172,7 @@ export default function PageFooter() {
 									{navigation.projects.map((item) => (
 										<li key={item.name}>
 											<a
-												href={`${item.href}?ref=kelasmengaji.online`}
+												href={`${item.href}?ref=sedekah.je`}
 												target="_blank"
 												className="text-sm leading-6 hover:text-gray-900"
 												rel="noreferrer"
