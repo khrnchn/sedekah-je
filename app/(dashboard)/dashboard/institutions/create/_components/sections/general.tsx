@@ -4,13 +4,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Category } from "@/db/schema";
 import { toTitleCase } from "@/lib/utils";
+import { useFormContext } from "react-hook-form";
 
 interface GeneralInformationSectionProps {
-  control: any;
   categories: Category[];
 }
 
-export function General({ control, categories }: GeneralInformationSectionProps) {
+export function General({ categories }: GeneralInformationSectionProps) {
+  const { control } = useFormContext();
+  
   return (
     <div className="space-y-4">
       <FormField

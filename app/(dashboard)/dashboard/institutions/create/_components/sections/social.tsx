@@ -17,7 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useFieldArray, useWatch } from "react-hook-form";
+import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 
 interface SocialLink {
   platformId: number;
@@ -25,7 +25,6 @@ interface SocialLink {
 }
 
 interface SocialLinksCardProps {
-  control: any;
   socialPlatforms: Array<{
     id: number;
     name: string;
@@ -33,7 +32,8 @@ interface SocialLinksCardProps {
   }>;
 }
 
-export function Social({ control, socialPlatforms }: SocialLinksCardProps) {
+export function Social({ socialPlatforms }: SocialLinksCardProps) {
+  const { control } = useFormContext();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "socialLinks",

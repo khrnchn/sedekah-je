@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { useForm, useWatch } from "react-hook-form"; // Import useWatch
+import { FormProvider, useForm, useWatch } from "react-hook-form"; // Import useWatch
 import { toast } from "sonner";
 import { z } from "zod";
 import { createInstitution } from "../_lib/actions";
@@ -91,37 +91,37 @@ export function CreateInstitutionForm({
   return (
     <Card>
       <CardContent className="pt-4">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Left Column (Main Form) */}
-              <div className="lg:col-span-2">
-                <General control={form.control} categories={categories} />
-                <Location
-                  control={form.control}
-                  states={states}
-                  cities={cities}
-                  selectedStateId={selectedStateId} // Pass the watched stateId
-                  onLocationSelect={handleLocationSelect}
-                />
+        <FormProvider {...form}>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Left Column (Main Form) */}
+                <div className="lg:col-span-2">
+                  <General categories={categories} />
+                  <Location
+                    states={states}
+                    cities={cities}
+                    selectedStateId={selectedStateId} // Pass the watched stateId
+                    onLocationSelect={handleLocationSelect}
+                  />
+                </div>
+
+                {/* Right Column (Side Card) */}
+                <div className="lg:col-span-1 space-y-8">
+                  <Social
+                    socialPlatforms={socialPlatforms}
+                  />
+                  <Payment paymentMethods={paymentMethods} />
+                  <QRSkeleton />
+                </div>
               </div>
 
-              {/* Right Column (Side Card) */}
-              <div className="lg:col-span-1 space-y-8">
-                <Social
-                  control={form.control}
-                  socialPlatforms={socialPlatforms}
-                />
-                <Payment paymentMethods={paymentMethods} />
-                <QRSkeleton />
-              </div>
-            </div>
-
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Creating..." : "Create Institution"}
-            </Button>
-          </form>
-        </Form>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Creating..." : "Create Institution"}
+              </Button>
+            </form>
+          </Form>
+        </FormProvider>
       </CardContent>
     </Card>
   );
