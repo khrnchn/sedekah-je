@@ -19,6 +19,7 @@ import { Clipboard, Download, MapPin, QrCode } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
+import PageFooter  from "@/components/page-footer";
 
 const Rawak = () => {
 	const cardRef = useRef<HTMLDivElement>(null);
@@ -209,7 +210,9 @@ const Rawak = () => {
 					</Card>
 				</div>
 				<GetdoaFooter />
+        <PageFooter />
 			</PageSection>
+      
 		</>
 	);
 };
