@@ -11,7 +11,7 @@
 sedekah.je is a directory of qr codes of mosques, suraus, or other institutions in malaysia. 
 read how this project started [here](https://www.khrnchn.xyz/blog/sedekah-je-lore).
 
-## contributing
+## contributing qr
 
 to upload qr, you have three options:
 1. (recommended) through [issue](https://github.com/khrnchn/sedekah-je/issues/new?assignees=&labels=addQR&projects=&template=add_qr_code.md&title=%5BaddQR%5D+Add+New+QR+Code)
@@ -28,6 +28,10 @@ to upload qr, you have three options:
 - click File > Save a copy in Drive
 - follow the notebook instruction
 - get the QR info and paste it in institutions.ts
+
+## contributing code
+
+you may refer [projects](https://github.com/users/khrnchn/projects/1/views/1) or just create a feature request.
   
 ## sponsor
 

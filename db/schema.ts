@@ -1,6 +1,13 @@
+import { relations } from "drizzle-orm";
 import * as t from "drizzle-orm/pg-core";
 
 // TODO: if this gets too big, split it into multiple files
+
+export const institutionStatus = t.pgEnum("institution_status", [
+  "pending",
+  "approved",
+  "rejected",
+]);
 
 const timestamps = {
   createdAt: t.timestamp("created_at").defaultNow().notNull(),
@@ -10,12 +17,11 @@ const timestamps = {
 export type Institution = typeof institutions.$inferSelect;
 export type NewInstitution = typeof institutions.$inferInsert;
 
-// Define enum in PostgreSQL
-export const institutionStatus = t.pgEnum('institution_status', [
-  'pending',
-  'approved',
-  'rejected'
-]);
+export type InstitutionWithRelations = Institution & {
+  category: Category;
+  state: State;
+  city: City;
+};
 
 export const institutions = t.pgTable("institutions", {
   id: t.serial("id").primaryKey(),
@@ -40,6 +46,7 @@ export const institutions = t.pgTable("institutions", {
 
   qrImagePath: t.text("qr_image_path"),
   qrContent: t.text("qr_content"),
+  // source: t.varchar("source", { length: 255 }), // social media, taken from institution
 
   latitude: t.decimal("latitude", { precision: 10, scale: 8 }).notNull(),
   longitude: t.decimal("longitude", { precision: 11, scale: 8 }).notNull(),
@@ -50,7 +57,7 @@ export const institutions = t.pgTable("institutions", {
     .integer("contributor_id")
     .references(() => users.id)
     .notNull(),
-  status: institutionStatus("status").notNull().default('pending'),
+  status: institutionStatus("status").notNull().default("pending"),
   approvedById: t.integer("approved_by_id").references(() => users.id),
   approvedAt: t.timestamp("approved_at"),
   rejectionReason: t.text("rejection_reason"),
@@ -69,6 +76,8 @@ export const categories = t.pgTable("categories", {
   ...timestamps,
 });
 
+export type State = typeof malaysianStates.$inferSelect;
+
 export const malaysianStates = t.pgTable("malaysian_states", {
   id: t.serial("id").primaryKey(),
   name: t.varchar("name", { length: 50 }).notNull().unique(),
@@ -76,6 +85,8 @@ export const malaysianStates = t.pgTable("malaysian_states", {
 
   ...timestamps,
 });
+
+export type City = typeof malaysianCities.$inferSelect;
 
 export const malaysianCities = t.pgTable("malaysian_cities", {
   id: t.serial("id").primaryKey(),
@@ -185,3 +196,21 @@ export const users = t.pgTable("users", {
 
   ...timestamps,
 });
+
+export const institutionsRelations = relations(
+  institutions,
+  ({ one }) => ({
+    category: one(categories, {
+      fields: [institutions.categoryId],
+      references: [categories.id],
+    }),
+    state: one(malaysianStates, {
+      fields: [institutions.stateId],
+      references: [malaysianStates.id],
+    }),
+    city: one(malaysianCities, {
+      fields: [institutions.cityId],
+      references: [malaysianCities.id],
+    }),
+  })
+);

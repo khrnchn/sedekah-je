@@ -10,9 +10,7 @@ const Stats = () => {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-2">
-            <p className="text-4xl font-semibold">
-              {getMosqueCount()}
-            </p>
+            <p className="text-4xl font-semibold">{getMosqueCount()}</p>
             <p className="text-sm text-muted-foreground">
               Places of worship registered as mosques
             </p>
@@ -25,10 +23,7 @@ const Stats = () => {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-2">
-            <p className="text-4xl font-semibold">
-              {" "}
-              {getSurauCount()}
-            </p>
+            <p className="text-4xl font-semibold"> {getSurauCount()}</p>
             <p className="text-sm text-muted-foreground">
               Places of worship registered as surau
             </p>
@@ -41,12 +36,9 @@ const Stats = () => {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-2">
-            <p className="text-4xl font-semibold">
-              {" "}
-              {getOthersCount()}
-            </p>
+            <p className="text-4xl font-semibold"> {getOthersCount()}</p>
             <p className="text-sm text-muted-foreground">
-                Badan kebajikan, maahad, and others.
+              Badan kebajikan, maahad, and others.
             </p>
           </div>
         </CardContent>

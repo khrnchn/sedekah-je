@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useTheme } from "next-themes";
 
 const navigation = {
     social: [
@@ -51,7 +52,7 @@ const navigation = {
     ],
     resources: [
         {
-            name: "Kod Sumber Terbuka",
+            name: "Sumber Kod",
             href: "https://github.com/khrnchn/sedekah-je",
         },
         {
@@ -62,120 +63,130 @@ const navigation = {
     ],
     projects: [
         {
-            name: "portfolio",
+            name: "Portfolio Saya",
             href: "https://khrnchn.xyz",
         },
     ],
 };
 
 export default function PageFooter() {
+    const { theme } = useTheme();
+
     return (
-        <footer aria-labelledby="footer-heading" className="my-16">
-            <h2 id="footer-heading" className="sr-only">
-                Footer
-            </h2>
-            <div className="mx-auto max-w-screen-lg px-4 py-8">
-                <div className="xl:grid xl:grid-cols-3 xl:gap-8">
-                    <div className="space-y-8">
-                        <Image
-                            alt="Logo Masjid SedekahJe"
-                            src="/masjid.svg"
-                            width={100}
-                            height={20}
-                            title="Logo created by Freepik - Flaticon"
-                            className="cursor-pointer"
-                        />
-                        <p className="text-sm leading-6 text-gray-600">
-                            Senarai QR masjid, surau, dan institusi yang dikumpulkan oleh netizen.
-                        </p>
-                        <div className="flex space-x-6">
-                            {navigation.social.map((item) => (
-                                <a
-                                    key={item.name}
-                                    href={item.href}
-                                    target="_blank"
-                                    className="text-gray-400 hover:text-gray-500" rel="noreferrer"
-                                >
-                                    <span className="sr-only">{item.name}</span>
-                                    <item.icon aria-hidden="true" className="h-6 w-6" />
-                                </a>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="mt-16 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">
-                        <div className="md:grid md:grid-cols-2 md:gap-8">
-                            <div>
-                                <h3 className="text-sm font-semibold leading-6 text-gray-900">
-                                    Rujukan
-                                </h3>
-                                <ul className="mt-6 space-y-4">
-                                    {navigation.resources.map((item) => (
-                                        <li key={item.name}>
-                                            <a
-                                                href={item.href}
-                                                target="_blank"
-                                                className="text-sm leading-6 text-gray-600 hover:text-gray-900" rel="noreferrer"
-                                            >
-                                                {item.name}
-                                            </a>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                            <div className="mt-10 md:mt-0">
-                                <h3 className="text-sm font-semibold leading-6 text-gray-900">
-                                    Lawati Juga
-                                </h3>
-                                <ul className="mt-6 space-y-4">
-                                    {navigation.partners.map((item) => (
-                                        <li key={item.name}>
-                                            <a
-                                                href={`${item.href}?ref=kelasmengaji.online`}
-                                                target="_blank"
-                                                className="text-sm leading-6 text-gray-600 hover:text-gray-900" rel="noreferrer"
-                                            >
-                                                {item.name}
-                                            </a>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        </div>
-                        <div className="md:grid md:grid-cols-2 md:gap-8">
-                            <div>
-                                <h3 className="text-sm font-semibold leading-6 text-gray-900">
-                                    Projek Lain
-                                </h3>
-                                <ul className="mt-6 space-y-4">
-                                    {navigation.projects.map((item) => (
-                                        <li key={item.name}>
-                                            <a
-                                                href={`${item.href}?ref=kelasmengaji.online`}
-                                                target="_blank"
-                                                className="text-sm leading-6 text-gray-600 hover:text-gray-900" rel="noreferrer"
-                                            >
-                                                {item.name}
-                                            </a>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className="mt-16 flex items-center justify-between border-t border-gray-900/10 pt-8 sm:mt-20">
-                    <p className="text-xs leading-5 text-gray-500">
-                        &copy; {new Date().getFullYear()} Hak Cipta Terpelihara
-                    </p>
-                    <a
-                        href="https://github.com/khrnchn/sedekah-je/graphs/contributors"
-                        target="_blank"
-                        className="text-xs leading-5 text-gray-500 hover:underline" rel="noreferrer"
-                    >
-                        Dibina oleh <span className="text-blue-500">Khairin Chan dan 22 Penyumbang Lain</span>
-                    </a>
-                </div>
-            </div>
-        </footer>
-    );
+		<footer
+			aria-labelledby="footer-heading"
+			className={`bg-[hsl(var(--background))] text-[hsl(var(--foreground))]`}
+		>
+			<h2 id="footer-heading" className="sr-only">
+				Footer
+			</h2>
+			<div className="mx-auto max-w-7xl px-6 py-12 sm:py-16 lg:px-8 lg:py-20">
+				<div className="xl:grid xl:grid-cols-3 xl:gap-8">
+					<div className="space-y-5 xl:col-span-1">
+						<Image
+							alt="Logo Masjid SedekahJe"
+							src="/masjid.svg"
+							width={100}
+							height={20}
+							title="Logo created by Freepik - Flaticon"
+							className="cursor-pointer"
+						/>
+						<p className="text-sm leading-6">
+							Senarai QR masjid, surau, dan institusi yang dikumpulkan oleh
+							netizen.
+						</p>
+						<div className="flex space-x-6">
+							{navigation.social.map((item) => (
+								<a
+									key={item.name}
+									href={item.href}
+									target="_blank"
+									className="hover:text-gray-500"
+									rel="noreferrer"
+								>
+									<span className="sr-only">{item.name}</span>
+									<item.icon aria-hidden="true" className="h-6 w-6" />
+								</a>
+							))}
+						</div>
+						<p className="text-xs text-left mt-5">
+							&copy; {new Date().getFullYear()} Hak Cipta Terpelihara.
+							<br /> Dibina oleh{" "}
+							<a
+								href="https://github.com/khrnchn/sedekah-je/graphs/contributors"
+								target="_blank"
+								className="text-blue-500 hover:underline"
+								rel="noreferrer"
+							>
+								Khairin Chan dan kawan kawan.
+							</a>
+						</p>
+					</div>
+					<div className="mt-4 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">
+						<div className="md:grid md:grid-cols-2 md:gap-8">
+							<div>
+								<h3 className="text-sm font-semibold leading-6 underline">
+									Rujukan
+								</h3>
+								<ul className="mt-4 space-y-4">
+									{navigation.resources.map((item) => (
+										<li key={item.name}>
+											<a
+												href={item.href}
+												target="_blank"
+												className="text-sm leading-6 hover:text-gray-900"
+												rel="noreferrer"
+											>
+												{item.name}
+											</a>
+										</li>
+									))}
+								</ul>
+							</div>
+							<div className="mt-4 md:mt-0">
+								<h3 className="text-sm font-semibold leading-6 underline">
+									Lawati Juga
+								</h3>
+								<ul className="mt-4 space-y-4">
+									{navigation.partners.map((item) => (
+										<li key={item.name}>
+											<a
+												href={`${item.href}?ref=sedekah.je`}
+												target="_blank"
+												className="text-sm leading-6 hover:text-gray-900"
+												rel="noreferrer"
+											>
+												{item.name}
+											</a>
+										</li>
+									))}
+								</ul>
+							</div>
+						</div>
+						<div className="md:grid md:grid-cols-2 md:gap-8">
+							<div>
+								<h3 className="text-sm font-semibold leading-6 underline">
+									Projek Lain
+								</h3>
+								<ul className="mt-4 space-y-4">
+									{navigation.projects.map((item) => (
+										<li key={item.name}>
+											<a
+												href={`${item.href}?ref=sedekah.je`}
+												target="_blank"
+												className="text-sm leading-6 hover:text-gray-900"
+												rel="noreferrer"
+											>
+												{item.name}
+											</a>
+										</li>
+									))}
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</footer>
+	);
 }
