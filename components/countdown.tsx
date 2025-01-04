@@ -44,12 +44,7 @@ const RamadanCountdown = () => {
 
   return (
     <Card className="relative overflow-hidden bg-gradient-to-r from-emerald-400 to-teal-800 text-white shadow-lg p-4 sm:p-6">
-      <div className="absolute inset-0 opacity-10">
-        <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
-          <path fill="#fff" d="M0 0h80v80H0z"/>
-          <path fill="none" stroke="#fff" strokeWidth="1" d="M-9.5 10.5h99M-9.5 30.5h99M-9.5 50.5h99M-9.5 70.5h99M10.5-9.5v99M30.5-9.5v99M50.5-9.5v99M70.5-9.5v99"/>
-          <path fill="#fff" d="M50.5 50.5l-20-20L10.5 50.5l20 20zM50.5 10.5l-20-20L10.5 10.5l20 20zM90.5 50.5l-20-20L50.5 50.5l20 20zM90.5 10.5l-20-20L50.5 10.5l20 20zM10.5 90.5l-20-20L-29.5 90.5l20 20zM10.5 50.5l-20-20L-29.5 50.5l20 20zM50.5 90.5l-20-20L10.5 90.5l20 20z"/>
-        </svg>
+      <div className="absolute inset-0 opacity-30 ramadhan-bg">
       </div>
       <CardHeader className="relative p-2 sm:p-6">
         <CardTitle className="flex items-center justify-center gap-2 text-center text-lg sm:text-3xl font-bold">
