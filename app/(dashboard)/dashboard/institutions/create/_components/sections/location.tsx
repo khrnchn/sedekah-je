@@ -6,15 +6,14 @@ import { LocationSearch } from "../location-search";
 import { useFormContext } from "react-hook-form"; // Import useFormContext
 
 interface LocationSectionProps {
-  control: any;
   states: State[];
   cities: City[];
   selectedStateId: number | null;
   onLocationSelect: (lat: number, lng: number, address: string) => void;
 }
 
-export function Location({ control, states, cities, selectedStateId, onLocationSelect }: LocationSectionProps) {
-  const { setValue } = useFormContext(); // Use useFormContext to get setValue
+export function Location({ states, cities, selectedStateId, onLocationSelect }: LocationSectionProps) {
+  const { setValue, control } = useFormContext(); 
 
   const filteredCities = cities.filter((city) => city.stateId === selectedStateId);
 

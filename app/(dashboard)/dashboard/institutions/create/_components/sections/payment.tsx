@@ -15,7 +15,7 @@ interface PaymentMethodsCardProps {
 }
 
 export function Payment({ paymentMethods }: PaymentMethodsCardProps) {
-  const { control, watch } = useFormContext(); // Access the form context
+  const { control, watch } = useFormContext(); 
   const { fields, append, remove } = useFieldArray({
     control,
     name: "paymentMethodIds",
