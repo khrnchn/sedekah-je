@@ -11,6 +11,7 @@ import { Header } from "@/components/ui/header";
 import PageSection from "@/components/ui/pageSection";
 import Link from "next/link";
 import React from "react";
+import PageFooter  from "@/components/page-footer";
 
 const faqData = [
 	{
@@ -104,6 +105,7 @@ const FAQ = () => {
 						</AccordionItem>
 					))}
 				</Accordion>
+				<PageFooter/>
 			</PageSection>
 		</>
 	);
