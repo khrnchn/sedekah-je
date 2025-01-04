@@ -8,13 +8,12 @@ import {
 	PieChart,
 	Settings2,
 	UserCog
-} from "lucide-react"
-import * as React from "react"
+} from "lucide-react";
+import * as React from "react";
 
-import { getInstitutionsCount } from "@/app/(dashboard)/dashboard/_lib/actions"
-import { NavMain } from "@/components/nav-main"
-import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
+import { getInstitutionsCount } from "@/app/(dashboard)/dashboard/_lib/actions";
+import { NavMain } from "@/components/nav-main";
+import { NavUser } from "@/components/nav-user";
 import {
 	Sidebar,
 	SidebarContent,
@@ -46,12 +45,12 @@ const data = {
 			items: [
 				{
 					title: "List of Institutions",
-					url: "#",
+					url: "/dashboard/institutions",
 					badge: async () => await getInstitutionsCount()
 				},
 				{
 					title: "Create Institution",
-					url: "#",
+					url: "/dashboard/institutions/create",
 				},
 			],
 		},

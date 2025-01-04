@@ -8,18 +8,14 @@ export default function Page() {
   return (
     <SJLayout>
       <SJBreadcrumbs
-        currentPage="List of Institutions"
+        currentPage="Dashboard"
         parentPage={{
-          title: "Institutions",
+          title: "Home",
           href: "#",
         }}
       />
       <LayoutBody>
         <div className="mx-auto">
-          <SJHeader
-            title="Institutions"
-            description="Manage and monitor list of institutions here"
-          />
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
             <Hello />
             <Stats />
