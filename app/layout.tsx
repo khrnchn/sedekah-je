@@ -132,6 +132,11 @@ export default function RootLayout({
             }),
           }}
         />
+        <Script
+          defer
+          src="https://analytics.farhanhelmy.com/script.js"
+          data-website-id="4ff9657f-1471-45f7-b9a2-4082b174bf26"
+        />
       </head>
       <body
         className={cn(
