@@ -136,7 +136,6 @@ export default function RootLayout({
           defer
           src="https://analytics.farhanhelmy.com/script.js"
           data-website-id="c2f79734-cbe5-4b9d-afd0-75e063e0aadb"
-{/*           data-website-id="4ff9657f-1471-45f7-b9a2-4082b174bf26" */}
         />
       </head>
       <body
