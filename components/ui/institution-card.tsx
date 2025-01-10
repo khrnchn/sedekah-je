@@ -5,17 +5,17 @@ import Share from "@/components/share";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
-	Tooltip,
-	TooltipContent,
-	TooltipProvider,
-	TooltipTrigger,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 import { cn, slugify } from "@/lib/utils";
@@ -69,7 +69,7 @@ const InstitutionCard = forwardRef<
       isClosest,
       distanceToCurrentUserInMeter,
     },
-    ref
+    ref,
   ) => {
     const [active, setActive] = useState<boolean | null>(false);
     const innerRef = useRef<HTMLDivElement>(null);
@@ -282,7 +282,7 @@ const InstitutionCard = forwardRef<
                 "hover:bg-gray-100 dark:hover:bg-zinc-800",
                 isClosest
                   ? "border-[hsl(var(--primary))] animate-pulse-subtle"
-                  : ""
+                  : "",
               )}
               onClick={() => navigateToItem(category, slugify(name))}
             >
@@ -316,8 +316,8 @@ const InstitutionCard = forwardRef<
                         category === "mosque"
                           ? "/masjid/masjid-figma.svg"
                           : category === "surau"
-                          ? "/surau/surau-figma.svg"
-                          : "/lain/lain-figma.svg"
+                            ? "/surau/surau-figma.svg"
+                            : "/lain/lain-figma.svg"
                       }
                       alt="category logo"
                       width={50}
@@ -384,39 +384,50 @@ const InstitutionCard = forwardRef<
                         onClick={async (e) => {
                           e.stopPropagation();
                           try {
-                            if (!qrContent) {
-                              const blob = await fetch(qrImage).then((res) =>
-                                res.blob()
-                              );
-                              const url = URL.createObjectURL(blob);
-                              const a = document.createElement("a");
+                            // Create a temporary iframe to load the QR page
+                            const iframe = document.createElement("iframe");
+                            iframe.style.visibility = "hidden";
+                            iframe.style.position = "fixed";
+                            iframe.style.right = "0";
+                            iframe.style.bottom = "0";
+                            iframe.width = "1080px";
+                            iframe.height = "1080px";
 
-                              a.href = url;
-                              a.download = `${name
-                                .toLowerCase()
-                                .replace(/\s/g, "-")}.png`;
-                              a.click();
-                              URL.revokeObjectURL(url);
-                            } else {
-                              const element = printRef.current;
-                              const canvas = await html2canvas(
-                                element as HTMLButtonElement
-                              );
+                            // Set the source to the QR page URL
+                            iframe.src = `${window.location.origin}/qr/${slugify(name)}`;
 
-                              const data = canvas.toDataURL("image/jpg");
-                              const link = document.createElement("a");
+                            document.body.appendChild(iframe);
 
-                              link.href = data;
-                              link.download = `${name
-                                .toLowerCase()
-                                .replace(/\s/g, "-")}.png`;
+                            // Wait for iframe to load
+                            await new Promise((resolve) => {
+                              iframe.onload = resolve;
+                            });
 
-                              document.body.appendChild(link);
-                              link.click();
-                              document.body.removeChild(link);
-                            }
+                            // Capture the iframe content
+                            const canvas = await html2canvas(
+                              iframe.contentDocument?.body as HTMLElement,
+                              {
+                                useCORS: true,
+                                allowTaint: true,
+                                backgroundColor: "#ffffff",
+                              },
+                            );
+
+                            // Convert to downloadable image
+                            const data = canvas.toDataURL("image/png");
+                            const link = document.createElement("a");
+                            link.href = data;
+                            link.download = `sedekahje-${slugify(name)}.png`;
+                            document.body.appendChild(link);
+                            link.click();
+
+                            // Cleanup
+                            document.body.removeChild(link);
+                            document.body.removeChild(iframe);
+
                             toast.success("Berjaya memuat turun kod QR.");
                           } catch (error) {
+                            console.error(error);
                             toast.error("Gagal memuat turun kod QR.");
                           }
                         }}
@@ -454,12 +465,12 @@ const InstitutionCard = forwardRef<
 
                           const element = printRef.current;
                           const canvas = await html2canvas(
-                            element as HTMLButtonElement
+                            element as HTMLButtonElement,
                           );
 
                           const data = canvas.toDataURL("image/jpg");
                           const blob = await fetch(data).then((res) =>
-                            res.blob()
+                            res.blob(),
                           );
 
                           copyToClipboard(blob);
@@ -504,7 +515,7 @@ const InstitutionCard = forwardRef<
         </TooltipProvider>
       </>
     );
-  }
+  },
 );
 
 InstitutionCard.displayName = "InstitutionCard";
