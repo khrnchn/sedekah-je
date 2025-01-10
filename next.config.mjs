@@ -4,7 +4,8 @@ const nextConfig = {
     // Warning: This allows production builds to successfully complete even if
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
-    images: {
+  },
+  images: {
     remotePatterns: [
       {
         protocol: "https",
@@ -14,6 +15,32 @@ const nextConfig = {
       },
     ],
   },
+
+  webpack(config) {
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ["@svgr/webpack"],
+    });
+
+    return config;
+  },
+
+  async headers() {
+    return [
+      {
+        source: "/qr/:path*",
+        headers: [
+          {
+            key: "Cross-Origin-Embedder-Policy",
+            value: "require-corp",
+          },
+          {
+            key: "Cross-Origin-Opener-Policy",
+            value: "same-origin",
+          },
+        ],
+      },
+    ];
   },
 };
 

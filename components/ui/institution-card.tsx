@@ -390,8 +390,8 @@ const InstitutionCard = forwardRef<
                             iframe.style.position = "fixed";
                             iframe.style.right = "0";
                             iframe.style.bottom = "0";
-                            iframe.width = "1080px";
-                            iframe.height = "1080px";
+                            iframe.width = "600px";
+                            iframe.height = "600px";
 
                             // Set the source to the QR page URL
                             iframe.src = `${window.location.origin}/qr/${slugify(name)}`;

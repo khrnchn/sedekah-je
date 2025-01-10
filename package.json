@@ -36,6 +36,7 @@
     "@radix-ui/react-tooltip": "^1.1.6",
     "@react-google-maps/api": "^2.20.5",
     "@sparticuz/chromium": "^131.0.1",
+    "@svgr/webpack": "^8.1.0",
     "@t3-oss/env-core": "^0.11.1",
     "@tanstack/react-query": "^5.62.8",
     "@tanstack/react-table": "^8.20.6",

@@ -1,7 +1,5 @@
-import Image from "next/image";
-import React from "react";
-
 import { QRCodeSVG } from "qrcode.react";
+import SedekahjeLogo from "../../../public/masjid.svg";
 
 import { institutions } from "@/app/data/institutions";
 import { slugify } from "@/lib/utils";
@@ -36,13 +34,8 @@ function QRSlug({ params }: { params: { slug: string } }) {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center">
       <div className="mb-4 flex flex-col items-center justify-center space-y-2">
-        <Image
-          alt=""
-          src="https://sedekah.je/masjid.svg"
-          className="size-[80px]"
-          width={80}
-          height={80}
-        />
+        <SedekahjeLogo width="80" height="80" />
+
         <p className="text-sm font-bold">SedekahJe</p>
       </div>
       <div className="h-[350px] w-[350px]">
@@ -50,11 +43,9 @@ function QRSlug({ params }: { params: { slug: string } }) {
           className={`relative flex h-full w-full items-center justify-center rounded-2xl ${map[type].bgColor}`}
         >
           <div className="absolute top-0 mt-2 rounded-full bg-white p-2">
-            <Image
+            <img
               src={map[type].logo}
-              width={100}
-              height={100}
-              className={`h-10 w-10 rounded-full object-contain p-1 ${map[type].bgColor}`}
+              className={`size-10 rounded-full object-contain p-1 ${map[type].bgColor}`}
               alt=""
             />
           </div>
