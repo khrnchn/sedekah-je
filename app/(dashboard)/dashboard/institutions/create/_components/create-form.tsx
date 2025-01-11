@@ -9,7 +9,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Category, City, PaymentMethod, State } from "@/db/schema";
 import { toTitleCase } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { revalidatePath } from "next/cache";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
@@ -20,6 +19,7 @@ import { createInstitutionSchema } from "../_lib/validations";
 import { LocationSearch } from "./location-search";
 import { Payment } from "./sections/payment";
 import QRSkeleton from "./sections/qr";
+import { Social } from "./sections/social";
 
 interface CreateInstitutionFormProps {
   categories: Category[];
@@ -41,7 +41,6 @@ export function CreateInstitutionForm({
   paymentMethods,
 }: CreateInstitutionFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const router = useRouter()
 
   const form = useForm<z.infer<typeof createInstitutionSchema>>({
     resolver: zodResolver(createInstitutionSchema),
@@ -84,7 +83,6 @@ export function CreateInstitutionForm({
       // window.location.reload() kalau reload page macam tak best pula
     } catch (error) {
       toast.error("Something went wrong!");
-      console.log("error: ", error)
     } finally {
       setIsSubmitting(false);
     }
@@ -269,6 +267,10 @@ export function CreateInstitutionForm({
                 {/* Right Section */}
                 <div className="lg:col-span-1 space-y-8">
                   <Payment paymentMethods={paymentMethods} />
+
+                  {/* TODO: maybe allow only for admin(?) */}
+                  {/* <Social socialPlatforms={socialPlatforms} /> */}
+
                   <QRSkeleton />
                 </div>
               </div>

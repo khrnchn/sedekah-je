@@ -112,8 +112,8 @@ export function Social({ socialPlatforms }: SocialLinksCardProps) {
                             // Include currently selected platform if it exists
                             ...(field.value
                               ? socialPlatforms.filter(
-                                  (p) => p.id === field.value
-                                )
+                                (p) => p.id === field.value
+                              )
                               : []),
                           ].map((platform) => (
                             <SelectItem
