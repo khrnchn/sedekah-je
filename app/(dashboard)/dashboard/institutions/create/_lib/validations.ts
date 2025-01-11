@@ -2,7 +2,7 @@ import * as z from "zod";
 
 export type CreateInstitutionSchema = z.infer<typeof createInstitutionSchema>;
 
-const socialLinkSchema = z.object({
+export const socialLinkSchema = z.object({
     platformId: z.number({
         required_error: "Please select a social platform",
     }),
@@ -36,7 +36,6 @@ export const createInstitutionSchema = z.object({
     latitude: z.number().min(-90).max(90),
     longitude: z.number().min(-180).max(180),
 
-    // social links
     socialLinks: z.array(socialLinkSchema).optional(),
 
     // others
