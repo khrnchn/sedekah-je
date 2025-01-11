@@ -6,7 +6,7 @@ import { useMemo, useRef } from "react"
 import { useLoadScript } from "@react-google-maps/api"
 
 interface LocationSearchProps {
-  onLocationSelect: (lat: number, lng: number, address: string) => void
+  onLocationSelect: (lat: number, lng: number, address: string, postcode: string) => void
 }
 
 export function LocationSearch({ onLocationSelect }: LocationSearchProps) {
@@ -30,7 +30,15 @@ export function LocationSearch({ onLocationSelect }: LocationSearchProps) {
         const lat = place.geometry.location.lat()
         const lng = place.geometry.location.lng()
         const address = place.formatted_address || ""
-        onLocationSelect(lat, lng, address)
+
+        let postcode = ""
+        place.address_components?.forEach((component) => {
+          if (component.types.includes("postal_code")) {
+            postcode = component.long_name
+          }
+        })
+
+        onLocationSelect(lat, lng, address, postcode)
       }
     })
 
