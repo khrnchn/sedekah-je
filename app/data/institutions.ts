@@ -9887,16 +9887,5 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 		coords: [2.9485325097481647, 101.76854506931714],
 	},
-	// @rusmanarief, twitter
-	{
-		id: 808,
-		name: "Surau An Nur",
-		category: "surau",
-		state: "Selangor",
-		city: "Bangi",
-		qrImage: "",
-		qrContent: "00020201021126420014A000000615000101066033460210MD001319085204866153034585802MY5912SURAU AN-NUR6002MY6273032517109002779070093410327470520171090029274300382340716171090007960400663046313",
-		supportedPayment: ["duitnow", "tng"],
-		coords: [2.9485325097481647, 101.76854506931714],
-	},
+	
 ];
