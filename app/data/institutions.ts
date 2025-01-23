@@ -9872,4 +9872,17 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 		coords: [3.112268283143902, 101.63392168186432],
 	},
+	// aniq, github issues - https://github.com/khrnchn/sedekah-je/issues/310
+	{
+		id: 807,
+		name: "Masjid Al Mukarramah Bandar Sri Damansara",
+		category: "mosque",
+		state: "Selangor",
+		city: "Petaling Jaya",
+		qrImage: "",
+		qrContent:
+			"00020201021126580014A000000615000101065641600226126232600001697RHBQR0093025204739953034585802MY5920Masjid Al Mukarramah6002MY61055220062230309ROA0135690706mambsd8264BFE8DD69EEB5AC29980B0B125252E9176A09BA92B527DFF93C3430ADC652C5606304C140",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [3.191508467534771, 101.61398182419398],
+	},
 ];
