@@ -2851,9 +2851,9 @@ export const institutions: Institution[] = [
 	},
 	{
 		/* TODO: There are two Surau Nurul Hidayah in Selangor, need to be more specific
-    Surau Nurul Hidayah, Prima Selayang
-    Surau Nurul Hidayah, Taman Kemacahaya
-    */
+	Surau Nurul Hidayah, Prima Selayang
+	Surau Nurul Hidayah, Taman Kemacahaya
+	*/
 		id: 232,
 		name: "Surau Nurul Hidayah",
 		category: "surau",
@@ -8735,7 +8735,7 @@ export const institutions: Institution[] = [
 		qrContent:
 			"00020201021126580014A000000615000101065887340212MBBQR2187481031000000000005204729953034585802MY5922MASJID JAMEK ALMA JAYA6012PULAU PINANG6304B988",
 		supportedPayment: ["duitnow"],
-		coords: [5.331237499999999, 100.4705469],
+		coords: [5.321997143277674, 100.47786845767071],
 	},
 	{
 		// https://www.facebook.com/MasjidAlIttihadKgKumpulanLangkawi/
@@ -9864,7 +9864,7 @@ export const institutions: Institution[] = [
 	},
 	// khairin, taken from masjid
 	{
-		id: 806, 
+		id: 806,
 		name: "Masjid Tun Abdul Aziz",
 		category: "mosque",
 		state: "Selangor",
@@ -9874,5 +9874,29 @@ export const institutions: Institution[] = [
 			"00020201021126600014A000000615000101065892670228BRQR65e7e15601d6cb62ca24b6045204922253034585802MY5921Masjid Tun Abdul Aziz6013Petaling Jaya61054610062420310M000002352052465e7e159d3f9a90682ec0b796304B10A",
 		supportedPayment: ["duitnow", "tng"],
 		coords: [3.112268283143902, 101.63392168186432],
-	}
+	},
+	// @rusmanarief, twitter
+	{
+		id: 807,
+		name: "Surau An Nur",
+		category: "surau",
+		state: "Selangor",
+		city: "Bangi",
+		qrImage: "",
+		qrContent: "00020201021126420014A000000615000101066033460210MD001319085204866153034585802MY5912SURAU AN-NUR6002MY6273032517109002779070093410327470520171090029274300382340716171090007960400663046313",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [2.9485325097481647, 101.76854506931714],
+	},
+	// @rusmanarief, twitter
+	{
+		id: 808,
+		name: "Surau An Nur",
+		category: "surau",
+		state: "Selangor",
+		city: "Bangi",
+		qrImage: "",
+		qrContent: "00020201021126420014A000000615000101066033460210MD001319085204866153034585802MY5912SURAU AN-NUR6002MY6273032517109002779070093410327470520171090029274300382340716171090007960400663046313",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [2.9485325097481647, 101.76854506931714],
+	},
 ];
