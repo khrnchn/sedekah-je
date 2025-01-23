@@ -2639,7 +2639,7 @@ export const institutions: Institution[] = [
 	},
 	{
 		id: 214,
-		name: "Tabung Anak Yatim Masjid P.Jaya", // TODO: Panchor Jaya?
+		name: "Tabung Anak Yatim Masjid Panchor Jaya",
 		category: "others",
 		state: "Negeri Sembilan",
 		city: "Seremban",
@@ -6968,7 +6968,6 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 		coords: [2.0387216, 103.3280851],
 	},
-	// TODO: find coords
 	{
 		id: 574,
 		name: "Masjid Al Muhajirin Felda Selancar 2",
@@ -6979,7 +6978,7 @@ export const institutions: Institution[] = [
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000279031001370401975204866153034585802MY5925MJD AL-MUHAJIRIN F.SLCR 26012MUADZAM SHAH61052670063049B8B",
 		supportedPayment: ["duitnow", "tng"],
-		coords: [0, 0],
+		coords: [2.6318421132259733, 103.01650721164643],
 	},
 	{
 		id: 575,
@@ -7065,17 +7064,17 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 		coords: [2.492, 102.82717],
 	},
+	// @rusmanarief, twitter
 	{
 		id: 582,
-		name: "B.tdbir Mj Jamek B.siput", // TODO: Check again, Masjid Jamek Kampung Sungai Siput?
-		category: "others",
-		state: "Johor",
-		city: "Segamat",
+		name: "Surau An Nur",
+		category: "surau",
+		state: "Selangor",
+		city: "Bangi",
 		qrImage: "",
-		qrContent:
-			"00020201021126610014A000000615000101065641670215QRMID0000000343031001374343995204866153034585802MY5924B.TDBIR MJ JAMEK B.SIPUT6007SEGAMAT61058500063048893",
+		qrContent: "00020201021126420014A000000615000101066033460210MD001319085204866153034585802MY5912SURAU AN-NUR6002MY6273032517109002779070093410327470520171090029274300382340716171090007960400663046313",
 		supportedPayment: ["duitnow", "tng"],
-		coords: [2.4631192, 102.6998185],
+		coords: [2.9485325097481647, 101.76854506931714],
 	},
 	{
 		id: 583,
@@ -7137,7 +7136,6 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 		coords: [2.0663562, 102.5812014],
 	},
-	// TODO: find coords
 	{
 		id: 588,
 		name: "Surau Al Barakah Bakri B2",
@@ -7148,7 +7146,7 @@ export const institutions: Institution[] = [
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000665031001975056005204866153034585802MY5925SURAU AL BARAKAH BAKRI B26004MUAR6105840006304F5A4",
 		supportedPayment: ["duitnow", "tng"],
-		coords: [0, 0],
+		coords: [2.047891117697883, 102.59768962883534],
 	},
 	{
 		id: 589,
@@ -7607,18 +7605,17 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 		coords: [2.1791205, 102.2737763],
 	},
-	// TODO: find coords
 	{
 		id: 628,
-		name: "Pembangunan Surau Taman Bukit Cheng 2",
+		name: "Surau Al Munawarah Taman Bukit Cheng",
 		category: "surau",
 		state: "Melaka",
-		city: "Taman Bukit Che",
+		city: "Melaka",
 		qrImage: "",
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000321031001762459575204866153034585802MY5925PBN SURAU TMN BKT CHENG 26015TAMAN BUKIT CHE6105752506304C22D",
 		supportedPayment: ["duitnow", "tng"],
-		coords: [0, 0],
+		coords: [2.2644666864247918, 102.22205925302586],
 	},
 	{
 		// https://www.facebook.com/MasjidAlAbrarSemabok/
@@ -9542,7 +9539,6 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 		coords: [3.3894139, 102.4349279],
 	},
-	// TODO: add coords
 	// khairin, facebook - https://www.facebook.com/photo.php?fbid=10228973039684008&set=p.10228973039684008&type=3
 	{
 		id: 782,
@@ -9555,6 +9551,7 @@ export const institutions: Institution[] = [
 		qrContent:
 			"00020201021126420014A000000615000101066033460210MD001301815204866153034585802MY5915MUSOLLA AN-NUR 6002MY6273032517072029477130091939813630520170720464403900269640716170720168107000563045D47",
 		supportedPayment: ["duitnow", "tng"],
+		coords: [3.112051131128929, 101.55233799535831]
 	},
 	// khairin, facebook - https://www.facebook.com/photo.php?fbid=7667341323284756&set=p.7667341323284756&type=3
 	{
@@ -9875,17 +9872,4 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 		coords: [3.112268283143902, 101.63392168186432],
 	},
-	// @rusmanarief, twitter
-	{
-		id: 807,
-		name: "Surau An Nur",
-		category: "surau",
-		state: "Selangor",
-		city: "Bangi",
-		qrImage: "",
-		qrContent: "00020201021126420014A000000615000101066033460210MD001319085204866153034585802MY5912SURAU AN-NUR6002MY6273032517109002779070093410327470520171090029274300382340716171090007960400663046313",
-		supportedPayment: ["duitnow", "tng"],
-		coords: [2.9485325097481647, 101.76854506931714],
-	},
-	
 ];
