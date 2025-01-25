@@ -9885,4 +9885,28 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 		coords: [3.191508467534771, 101.61398182419398],
 	},
+	// @puteriarchy, twitter - https://x.com/puteriarchy/status/1882709240198128022
+	{
+		id: 808,
+		name: "Wakaf Pembinaan Masjid Saujana KLIA",
+		category: "mosque",
+		state: "Selangor",
+		city: "Sepang",
+		qrImage: "",
+		qrContent: "00020201021126580014A000000615000101065016640226100106620010264O99AOSA00015204839853034585802MY5925INFAQ PEMBINAAN MASJID SA6002MY62150311O99AOSA00018264EF1E59E723560928E9C6690069552AE2AF681855DF348417B3BF70B61D870AE663048B75",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [2.8172482434275805, 101.68491203157784], // TODO: this is coords for taman saujana klia. 
+	},
+	// @zainul1772823, twitter dm
+	{
+		id: 809,
+		name: "Masjid Al-Hijrah Desa Pinggiran Putra",
+		category: "mosque",
+		state: "Selangor",
+		city: "Kajang",
+		qrImage: "",
+		qrContent: "00020201021126420014A000000615000101066033460210MD000018395204866153034585802MY5917MASJID Al-Hijrah 6002MY62530325163168556579200890279451205201638324296056001106563047D63",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [2.897884056988074, 101.7013001576707],
+	}
 ];
