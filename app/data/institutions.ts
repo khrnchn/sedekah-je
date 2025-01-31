@@ -9921,7 +9921,6 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 		coords: [6.079464934636663, 100.4424562573742], // TODO: in maps it says 'FUTURE MASJID JAMEK AL-IKRAM"
 	},
-	// 
 	// @zainul1772823, twitter dm
 	{
 		id: 811,
@@ -9933,5 +9932,17 @@ export const institutions: Institution[] = [
 		qrContent: "00020201021126420014A000000615000101066033460210MD000048515204829953034585802MY5925PONDOK PENGAJIAN BA ALAWI6002MY62730325163729051406400969576516005201670732427957004066607161637290132872005630476AF",
 		supportedPayment: ["duitnow", "tng"],
 		coords: [1.8481315720872622, 102.94203815767072],
-	}
+	},
+	// hafiz, github issues - https://github.com/khrnchn/sedekah-je/issues/321
+	{
+		id: 812,
+		name: "Masjid Universiti Pertahanan Nasional Malaysia",
+		category: "mosque",
+		state: "W.P. Kuala Lumpur",
+		city: "W.P. Kuala Lumpur",
+		qrImage: "",
+		qrContent: "00020201021126420014A000000615000101066033460210MD000907595204939953034585802MY5925UNIVERSITI PERTAHANAN NAS6002MY6273032516709855659800020663767330520167098557890300754730716167098444253800763048D05",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [3.049369356192392, 101.72208088186406],
+	},
 ];
