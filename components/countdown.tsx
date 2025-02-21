@@ -14,7 +14,7 @@ const RamadanCountdown = () => {
   const [isRamadan, setIsRamadan] = useState(false)
 
   useEffect(() => {
-    const ramadanStartDate = new Date("February 28, 2025 00:00:00").getTime()
+    const ramadanStartDate = new Date("March 2, 2025 00:00:00").getTime()
 
     const updateCountdown = () => {
       const now = new Date().getTime()
