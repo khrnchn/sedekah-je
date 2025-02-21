@@ -9945,4 +9945,28 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 		coords: [3.049369356192392, 101.72208088186406],
 	},
+	// hnish, twitter - https://x.com/Hnish_t/status/1892772581222101468
+	{
+		id: 813,
+		name: "Mental Illness Awareness and Support Association MIASA",
+		category: "others",
+		state: "Selangor",
+		city: "Petaling Jaya",
+		qrImage: "",
+		qrContent: "00020201021126420014A000000615000101066033460210MD001141215204539953034585802MY5905MIASA6002MY6273032516866479012820088540602930520168664796306300848940716168663143198900663045041",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [3.1266230929914056, 101.64736675767072],
+	},
+	// hnish, twitter - https://x.com/Hnish_t/status/1892772581222101468
+	{
+		id: 814,
+		name: "National Cancer Society Malaysia",
+		category: "others",
+		state: "W.P. Kuala Lumpur",
+		city: "W.P. Kuala Lumpur",
+		qrImage: "",
+		qrContent: "00020201021126580014A000000615000101065887340212MBBQR1963202031000000000005204000053034585802MY5925NATIONALCANCERSOCIETYMSIA6015WP KUALA LUMPUR62280724MBBQR1963202NCSMDONATION63049ABF",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [3.1683339828744015, 101.70514135302923],
+	},
 ];
