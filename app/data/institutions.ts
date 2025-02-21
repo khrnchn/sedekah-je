@@ -9969,4 +9969,16 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 		coords: [3.1683339828744015, 101.70514135302923],
 	},
+	// @dilaaazzz, twitter dm
+	{
+		id: 815,
+		name: "Tahfiz Rendah Assofa Seremban",
+		category: "others",
+		state: "Negeri Sembilan",
+		city: "Seremban",
+		qrImage: "",
+		qrContent: "00020201021126890014A0000006150001010642070902240500441100031388F72552000315BSN Merchant QR041001450252265204000053034585802MY5925KELAB ANSORIN MTAS & TRAS6005BAHAU6105703006304B4BE",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [2.71599246653301, 101.91983745302747],
+	},
 ];
