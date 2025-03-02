@@ -9981,4 +9981,16 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 		coords: [2.71599246653301, 101.91983745302747],
 	},
+	// @mfahm1y, twitter - https://x.com/mfahm1y/status/1895734217067352529
+	{
+		id: 816,
+		name: "Musolla Idaman Residensi Selangorku Cyberjaya",
+		category: "surau",
+		state: "Selangor",
+		city: "Cyberjaya",
+		qrImage: "",
+		qrContent: "00020201021126600014A000000615000101065892670228BRQR6653e22748ea907710471c055204866153034585802MY5914Musolla Idaman6009Cyberjaya61056330062420310M00000343105246653e232898fea1577c54fa36304B713",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [2.910696524929305, 101.63039964232928],
+	}
 ];
