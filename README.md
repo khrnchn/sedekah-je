@@ -41,7 +41,7 @@ you may refer [projects](https://github.com/users/khrnchn/projects/1/views/1) or
 ## contributors
 
 <a href="https://github.com/khrnchn/sedekah-je/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=khrnchn/sedekah-je" />
+    <img src="https://contrib.rocks/image?repo=khrnchn/sedekah-je" />
 </a>
 
 ## stats for fun
