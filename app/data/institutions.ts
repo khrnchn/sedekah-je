@@ -7894,7 +7894,7 @@ export const institutions: Institution[] = [
 		city: "Kuala Terengganu",
 		qrImage: "",
 		qrContent:
-			"0020201021126420014A000000615000101066033460210MD001203755204866153034585802MY5925Masjid Al-Muktafi Billah 6002MY627303251688458697280006044542704052016884587238070053035071616884584108920086304CB95",
+			"00020201021126420014A000000615000101066033460210MD001203755204866153034585802MY5925Masjid Al-Muktafi Billah 6002MY627303251688458697280006044542704052016884587238070053035071616884584108920086304CB95",
 		supportedPayment: ["duitnow"],
 		coords: [5.3277666, 103.1488076],
 	},
@@ -7934,18 +7934,19 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow"],
 		coords: [2.976648, 101.622875],
 	},
-	{
-		id: 655,
-		name: "Masjid Khalifah Taman Jaya",
-		category: "mosque",
-		state: "Terengganu",
-		city: "Kuala Terengganu",
-		qrImage: "",
-		qrContent:
-			"00020201021126610014A000000615000101065641670215QRMID0000010061041001998485995204866153034585802MY5925MJD KHALIFAH INFAK MASJID6015KUALA TERENGGAN610520400630456E",
-		supportedPayment: ["duitnow"],
-		coords: [5.3223491, 103.1457523],
-	},
+	// TODO: invalid qr, need to update
+	// {
+	// 	id: 655,
+	// 	name: "Masjid Khalifah Taman Jaya",
+	// 	category: "mosque",
+	// 	state: "Terengganu",
+	// 	city: "Kuala Terengganu",
+	// 	qrImage: "",
+	// 	qrContent:
+	// 		"00020201021126610014A000000615000101065641670215QRMID0000010061041001998485995204866153034585802MY5925MJD KHALIFAH INFAK MASJID6015KUALA TERENGGAN610520400630456E",
+	// 	supportedPayment: ["duitnow"],
+	// 	coords: [5.3223491, 103.1457523],
+	// },
 	{
 		id: 656,
 		name: "Surau Al-Mukhlisin Pangsapuri Semarak",
