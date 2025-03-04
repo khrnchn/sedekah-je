@@ -1,10 +1,10 @@
 "use client";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowUpRight, Moon } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import moment from "moment-hijri";
-// import { Skeleton } from '@/components/ui/skeleton'
 
 /**
  * Calculates Ramadan information based on the current Hijri date
@@ -46,9 +46,33 @@ const RamadanProgress = () => {
 		refetchOnWindowFocus: false, // Nak avoid unnecessary calls
 	});
 
-	// Return null (don't render anything) if not Ramadan or still loading
+	// Show skeleton while loading
 	if (isLoading || !ramadanInfo) {
-		return null;
+		return (
+			<Card className="relative overflow-hidden bg-gradient-to-r from-emerald-400 to-teal-800 text-white shadow-lg p-4 sm:p-6">
+				<div className="absolute inset-0 opacity-30 ramadhan-bg" />
+				<CardHeader className="relative p-2 sm:p-6">
+					<CardTitle className="flex items-center justify-center gap-2 text-center text-lg sm:text-3xl font-bold">
+						<Skeleton className="h-5 w-5 sm:h-8 sm:w-8 bg-white/30 rounded-full" />
+						<Skeleton className="h-8 w-48 sm:h-10 sm:w-64 bg-white/30 rounded-md" />
+					</CardTitle>
+				</CardHeader>
+				<CardContent className="relative flex flex-col items-center gap-4 sm:gap-6 p-2">
+					{/* Ramadan Progress Skeleton */}
+					<div className="w-full">
+						<Skeleton className="h-6 w-48 mx-auto mb-2 bg-white/30 rounded-md" />
+						<Skeleton className="w-full bg-white/20 h-3 rounded-full" />
+						<Skeleton className="h-4 w-32 mx-auto mt-1 bg-white/30 rounded-md" />
+					</div>
+
+					{/* Ramadan Message & CTA Skeleton */}
+					<div className="mt-2 text-center space-y-2 w-full">
+						<Skeleton className="h-16 sm:h-14 w-full bg-white/10 rounded-lg" />
+						<Skeleton className="h-4 w-3/4 mx-auto bg-white/20 rounded-md" />
+					</div>
+				</CardContent>
+			</Card>
+		);
 	}
 
 	// Return null if it's not Ramadan
@@ -67,7 +91,7 @@ const RamadanProgress = () => {
 					className="flex items-center justify-center gap-2 text-center
           text-lg sm:text-3xl font-bold"
 				>
-					<Moon className="h-5 w-5 sm:h-8 sm:w-8" />
+					<Star className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-300" />
 					<span>{ramadanInfo.hijriDate}</span>
 				</CardTitle>
 			</CardHeader>
@@ -111,5 +135,16 @@ const RamadanProgress = () => {
 		</Card>
 	);
 };
+
+const Star = ({ className }: { className?: string }) => (
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		viewBox="0 0 24 24"
+		fill="currentColor"
+		className={className}
+	>
+		<path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+	</svg>
+);
 
 export default RamadanProgress;
