@@ -9994,5 +9994,65 @@ export const institutions: Institution[] = [
 		qrContent: "00020201021126600014A000000615000101065892670228BRQR6653e22748ea907710471c055204866153034585802MY5914Musolla Idaman6009Cyberjaya61056330062420310M00000343105246653e232898fea1577c54fa36304B713",
 		supportedPayment: ["duitnow", "tng"],
 		coords: [2.910696524929305, 101.63039964232928],
-	}
+	},
+	// @krnpcyknsiti, twitter dm
+	{
+		id: 817,
+		name: "Masjid Al-Ehsan Seksyen 24",
+		category: "mosque",
+		state: "Selangor",
+		city: "Shah Alam",
+		qrImage: "",
+		qrContent: "00020201021126420014A000000615000101066033460210MD000036345204866153034585802MY5915MASJID AL EHSAN6002MY627303251635143773201001755271045052017404704542540054782071616351435622430096304D885",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [3.0352710481411864, 101.52077565767071],
+	},
+	// @NajimmyF40448, twitter dm
+	{
+		id: 818,
+		name: "Surau Asy-Syarawi, Taman Mount Austin",
+		category: "surau",
+		state: "Johor",
+		city: "Johor Bahru",
+		qrImage: "",
+		qrContent: "00020201021126580014A000000615000101065641600226125106700002651RHBQR0588225204739953034585802MY5912ASY-SYA'RAWI6002MY61058110062250309ROA1103510708RosliAli8264C1EBBF4F59DDD1B9D09EC55CE5B0CB76C7FC214C62221F78574046B09E7123486304B1B0",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [1.5488397989965252, 103.78905378465859],
+	},
+	// @NajimmyF40448, twitter dm
+	{
+		id: 819,
+		name: "Masjid Taman Sri Pulai",
+		category: "mosque",
+		state: "Johor",
+		city: "Skudai",
+		qrImage: "",
+		qrContent: "00020201021126610014A000000615000101065018540215000001244030862031000000000005204866153034585802MY5925MASJID TAMAN SRI PULAI-QR6011JOHOR BAHRU6105813006215011110181170000630463C8",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [1.5640596200451136, 103.6174584530241],
+	},
+	// @NajimmyF40448, twitter dm
+	{
+		id: 820,
+		name: "Surau Jauharul Muttaqin, Taman Mount Austin",
+		category: "surau",
+		state: "Johor",
+		city: "Skudai",
+		qrImage: "",
+		qrContent: "00020201021126530014A000000615000101065641690221QRAMB00000000003027795204866153034585802MY5923SURAU JAUHARUL MUTTAQIN6005JOHOR6105813006304C620",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [1.523162620454609, 103.6276438540268],
+	},
+	// @NajimmyF40448, twitter dm
+	{
+		id: 821,
+		name: "Masjid Jamek Gelang Patah",
+		category: "mosque",
+		state: "Johor",
+		city: "Gelang Patah",
+		qrImage: "",
+		qrContent: "00020201021126580014A000000615000101065887340212MBBQR1949156031000000000005204000053034585802MY5925MASJID JAMEK GELANG PATAH6005JOHOR630480E5",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [1.4521724856504457, 103.58722635117638],
+	},
 ];

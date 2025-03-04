@@ -2,6 +2,7 @@ import Link from "next/link";
 import React from "react";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
+import { ExternalLink } from "lucide-react";
 
 const RawakFooter = () => {
 	return (
@@ -22,13 +23,20 @@ const RawakFooter = () => {
 					variant="outline"
 					className="bg-gradient-to-br from-blue-500 to-blue-300 border border-blue-400 rounded-full hover:from-blue-700 hover:to-blue-500 transition-colors duration-300"
 					onClick={() => {
-						toast.message(
-							"Kami telah berhenti menerima QR daripada pengguna buat masa sekarang.",
-						);
+						toast(
+							<div className="flex flex-col gap-2">
+								<p>
+									Sila DM gambar QR dan maklumat masjid di akaun twitter SedekahJe - {" "}
+									<span className="font-bold text-blue-500">
+										<Link href="https://x.com/sedekahje" target="_blank">x.com/sedekahje</Link>
+									</span>
+								</p>
+							</div>
+						)
 					}}
 				>
 					<p className="text-black font-medium bold dark:text-white">
-						Muatnaik QR
+						Nak Tambah QR?
 					</p>
 				</Button>
 			</a>

@@ -61,7 +61,7 @@ export function DisclaimerModal() {
 					<p className="mt-4">
 						Baca bagaimana SedekahJe mengesahkan QR sebelum ini:{" "}
 						<Link
-							href="https://www.khrnchn.xyz/blog/sedekah-je-first-challenge"
+							href="https://www.khairin.my/blog/sedekah-je-first-challenge"
 							target="_blank"
 							rel="noopener noreferrer"
 							className="text-blue-500 hover:underline"
