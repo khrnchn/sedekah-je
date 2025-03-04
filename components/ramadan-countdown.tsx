@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
-import { Moon } from "lucide-react";
+import { ArrowUpRight, Moon } from "lucide-react";
 import moment from "moment-hijri";
 // import { Skeleton } from '@/components/ui/skeleton'
 
@@ -71,14 +71,11 @@ const RamadanProgress = () => {
 					<span>{ramadanInfo.hijriDate}</span>
 				</CardTitle>
 			</CardHeader>
-			<CardContent
-				className="relative flex flex-col items-center gap-4 sm:gap-6 p-2
-        sm:p-6"
-			>
-				{/* Ramadan Progress Bar */}
+			<CardContent className="relative flex flex-col items-center gap-4 sm:gap-6 p-2">
+				{/* Ramadan Progress */}
 				<div className="w-full">
 					<div className="text-center text-sm sm:text-lg font-semibold mb-2">
-						Progress Ramadan
+						Perjalanan Bulan Ramadan
 					</div>
 					<div className="w-full bg-white/20 h-3 rounded-full">
 						<div
@@ -91,9 +88,24 @@ const RamadanProgress = () => {
 					</div>
 				</div>
 
-				{/* Greeting Message */}
-				<div className="mt-2 text-center text-xs sm:text-sm font-semibold">
-					Selamat Menunaikan Ibadah Puasa!
+				{/* Ramadan Message & CTA, Call to Action */}
+				<div className="mt-2 text-center space-y-2">
+					<div className="text-xs sm:text-sm bg-white/10 p-2 sm:p-3 rounded-lg">
+						<span className="font-bold">#SedekahJe 30 Hari 30 QR</span> - Ikuti
+						kempen sedekah Ramadan kami di{" "}
+						<a
+							href="https://x.com/sedekahje"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="inline-flex items-center gap-1 underline font-semibold hover:text-green-200 transition-colors"
+						>
+							<span>@sedekahje</span>
+							<ArrowUpRight className="h-3 w-3" />
+						</a>
+					</div>
+					<p className="text-xs italic opacity-80">
+						"Tidak akan berkurang harta dengan sedekah" - HR Muslim 2588
+					</p>
 				</div>
 			</CardContent>
 		</Card>
