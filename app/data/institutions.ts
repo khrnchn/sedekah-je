@@ -10055,4 +10055,29 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 		coords: [1.4521724856504457, 103.58722635117638],
 	},
+	// @hnnfqh, twitter dm
+	{
+		id: 822,
+		name: "Surau Kampung Kundangan",
+		category: "surau",
+		state: "Negeri Sembilan",
+		city: "Kuala Pilah",
+		qrImage: "",
+		qrContent: "00020201021126600014A000000615000101065892670228BRQR6661165871c83663c27bd2935204866153034585802MY5918Surau KG Kundangan6011Kuala pilah61057200062420310M000003582052466611666898fea1577c756b3630434CE",
+		supportedPayment: ["duitnow", "tng"],
+		// TODO: not actual surau coords, but kampung kundangan
+		coords: [2.748964291047681, 102.13264695470639],
+	},
+	// @thatguyridd, twitter dm
+	{
+		id: 823,
+		name: "Surau Al-Ikhwan",
+		category: "surau",
+		state: "Selangor",
+		city: "Kota Damansara",
+		qrImage: "",
+		qrContent: "00020201021126580014A000000615000101065641600226126208100008380RHBQR0404995204739953034585802MY5915Surau Al- Ikhwan6002MY61054781062300309ROA0840400713suraualikhwan8264A2BD044D9C063F5EE2E450FB6D4B536AC9608A0B1A768A2F1CB30775C566F7AD6304C7B8",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [3.1643578963043884, 101.57722660700495],
+	},
 ];
