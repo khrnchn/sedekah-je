@@ -10080,4 +10080,28 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 		coords: [3.1643578963043884, 101.57722660700495],
 	},
+	// @its_iskandar, twitter dm
+	{
+		id: 824,
+		name: "Masjid Talhah Bin Ubaidillah",
+		category: "mosque",
+		state: "Selangor",
+		city: "Bukit Jalil",
+		qrImage: "",
+		qrContent: "00020201021126420014A000000615000101066033460210MD001068305204866153034585802MY5925MASJID TALHAH BIN 'UBAIDI6002MY627303251680676024762008882529120052016806760760700062391071616806754610530066304511F",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [3.054668582371049, 101.66451075118127],
+	},
+	// @Rin4237, twitter dm
+	{
+		id: 825,
+		name: "Surau Bangi Perdana",
+		category: "surau",
+		state: "Selangor",
+		city: "Bangi",
+		qrImage: "",
+		qrContent: "00020201021126580014A000000615000101065887340212MBBQR1391598031000000000005204729953034585802MY5919SURAU BANGI PERDANA6008SELANGOR63047928",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [2.947007160694057, 101.78110436836978],
+	},
 ];
