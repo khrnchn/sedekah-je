@@ -10104,4 +10104,16 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 		coords: [2.947007160694057, 101.78110436836978],
 	},
+	// nur adam maxx, facebook - https://www.facebook.com/NurAdamMaxx/posts/pfbid02KmhC6fskVDesiRmnkQRE5N5AoNtnxHeW9yRtTE9CDXeMQSNsUfN9WgLRJ4BXf9fHl?comment_id=1938591719879950&reply_comment_id=957432703220541&notif_id=1741367772790072&notif_t=comment_mention&ref=notif
+	{
+		id: 826,
+		name: "Masjid Al-Firdaus Taman Tunku Miri",
+		category: "mosque",
+		state: "Sarawak",
+		city: "Miri",
+		qrImage: "",
+		qrContent: "00020201021126600014A000000615000101065892670228BRQR67c99e03f641c7609ef0d2a15204866153034585802MY5917Masjid Al Firdaus6004Miri61059800062420310M000006987052467c9a048f6e69d286e963a9763042F4F",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [4.324580076843401, 113.9949902107058],
+	}
 ];
