@@ -10186,4 +10186,15 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
   coords: [3.0348576033785086, 101.45047532883534],
   },
+  // khairin, facebook - https://www.facebook.com/photo/?fbid=781614480663446&set=pcb.781614750663419&locale=ms_MY
+  {
+    id: 831,
+    name: "Surau Abu Bakar As-Siddiq Taman Patani Jaya",
+    category: "surau",
+    state: "Kedah",
+    city: "Sungai Petani",
+    qrImage: "https://scontent.fkul10-1.fna.fbcdn.net/v/t39.30808-6/483881584_1049196137238611_6701623536270831227_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=127cfc&_nc_ohc=d9S1P5dsBHoQ7kNvgGA-I1o&_nc_oc=AdjrhzbNVe8wGVti4rfVyLYUeRqKxQ6KA3yXBArOTPsf-2ou9AYrO0oru7cWx4P-Em6Cc-UYpoCuWZcfxcip_Gob&_nc_zt=23&_nc_ht=scontent.fkul10-1.fna&_nc_gid=A8eqhtPj_9CCUYeBBI4s6ev&oh=00_AYHNHmps9qUmr_EVQ0RzRxc9a7XfNNPjmCyEcz88MVsgDw&oe=67D9C127",
+    qrContent: "",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
