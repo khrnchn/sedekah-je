@@ -10182,7 +10182,8 @@ export const institutions: Institution[] = [
     state: "Selangor",
     city: "Klang",
     qrImage: "https://scontent.fkul15-1.fna.fbcdn.net/v/t39.30808-6/481789232_1181545760646960_5821765101817029374_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=833d8c&_nc_ohc=ZeG0PDVAwqgQ7kNvgFp2c8y&_nc_oc=AdgAHeR9wg1cJrWtRbJ9lgV_zvlHsLlNizd6tIr5Bkddr2K9MrbVsuzYhDGoNh_mSddYfxtMAK8FEzA8kKvNLGX-&_nc_zt=23&_nc_ht=scontent.fkul15-1.fna&_nc_gid=AtLSovw0L1SFR9U4vS4IK-f&oh=00_AYGbRJOdAHHcgwoleImqMvP0CNo2-Bm0h7oAFJrjhCb6Pw&oe=67D9CB51",
-    qrContent: "",
+    qrContent: "00020201021126420014A000000615000101066033460210MD000072835204866153034585802MY5925MASJID DIRAJA SULTAN SULE6002MY6273032516409256228400098283525490520172250152401200853700716164092534728400663048884",
     supportedPayment: ["duitnow", "tng"]
+  coords: [3.0348576033785086, 101.45047532883534],
   },
 ];
