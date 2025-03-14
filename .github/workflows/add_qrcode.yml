@@ -7,6 +7,10 @@ on:
 jobs:
   add-qrcode:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.event.issue.number }}
+      cancel-in-progress: true
 
     steps:
       - name: Checkout Repository
@@ -26,9 +30,11 @@ jobs:
           echo "Keyword [addQR] found. Proceeding with workflow."
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4.2.0
         with:
-          node-version: "16"
+          node-version: "18"
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
 
       - name: Install Dependencies
         run: |
@@ -37,7 +43,7 @@ jobs:
       - name: Create Input File
         run: |
           echo "${{ github.event.issue.body }}" > input.data
-    
+
       - name: Run Extract Fields Script
         id: extract
         run: |
@@ -70,15 +76,15 @@ jobs:
           AUTHOR_NAME=$(gh api /users/${{ github.event.issue.user.login }} --jq .name)
           AUTHOR_EMAIL=$(gh api /users/${{ github.event.issue.user.login }} --jq .email)
           AUTHOR_LOGIN="${{ github.event.issue.user.login }}"
-          
+
           if [ "$AUTHOR_NAME" = "" ]; then
             AUTHOR_NAME="${AUTHOR_LOGIN}"
           fi
-          
+
           if [ "$AUTHOR_EMAIL" = "" ]; then
             AUTHOR_EMAIL="${AUTHOR_LOGIN}@users.noreply.github.com"
           fi
-          
+
           echo "name=$AUTHOR_NAME" >> $GITHUB_OUTPUT
           echo "email=$AUTHOR_EMAIL" >> $GITHUB_OUTPUT
         env:
@@ -108,6 +114,13 @@ jobs:
             --title ':memo: add new institution from #${{ github.event.issue.number }}' \
             --body "closes \#${{ github.event.issue.number }}
 
-          ${{ github.event.issue.body }}"
+          ${{ github.event.issue.body }}" \
+            --label "new-institution,automated-pr"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment on Issue
+        run: |
+          gh issue comment ${{ github.event.issue.number }} --body "Thank you for your contribution! A PR has been created #$(gh pr view ${{ steps.create_branch.outputs.branch }} --json number -q .number) to add this institution."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
