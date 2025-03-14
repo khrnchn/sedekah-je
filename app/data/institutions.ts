@@ -10194,7 +10194,8 @@ export const institutions: Institution[] = [
     state: "Kedah",
     city: "Sungai Petani",
     qrImage: "https://scontent.fkul10-1.fna.fbcdn.net/v/t39.30808-6/483881584_1049196137238611_6701623536270831227_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=127cfc&_nc_ohc=d9S1P5dsBHoQ7kNvgGA-I1o&_nc_oc=AdjrhzbNVe8wGVti4rfVyLYUeRqKxQ6KA3yXBArOTPsf-2ou9AYrO0oru7cWx4P-Em6Cc-UYpoCuWZcfxcip_Gob&_nc_zt=23&_nc_ht=scontent.fkul10-1.fna&_nc_gid=A8eqhtPj_9CCUYeBBI4s6ev&oh=00_AYHNHmps9qUmr_EVQ0RzRxc9a7XfNNPjmCyEcz88MVsgDw&oe=67D9C127",
-    qrContent: "",
-    supportedPayment: ["duitnow", "tng"]
+    qrContent: "00020201021126560014A000000615000101068900610224602e401d114579dd4ed21d325204000053034585802MY5925SURAU ABU BAKAR AS-SIDDIQ6002MY82405aec62394f5db1722a23bd8a9c3387f83e45b1f4630487E3",
+    supportedPayment: ["duitnow", "tng"],
+    coords: [5.631619720711193, 100.48703133770263],
   },
 ];
