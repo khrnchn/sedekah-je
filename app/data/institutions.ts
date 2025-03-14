@@ -10174,4 +10174,15 @@ export const institutions: Institution[] = [
 			"00020201021126580014A000000615000101065641600226125818700002722RHBQR0094285204739953034585802MY5924MASJID UBUDIAH K.KANGSAR6002MY61053300062300309ROA0137040713ubudiahbc20218264C33E21A43A4E516BABF9DED85D02AB6FA78ACFE2FB08AEE3395CE96E3E4B19426304F334",
 		supportedPayment: ["duitnow", "tng"],
 	},
+  // kyziq khairul haziq, taken from masjid
+  {
+    id: 830,
+    name: "Surau Al-Amin Taman Setapak Indah",
+    category: "surau",
+    state: "W.P. Kuala Lumpur",
+    city: "Kuala Lumpur",
+    qrImage: "https://i.ibb.co/tMCvZZQS/6242282297114083207-121.png",
+    qrContent: "",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
