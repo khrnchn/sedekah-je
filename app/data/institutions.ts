@@ -10140,4 +10140,15 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 		coords: [5.389406498068147, 103.0967455558232],
 	},
+  // khairin, facebook - https://www.facebook.com/MasjidJamekCinaMuslimKlang/posts/pfbid0sfVr86K9gKEX8NGu8eY7nSKYYjM5DHcTW2rwxwH3tdg1PT4U15HUKbvcqRtYEwYfl?locale=ms_MY
+  {
+    id: 829,
+    name: "Masjid Jamek Cina Muslim Klang",
+    category: "mosque",
+    state: "Selangor",
+    city: "Klang",
+    qrImage: "https://scontent.fkul16-2.fna.fbcdn.net/v/t39.30808-6/480680485_954454796796454_2336077717463582258_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=833d8c&_nc_ohc=pa8Tv9tA3KMQ7kNvgG0riFM&_nc_oc=AdiBqF9WtqZ3j_NjTSxajF2vPB1p8m6xZ8zQGixw6vXWdQqs5xVbbxBqvnnvdJjocZc&_nc_zt=23&_nc_ht=scontent.fkul16-2.fna&_nc_gid=AdTWeGqDF7zKQ_69Imcx4rb&oh=00_AYHmjXvL3ZKXxgpSQa315izrBWHXrP9tEP5lSs5ys86oQg&oe=67D9A012",
+    qrContent: "",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
