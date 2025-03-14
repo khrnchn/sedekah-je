@@ -29,23 +29,30 @@ const filePath = path.join(__dirname, "../app", "data", "institutions.ts");
 async function decodeQRCode(url, retries = 3) {
 	try {
 		console.log(`Attempting to decode QR code from URL: ${url}`);
-		const apiUrl = `https://api.qrserver.com/v1/read-qr-code/?fileurl=${encodeURIComponent(
-			url,
-		)}`;
-		console.log(`API URL: ${apiUrl}`);
+		const apiUrl = `https://zxing.org/w/decode?u=${encodeURIComponent(url)}`;
+		console.log(`Sending request to ZXing API: ${apiUrl}`);
 
 		const response = await axios.get(apiUrl);
-		console.log("API response status:", response.status);
+		console.log("Received response from ZXing API:", response.status);
 
-		const qrData = response.data;
-		console.log("API response data:", JSON.stringify(qrData, null, 2));
+		// Parse the HTML response to extract the decoded text
+		const htmlResponse = response.data;
 
-		if (qrData?.[0]?.symbol?.[0]?.data) {
-			console.log("QR code data found:", qrData[0].symbol[0].data);
-			return qrData[0].symbol[0].data;
+		// Look for the decoded text in the response
+		const decodedMatch = htmlResponse.match(/<pre>(.*?)<\/pre>/s);
+		if (decodedMatch?.[1]) {
+			const decodedText = decodedMatch[1].trim();
+			console.log("QR code data found:", decodedText);
+			return decodedText;
 		}
 
-		console.warn("No QR code data found in the response.");
+		// Check if there was an error message
+		const errorMatch = htmlResponse.match(/<div class="error">(.*?)<\/div>/s);
+		if (errorMatch?.[1]) {
+			console.warn(`ZXing API error: ${errorMatch[1].trim()}`);
+		} else {
+			console.warn("No QR code data found in the response");
+		}
 
 		if (retries > 0) {
 			console.log(`Retrying QR code decoding (${retries} retries left)...`);
@@ -75,6 +82,7 @@ async function decodeQRCode(url, retries = 3) {
 	}
 }
 
+// Main process to append the institution
 (async () => {
 	try {
 		console.log("Starting institution append process...");
@@ -112,6 +120,19 @@ async function decodeQRCode(url, retries = 3) {
 			supportedPayment = '["tng"]';
 		}
 
+		// Determine whether to include qrImage or not based on qrContent
+		let qrImageField = "";
+		let qrContentField = "";
+
+		if (qrContent) {
+			// If QR content was successfully extracted, only include qrContent
+			qrContentField = `\n    qrContent: "${escapedQrContent}",`;
+		} else {
+			// If QR content couldn't be extracted, only include qrImage
+			qrImageField = `\n    qrImage: "${qrCodeImage}",`;
+			console.log("QR code could not be decoded. Using qrImage instead.");
+		}
+
 		// Create a new institution entry with qrContent
 		const newInstitution = `  // ${remarks}
   {
@@ -119,9 +140,7 @@ async function decodeQRCode(url, retries = 3) {
     name: "${nameOfTheMasjid}",
     category: "${category}",
     state: "${state}",
-    city: "${nameOfTheCity}",
-    qrImage: "${qrCodeImage}",
-    qrContent: "${escapedQrContent}",
+  	city: "${nameOfTheCity}",${qrImageField}${qrContentField}
     supportedPayment: ${supportedPayment}
   },
 `;
