@@ -21,9 +21,9 @@ try {
 function extractFields(text) {
 	const fieldRegex = /\*\*(.*?):\*\*\s*(?:- )?(.*?)(?=\n\*\*|$)/gs;
 	const fields = {};
-	let match;
+	let match = fieldRegex.exec(text);
 
-	while ((match = fieldRegex.exec(text)) !== null) {
+	while (match !== null) {
 		const key = match[1].trim();
 		let value = match[2].trim();
 
@@ -32,11 +32,15 @@ function extractFields(text) {
 		}
 
 		if (key === "QR Code Image") {
-			const urlMatch = value.match(/\((https?:\/\/[^\s)]+)\)/);
-			if (urlMatch) {
-				value = urlMatch[1];
-			} else {
-				console.warn(`No URL found in QR Code Image field: "${value}"`);
+			// Check if the value is already a URL
+			if (!value.match(/^https?:\/\//)) {
+				// If not a direct URL, try to extract from markdown format
+				const urlMatch = value.match(/\((https?:\/\/[^\s)]+)\)/);
+				if (urlMatch) {
+					value = urlMatch[1];
+				} else {
+					console.warn(`No URL found in QR Code Image field: "${value}"`);
+				}
 			}
 		}
 
@@ -50,6 +54,9 @@ function extractFields(text) {
 			.join("");
 
 		fields[camelCaseKey] = value;
+
+		// Get the next match
+		match = fieldRegex.exec(text);
 	}
 
 	return fields;
