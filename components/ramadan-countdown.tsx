@@ -13,8 +13,10 @@ import moment from "moment-hijri";
 const calculateRamadanInfo = async () => {
 	// Get current Hijri date
 	const today = moment();
+
 	const hijriMonth = today.iMonth();
-	const hijriDay = today.iDate();
+	// Adjust for Malaysia starting Ramadan 1 day late
+	const hijriDay = today.iDate() - 1;
 	const hijriYear = today.iYear();
 
 	// Ramadan is the 9th month in Hijri calendar (0-indexed in moment-hijri)
@@ -28,6 +30,17 @@ const calculateRamadanInfo = async () => {
 
 	// Format Hijri date
 	const hijriDate = `Ramadan ${hijriDay}, ${hijriYear} AH`;
+
+	// Handle edge case where hijriDay becomes 0 or negative
+	if (hijriDay <= 0) {
+		return {
+			isRamadan: false,
+			hijriDay: 0,
+			totalDays,
+			progressPercentage: 0,
+			hijriDate: `Ramadan not started yet`,
+		};
+	}
 
 	return {
 		isRamadan,
