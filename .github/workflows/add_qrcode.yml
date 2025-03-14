@@ -46,7 +46,7 @@ jobs:
         id: extract
         run: |
           echo "${{ github.event.issue.number }}"
-          node actions/extractFields.js input.data
+          node actions/extractFields.js
         env:
           INPUT_FILE: "input.data"
           ISSUE_ID: "${{ github.event.issue.number }}"
@@ -54,12 +54,6 @@ jobs:
       - name: Append Data to institutions.ts
         run: |
           node actions/append_institution.js
-        env:
-          TYPE_OF_INSTITUTE: "${{ steps.extract.outputs.typeOfInstitute }}"
-          NAME_OF_MASJID: "${{ steps.extract.outputs.nameOfMasjid }}"
-          CITY: "${{ steps.extract.outputs.nameOfTheCity }}"
-          STATE: "${{ steps.extract.outputs.state }}"
-          IMAGE_URL: "${{ steps.extract.outputs.qrCodeImage }}"
 
       - name: Show Git Diff
         run: |

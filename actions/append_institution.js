@@ -26,25 +26,68 @@ const category =
 const filePath = path.join(__dirname, "../app", "data", "institutions.ts");
 
 // Function to decode QR code using the API
-async function decodeQRCode(url) {
+async function decodeQRCode(url, retries = 3) {
 	try {
-		const apiUrl = `https://api.qrserver.com/v1/read-qr-code/?fileurl=${encodeURIComponent(url)}`;
+		console.log(`Attempting to decode QR code from URL: ${url}`);
+		const apiUrl = `https://api.qrserver.com/v1/read-qr-code/?fileurl=${encodeURIComponent(
+			url,
+		)}`;
+		console.log(`API URL: ${apiUrl}`);
+
 		const response = await axios.get(apiUrl);
+		console.log("API response status:", response.status);
 
 		const qrData = response.data;
-		if (qrData?.[0].symbol?.[0].data) {
+		console.log("API response data:", JSON.stringify(qrData, null, 2));
+
+		if (qrData?.[0]?.symbol?.[0]?.data) {
+			console.log("QR code data found:", qrData[0].symbol[0].data);
 			return qrData[0].symbol[0].data;
 		}
-		console.error("No QR code data found in the response.");
+
+		console.warn("No QR code data found in the response.");
+
+		if (retries > 0) {
+			console.log(`Retrying QR code decoding (${retries} retries left)...`);
+			await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait 2 seconds
+			return decodeQRCode(url, retries - 1);
+		}
+
 		return "";
 	} catch (error) {
 		console.error(`Error decoding QR code from URL "${url}":`, error.message);
+
+		if (error.response) {
+			console.error("Response status:", error.response.status);
+			console.error(
+				"Response data:",
+				JSON.stringify(error.response.data, null, 2),
+			);
+		}
+
+		if (retries > 0) {
+			console.log(`Retrying QR code decoding (${retries} retries left)...`);
+			await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait 2 seconds
+			return decodeQRCode(url, retries - 1);
+		}
+
 		return "";
 	}
 }
 
 (async () => {
 	try {
+		console.log("Starting institution append process...");
+		console.log("Institution details:", {
+			typeOfInstitute,
+			nameOfTheMasjid,
+			nameOfTheCity,
+			state,
+			qrCodeImage,
+			remarks,
+			issueId,
+		});
+
 		// Decode QR code
 		const qrContent = await decodeQRCode(qrCodeImage);
 
@@ -58,6 +101,8 @@ async function decodeQRCode(url) {
 					...idMatches.map((id) => Number.parseInt(id.match(/\d+/)[0])),
 				) + 1
 			: 1;
+
+		console.log(`Using next ID: ${nextId}`);
 
 		// Escape double quotes in qrContent to prevent syntax errors
 		const escapedQrContent = qrContent.replace(/"/g, '\\"');
