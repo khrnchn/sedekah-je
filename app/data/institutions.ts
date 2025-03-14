@@ -10140,4 +10140,15 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 		coords: [5.389406498068147, 103.0967455558232],
 	},
+  // kyziq khairul haziq, taken from masjid
+  {
+    id: 829,
+    name: "Masjid Ubudiah Kuala Kangsar",
+    category: "mosque",
+    state: "Perak",
+    city: "Kuala Kangsar",
+    qrImage: "https://i.ibb.co/Fq6VD64R/Screenshot-2025-03-14-153925.png",
+    qrContent: "",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
