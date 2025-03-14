@@ -29,14 +29,14 @@ jobs:
           fi
           echo "Keyword [addQR] found. Proceeding with workflow."
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4.2.0
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2.01
         with:
-          node-version: "18"
+          bun-version: latest
 
       - name: Install Dependencies
         run: |
-          npm install axios --legacy-peer-deps
+          bun install axios
 
       - name: Create Input File
         run: |
@@ -46,14 +46,14 @@ jobs:
         id: extract
         run: |
           echo "${{ github.event.issue.number }}"
-          node actions/extractFields.js input.data
+          bun actions/extractFields.js input.data
         env:
           INPUT_FILE: "input.data"
           ISSUE_ID: "${{ github.event.issue.number }}"
 
       - name: Append Data to institutions.ts
         run: |
-          node actions/append_institution.js
+          bun actions/append_institution.js
         env:
           TYPE_OF_INSTITUTE: "${{ steps.extract.outputs.typeOfInstitute }}"
           NAME_OF_MASJID: "${{ steps.extract.outputs.nameOfMasjid }}"
