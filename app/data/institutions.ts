@@ -5866,18 +5866,19 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 		coords: [3.0780669, 112.8042869],
 	},
-	{
-		id: 483,
-		name: "Masjid Darul Khairat Bakam",
-		category: "mosque",
-		state: "Sarawak",
-		city: "Miri",
-		qrImage: "",
-		qrContent:
-			"00020201021126610014A000000615000101065641670215QRMID0000000406031001985521445204866153034585802MY5923MJD DARUL KHAIRAT BAKAM6004MIRI61059800063041BB2",
-		supportedPayment: ["duitnow", "tng"],
-		coords: [4.2450192, 113.9244984],
-	},
+	// TODO: transaction failed
+	// {
+	// 	id: 483,
+	// 	name: "Masjid Darul Khairat Bakam",
+	// 	category: "mosque",
+	// 	state: "Sarawak",
+	// 	city: "Miri",
+	// 	qrImage: "",
+	// 	qrContent:
+	// 		"00020201021126610014A000000615000101065641670215QRMID0000000406031001985521445204866153034585802MY5923MJD DARUL KHAIRAT BAKAM6004MIRI61059800063041BB2",
+	// 	supportedPayment: ["duitnow", "tng"],
+	// 	coords: [4.2450192, 113.9244984],
+	// },
 	{
 		id: 484,
 		name: "Surau Darus Salam",
@@ -10174,28 +10175,28 @@ export const institutions: Institution[] = [
 			"00020201021126580014A000000615000101065641600226125818700002722RHBQR0094285204739953034585802MY5924MASJID UBUDIAH K.KANGSAR6002MY61053300062300309ROA0137040713ubudiahbc20218264C33E21A43A4E516BABF9DED85D02AB6FA78ACFE2FB08AEE3395CE96E3E4B19426304F334",
 		supportedPayment: ["duitnow", "tng"],
 	},
-  // khairin, facebook - https://www.facebook.com/photo.php?fbid=1181545753980294&set=pb.100063746405386.-2207520000&type=3&locale=ms_MY
-  {
-    id: 830,
-    name: "Masjid Diraja Sultan Suleiman",
-    category: "mosque",
-    state: "Selangor",
-    city: "Klang",
-    qrImage: "https://scontent.fkul15-1.fna.fbcdn.net/v/t39.30808-6/481789232_1181545760646960_5821765101817029374_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=833d8c&_nc_ohc=ZeG0PDVAwqgQ7kNvgFp2c8y&_nc_oc=AdgAHeR9wg1cJrWtRbJ9lgV_zvlHsLlNizd6tIr5Bkddr2K9MrbVsuzYhDGoNh_mSddYfxtMAK8FEzA8kKvNLGX-&_nc_zt=23&_nc_ht=scontent.fkul15-1.fna&_nc_gid=AtLSovw0L1SFR9U4vS4IK-f&oh=00_AYGbRJOdAHHcgwoleImqMvP0CNo2-Bm0h7oAFJrjhCb6Pw&oe=67D9CB51",
-    qrContent: "00020201021126420014A000000615000101066033460210MD000072835204866153034585802MY5925MASJID DIRAJA SULTAN SULE6002MY6273032516409256228400098283525490520172250152401200853700716164092534728400663048884",
-    supportedPayment: ["duitnow", "tng"],
-  coords: [3.0348576033785086, 101.45047532883534],
-  },
-  // khairin, facebook - https://www.facebook.com/photo/?fbid=781614480663446&set=pcb.781614750663419&locale=ms_MY
-  {
-    id: 831,
-    name: "Surau Abu Bakar As-Siddiq Taman Patani Jaya",
-    category: "surau",
-    state: "Kedah",
-    city: "Sungai Petani",
-    qrImage: "https://scontent.fkul10-1.fna.fbcdn.net/v/t39.30808-6/483881584_1049196137238611_6701623536270831227_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=127cfc&_nc_ohc=d9S1P5dsBHoQ7kNvgGA-I1o&_nc_oc=AdjrhzbNVe8wGVti4rfVyLYUeRqKxQ6KA3yXBArOTPsf-2ou9AYrO0oru7cWx4P-Em6Cc-UYpoCuWZcfxcip_Gob&_nc_zt=23&_nc_ht=scontent.fkul10-1.fna&_nc_gid=A8eqhtPj_9CCUYeBBI4s6ev&oh=00_AYHNHmps9qUmr_EVQ0RzRxc9a7XfNNPjmCyEcz88MVsgDw&oe=67D9C127",
-    qrContent: "00020201021126560014A000000615000101068900610224602e401d114579dd4ed21d325204000053034585802MY5925SURAU ABU BAKAR AS-SIDDIQ6002MY82405aec62394f5db1722a23bd8a9c3387f83e45b1f4630487E3",
-    supportedPayment: ["duitnow", "tng"],
-    coords: [5.631619720711193, 100.48703133770263],
-  },
+	// khairin, facebook - https://www.facebook.com/photo.php?fbid=1181545753980294&set=pb.100063746405386.-2207520000&type=3&locale=ms_MY
+	{
+		id: 830,
+		name: "Masjid Diraja Sultan Suleiman",
+		category: "mosque",
+		state: "Selangor",
+		city: "Klang",
+		qrImage: "https://scontent.fkul15-1.fna.fbcdn.net/v/t39.30808-6/481789232_1181545760646960_5821765101817029374_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=833d8c&_nc_ohc=ZeG0PDVAwqgQ7kNvgFp2c8y&_nc_oc=AdgAHeR9wg1cJrWtRbJ9lgV_zvlHsLlNizd6tIr5Bkddr2K9MrbVsuzYhDGoNh_mSddYfxtMAK8FEzA8kKvNLGX-&_nc_zt=23&_nc_ht=scontent.fkul15-1.fna&_nc_gid=AtLSovw0L1SFR9U4vS4IK-f&oh=00_AYGbRJOdAHHcgwoleImqMvP0CNo2-Bm0h7oAFJrjhCb6Pw&oe=67D9CB51",
+		qrContent: "00020201021126420014A000000615000101066033460210MD000072835204866153034585802MY5925MASJID DIRAJA SULTAN SULE6002MY6273032516409256228400098283525490520172250152401200853700716164092534728400663048884",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [3.0348576033785086, 101.45047532883534],
+	},
+	// khairin, facebook - https://www.facebook.com/photo/?fbid=781614480663446&set=pcb.781614750663419&locale=ms_MY
+	{
+		id: 831,
+		name: "Surau Abu Bakar As-Siddiq Taman Patani Jaya",
+		category: "surau",
+		state: "Kedah",
+		city: "Sungai Petani",
+		qrImage: "https://scontent.fkul10-1.fna.fbcdn.net/v/t39.30808-6/483881584_1049196137238611_6701623536270831227_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=127cfc&_nc_ohc=d9S1P5dsBHoQ7kNvgGA-I1o&_nc_oc=AdjrhzbNVe8wGVti4rfVyLYUeRqKxQ6KA3yXBArOTPsf-2ou9AYrO0oru7cWx4P-Em6Cc-UYpoCuWZcfxcip_Gob&_nc_zt=23&_nc_ht=scontent.fkul10-1.fna&_nc_gid=A8eqhtPj_9CCUYeBBI4s6ev&oh=00_AYHNHmps9qUmr_EVQ0RzRxc9a7XfNNPjmCyEcz88MVsgDw&oe=67D9C127",
+		qrContent: "00020201021126560014A000000615000101068900610224602e401d114579dd4ed21d325204000053034585802MY5925SURAU ABU BAKAR AS-SIDDIQ6002MY82405aec62394f5db1722a23bd8a9c3387f83e45b1f4630487E3",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [5.631619720711193, 100.48703133770263],
+	},
 ];
