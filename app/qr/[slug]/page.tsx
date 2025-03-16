@@ -1,4 +1,5 @@
 import { QRCodeSVG } from "qrcode.react";
+import Image from "next/image";
 import SedekahjeLogo from "../../../public/masjid.svg";
 
 import { institutions } from "@/app/data/institutions";
@@ -34,7 +35,7 @@ function QRSlug({ params }: { params: { slug: string } }) {
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center">
       <div className="mb-4 flex flex-col items-center justify-center space-y-2">
-        <SedekahjeLogo width="80" height="80" />
+        <Image src={SedekahjeLogo} width={80} height={80} alt="SedekahJe Logo" />
 
         <p className="text-sm font-bold">SedekahJe</p>
       </div>
