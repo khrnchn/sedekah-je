@@ -15,11 +15,12 @@ import QrCodeDisplay from "@/components/ui/qrCodeDisplay";
 import useClientDimensions from "@/hooks/use-client-dimensions";
 import { removeDuplicateInstitutions, slugify } from "@/lib/utils";
 import html2canvas from "html2canvas";
-import { Clipboard, Download, MapPin, QrCode } from "lucide-react";
+import { Clipboard, Download, Loader2, MapPin, QrCode } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import PageFooter  from "@/components/page-footer";
+import PageFooter from "@/components/page-footer";
+import { AnimatePresence, motion } from "framer-motion";
 
 const Rawak = () => {
 	const cardRef = useRef<HTMLDivElement>(null);
@@ -30,6 +31,8 @@ const Rawak = () => {
 	const { width } = useClientDimensions();
 	const [url, setUrl] = useState<string>("");
 	const printRef = useRef<HTMLButtonElement>(null);
+	const [isDownloading, setIsDownloading] = useState(false);
+	const [downloadStage, setDownloadStage] = useState<string>("");
 
 	const institutions = removeDuplicateInstitutions(rawInstitutions);
 
@@ -60,21 +63,111 @@ const Rawak = () => {
 	}, [filteredInstitutions]);
 
 	const handleDownload = useCallback(async () => {
-		if (!randomInstitution || !printRef.current) return;
+		if (!randomInstitution) return;
+
+		setIsDownloading(true);
+		setDownloadStage("Menyediakan kod QR...");
 
 		try {
-			const element = printRef.current;
-			const canvas = await html2canvas(element);
+			// Use the same approach as the homepage - create an iframe to load the QR page
+			const iframe = document.createElement("iframe");
+			iframe.style.visibility = "hidden";
+			iframe.style.position = "fixed";
+			iframe.style.right = "0";
+			iframe.style.bottom = "0";
+			iframe.width = "600px";
+			iframe.height = "600px";
+
+			// Set the source to the QR page URL
+			const qrPageUrl = `${window.location.origin}/qr/${slugify(randomInstitution.name)}`;
+			console.log("Loading QR page:", qrPageUrl);
+			iframe.src = qrPageUrl;
+
+			document.body.appendChild(iframe);
+
+			// Wait for iframe to load and ensure content is fully rendered
+			await new Promise((resolve) => {
+				iframe.onload = () => {
+					console.log("Iframe loaded");
+					setDownloadStage("Memuatkan halaman kod QR...");
+					// Add a delay to ensure content is fully rendered
+					setTimeout(() => {
+						console.log("Proceeding with capture after delay");
+						resolve(null);
+					}, 1000);
+				};
+			});
+
+			// Debug iframe content
+			console.log("Iframe document:", iframe.contentDocument);
+			console.log("Iframe body:", iframe.contentDocument?.body);
+
+			// Capture the iframe content
+			setDownloadStage("Mengambil gambar kod QR...");
+			const canvas = await html2canvas(
+				iframe.contentDocument?.body as HTMLElement,
+				{
+					useCORS: true,
+					allowTaint: true,
+					backgroundColor: "#ffffff",
+					scale: 2, // Increase resolution for better quality
+					logging: true, // Enable logging for debugging
+				},
+			);
+
+			// Convert to downloadable image
+			setDownloadStage("Menyediakan fail untuk dimuat turun...");
 			const data = canvas.toDataURL("image/png");
 			const link = document.createElement("a");
 			link.href = data;
-			link.download = `${slugify(randomInstitution.name)}-qr.png`;
+			link.download = `sedekahje-${slugify(randomInstitution.name)}.png`;
 			document.body.appendChild(link);
 			link.click();
+
+			// Cleanup
 			document.body.removeChild(link);
+			document.body.removeChild(iframe);
+
 			toast.success("Berjaya memuat turun kod QR.");
 		} catch (error) {
+			console.error("Download error:", error);
 			toast.error("Gagal memuat turun kod QR.");
+
+			// Fallback to direct QR code capture if iframe method fails
+			try {
+				console.log("Attempting fallback method");
+				setDownloadStage("Mencuba kaedah alternatif...");
+
+				if (!printRef.current) {
+					console.error("QR element not found");
+					return;
+				}
+
+				const element = printRef.current;
+				const canvas = await html2canvas(element, {
+					useCORS: true,
+					allowTaint: true,
+					backgroundColor: "#ffffff",
+					scale: 2,
+				});
+
+				setDownloadStage("Menyediakan fail untuk dimuat turun...");
+				const data = canvas.toDataURL("image/png");
+				const link = document.createElement("a");
+				link.href = data;
+				link.download = `sedekahje-${slugify(randomInstitution.name)}.png`;
+				document.body.appendChild(link);
+				link.click();
+				document.body.removeChild(link);
+
+				toast.success("Berjaya memuat turun kod QR (kaedah alternatif).");
+			} catch (fallbackError) {
+				console.error("Fallback download error:", fallbackError);
+				toast.error("Gagal memuat turun kod QR dengan kedua-dua kaedah.");
+			}
+		} finally {
+			setIsDownloading(false);
+			setDownloadStage("");
 		}
 	}, [randomInstitution]);
 
@@ -103,6 +196,25 @@ const Rawak = () => {
 	return (
 		<>
 			<Header />
+
+			{/* Loading Overlay for Mobile */}
+			<AnimatePresence>
+				{isDownloading && (
+					<motion.div
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						exit={{ opacity: 0 }}
+						className="fixed inset-0 h-full w-full z-50 bg-black/50 flex flex-col items-center justify-center"
+					>
+						<div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-xs w-full flex flex-col items-center gap-4">
+							<div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+							<p className="text-center font-medium">Memuat turun kod QR...</p>
+							<p className="text-center text-sm text-gray-500 dark:text-gray-400">{downloadStage || "Sila tunggu sebentar"}</p>
+						</div>
+					</motion.div>
+				)}
+			</AnimatePresence>
+
 			<PageSection className="bg-background transition-colors duration-200 ease-in-out">
 				<PageHeader pageTitle="Sedekah Rawak" showHeader={false} />
 
@@ -127,6 +239,7 @@ const Rawak = () => {
 						<Button
 							onClick={generateRandomNumber}
 							className="w-full bg-green-500 text-white px-6 py-3 hover:bg-green-600 transition-colors duration-300 shadow-md focus:outline-none"
+							disabled={isDownloading}
 						>
 							🎲 Jana QR Secara Rawak
 						</Button>
@@ -175,13 +288,21 @@ const Rawak = () => {
 										<Button
 											className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 px-3 py-2 rounded-md transition-all duration-200 ease-in-out flex items-center justify-center"
 											onClick={handleDownload}
+											disabled={isDownloading}
 										>
-											<Download size={16} className="mr-2" />
-											<span className="text-xs font-medium">Muat Turun</span>
+											{isDownloading ? (
+												<Loader2 size={16} className="mr-2 animate-spin" />
+											) : (
+												<Download size={16} className="mr-2" />
+											)}
+											<span className="text-xs font-medium">
+												{isDownloading ? "Memuat Turun..." : "Muat Turun"}
+											</span>
 										</Button>
 										<Button
 											className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 px-3 py-2 rounded-md transition-all duration-200 ease-in-out flex items-center justify-center"
 											onClick={handleCopy}
+											disabled={isDownloading}
 										>
 											<Clipboard size={16} className="mr-2" />
 											<span className="text-xs font-medium">Salin</span>
@@ -189,6 +310,7 @@ const Rawak = () => {
 										<Button
 											className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 px-3 py-2 rounded-md transition-all duration-200 ease-in-out flex items-center justify-center"
 											onClick={handleMapOpen}
+											disabled={isDownloading}
 										>
 											<MapPin size={16} className="mr-2" />
 											<span className="text-xs font-medium">Peta</span>
@@ -210,9 +332,8 @@ const Rawak = () => {
 					</Card>
 				</div>
 				<GetdoaFooter />
-        <PageFooter />
+				<PageFooter />
 			</PageSection>
-      
 		</>
 	);
 };
