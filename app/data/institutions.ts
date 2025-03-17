@@ -10199,4 +10199,16 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 		coords: [5.631619720711193, 100.48703133770263],
 	},
+	// @LordMundu, twitter dm
+	{
+		id: 832,
+		name: "Masjid Tok Ku Ismail",
+		category: "mosque",
+		state: "Kelantan",
+		city: "Machang",
+		qrImage: "",
+		qrContent: "00020201021126580014A000000615000101065887340212MBBQR2324882031000000000005204729953034585802MY5920MASJID TOK KU ISMAIL6008KELANTAN6304B578",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [5.759771641499046, 102.22962617116464],
+	},
 ];
