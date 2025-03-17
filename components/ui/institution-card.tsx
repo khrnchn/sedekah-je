@@ -72,6 +72,8 @@ const InstitutionCard = forwardRef<
     ref,
   ) => {
     const [active, setActive] = useState<boolean | null>(false);
+    const [isDownloading, setIsDownloading] = useState(false);
+    const [downloadStage, setDownloadStage] = useState<string>("");
     const innerRef = useRef<HTMLDivElement>(null);
     const printRef = useRef<HTMLButtonElement>(null);
 
@@ -174,6 +176,25 @@ const InstitutionCard = forwardRef<
             />
           )}
         </AnimatePresence>
+
+        {/* Loading Overlay for Mobile */}
+        <AnimatePresence>
+          {isDownloading && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 h-full w-full z-50 bg-black/50 flex flex-col items-center justify-center"
+            >
+              <div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-xs w-full flex flex-col items-center gap-4">
+                <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+                <p className="text-center font-medium">Memuat turun kod QR...</p>
+                <p className="text-center text-sm text-gray-500 dark:text-gray-400">{downloadStage || "Sila tunggu sebentar"}</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <AnimatePresence>
           {active ? (
             <div className="fixed inset-0 grid place-items-center z-[100]">
@@ -245,9 +266,8 @@ const InstitutionCard = forwardRef<
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      href={`https://www.google.com/maps/search/?api=1&query=${
-                        coords ? coords.join(",") : encodeURIComponent(name)
-                      }`}
+                      href={`https://www.google.com/maps/search/?api=1&query=${coords ? coords.join(",") : encodeURIComponent(name)
+                        }`}
                       target="_blank"
                       className="px-4 py-3 text-sm rounded-full font-bold bg-green-500 text-white"
                       rel="noreferrer"
@@ -300,8 +320,8 @@ const InstitutionCard = forwardRef<
                             •{" "}
                             {distanceToCurrentUserInMeter > 1000
                               ? `${(
-                                  distanceToCurrentUserInMeter / 1000
-                                ).toFixed(1)}km`
+                                distanceToCurrentUserInMeter / 1000
+                              ).toFixed(1)}km`
                               : `${Math.round(distanceToCurrentUserInMeter)}m`}
                           </span>
                         )}
@@ -352,10 +372,6 @@ const InstitutionCard = forwardRef<
                     <QrCodeDisplay
                       qrContent={qrContent}
                       supportedPayment={supportedPayment}
-                      // onClick={(e) => {
-                      // 	e.stopPropagation();
-                      // 	setActive(true);
-                      // }}
                       ref={printRef}
                       name={name}
                     />
@@ -381,8 +397,11 @@ const InstitutionCard = forwardRef<
                         size="icon"
                         variant="ghost"
                         className="hover:bg-primary/10 hover:text-primary transition-colors duration-200 ease-in-out"
+                        disabled={isDownloading}
                         onClick={async (e) => {
                           e.stopPropagation();
+                          setIsDownloading(true);
+                          setDownloadStage("Menyediakan kod QR...");
                           try {
                             // Create a temporary iframe to load the QR page
                             const iframe = document.createElement("iframe");
@@ -394,26 +413,44 @@ const InstitutionCard = forwardRef<
                             iframe.height = "600px";
 
                             // Set the source to the QR page URL
-                            iframe.src = `${window.location.origin}/qr/${slugify(name)}`;
+                            const qrPageUrl = `${window.location.origin}/qr/${slugify(name)}`;
+                            console.log("Loading QR page:", qrPageUrl);
+                            iframe.src = qrPageUrl;
 
                             document.body.appendChild(iframe);
 
-                            // Wait for iframe to load
+                            // Wait for iframe to load and ensure content is fully rendered
                             await new Promise((resolve) => {
-                              iframe.onload = resolve;
+                              iframe.onload = () => {
+                                console.log("Iframe loaded");
+                                setDownloadStage("Memuatkan halaman kod QR...");
+                                // Add a delay to ensure content is fully rendered
+                                setTimeout(() => {
+                                  console.log("Proceeding with capture after delay");
+                                  resolve(null);
+                                }, 1000);
+                              };
                             });
 
+                            // Debug iframe content
+                            console.log("Iframe document:", iframe.contentDocument);
+                            console.log("Iframe body:", iframe.contentDocument?.body);
+
                             // Capture the iframe content
+                            setDownloadStage("Mengambil gambar kod QR...");
                             const canvas = await html2canvas(
                               iframe.contentDocument?.body as HTMLElement,
                               {
                                 useCORS: true,
                                 allowTaint: true,
                                 backgroundColor: "#ffffff",
+                                scale: 2, // Increase resolution for better quality
+                                logging: true, // Enable logging for debugging
                               },
                             );
 
                             // Convert to downloadable image
+                            setDownloadStage("Menyediakan fail untuk dimuat turun...");
                             const data = canvas.toDataURL("image/png");
                             const link = document.createElement("a");
                             link.href = data;
@@ -427,16 +464,55 @@ const InstitutionCard = forwardRef<
 
                             toast.success("Berjaya memuat turun kod QR.");
                           } catch (error) {
-                            console.error(error);
+                            console.error("Download error:", error);
                             toast.error("Gagal memuat turun kod QR.");
+
+                            // Fallback to direct QR code capture if iframe method fails
+                            try {
+                              console.log("Attempting fallback method");
+                              setDownloadStage("Mencuba kaedah alternatif...");
+                              const element = printRef.current;
+                              if (!element) {
+                                console.error("QR element not found");
+                                return;
+                              }
+
+                              const canvas = await html2canvas(element, {
+                                useCORS: true,
+                                allowTaint: true,
+                                backgroundColor: "#ffffff",
+                                scale: 2,
+                              });
+
+                              setDownloadStage("Menyediakan fail untuk dimuat turun...");
+                              const data = canvas.toDataURL("image/png");
+                              const link = document.createElement("a");
+                              link.href = data;
+                              link.download = `sedekahje-${slugify(name)}.png`;
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
+
+                              toast.success("Berjaya memuat turun kod QR (kaedah alternatif).");
+                            } catch (fallbackError) {
+                              console.error("Fallback download error:", fallbackError);
+                              toast.error("Gagal memuat turun kod QR dengan kedua-dua kaedah.");
+                            }
+                          } finally {
+                            setIsDownloading(false);
+                            setDownloadStage("");
                           }
                         }}
                       >
-                        <DownloadIcon className="h-5 w-5" />
+                        {isDownloading ? (
+                          <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                        ) : (
+                          <DownloadIcon className="h-5 w-5" />
+                        )}
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent side="top">
-                      <p>Muat turun kod QR</p>
+                      <p>{isDownloading ? "Sedang memuat turun..." : "Muat turun kod QR"}</p>
                     </TooltipContent>
                   </Tooltip>
 
@@ -447,6 +523,7 @@ const InstitutionCard = forwardRef<
                         size="icon"
                         variant="ghost"
                         className="hover:bg-primary/10 hover:text-primary transition-colors duration-200 ease-in-out"
+                        disabled={isDownloading}
                       >
                         <Share2 className="h-5 w-5" />
                         <span className="sr-only">Kongsi</span>
