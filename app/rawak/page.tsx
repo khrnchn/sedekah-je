@@ -68,130 +68,14 @@ const Rawak = () => {
 		setIsDownloading(true);
 		setDownloadStage("Menyediakan kod QR...");
 
-		// Set a timeout to prevent infinite loading
-		const timeoutId = setTimeout(() => {
-			console.log("Download timeout - switching to fallback method");
-			setDownloadStage("Masa tamat - mencuba kaedah alternatif...");
-			// The main method is taking too long, we'll try the fallback
-			handleFallbackDownload();
-		}, 10000); // 10 seconds timeout
-
-		try {
-			// For mobile devices, try direct capture first as it's more reliable
-			if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-				console.log("Mobile device detected - using direct capture method");
-				try {
-					await handleDirectCapture();
-				} catch (directCaptureError) {
-					console.error("Direct capture error:", directCaptureError);
-					toast.error("Gagal memuat turun kod QR. Sila cuba lagi.");
-				} finally {
-					clearTimeout(timeoutId);
-					setIsDownloading(false); // Ensure loading state is cleared
-					setDownloadStage("");
-				}
-				return;
-			}
-
-			// For desktop, use iframe method
-			// Use the same approach as the homepage - create an iframe to load the QR page
-			const iframe = document.createElement("iframe");
-			iframe.style.visibility = "hidden";
-			iframe.style.position = "fixed";
-			iframe.style.right = "0";
-			iframe.style.bottom = "0";
-			iframe.width = "600px";
-			iframe.height = "600px";
-
-			// Set the source to the QR page URL
-			const qrPageUrl = `${window.location.origin}/qr/${slugify(randomInstitution.name)}`;
-			console.log("Loading QR page:", qrPageUrl);
-			iframe.src = qrPageUrl;
-
-			document.body.appendChild(iframe);
-
-			// Wait for iframe to load and ensure content is fully rendered
-			await new Promise((resolve, reject) => {
-				// Add a timeout for the iframe loading
-				const iframeTimeoutId = setTimeout(() => {
-					reject(new Error("Iframe loading timed out"));
-				}, 5000); // 5 seconds timeout for iframe loading
-
-				iframe.onload = () => {
-					console.log("Iframe loaded");
-					setDownloadStage("Memuatkan halaman kod QR...");
-					clearTimeout(iframeTimeoutId);
-					// Add a delay to ensure content is fully rendered
-					setTimeout(() => {
-						console.log("Proceeding with capture after delay");
-						resolve(null);
-					}, 1000);
-				};
-
-				iframe.onerror = () => {
-					clearTimeout(iframeTimeoutId);
-					reject(new Error("Iframe failed to load"));
-				};
-			});
-
-			// Debug iframe content
-			console.log("Iframe document:", iframe.contentDocument);
-			console.log("Iframe body:", iframe.contentDocument?.body);
-
-			if (!iframe.contentDocument || !iframe.contentDocument.body) {
-				throw new Error("Cannot access iframe content - possible CORS issue");
-			}
-
-			// Capture the iframe content
-			setDownloadStage("Mengambil gambar kod QR...");
-			const canvas = await html2canvas(
-				iframe.contentDocument.body,
-				{
-					useCORS: true,
-					allowTaint: true,
-					backgroundColor: "#ffffff",
-					scale: 2, // Increase resolution for better quality
-					logging: true, // Enable logging for debugging
-				},
-			);
-
-			// Convert to downloadable image
-			setDownloadStage("Menyediakan fail untuk dimuat turun...");
-			const data = canvas.toDataURL("image/png");
-			const link = document.createElement("a");
-			link.href = data;
-			link.download = `sedekahje-${slugify(randomInstitution.name)}.png`;
-			document.body.appendChild(link);
-			link.click();
-
-			// Cleanup
-			document.body.removeChild(link);
-			document.body.removeChild(iframe);
-			clearTimeout(timeoutId);
-
-			toast.success("Berjaya memuat turun kod QR.");
-
-			// Ensure loading state is cleared
-			setIsDownloading(false);
-			setDownloadStage("");
-		} catch (error) {
-			console.error("Download error:", error);
-
-			// Try the fallback method
-			await handleFallbackDownload();
-			clearTimeout(timeoutId);
-		}
-
 		// Define the direct capture method
 		async function handleDirectCapture() {
 			setDownloadStage("Mengambil gambar kod QR secara langsung...");
 			if (!printRef.current) {
-				console.error("QR element not found");
 				throw new Error("QR element not found");
 			}
 
 			if (!randomInstitution) {
-				console.error("No institution selected");
 				throw new Error("No institution selected");
 			}
 
@@ -215,20 +99,102 @@ const Rawak = () => {
 			toast.success("Berjaya memuat turun kod QR.");
 		}
 
-		// Define the fallback method
-		async function handleFallbackDownload() {
-			try {
-				console.log("Attempting fallback method");
-				setDownloadStage("Mencuba kaedah alternatif...");
-				await handleDirectCapture();
-				toast.success("Berjaya memuat turun kod QR (kaedah alternatif).");
-			} catch (fallbackError) {
-				console.error("Fallback download error:", fallbackError);
-				toast.error("Gagal memuat turun kod QR. Sila cuba lagi.");
-			} finally {
-				setIsDownloading(false);
-				setDownloadStage("");
+		// Define the iframe method as a fallback only for desktop browsers
+		async function handleIframeCapture() {
+			if (!randomInstitution) {
+				throw new Error("No institution selected");
 			}
+
+			// Create a temporary iframe to load the QR page
+			const iframe = document.createElement("iframe");
+			iframe.style.visibility = "hidden";
+			iframe.style.position = "fixed";
+			iframe.style.right = "0";
+			iframe.style.bottom = "0";
+			iframe.width = "600px";
+			iframe.height = "600px";
+
+			// Set the source to the QR page URL
+			const qrPageUrl = `${window.location.origin}/qr/${slugify(randomInstitution.name)}`;
+			console.log("Loading QR page:", qrPageUrl);
+			iframe.src = qrPageUrl;
+
+			document.body.appendChild(iframe);
+
+			try {
+				// Wait for iframe to load with timeout
+				await new Promise<void>((resolve, reject) => {
+					const iframeTimeoutId = setTimeout(() => {
+						reject(new Error("Iframe loading timed out"));
+					}, 5000);
+
+					iframe.onload = () => {
+						console.log("Iframe loaded");
+						setDownloadStage("Memuatkan halaman kod QR...");
+						clearTimeout(iframeTimeoutId);
+						setTimeout(() => {
+							resolve();
+						}, 1000);
+					};
+
+					iframe.onerror = () => {
+						clearTimeout(iframeTimeoutId);
+						reject(new Error("Iframe failed to load"));
+					};
+				});
+
+				if (!iframe.contentDocument || !iframe.contentDocument.body) {
+					throw new Error("Cannot access iframe content");
+				}
+
+				// Capture the iframe content
+				setDownloadStage("Mengambil gambar kod QR...");
+				const canvas = await html2canvas(iframe.contentDocument.body, {
+					useCORS: true,
+					allowTaint: true,
+					backgroundColor: "#ffffff",
+					scale: 2,
+				});
+
+				// Convert to downloadable image
+				setDownloadStage("Menyediakan fail untuk dimuat turun...");
+				const data = canvas.toDataURL("image/png");
+				const link = document.createElement("a");
+				link.href = data;
+				link.download = `sedekahje-${slugify(randomInstitution.name)}.png`;
+				document.body.appendChild(link);
+				link.click();
+				document.body.removeChild(link);
+
+				toast.success("Berjaya memuat turun kod QR.");
+			} finally {
+				// Always remove the iframe
+				if (document.body.contains(iframe)) {
+					document.body.removeChild(iframe);
+				}
+			}
+		}
+
+		try {
+			// Try direct capture method first for all devices - more reliable cross-browser
+			await handleDirectCapture();
+		} catch (directCaptureError) {
+			console.error("Direct capture error:", directCaptureError);
+
+			// Try iframe method as fallback only for desktop browsers
+			if (!/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+				try {
+					await handleIframeCapture();
+				} catch (iframeError) {
+					console.error("Iframe capture error:", iframeError);
+					toast.error("Gagal memuat turun kod QR. Sila cuba lagi.");
+				}
+			} else {
+				toast.error("Gagal memuat turun kod QR. Sila cuba lagi.");
+			}
+		} finally {
+			setIsDownloading(false);
+			setDownloadStage("");
 		}
 	}, [randomInstitution]);
 
