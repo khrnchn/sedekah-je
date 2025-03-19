@@ -17,6 +17,23 @@ try {
 	process.exit(1);
 }
 
+// Function to sanitize string inputs
+function sanitizeString(str) {
+	if (typeof str !== 'string') return '';
+	return str.trim();
+}
+
+// Function to validate URL
+function isValidUrl(urlString) {
+	try {
+		// Basic URL validation
+		const url = new URL(urlString);
+		return url.protocol === 'http:' || url.protocol === 'https:';
+	} catch {
+		return false;
+	}
+}
+
 // Function to extract fields from a single entry
 function extractFields(text) {
 	const fieldRegex = /\*\*(.*?):\*\*\s*(?:- )?(.*?)(?=\n\*\*|$)/gs;
@@ -24,8 +41,8 @@ function extractFields(text) {
 	let match = fieldRegex.exec(text);
 
 	while (match !== null) {
-		const key = match[1].trim();
-		let value = match[2].trim();
+		const key = sanitizeString(match[1]);
+		let value = sanitizeString(match[2]);
 
 		if (value.startsWith("- ")) {
 			value = value.substring(2).trim();
@@ -33,13 +50,14 @@ function extractFields(text) {
 
 		if (key === "QR Code Image") {
 			// Check if the value is already a URL
-			if (!value.match(/^https?:\/\//)) {
+			if (!isValidUrl(value)) {
 				// If not a direct URL, try to extract from markdown format
 				const urlMatch = value.match(/\((https?:\/\/[^\s)]+)\)/);
-				if (urlMatch) {
+				if (urlMatch && isValidUrl(urlMatch[1])) {
 					value = urlMatch[1];
 				} else {
-					console.warn(`No URL found in QR Code Image field: "${value}"`);
+					console.warn(`No valid URL found in QR Code Image field: "${value}"`);
+					value = ''; // Clear invalid URLs
 				}
 			}
 		}

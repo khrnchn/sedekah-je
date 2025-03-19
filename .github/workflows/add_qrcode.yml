@@ -20,14 +20,18 @@ jobs:
 
       - name: Check for [addQR] Keyword
         id: check_keyword
-        run: |
-          ISSUE_TITLE="${{ github.event.issue.title }}"
-          ISSUE_BODY="${{ github.event.issue.body }}"
-          if [[ "$ISSUE_TITLE" != *"[addQR]"* && "$ISSUE_BODY" != *"[addQR]"* ]]; then
-            echo "No [addQR] keyword found. Exiting workflow."
-            exit 78
-          fi
-          echo "Keyword [addQR] found. Proceeding with workflow."
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueTitle = context.payload.issue.title;
+            const issueBody = context.payload.issue.body || '';
+            
+            if (!issueTitle.includes('[addQR]') && !issueBody.includes('[addQR]')) {
+              core.setFailed('No [addQR] keyword found. Exiting workflow.');
+              return process.exit(78);
+            }
+            
+            console.log('Keyword [addQR] found. Proceeding with workflow.');
 
       - name: Set up Node.js
         uses: actions/setup-node@v4.2.0
@@ -39,8 +43,13 @@ jobs:
           npm install axios --legacy-peer-deps
 
       - name: Create Input File
-        run: |
-          echo "${{ github.event.issue.body }}" > input.data
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            // Safely write issue body to file
+            fs.writeFileSync('input.data', context.payload.issue.body || '');
+            console.log('Input file created successfully');
 
       - name: Run Extract Fields Script
         id: extract
@@ -99,20 +108,53 @@ jobs:
           echo "branch=$BRANCH_NAME" >> $GITHUB_OUTPUT
 
       - name: Create Pull Request
-        run: |
-          gh pr create \
-            -B main \
-            -H ${{ steps.create_branch.outputs.branch }} \
-            --title ':memo: add new institution from #${{ github.event.issue.number }}' \
-            --body "closes \#${{ github.event.issue.number }}
-
-          ${{ github.event.issue.body }}" \
-            --label "new-institution,automated-pr"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: actions/github-script@v7
+        id: create-pr
+        with:
+          script: |
+            // Safely construct PR
+            const { owner, repo } = context.repo;
+            const issueNumber = context.payload.issue.number;
+            
+            // Create a simple, sanitized PR body 
+            const prBody = `Closes #${issueNumber}
+            
+            Automated PR created by the Add New Institution workflow.`;
+            
+            try {
+              const pr = await github.rest.pulls.create({
+                owner,
+                repo,
+                title: `:memo: add new institution from #${issueNumber}`,
+                body: prBody,
+                head: `add-institution-${issueNumber}`,
+                base: 'main'
+              });
+              
+              // Add labels to the PR
+              await github.rest.issues.addLabels({
+                owner,
+                repo,
+                issue_number: pr.data.number,
+                labels: ['new-institution', 'automated-pr']
+              });
+              
+              console.log(`PR created: ${pr.data.html_url}`);
+              return pr.data.number;
+            } catch (error) {
+              core.setFailed(`Failed to create PR: ${error.message}`);
+              throw error;
+            }
 
       - name: Comment on Issue
-        run: |
-          gh issue comment ${{ github.event.issue.number }} --body "Thank you for your contribution! A PR has been created #$(gh pr view ${{ steps.create_branch.outputs.branch }} --json number -q .number) to add this institution."
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueNumber = context.payload.issue.number;
+            const prNumber = steps['create-pr'].outputs.result;
+            
+            await github.rest.issues.createComment({
+              ...context.repo,
+              issue_number: issueNumber,
+              body: `Thank you for your contribution! A PR has been created #${prNumber} to add this institution.`
+            });
