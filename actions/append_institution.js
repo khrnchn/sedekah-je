@@ -16,11 +16,34 @@ const {
 	issueId,
 } = extractedFields;
 
-// Determine category based on institute type
+// Sanitize inputs to prevent injection
+function sanitizeForJavaScript(input) {
+	if (typeof input !== 'string') return '';
+	return input.replace(/["'\\]/g, (char) => '\\' + char);
+}
+
+// Sanitize all inputs
+const sanitizedTypeOfInstitute = sanitizeForJavaScript(typeOfInstitute || '');
+const sanitizedNameOfTheMasjid = sanitizeForJavaScript(nameOfTheMasjid || '');
+const sanitizedNameOfTheCity = sanitizeForJavaScript(nameOfTheCity || '');
+const sanitizedState = sanitizeForJavaScript(state || '');
+const sanitizedRemarks = sanitizeForJavaScript(remarks || '');
+
+// Validate QR code URL - only accept http/https URLs
+const sanitizedQrCodeImage = (qrCodeImage && /^https?:\/\//i.test(qrCodeImage))
+	? qrCodeImage
+	: '';
+
+if (!sanitizedQrCodeImage) {
+	console.error("Invalid QR code URL provided");
+	process.exit(1);
+}
+
+// Determine category based on institute type - use sanitized value
 const category =
-	typeOfInstitute.toLowerCase() === "masjid"
+	sanitizedTypeOfInstitute.toLowerCase() === "masjid"
 		? "mosque"
-		: typeOfInstitute.toLowerCase();
+		: sanitizedTypeOfInstitute.toLowerCase();
 
 // Path to institutions.ts file
 const filePath = path.join(__dirname, "../app", "data", "institutions.ts");
@@ -62,22 +85,12 @@ async function decodeQRCode(url, retries = 3) {
 
 		return "";
 	} catch (error) {
-		console.error(`Error decoding QR code from URL "${url}":`, error.message);
-
-		if (error.response) {
-			console.error("Response status:", error.response.status);
-			console.error(
-				"Response data:",
-				JSON.stringify(error.response.data, null, 2),
-			);
-		}
-
+		console.error("Error decoding QR code:", error.message);
 		if (retries > 0) {
 			console.log(`Retrying QR code decoding (${retries} retries left)...`);
 			await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait 2 seconds
 			return decodeQRCode(url, retries - 1);
 		}
-
 		return "";
 	}
 }
@@ -87,17 +100,17 @@ async function decodeQRCode(url, retries = 3) {
 	try {
 		console.log("Starting institution append process...");
 		console.log("Institution details:", {
-			typeOfInstitute,
-			nameOfTheMasjid,
-			nameOfTheCity,
-			state,
-			qrCodeImage,
-			remarks,
+			typeOfInstitute: sanitizedTypeOfInstitute,
+			nameOfTheMasjid: sanitizedNameOfTheMasjid,
+			nameOfTheCity: sanitizedNameOfTheCity,
+			state: sanitizedState,
+			qrCodeImage: sanitizedQrCodeImage,
+			remarks: sanitizedRemarks,
 			issueId,
 		});
 
 		// Decode QR code
-		const qrContent = await decodeQRCode(qrCodeImage);
+		const qrContent = await decodeQRCode(sanitizedQrCodeImage);
 
 		// Read the existing institutions.ts file
 		let fileContent = fs.readFileSync(filePath, "utf8");
@@ -106,17 +119,17 @@ async function decodeQRCode(url, retries = 3) {
 		const idMatches = fileContent.match(/id:\s*(\d+),/g);
 		const nextId = idMatches
 			? Math.max(
-					...idMatches.map((id) => Number.parseInt(id.match(/\d+/)[0])),
-				) + 1
+				...idMatches.map((id) => Number.parseInt(id.match(/\d+/)[0])),
+			) + 1
 			: 1;
 
 		console.log(`Using next ID: ${nextId}`);
 
 		// Escape double quotes in qrContent to prevent syntax errors
-		const escapedQrContent = qrContent.replace(/"/g, '\\"');
+		const escapedQrContent = (qrContent || '').replace(/"/g, '\\"');
 
 		let supportedPayment = '["duitnow", "tng"]';
-		if (qrCodeImage.includes("tngdigital")) {
+		if (sanitizedQrCodeImage.includes("tngdigital")) {
 			supportedPayment = '["tng"]';
 		}
 
@@ -129,18 +142,18 @@ async function decodeQRCode(url, retries = 3) {
 			qrContentField = `\n    qrContent: "${escapedQrContent}",`;
 		} else {
 			// If QR content couldn't be extracted, only include qrImage
-			qrImageField = `\n    qrImage: "${qrCodeImage}",`;
+			qrImageField = `\n    qrImage: "${sanitizedQrCodeImage}",`;
 			console.log("QR code could not be decoded. Using qrImage instead.");
 		}
 
 		// Create a new institution entry with qrContent
-		const newInstitution = `  // ${remarks}
+		const newInstitution = `  // ${sanitizedRemarks}
   {
     id: ${nextId},
-    name: "${nameOfTheMasjid}",
+    name: "${sanitizedNameOfTheMasjid}",
     category: "${category}",
-    state: "${state}",
-  	city: "${nameOfTheCity}",${qrImageField}${qrContentField}
+    state: "${sanitizedState}",
+  	city: "${sanitizedNameOfTheCity}",${qrImageField}${qrContentField}
     supportedPayment: ${supportedPayment}
   },
 `;
