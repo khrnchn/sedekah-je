@@ -48,7 +48,7 @@ const category =
 const filePath = path.join(__dirname, "../app", "data", "institutions.ts");
 
 // Function to decode QR code using the API
-async function decodeQRCode(url, retries = 3) {
+async function decodeQRCode(url, retries = 1) {
 	if (!url) return "";
 
 	try {
@@ -58,6 +58,8 @@ async function decodeQRCode(url, retries = 3) {
 
 		const response = await axios.get(apiUrl, {
 			timeout: 10000, // 10 second timeout
+			httpAgent: new (require('http').Agent)({ timeout: 5000 }), // 5 second connection timeout
+			httpsAgent: new (require('https').Agent)({ timeout: 5000 }) // 5 second connection timeout
 		});
 		console.log("Received response from ZXing API:", response.status);
 
@@ -88,8 +90,18 @@ async function decodeQRCode(url, retries = 3) {
 
 		return "";
 	} catch (error) {
+		// Log detailed error information
 		console.error(`Error decoding QR code: ${error.message}`);
-		if (retries > 0 && !error.code === 'ETIMEDOUT') {
+		console.error(`Error code: ${error.code}`);
+		console.error(`Error type: ${error.name}`);
+
+		// Skip retries on any timeout-related errors
+		if (error.code === 'ETIMEDOUT' || error.code === 'ECONNABORTED' || error.name === 'TimeoutError') {
+			console.log('Skipping retry due to timeout error');
+			return "";
+		}
+
+		if (retries > 0) {
 			console.log(`Retrying QR code decoding (${retries} retries left)...`);
 			await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait 2 seconds
 			return decodeQRCode(url, retries - 1);
