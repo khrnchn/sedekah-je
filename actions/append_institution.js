@@ -35,8 +35,7 @@ const sanitizedQrCodeImage = (qrCodeImage && /^https?:\/\//i.test(qrCodeImage))
 	: '';
 
 if (!sanitizedQrCodeImage) {
-	console.error("Invalid QR code URL provided");
-	process.exit(1);
+	console.warn("Invalid or missing QR code URL - proceeding without QR code");
 }
 
 // Determine category based on institute type - use sanitized value
@@ -50,12 +49,16 @@ const filePath = path.join(__dirname, "../app", "data", "institutions.ts");
 
 // Function to decode QR code using the API
 async function decodeQRCode(url, retries = 3) {
+	if (!url) return "";
+
 	try {
 		console.log(`Attempting to decode QR code from URL: ${url}`);
 		const apiUrl = `https://zxing.org/w/decode?u=${encodeURIComponent(url)}`;
 		console.log(`Sending request to ZXing API: ${apiUrl}`);
 
-		const response = await axios.get(apiUrl);
+		const response = await axios.get(apiUrl, {
+			timeout: 10000, // 10 second timeout
+		});
 		console.log("Received response from ZXing API:", response.status);
 
 		// Parse the HTML response to extract the decoded text
@@ -85,8 +88,8 @@ async function decodeQRCode(url, retries = 3) {
 
 		return "";
 	} catch (error) {
-		console.error("Error decoding QR code:", error.message);
-		if (retries > 0) {
+		console.error(`Error decoding QR code: ${error.message}`);
+		if (retries > 0 && !error.code === 'ETIMEDOUT') {
 			console.log(`Retrying QR code decoding (${retries} retries left)...`);
 			await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait 2 seconds
 			return decodeQRCode(url, retries - 1);
@@ -109,8 +112,13 @@ async function decodeQRCode(url, retries = 3) {
 			issueId,
 		});
 
-		// Decode QR code
-		const qrContent = await decodeQRCode(sanitizedQrCodeImage);
+		// Decode QR code - proceed even if it fails
+		let qrContent = "";
+		try {
+			qrContent = await decodeQRCode(sanitizedQrCodeImage);
+		} catch (error) {
+			console.warn("Failed to decode QR code, proceeding without QR content:", error.message);
+		}
 
 		// Read the existing institutions.ts file
 		let fileContent = fs.readFileSync(filePath, "utf8");
@@ -133,27 +141,24 @@ async function decodeQRCode(url, retries = 3) {
 			supportedPayment = '["tng"]';
 		}
 
-		// Determine whether to include qrImage or not based on qrContent
-		let qrImageField = "";
-		let qrContentField = "";
-
-		if (qrContent) {
-			// If QR content was successfully extracted, only include qrContent
-			qrContentField = `\n    qrContent: "${escapedQrContent}",`;
-		} else {
-			// If QR content couldn't be extracted, only include qrImage
-			qrImageField = `\n    qrImage: "${sanitizedQrCodeImage}",`;
-			console.log("QR code could not be decoded. Using qrImage instead.");
+		// Always include qrImage if provided, and add qrContent if successfully decoded
+		const qrFields = [];
+		if (sanitizedQrCodeImage) {
+			qrFields.push(`qrImage: "${sanitizedQrCodeImage}"`);
 		}
+		if (qrContent) {
+			qrFields.push(`qrContent: "${escapedQrContent}"`);
+		}
+		const qrFieldsString = qrFields.length > 0 ? `\n    ${qrFields.join(",\n    ")},` : "";
 
-		// Create a new institution entry with qrContent
+		// Create a new institution entry
 		const newInstitution = `  // ${sanitizedRemarks}
   {
     id: ${nextId},
     name: "${sanitizedNameOfTheMasjid}",
     category: "${category}",
     state: "${sanitizedState}",
-  	city: "${sanitizedNameOfTheCity}",${qrImageField}${qrContentField}
+    city: "${sanitizedNameOfTheCity}",${qrFieldsString}
     supportedPayment: ${supportedPayment}
   },
 `;
@@ -175,9 +180,7 @@ async function decodeQRCode(url, retries = 3) {
 		// Write the updated content back to institutions.ts
 		fs.writeFileSync(filePath, fileContent, "utf8");
 
-		console.log(
-			"New institution appended successfully with decoded QR content.",
-		);
+		console.log("New institution appended successfully.");
 	} catch (error) {
 		console.error("An error occurred while appending the institution:", error);
 		process.exit(1);
