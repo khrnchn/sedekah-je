@@ -1,6 +1,8 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const axios = require("axios");
+const jsQR = require("jsqr");
+const sharp = require("sharp");
 
 // Load extracted fields from JSON
 const extractedFields = JSON.parse(
@@ -47,40 +49,38 @@ const category =
 // Path to institutions.ts file
 const filePath = path.join(__dirname, "../app", "data", "institutions.ts");
 
-// Function to decode QR code using the API
+// Function to decode QR code using jsQR locally
 async function decodeQRCode(url, retries = 1) {
 	if (!url) return "";
 
 	try {
 		console.log(`Attempting to decode QR code from URL: ${url}`);
-		const apiUrl = `https://zxing.org/w/decode?u=${encodeURIComponent(url)}`;
-		console.log(`Sending request to ZXing API: ${apiUrl}`);
 
-		const response = await axios.get(apiUrl, {
-			timeout: 10000, // 10 second timeout
-			httpAgent: new (require('http').Agent)({ timeout: 5000 }), // 5 second connection timeout
-			httpsAgent: new (require('https').Agent)({ timeout: 5000 }) // 5 second connection timeout
+		// Download the image
+		const response = await axios.get(url, {
+			responseType: 'arraybuffer',
+			timeout: 5000
 		});
-		console.log("Received response from ZXing API:", response.status);
 
-		// Parse the HTML response to extract the decoded text
-		const htmlResponse = response.data;
+		// Process the image with sharp
+		const image = await sharp(response.data)
+			.ensureAlpha()
+			.raw()
+			.toBuffer({ resolveWithObject: true });
 
-		// Look for the decoded text in the response
-		const decodedMatch = htmlResponse.match(/<pre>(.*?)<\/pre>/s);
-		if (decodedMatch?.[1]) {
-			const decodedText = decodedMatch[1].trim();
-			console.log("QR code data found:", decodedText);
-			return decodedText;
+		// Decode QR code
+		const code = jsQR(
+			new Uint8ClampedArray(image.data),
+			image.info.width,
+			image.info.height
+		);
+
+		if (code) {
+			console.log("QR code successfully decoded");
+			return code.data;
 		}
 
-		// Check if there was an error message
-		const errorMatch = htmlResponse.match(/<div class="error">(.*?)<\/div>/s);
-		if (errorMatch?.[1]) {
-			console.warn(`ZXing API error: ${errorMatch[1].trim()}`);
-		} else {
-			console.warn("No QR code data found in the response");
-		}
+		console.warn("No QR code found in the image");
 
 		if (retries > 0) {
 			console.log(`Retrying QR code decoding (${retries} retries left)...`);
@@ -90,20 +90,11 @@ async function decodeQRCode(url, retries = 1) {
 
 		return "";
 	} catch (error) {
-		// Log detailed error information
 		console.error(`Error decoding QR code: ${error.message}`);
-		console.error(`Error code: ${error.code}`);
-		console.error(`Error type: ${error.name}`);
 
-		// Skip retries on any timeout-related errors
-		if (error.code === 'ETIMEDOUT' || error.code === 'ECONNABORTED' || error.name === 'TimeoutError') {
-			console.log('Skipping retry due to timeout error');
-			return "";
-		}
-
-		if (retries > 0) {
+		if (retries > 0 && !error.message.includes('timeout')) {
 			console.log(`Retrying QR code decoding (${retries} retries left)...`);
-			await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait 2 seconds
+			await new Promise((resolve) => setTimeout(resolve, 2000));
 			return decodeQRCode(url, retries - 1);
 		}
 		return "";
