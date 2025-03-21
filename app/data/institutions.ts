@@ -10211,4 +10211,15 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 		coords: [5.759771641499046, 102.22962617116464],
 	},
+  // nrlfazlianaa_, twitter dm
+  {
+    id: 833,
+    name: "Masjid Jamek Batu 12 Puchong",
+    category: "mosque",
+    state: "Selangor",
+    city: "Puchong",
+    qrImage: "https://i.ibb.co/WWtPsTvN/image.png",
+    qrContent: "00020201021126580014A000000615000101065016640226100106020038176O81AMXA00015204482953034585802MY5925MASJID JAMEK BATU 12 PUCH6002MY62150311O81AMXA00018264DE4BBA75685667543A4802B3803AF0D3BFEB72BEA1D427E04DA19FAA8A86530A63048F19",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
