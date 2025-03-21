@@ -10222,4 +10222,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126580014A000000615000101065016640226100106020038176O81AMXA00015204482953034585802MY5925MASJID JAMEK BATU 12 PUCH6002MY62150311O81AMXA00018264DE4BBA75685667543A4802B3803AF0D3BFEB72BEA1D427E04DA19FAA8A86530A63048F19",
     supportedPayment: ["duitnow", "tng"]
   },
+  // frwzhjmldn, twitter dm
+  {
+    id: 834,
+    name: "Masjid An Nur Taman Maju",
+    category: "mosque",
+    state: "Melaka",
+    city: "Jasin",
+    qrImage: "https://i.ibb.co/ychHB8fh/image.png",
+    qrContent: "00020201021126580014A000000615000101065887340212MBBQR2074068031000000000005204000053034585802MY5924MASJID AN NUR TAMAN MAJU6006MELAKA6304D0AA",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
