@@ -10233,4 +10233,14 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126580014A000000615000101065887340212MBBQR2074068031000000000005204000053034585802MY5924MASJID AN NUR TAMAN MAJU6006MELAKA6304D0AA",
     supportedPayment: ["duitnow", "tng"]
   },
+  // MSCDee_47, twitter dm
+  {
+    id: 835,
+    name: "Madrasah Al Huda",
+    category: "surau",
+    state: "W.P. Kuala Lumpur",
+    city: "Keramat",
+    qrImage: "https://i.ibb.co/m5FqmDXs/image.png",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
