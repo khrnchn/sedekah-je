@@ -10244,4 +10244,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126580014A000000615000101065887340212MBBQR2345541031000000000005204729953034585802MY5916MADRASAH AL HUDA6015WP KUALA LUMPUR630490B1",
     supportedPayment: ["duitnow", "tng"]
   },
+  // lilyy1611, twitter dm
+  {
+    id: 836,
+    name: "Masjid Ubudiyah Kampung Paya Luas",
+    category: "mosque",
+    state: "Pahang",
+    city: "Temerloh",
+    qrImage: "https://i.ibb.co/N233Gd3Z/image.png",
+    qrContent: "00020201021126610014A000000615000101065641670215QRMID0000016874041001398800945204866153034585802MY5925MJD UBUDIYAH KG PAYA LUAS6008TEMERLOH61052800063049F53",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
