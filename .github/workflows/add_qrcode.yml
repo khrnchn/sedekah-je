@@ -151,10 +151,12 @@ jobs:
         with:
           script: |
             const issueNumber = context.payload.issue.number;
-            const prNumber = steps['create-pr'].outputs.result;
+            const prNumber = process.env.PR_NUMBER;
             
             await github.rest.issues.createComment({
               ...context.repo,
               issue_number: issueNumber,
               body: `Thank you for your contribution! A PR has been created #${prNumber} to add this institution.`
             });
+        env:
+          PR_NUMBER: ${{ steps.create-pr.outputs.result }}
