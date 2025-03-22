@@ -10241,6 +10241,7 @@ export const institutions: Institution[] = [
     state: "W.P. Kuala Lumpur",
     city: "Keramat",
     qrImage: "https://i.ibb.co/m5FqmDXs/image.png",
+    qrContent: "00020201021126580014A000000615000101065887340212MBBQR2345541031000000000005204729953034585802MY5916MADRASAH AL HUDA6015WP KUALA LUMPUR630490B1",
     supportedPayment: ["duitnow", "tng"]
   },
 ];
