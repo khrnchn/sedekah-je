@@ -10263,6 +10263,7 @@ export const institutions: Institution[] = [
     state: "Selangor",
     city: "Seri Kembangan",
     qrImage: "https://i.ibb.co/8Wfhn5L/image.png",
+    qrContent: "00020201021126580014A000000615000101065887340212MBBQR2179501031000000000005204729953034585802MY5925SURAU SAIYIDINA ABU BAKAR6008SELANGOR63046C21",
     supportedPayment: ["duitnow", "tng"]
   },
 ];
