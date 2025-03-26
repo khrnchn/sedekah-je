@@ -10277,4 +10277,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126560014A000000615000101068900610224630345a711f8cf1cfa5c3fe55204599953034585802MY5925IIUM MOSQUE -IHYA RAMADAN6006GOMBAK62140710QR_PAYMENT8240fad9fa96c4cf44c2427e82555ec87356eab58dd46304D06D",
     supportedPayment: ["duitnow", "tng"]
   },
+  // khairin, onpay - https://infaqmasjidalummah.onpay.my/order/form/tanahkubur
+  {
+    id: 839,
+    name: "Masjid Al Ummah Telok Chengai",
+    category: "mosque",
+    state: "Kedah",
+    city: "Alor Setar",
+    qrImage: "https://cdn.onpay.my/users/infaqmasjidalummah/media/uploads/Tanah%20Kubur%20Masjid%20Al-Ummah%20Telok%20Chengai%20(11).jpg",
+    qrContent: "00020201021126420014A000000615000101066033460210MD000011375204866153034585802MY5929Masjid Al Ummah Telok Chengai6002MY62530325162972045689100702990463005201632811181852001348663049199",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
