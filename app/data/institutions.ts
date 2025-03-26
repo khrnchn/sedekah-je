@@ -10299,4 +10299,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126580014A000000615000101065016640226100106620011331O42AOZA00015204597353034585802MY5919MASJID KOTA WARISAN6002MY62150311O42AOZA00018264E425515D88CD45A4140C37D4A55C570EF7E9B9E440850E575CBB7442B68E16E963045F53",
     supportedPayment: ["duitnow", "tng"]
   },
+  // khairin, website - https://banksahamakhirat.com/
+  {
+    id: 841,
+    name: "JAWATANKUASA SURAU AL-A’RAF",
+    category: "surau",
+    state: "Selangor",
+    city: "Bandar Baru Salak Tinggi",
+    qrImage: "https://banksahamakhirat.com/wp-content/uploads/2025/01/pembinaan-surau-salak-perdana-derma-sedeqah-masjid-qr-code-transfer-duit-dana.jpg",
+    qrContent: "00020201021126600014A000000615000101065892670228BRQR6577cd92b16709469f2dc8b65204866153034585802MY5925Jawatankuasa Surau AlAraf6006Sepang61054300062420310M00000022905246577ce843c6e1a7f4ac64fe663042A18",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
