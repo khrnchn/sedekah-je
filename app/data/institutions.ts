@@ -10266,4 +10266,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126580014A000000615000101065887340212MBBQR2179501031000000000005204729953034585802MY5925SURAU SAIYIDINA ABU BAKAR6008SELANGOR63046C21",
     supportedPayment: ["duitnow", "tng"]
   },
+  // khairin, facebook - https://www.facebook.com/photo.php?fbid=936841948537821&set=pb.100066360740916.-2207520000&type=3&locale=ms_MY
+  {
+    id: 838,
+    name: "Masjid Sultan Haji Ahmad Shah IIUM Gombak",
+    category: "mosque",
+    state: "Selangor",
+    city: "Gombak",
+    qrImage: "https://scontent.fkul16-1.fna.fbcdn.net/v/t39.30808-6/486445032_994746016080747_7056981972921732591_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=127cfc&_nc_ohc=hN7Jz3Qmdj8Q7kNvgGfpFRH&_nc_oc=AdmGuXynNjLTcjhdIfYR5dOr4EKqrgvk2iis7nh_79VXBUdeaEKkNDMYTtH39Wogcoo&_nc_zt=23&_nc_ht=scontent.fkul16-1.fna&_nc_gid=FuH4V5kp8CF1N8E45QkziA&oh=00_AYHGqHPEd8N9crCQcaHrH7zT8iurh4DkHRrD8GxNWr5Stg&oe=67E95304",
+    qrContent: "00020201021126560014A000000615000101068900610224630345a711f8cf1cfa5c3fe55204599953034585802MY5925IIUM MOSQUE -IHYA RAMADAN6006GOMBAK62140710QR_PAYMENT8240fad9fa96c4cf44c2427e82555ec87356eab58dd46304D06D",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
