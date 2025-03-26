@@ -139,6 +139,14 @@ jobs:
         run: |
           BRANCH_NAME="add-institution-${{ github.event.issue.number }}"
           echo "Creating branch: $BRANCH_NAME"
+          
+          # Check if branch exists remotely
+          if git ls-remote --heads origin "$BRANCH_NAME" | grep -q "$BRANCH_NAME"; then
+            echo "Branch $BRANCH_NAME already exists. Deleting it..."
+            git push origin --delete "$BRANCH_NAME"
+          fi
+          
+          # Create and switch to new branch
           git checkout -b "$BRANCH_NAME"
           git config --global user.name "${{ steps.author.outputs.name }}"
           git config --global user.email "${{ steps.author.outputs.email }}"
