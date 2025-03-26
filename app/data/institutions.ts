@@ -10310,4 +10310,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126600014A000000615000101065892670228BRQR6577cd92b16709469f2dc8b65204866153034585802MY5925Jawatankuasa Surau AlAraf6006Sepang61054300062420310M00000022905246577ce843c6e1a7f4ac64fe663042A18",
     supportedPayment: ["duitnow", "tng"]
   },
+  // azriafnd, twitter dm
+  {
+    id: 842,
+    name: "Surau Darul Husna",
+    category: "surau",
+    state: "Selangor",
+    city: "Banting",
+    qrImage: "https://i.ibb.co/RkT2Ffqc/image.png",
+    qrContent: "00020201021126420014A000000615000101066033460210MD001210465204866153034585802MY5917SURAU DARUL HUSNA6002MY627303251690283979323009142808556052016902839819130085389071616902838011860076304C347",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
