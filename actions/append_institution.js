@@ -21,7 +21,14 @@ const {
 // Sanitize inputs to prevent injection
 function sanitizeForJavaScript(input) {
 	if (typeof input !== 'string') return '';
-	return input.replace(/["'\\]/g, (char) => '\\' + char);
+	// Remove any HTML tags
+	input = input.replace(/<[^>]*>/g, '');
+	// Escape special characters
+	input = input.replace(/["'\\]/g, (char) => '\\' + char);
+	// Remove any control characters
+	input = input.replace(/[\x00-\x1F\x7F-\x9F]/g, '');
+	// Limit length to prevent buffer overflow
+	return input.slice(0, 1000);
 }
 
 // Sanitize all inputs
@@ -117,11 +124,28 @@ async function decodeQRCode(url, retries = 1) {
 
 		// Decode QR code - proceed even if it fails
 		let qrContent = "";
+		let qrDecodeStatus = "FAILED";
+		let qrDecodeAttempts = 0;
 		try {
 			qrContent = await decodeQRCode(sanitizedQrCodeImage);
+			if (qrContent) {
+				qrDecodeStatus = "SUCCESS";
+			}
 		} catch (error) {
 			console.warn("Failed to decode QR code, proceeding without QR content:", error.message);
 		}
+
+		// Set environment variables for GitHub Actions
+		process.env.TYPE_OF_INSTITUTE = sanitizedTypeOfInstitute;
+		process.env.NAME_OF_THE_MASJID = sanitizedNameOfTheMasjid;
+		process.env.NAME_OF_THE_CITY = sanitizedNameOfTheCity;
+		process.env.STATE = sanitizedState;
+		process.env.NEXT_ID = nextId.toString();
+		process.env.QR_CODE_IMAGE = sanitizedQrCodeImage;
+		process.env.REMARKS = sanitizedRemarks;
+		process.env.QR_DECODE_STATUS = qrDecodeStatus;
+		process.env.QR_DECODE_ATTEMPTS = qrDecodeAttempts.toString();
+		process.env.QR_CONTENT = qrContent;
 
 		// Read the existing institutions.ts file
 		let fileContent = fs.readFileSync(filePath, "utf8");

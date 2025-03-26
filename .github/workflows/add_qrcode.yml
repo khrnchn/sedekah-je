@@ -63,6 +63,17 @@ jobs:
       - name: Append Data to institutions.ts
         run: |
           node actions/append_institution.js
+        env:
+          TYPE_OF_INSTITUTE: ${{ env.TYPE_OF_INSTITUTE }}
+          NAME_OF_THE_MASJID: ${{ env.NAME_OF_THE_MASJID }}
+          NAME_OF_THE_CITY: ${{ env.NAME_OF_THE_CITY }}
+          STATE: ${{ env.STATE }}
+          NEXT_ID: ${{ env.NEXT_ID }}
+          QR_CODE_IMAGE: ${{ env.QR_CODE_IMAGE }}
+          REMARKS: ${{ env.REMARKS }}
+          QR_DECODE_STATUS: ${{ env.QR_DECODE_STATUS }}
+          QR_DECODE_ATTEMPTS: ${{ env.QR_DECODE_ATTEMPTS }}
+          QR_CONTENT: ${{ env.QR_CONTENT }}
 
       - name: Show Git Diff
         run: |
@@ -112,14 +123,10 @@ jobs:
         id: create-pr
         with:
           script: |
-            // Safely construct PR
             const { owner, repo } = context.repo;
             const issueNumber = context.payload.issue.number;
             
-            // Create a simple, sanitized PR body 
-            const prBody = `Closes #${issueNumber}
-            
-            Automated PR created by the Add New Institution workflow.`;
+            const prBody = `Closes #${issueNumber}\n\n## Appended Institution Details\n- Type: ${process.env.TYPE_OF_INSTITUTE || 'N/A'}\n- Name: ${process.env.NAME_OF_THE_MASJID || 'N/A'}\n- City: ${process.env.NAME_OF_THE_CITY || 'N/A'}\n- State: ${process.env.STATE || 'N/A'}\n- Generated ID: ${process.env.NEXT_ID || 'N/A'}\n- QR Image URL: ${process.env.QR_CODE_IMAGE || 'N/A'}\n- Remarks: ${process.env.REMARKS || 'N/A'}\n- Issue ID: ${issueNumber}\n\n## QR Code Status\n- Status: ${process.env.QR_DECODE_STATUS || 'FAILED'}\n- Attempts: ${process.env.QR_DECODE_ATTEMPTS || '0'}\n- QR Content: ${process.env.QR_CONTENT || 'Not decoded'}\n\n${process.env.QR_DECODE_STATUS === 'FAILED' ? `## Manual QR Content Input\nPlease provide the QR content in the following format:\n<!-- QR_CONTENT: [content] -->` : ''}\n\nAutomated PR created by the Add New Institution workflow.`;
             
             try {
               const pr = await github.rest.pulls.create({
