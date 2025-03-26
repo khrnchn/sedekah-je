@@ -122,6 +122,19 @@ async function decodeQRCode(url, retries = 1) {
 			issueId,
 		});
 
+		// Read the existing institutions.ts file
+		let fileContent = fs.readFileSync(filePath, "utf8");
+
+		// Find all existing IDs to determine the next ID
+		const idMatches = fileContent.match(/id:\s*(\d+),/g);
+		const nextId = idMatches
+			? Math.max(
+				...idMatches.map((id) => Number.parseInt(id.match(/\d+/)[0])),
+			) + 1
+			: 1;
+
+		console.log(`Using next ID: ${nextId}`);
+
 		// Decode QR code - proceed even if it fails
 		let qrContent = "";
 		let qrDecodeStatus = "FAILED";
@@ -146,19 +159,6 @@ async function decodeQRCode(url, retries = 1) {
 		process.env.QR_DECODE_STATUS = qrDecodeStatus;
 		process.env.QR_DECODE_ATTEMPTS = qrDecodeAttempts.toString();
 		process.env.QR_CONTENT = qrContent;
-
-		// Read the existing institutions.ts file
-		let fileContent = fs.readFileSync(filePath, "utf8");
-
-		// Find all existing IDs to determine the next ID
-		const idMatches = fileContent.match(/id:\s*(\d+),/g);
-		const nextId = idMatches
-			? Math.max(
-				...idMatches.map((id) => Number.parseInt(id.match(/\d+/)[0])),
-			) + 1
-			: 1;
-
-		console.log(`Using next ID: ${nextId}`);
 
 		// Escape double quotes in qrContent to prevent syntax errors
 		const escapedQrContent = (qrContent || '').replace(/"/g, '\\"');
