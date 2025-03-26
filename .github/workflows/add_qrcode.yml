@@ -93,6 +93,7 @@ jobs:
           fi
 
       - name: Append Data to institutions.ts
+        id: append
         run: |
           node actions/append_institution.js
         env:
@@ -106,6 +107,24 @@ jobs:
           QR_DECODE_STATUS: ${{ env.QR_DECODE_STATUS }}
           QR_DECODE_ATTEMPTS: ${{ env.QR_DECODE_ATTEMPTS }}
           QR_CONTENT: ${{ env.QR_CONTENT }}
+
+      - name: Update QR Code Status
+        id: update_qr_status
+        run: |
+          # Read the last added institution from institutions.ts
+          LAST_INSTITUTION=$(grep -A 10 "qrContent:" app/data/institutions.ts | tail -n 10)
+          
+          # Extract QR content and status
+          if echo "$LAST_INSTITUTION" | grep -q "qrContent:"; then
+            QR_CONTENT=$(echo "$LAST_INSTITUTION" | grep "qrContent:" | cut -d'"' -f2)
+            echo "QR_CONTENT=$QR_CONTENT" >> $GITHUB_ENV
+            echo "QR_DECODE_STATUS=SUCCESS" >> $GITHUB_ENV
+            echo "QR_DECODE_ATTEMPTS=1" >> $GITHUB_ENV
+          else
+            echo "QR_DECODE_STATUS=FAILED" >> $GITHUB_ENV
+            echo "QR_DECODE_ATTEMPTS=0" >> $GITHUB_ENV
+            echo "QR_CONTENT=Not decoded" >> $GITHUB_ENV
+          fi
 
       - name: Show Git Diff
         run: |
