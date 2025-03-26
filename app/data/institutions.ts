@@ -10288,4 +10288,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126420014A000000615000101066033460210MD000011375204866153034585802MY5929Masjid Al Ummah Telok Chengai6002MY62530325162972045689100702990463005201632811181852001348663049199",
     supportedPayment: ["duitnow", "tng"]
   },
+  // khairin, website - https://masjidkotawarisan.com/
+  {
+    id: 840,
+    name: "Masjid Kota Warisan",
+    category: "mosque",
+    state: "Selangor",
+    city: "Sepang",
+    qrImage: "https://i0.wp.com/masjidkotawarisan.com/wp-content/uploads/2025/02/MKW1.jpeg?w=1080&ssl=1",
+    qrContent: "00020201021126580014A000000615000101065016640226100106620011331O42AOZA00015204597353034585802MY5919MASJID KOTA WARISAN6002MY62150311O42AOZA00018264E425515D88CD45A4140C37D4A55C570EF7E9B9E440850E575CBB7442B68E16E963045F53",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
