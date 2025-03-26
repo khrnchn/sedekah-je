@@ -60,6 +60,38 @@ jobs:
           INPUT_FILE: "input.data"
           ISSUE_ID: "${{ github.event.issue.number }}"
 
+      - name: Set Environment Variables
+        id: set_env
+        run: |
+          if [ -f "extractedFields.json" ]; then
+            # Read the JSON file and set environment variables
+            TYPE_OF_INSTITUTE=$(jq -r '.typeOfInstitute // "N/A"' extractedFields.json)
+            NAME_OF_THE_MASJID=$(jq -r '.nameOfTheMasjid // "N/A"' extractedFields.json)
+            NAME_OF_THE_CITY=$(jq -r '.nameOfTheCity // "N/A"' extractedFields.json)
+            STATE=$(jq -r '.state // "N/A"' extractedFields.json)
+            NEXT_ID=$(jq -r '.nextId // "N/A"' extractedFields.json)
+            QR_CODE_IMAGE=$(jq -r '.qrCodeImage // "N/A"' extractedFields.json)
+            REMARKS=$(jq -r '.remarks // "N/A"' extractedFields.json)
+            QR_DECODE_STATUS=$(jq -r '.qrDecodeStatus // "FAILED"' extractedFields.json)
+            QR_DECODE_ATTEMPTS=$(jq -r '.qrDecodeAttempts // "0"' extractedFields.json)
+            QR_CONTENT=$(jq -r '.qrContent // "Not decoded"' extractedFields.json)
+
+            # Set environment variables for subsequent steps
+            echo "TYPE_OF_INSTITUTE=$TYPE_OF_INSTITUTE" >> $GITHUB_ENV
+            echo "NAME_OF_THE_MASJID=$NAME_OF_THE_MASJID" >> $GITHUB_ENV
+            echo "NAME_OF_THE_CITY=$NAME_OF_THE_CITY" >> $GITHUB_ENV
+            echo "STATE=$STATE" >> $GITHUB_ENV
+            echo "NEXT_ID=$NEXT_ID" >> $GITHUB_ENV
+            echo "QR_CODE_IMAGE=$QR_CODE_IMAGE" >> $GITHUB_ENV
+            echo "REMARKS=$REMARKS" >> $GITHUB_ENV
+            echo "QR_DECODE_STATUS=$QR_DECODE_STATUS" >> $GITHUB_ENV
+            echo "QR_DECODE_ATTEMPTS=$QR_DECODE_ATTEMPTS" >> $GITHUB_ENV
+            echo "QR_CONTENT=$QR_CONTENT" >> $GITHUB_ENV
+          else
+            echo "extractedFields.json not found"
+            exit 1
+          fi
+
       - name: Append Data to institutions.ts
         run: |
           node actions/append_institution.js
