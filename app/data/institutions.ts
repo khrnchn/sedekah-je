@@ -10255,4 +10255,14 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126610014A000000615000101065641670215QRMID0000016874041001398800945204866153034585802MY5925MJD UBUDIYAH KG PAYA LUAS6008TEMERLOH61052800063049F53",
     supportedPayment: ["duitnow", "tng"]
   },
+  // eidaud83, twitter dm
+  {
+    id: 837,
+    name: "Surau Saidina Abu Bakar As-Siddiq Taman Lestari Putra LEP 4",
+    category: "surau",
+    state: "Selangor",
+    city: "Seri Kembangan",
+    qrImage: "https://i.ibb.co/8Wfhn5L/image.png",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
