@@ -2,7 +2,7 @@ name: Add New Institution
 
 on:
   issues:
-    types: [opened]
+    types: [opened, reopened]
 
 jobs:
   add-qrcode:
