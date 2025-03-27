@@ -10321,4 +10321,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126420014A000000615000101066033460210MD001210465204866153034585802MY5917SURAU DARUL HUSNA6002MY627303251690283979323009142808556052016902839819130085389071616902838011860076304C347",
     supportedPayment: ["duitnow", "tng"]
   },
+  // kawan aerry, twitter dm
+  {
+    id: 843,
+    name: "Masjid Saujana Puchong",
+    category: "mosque",
+    state: "Selangor",
+    city: "Puchong",
+    qrImage: "https://i.ibb.co/WLgpMk1/image.png",
+    qrContent: "00020201021126580014A000000615000101065887340212MBBQR2128689031000000000005204729953034585802MY5909MASJID SP6008SELANGOR63046136",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
