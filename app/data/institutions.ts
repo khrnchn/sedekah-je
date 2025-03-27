@@ -10352,6 +10352,7 @@ export const institutions: Institution[] = [
     city: "Kuantan",
     qrImage: "https://i.ibb.co/VcfD7PYH/image.png",
     qrContent: "00020201021126420014A000000615000101066033460210MD001210305204866153034585802MY5925Masjid Al-Munir, Kg. Sela6002MY6273032516902725792770098506508510520169027264750300169600716169027164814500863049472",
-    supportedPayment: ["duitnow", "tng"]
+    supportedPayment: ["duitnow", "tng"],
+    coords: [3.8132992660880887, 103.34569406931716],
   },
 ];
