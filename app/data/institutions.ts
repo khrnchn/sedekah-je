@@ -10329,6 +10329,7 @@ export const institutions: Institution[] = [
     state: "Selangor",
     city: "Puchong",
     qrImage: "https://i.ibb.co/WLgpMk1/image.png",
+    qrContent: "00020201021126580014A000000615000101065887340212MBBQR2128689031000000000005204729953034585802MY5909MASJID SP6008SELANGOR63046136",
     supportedPayment: ["duitnow", "tng"]
   },
 ];
