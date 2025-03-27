@@ -10332,4 +10332,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126580014A000000615000101065887340212MBBQR2128689031000000000005204729953034585802MY5909MASJID SP6008SELANGOR63046136",
     supportedPayment: ["duitnow", "tng"]
   },
+  // Luqies, self-snap - Masjid Bt 4 Kiyai Haji Omar
+  {
+    id: 844,
+    name: "Masjid Kampong Batu 4, Klang",
+    category: "mosque",
+    state: "Selangor",
+    city: "Klang",
+    qrImage: "https://github.com/user-attachments/assets/4ce05bb1-9ae6-480c-8b45-ddee05d20925",
+    qrContent: "00020201021126420014A000000615000101066033460210MD001346985204866153034585802MY5925MASJID KAMPONG BATU EMPAT6002MY627303251717472297211006916101238052017416787991470040525071617174719045720016304EF3E",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
