@@ -10365,12 +10365,13 @@ export const institutions: Institution[] = [
     qrImage: "https://i.ibb.co/3Prvc0m/image.png",
     qrContent: "00020201021126600014A000000615000101065892670228BRQR66053af2e8a12479f5ea05765204866153034585802MY5923Masjid Al Muhajirin IM56007Kuantan61052520062420310M000002807052466053af3b6230a7e11c36031630481B2",
     coords: [3.823675325873265, 103.29079038002023],
-    supportedPayment: ["duitnow", "tng"]
+    supportedPayment: ["duitnow", "tng"],
+coords: 3.8238251990581205, 103.29087621534141,
   },
-  Rimau786, twitter dm
+  // Rimau786, twitter dm
   {
     id: 847,
-    name: "Surau Residensi Sungai Mas",
+    name: "Surau Residensi Pandan Mas",
     category: "surau",
     state: "Selangor",
     city: "e.g., Kuala Lumpur",
