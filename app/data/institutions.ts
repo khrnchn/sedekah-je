@@ -10355,4 +10355,16 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
     coords: [3.8132992660880887, 103.34569406931716],
   },
+  // panijaz, twitter dm
+  {
+    id: 846,
+    name: "Masjid Al Muhajirin Indera Mahkota 5",
+    category: "mosque",
+    state: "Pahang",
+    city: "Indera Mahkota",
+    qrImage: "https://i.ibb.co/3Prvc0m/image.png",
+    qrContent: "00020201021126600014A000000615000101065892670228BRQR66053af2e8a12479f5ea05765204866153034585802MY5923Masjid Al Muhajirin IM56007Kuantan61052520062420310M000002807052466053af3b6230a7e11c36031630481B2",
+    coords: [3.823675325873265, 103.29079038002023],
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
