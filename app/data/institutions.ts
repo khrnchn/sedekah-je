@@ -10367,4 +10367,15 @@ export const institutions: Institution[] = [
     coords: [3.823675325873265, 103.29079038002023],
     supportedPayment: ["duitnow", "tng"]
   },
+  // {name}, {source} - {url} (eg: khairin, facebook - facebook.com/something) example: https://github.com/khrnchn/sedekah-je/blob/main/app/data/institutions.ts#L8835
+  {
+    id: 847,
+    name: "Surau Residensi Sungai Mas",
+    category: "surau",
+    state: "Selangor",
+    city: "e.g., Kuala Lumpur",
+    qrImage: "https://i.ibb.co/0yxjpm1y/image.png",
+    qrContent: "00020201021126580014A000000615000101065887340212MBBQR1951523031000000000005204829953034585802MY5925SURAU RESIDENSI PANDANMAS6015WP KUALA LUMPUR63040357",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
