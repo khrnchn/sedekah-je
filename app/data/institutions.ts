@@ -10367,7 +10367,7 @@ export const institutions: Institution[] = [
     coords: [3.823675325873265, 103.29079038002023],
     supportedPayment: ["duitnow", "tng"]
   },
-  // {name}, {source} - {url} (eg: khairin, facebook - facebook.com/something) example: https://github.com/khrnchn/sedekah-je/blob/main/app/data/institutions.ts#L8835
+  Rimau786, twitter dm
   {
     id: 847,
     name: "Surau Residensi Sungai Mas",
