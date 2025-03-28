@@ -10355,4 +10355,14 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
     coords: [3.8132992660880887, 103.34569406931716],
   },
+  // panijaz, twitter dm
+  {
+    id: 846,
+    name: "Masjid Al Muhajirin Indera Mahkota 5",
+    category: "mosque",
+    state: "Pahang",
+    city: "Indera Mahkota",
+    qrImage: "https://i.ibb.co/3Prvc0m/image.png",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
