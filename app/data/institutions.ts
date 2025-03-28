@@ -10370,7 +10370,7 @@ coords: [3.823771674298601, 103.2908547576707],
   // Rimau786, twitter dm
   {
     id: 847,
-    name: "Surau Residensi Pandan Mas",
+    name: "Surau Residensi PandanMas",
     category: "surau",
     state: "W.P. Kuala Lumpur",
     city: "Kuala Lumpur",
