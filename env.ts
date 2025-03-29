@@ -1,11 +1,7 @@
 import { createEnv } from "@t3-oss/env-core";
-import { z } from "zod";
 
 export const env = createEnv({
-	server: {
-		TELEGRAM_BOT_TOKEN: z.string(),
-		TELEGRAM_CHANNEL_ID: z.string(),
-	},
+	server: {},
 
 	/**
 	 * The prefix that client-side variables must have. This is enforced both at
