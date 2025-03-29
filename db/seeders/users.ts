@@ -1,4 +1,5 @@
 import { users } from "@/db/schema";
+import bcrypt from "bcryptjs";
 import type { PoolClient } from "pg";
 import { db } from "..";
 
@@ -8,7 +9,7 @@ export async function seedUsers(client: PoolClient) {
 			clerkId: "test",
 			name: "SedekahJe Admin",
 			email: "admin@admin.com",
-			password: await Bun.password.hash("password"),
+			password: await bcrypt.hash("password", 10),
 			isAdmin: true,
 		},
 	];
