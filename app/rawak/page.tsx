@@ -6,6 +6,7 @@ import FilterCategory from "@/components/filter-category";
 import FilterState from "@/components/filter-state";
 import FilteredCount from "@/components/filtered-count";
 import GetdoaFooter from "@/components/getdoa-footer";
+import PageFooter from "@/components/page-footer";
 import PageHeader from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -14,13 +15,12 @@ import PageSection from "@/components/ui/pageSection";
 import QrCodeDisplay from "@/components/ui/qrCodeDisplay";
 import useClientDimensions from "@/hooks/use-client-dimensions";
 import { removeDuplicateInstitutions, slugify } from "@/lib/utils";
+import { AnimatePresence, motion } from "framer-motion";
 import html2canvas from "html2canvas";
 import { Clipboard, Download, Loader2, MapPin, QrCode } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import PageFooter from "@/components/page-footer";
-import { AnimatePresence, motion } from "framer-motion";
 
 const Rawak = () => {
 	const cardRef = useRef<HTMLDivElement>(null);
@@ -62,170 +62,6 @@ const Rawak = () => {
 		}
 	}, [filteredInstitutions]);
 
-	const handleDownload = useCallback(async () => {
-		if (!randomInstitution) return;
-
-		setIsDownloading(true);
-		setDownloadStage("Menyediakan kod QR...");
-
-		// Set a master timeout to prevent infinite loading
-		const masterTimeoutId = setTimeout(() => {
-			setIsDownloading(false);
-			setDownloadStage("");
-			toast.error("Masa tamat. Sila cuba lagi.");
-		}, 15000); // 15 seconds maximum for the whole operation
-
-		// Check if this is a mobile device
-		const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-		try {
-			// For mobile devices, try Web Share API first if available
-			if (isMobile && navigator.share && navigator.canShare) {
-				try {
-					setDownloadStage("Menyediakan perkongsian kod QR...");
-					const element = printRef.current;
-					if (!element) {
-						throw new Error("QR element not found");
-					}
-
-					// Capture image
-					const canvas = await html2canvas(element, {
-						useCORS: true,
-						allowTaint: true,
-						backgroundColor: "#ffffff",
-						scale: 2,
-					});
-
-					// Convert to blob for sharing
-					const blob = await new Promise<Blob>((resolve, reject) => {
-						canvas.toBlob((blob) => {
-							if (blob) resolve(blob);
-							else reject(new Error("Failed to create image blob"));
-						}, "image/png", 0.8);
-					});
-
-					// Create file from blob
-					const file = new File([blob], `sedekahje-${slugify(randomInstitution.name)}.png`, { type: "image/png" });
-
-					// Check if we can share this file
-					const shareData = { files: [file], title: `Kod QR untuk ${randomInstitution.name}` };
-
-					if (navigator.canShare(shareData)) {
-						await navigator.share(shareData);
-						toast.success("Kod QR telah dikongsi.");
-						clearTimeout(masterTimeoutId);
-						setIsDownloading(false);
-						setDownloadStage("");
-						return;
-					}
-				} catch (shareError) {
-					console.error("Share error:", shareError);
-					// Continue to fallback methods if sharing fails
-				}
-			}
-
-			// Try iOS Safari specific approach
-			if (/iPhone|iPad|iPod/i.test(navigator.userAgent) && /Safari/i.test(navigator.userAgent)) {
-				try {
-					setDownloadStage("Menyediakan kaedah khas untuk Safari iOS...");
-					const element = printRef.current;
-					if (!element) {
-						throw new Error("QR element not found");
-					}
-
-					const canvas = await html2canvas(element, {
-						useCORS: true,
-						allowTaint: true,
-						backgroundColor: "#ffffff",
-						scale: 2,
-						logging: false,
-					});
-
-					// Create a temporary anchor that opens in a new tab
-					const data = canvas.toDataURL("image/png");
-					const newTab = window.open();
-					if (!newTab) {
-						throw new Error("Popup blocked. Please allow popups for this site.");
-					}
-
-					newTab.document.write(`
-						<html>
-							<head>
-								<title>Kod QR untuk ${randomInstitution.name}</title>
-								<meta name="viewport" content="width=device-width, initial-scale=1.0">
-								<style>
-									body { margin: 0; padding: 20px; text-align: center; font-family: system-ui, sans-serif; }
-									img { max-width: 100%; height: auto; }
-									.instructions { margin-top: 20px; color: #555; }
-								</style>
-							</head>
-							<body>
-								<h3>Kod QR untuk ${randomInstitution.name}</h3>
-								<img src="${data}" alt="QR Code">
-								<p class="instructions">Tekan lama pada imej dan pilih "Simpan Imej" untuk muat turun.</p>
-							</body>
-						</html>
-					`);
-					newTab.document.close();
-
-					toast.success("Berjaya memuat turun kod QR. Sila simpan imej.");
-					clearTimeout(masterTimeoutId);
-					setIsDownloading(false);
-					setDownloadStage("");
-					return;
-				} catch (safariError) {
-					console.error("Safari handling error:", safariError);
-					// Continue to fallback methods
-				}
-			}
-
-			// Standard approach for other browsers
-			try {
-				setDownloadStage("Mengambil gambar kod QR secara langsung...");
-				const element = printRef.current;
-				if (!element) {
-					throw new Error("QR element not found");
-				}
-
-				const canvas = await html2canvas(element, {
-					useCORS: true,
-					allowTaint: true,
-					backgroundColor: "#ffffff",
-					scale: 2,
-					logging: false,
-				});
-
-				setDownloadStage("Menyediakan fail untuk dimuat turun...");
-				const data = canvas.toDataURL("image/png");
-				const link = document.createElement("a");
-				link.href = data;
-				link.download = `sedekahje-${slugify(randomInstitution.name)}.png`;
-				document.body.appendChild(link);
-				link.click();
-				document.body.removeChild(link);
-
-				toast.success("Berjaya memuat turun kod QR.");
-				clearTimeout(masterTimeoutId);
-				setIsDownloading(false);
-				setDownloadStage("");
-				return;
-			} catch (standardError) {
-				console.error("Standard download error:", standardError);
-				// Try alternative approach
-			}
-
-			// If we get here, all methods failed
-			toast.error("Gagal memuat turun kod QR. Sila cuba lagi.");
-		} catch (error) {
-			console.error("Download error:", error);
-			toast.error("Gagal memuat turun kod QR. Sila cuba lagi.");
-		} finally {
-			clearTimeout(masterTimeoutId);
-			setIsDownloading(false);
-			setDownloadStage("");
-		}
-	}, [randomInstitution]);
-
 	const handleCopy = useCallback(() => {
 		if (!url) return;
 
@@ -264,7 +100,9 @@ const Rawak = () => {
 						<div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-xs w-full flex flex-col items-center gap-4">
 							<div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
 							<p className="text-center font-medium">Memuat turun kod QR...</p>
-							<p className="text-center text-sm text-gray-500 dark:text-gray-400">{downloadStage || "Sila tunggu sebentar"}</p>
+							<p className="text-center text-sm text-gray-500 dark:text-gray-400">
+								{downloadStage || "Sila tunggu sebentar"}
+							</p>
 						</div>
 					</motion.div>
 				)}
@@ -342,8 +180,122 @@ const Rawak = () => {
 									<div className="flex justify-between space-x-2 w-full mt-4">
 										<Button
 											className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 px-3 py-2 rounded-md transition-all duration-200 ease-in-out flex items-center justify-center"
-											onClick={handleDownload}
+											// onClick={handleDownload}
 											disabled={isDownloading}
+											onClick={async (e) => {
+												e.stopPropagation();
+												setIsDownloading(true);
+												setDownloadStage("Menyediakan kod QR...");
+												try {
+													// Create a temporary iframe to load the QR page
+													const iframe = document.createElement("iframe");
+													iframe.style.visibility = "hidden";
+													iframe.style.position = "fixed";
+													iframe.style.right = "0";
+													iframe.style.bottom = "0";
+													iframe.width = "600px";
+													iframe.height = "600px";
+
+													// Set the source to the QR page URL
+													const qrPageUrl = `${window.location.origin}/qr/${slugify(randomInstitution.name)}`;
+													console.log("Loading QR page:", qrPageUrl);
+													iframe.src = qrPageUrl;
+
+													document.body.appendChild(iframe);
+
+													// Wait for iframe to load and ensure content is fully rendered
+													await new Promise((resolve) => {
+														iframe.onload = () => {
+															console.log("Iframe loaded");
+															setDownloadStage("Memuatkan halaman kod QR...");
+															// Add a delay to ensure content is fully rendered
+															setTimeout(() => {
+																console.log(
+																	"Proceeding with capture after delay",
+																);
+																resolve(null);
+															}, 1000);
+														};
+													});
+
+													// Capture the iframe content
+													setDownloadStage("Mengambil gambar kod QR...");
+													const canvas = await html2canvas(
+														iframe.contentDocument?.body as HTMLElement,
+														{
+															useCORS: true,
+															allowTaint: true,
+															backgroundColor: "#ffffff",
+															scale: 2, // Increase resolution for better quality
+															logging: true, // Enable logging for debugging
+														},
+													);
+
+													// Convert to downloadable image
+													setDownloadStage(
+														"Menyediakan fail untuk dimuat turun...",
+													);
+													const data = canvas.toDataURL("image/png");
+													const link = document.createElement("a");
+													link.href = data;
+													link.download = `sedekahje-${slugify(randomInstitution.name)}.png`;
+													document.body.appendChild(link);
+													link.click();
+
+													// Cleanup
+													document.body.removeChild(link);
+													document.body.removeChild(iframe);
+
+													toast.success("Berjaya memuat turun kod QR.");
+												} catch (error) {
+													console.error("Download error:", error);
+													toast.error("Gagal memuat turun kod QR.");
+
+													// Fallback to direct QR code capture if iframe method fails
+													try {
+														console.log("Attempting fallback method");
+														setDownloadStage("Mencuba kaedah alternatif...");
+														const element = printRef.current;
+														if (!element) {
+															console.error("QR element not found");
+															return;
+														}
+
+														const canvas = await html2canvas(element, {
+															useCORS: true,
+															allowTaint: true,
+															backgroundColor: "#ffffff",
+															scale: 2,
+														});
+
+														setDownloadStage(
+															"Menyediakan fail untuk dimuat turun...",
+														);
+														const data = canvas.toDataURL("image/png");
+														const link = document.createElement("a");
+														link.href = data;
+														link.download = `sedekahje-${slugify(randomInstitution.name)}.png`;
+														document.body.appendChild(link);
+														link.click();
+														document.body.removeChild(link);
+
+														toast.success(
+															"Berjaya memuat turun kod QR (kaedah alternatif).",
+														);
+													} catch (fallbackError) {
+														console.error(
+															"Fallback download error:",
+															fallbackError,
+														);
+														toast.error(
+															"Gagal memuat turun kod QR dengan kedua-dua kaedah.",
+														);
+													}
+												} finally {
+													setIsDownloading(false);
+													setDownloadStage("");
+												}
+											}}
 										>
 											{isDownloading ? (
 												<Loader2 size={16} className="mr-2 animate-spin" />
