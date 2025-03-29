@@ -1,5 +1,5 @@
 import { QRCodeSVG } from "qrcode.react";
-import SedekahjeLogo from "../../../public/masjid.svg";
+import SedekahjeLogo from "./masjid.svg";
 
 import { institutions } from "@/app/data/institutions";
 import { slugify } from "@/lib/utils";
