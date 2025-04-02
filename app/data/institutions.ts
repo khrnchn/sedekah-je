@@ -10401,4 +10401,15 @@ coords: [3.823771674298601, 103.2908547576707],
     supportedPayment: ["duitnow", "tng"],
     coords: [5.248652577050432, 100.4342057576707],
   },
+  // nqs587, twitter dm
+  {
+    id: 850,
+    name: "MASJID KARIAH TAMAN MARIDA SENAWANG",
+    category: "mosque",
+    state: "Negeri Sembilan",
+    city: "Senawang",
+    qrImage: "https://i.ibb.co/ksLJ6p1h/image.png",
+    qrContent: "00020201021126420014A000000615000101066033460210MD000002735204866153034585802MY5922Masjid Kariah Senawang6002MY6273032516987151622430038671554660520173311236008500143130716162007905245500163047078",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
