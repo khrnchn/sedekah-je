@@ -10421,6 +10421,7 @@ coords: [3.823771674298601, 103.2908547576707],
     city: "Chukai",
     qrImage: "https://i.ibb.co/xq3Kw2R3/image.png",
     qrContent: "00020201021126580014A000000615000101065887340212MBBQR2126614031000000000005204729953034585802MY5921MASJID BUKIT KUKURAN 6010TERENGGANU6304EC64",
-    supportedPayment: ["duitnow", "tng"]
+    supportedPayment: ["duitnow", "tng"],
+    coords: [4.403925426183276, 103.4480222],
   },
 ];
