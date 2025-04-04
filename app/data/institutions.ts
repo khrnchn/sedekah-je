@@ -10412,4 +10412,15 @@ coords: [3.823771674298601, 103.2908547576707],
     qrContent: "00020201021126420014A000000615000101066033460210MD000002735204866153034585802MY5922Masjid Kariah Senawang6002MY6273032516987151622430038671554660520173311236008500143130716162007905245500163047078",
     supportedPayment: ["duitnow", "tng"]
   },
+  // pinkb0ngwater, twitter dm
+  {
+    id: 851,
+    name: "Masjid Bukit Kukuran Kemasik",
+    category: "mosque",
+    state: "Terengganu",
+    city: "Chukai",
+    qrImage: "https://i.ibb.co/xq3Kw2R3/image.png",
+    qrContent: "00020201021126580014A000000615000101065887340212MBBQR2126614031000000000005204729953034585802MY5921MASJID BUKIT KUKURAN 6010TERENGGANU6304EC64",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
