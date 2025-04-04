@@ -20,8 +20,9 @@ to upload qr, you have three options:
 - eg: `khairin, facebook - https://facebook.com/source-of-the-qr`
 - add additional info like coordinates
 - submit issue and pr will be automatically created
+- dont forget to remove all the dashes (-)
 
-2. through [google form](https://forms.gle/sUvn5KteEXi6Ke8G9)
+2. dm us on [twitter](https://x.com/sedekahje)
 
 3. through bulk contribution
 - click this notebook [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1ObRdwFqF9Ug6f1UjvDPB0X7m3hAyMaQj?usp=sharing) (no local setup require)
