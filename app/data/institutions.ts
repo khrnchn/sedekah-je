@@ -10424,4 +10424,15 @@ coords: [3.823771674298601, 103.2908547576707],
     supportedPayment: ["duitnow", "tng"],
     coords: [4.403925426183276, 103.4480222],
   },
+  // eidaud83, twitter dm
+  {
+    id: 852,
+    name: "Masjid Nurul Huda Salor",
+    category: "mosque",
+    state: "Kelantan",
+    city: "Pasir Mas",
+    qrImage: "https://i.ibb.co/GftG7n3J/image.png",
+    qrContent: "00020201021126420014A000000615000101066033460210MD001380525204866153034585802MY5923Masjid Nurul Huda Salor6002MY6273032517241191602380046388378350520172411942709000106950716172411889720600363049455",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
