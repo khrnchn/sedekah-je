@@ -10436,4 +10436,17 @@ coords: [3.823771674298601, 103.2908547576707],
     supportedPayment: ["duitnow", "tng"],
     coords: [6.042578215333993, 102.20714698650606],
   },
+  // kyziq, faris (cousin) - taken from masjid
+  // https://www.facebook.com/pages/Masjid-Kepala-Gajah/222228684470144
+  {
+    id: 853,
+    name: "Masjid As-Solihin Kampung Kepala Gajah",
+    category: "mosque",
+    state: "Pulau Pinang",
+    city: "Simpang Ampat",
+    qrImage: "https://i.ibb.co/Df45HGpP/Whats-App-Image-2025-04-05-at-11-26-43-PM.jpg",
+    qrContent: "00020201021126470014A000000615000101065641620215PBB2023000896775204869953034585802MY5925J/K QARYAH MASJID KEPALA 6013SIMPANG AMPAT62200306323844070628929563046860",
+    supportedPayment: ["duitnow", "tng"],
+    coords: [5.284405407699483, 100.49594420552943],
+  },
 ];
