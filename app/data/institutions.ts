@@ -10437,7 +10437,7 @@ coords: [3.823771674298601, 103.2908547576707],
     coords: [6.042578215333993, 102.20714698650606],
   },
   // kyziq, faris (cousin) - taken from masjid
-  // https://www.facebook.com/pages/Masjid-Kepala-Gajah/222228684470144?_rdr
+  // https://www.facebook.com/pages/Masjid-Kepala-Gajah/222228684470144
   {
     id: 853,
     name: "Masjid As-Solihin Kampung Kepala Gajah",
