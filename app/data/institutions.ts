@@ -10449,4 +10449,14 @@ coords: [3.823771674298601, 103.2908547576707],
     supportedPayment: ["duitnow", "tng"],
     coords: [5.284405407699483, 100.49594420552943],
   },
+  // Shaikh Danial, Taken from masjid
+  {
+    id: 854,
+    name: "Masjid Al-Ubudiah",
+    category: "mosque",
+    state: "W.P. Kuala Lumpur",
+    city: "Kuala Lumpur",
+    qrImage: "https://i.ibb.co/qYfwTtrs/QR-MASJID-AL-UBUDIAH-SEGAMBUT.jpg",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
