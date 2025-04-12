@@ -10457,6 +10457,7 @@ coords: [3.823771674298601, 103.2908547576707],
     state: "W.P. Kuala Lumpur",
     city: "Kuala Lumpur",
     qrImage: "https://i.ibb.co/qYfwTtrs/QR-MASJID-AL-UBUDIAH-SEGAMBUT.jpg",
-    supportedPayment: ["duitnow", "tng"]
+    supportedPayment: ["duitnow", "tng"],
+    qrContent: "00020201021126580014A000000615000101065887340212MBBQR2197500031000000000005204729953034585802MY5921WAKAF PPZ-M.ALUBUDIAH6015WP KUALA LUMPUR63043DAA",
   },
 ];
