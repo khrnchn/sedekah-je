@@ -66,7 +66,12 @@ async function decodeQRCode(url, retries = 1) {
 		// Download the image
 		const response = await axios.get(url, {
 			responseType: 'arraybuffer',
-			timeout: 5000
+			timeout: 15000, // 15 seconds
+			/* Not sure if needed, to avoid being blocked by the server
+			headers: { 
+				'User-Agent': ''
+			}
+			*/
 		});
 
 		// Process the image with sharp
@@ -99,11 +104,15 @@ async function decodeQRCode(url, retries = 1) {
 	} catch (error) {
 		console.error(`Error decoding QR code: ${error.message}`);
 
-		if (retries > 0 && !error.message.includes('timeout')) {
-			console.log(`Retrying QR code decoding (${retries} retries left)...`);
-			await new Promise((resolve) => setTimeout(resolve, 2000));
-			return decodeQRCode(url, retries - 1);
+		// If it's a timeout error, try again with more retries
+		if (error.message.includes('timeout')) {
+			if (retries > 0) {
+				console.log(`Timeout occurred, retrying QR code decoding (${retries} retries left)...`);
+				await new Promise((resolve) => setTimeout(resolve, 2000));
+				return decodeQRCode(url, retries - 1);
+			}
 		}
+
 		return "";
 	}
 }
