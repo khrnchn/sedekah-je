@@ -10460,4 +10460,14 @@ coords: [3.823771674298601, 103.2908547576707],
     supportedPayment: ["duitnow", "tng"],
     qrContent: "00020201021126580014A000000615000101065887340212MBBQR2197500031000000000005204729953034585802MY5921WAKAF PPZ-M.ALUBUDIAH6015WP KUALA LUMPUR63043DAA",
   },
+  // kyziq, faris (cousin) - taken from masjid
+  {
+    id: 855,
+    name: "Masjid Jamek Al Ihsaniah",
+    category: "mosque",
+    state: "Pulau Pinang",
+    city: "Simpang Ampat",
+    qrImage: "https://i.ibb.co/PZ15r8mK/MASJID-JAMEK-AL-IHSANIAH-2025-04-09-at-12-05-22-AM.jpg",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
