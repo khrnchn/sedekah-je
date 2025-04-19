@@ -10376,7 +10376,8 @@ coords: [3.823771674298601, 103.2908547576707],
     city: "Kuala Lumpur",
     qrImage: "https://i.ibb.co/0yxjpm1y/image.png",
     qrContent: "00020201021126580014A000000615000101065887340212MBBQR1951523031000000000005204829953034585802MY5925SURAU RESIDENSI PANDANMAS6015WP KUALA LUMPUR63040357",
-    supportedPayment: ["duitnow", "tng"]
+	supportedPayment: ["duitnow", "tng"],
+	coords: [3.142375592220704, 101.73780012698786],
   },
   // aiman pokgak, taken at masjid
   {
