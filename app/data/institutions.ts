@@ -10472,4 +10472,15 @@ coords: [3.823771674298601, 103.2908547576707],
     supportedPayment: ["duitnow", "tng"],
     coords: [5.28240315192533, 100.4758950934587],
   },
+  // afrie, whatsapp
+  {
+    id: 856,
+    name: "Masjid Qiyammuddin Kampung Gelong",
+    category: "mosque",
+    state: "Kedah",
+    city: "Jitra",
+    qrImage: "https://i.ibb.co/9mYqLMMq/image.png",
+    qrContent: "00020201021126420014A000000615000101066033460210MD001321535204866153034585802MY5918MASJID QIYAMMUDDIN6002MY627303251711334312303003529378509052017113346340750010516071617113336149600096304CC10",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
