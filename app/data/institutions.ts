@@ -10494,6 +10494,7 @@ coords: [3.823771674298601, 103.2908547576707],
     city: "Kota Samarahan",
     qrImage: "https://i.ibb.co/m3H09PP/image.png",
     qrContent: "00020201021126580014A000000615000101065887340212MBBQR2123256031000000000005204729953034585802MY5918MASJID AL-MUHAIMIN6007SARAWAK6304236C",
-    supportedPayment: ["duitnow", "tng"]
+    supportedPayment: ["duitnow", "tng"],
+coords: [1.4145420903083865, 110.40895810184749],
   },
 ];
