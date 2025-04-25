@@ -10485,4 +10485,15 @@ coords: [3.823771674298601, 103.2908547576707],
     supportedPayment: ["duitnow", "tng"],
     coords: [6.299841841942134, 100.4002716541283],
   },
+  // Rimau786, twitter dm
+  {
+    id: 857,
+    name: "Masjid Al Muhaimin Kota Samarahan Sarawak",
+    category: "mosque",
+    state: "Sarawak",
+    city: "Kota Samarahan",
+    qrImage: "https://i.ibb.co/m3H09PP/image.png",
+    qrContent: "00020201021126580014A000000615000101065887340212MBBQR2123256031000000000005204729953034585802MY5918MASJID AL-MUHAIMIN6007SARAWAK6304236C",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
