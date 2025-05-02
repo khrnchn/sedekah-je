@@ -10497,4 +10497,15 @@ coords: [3.823771674298601, 103.2908547576707],
     supportedPayment: ["duitnow", "tng"],
 coords: [1.4145420903083865, 110.40895810184749],
   },
+  // facebook - https://www.facebook.com/SurauArRaudhah.EcoMajestic
+  {
+    id: 858,
+    name: "Surau Ar-Raudhah",
+    category: "surau",
+    state: "Selangor",
+    city: "Semenyih",
+    qrImage: "https://i.ibb.co/fVNptn06/image.jpg",
+    qrContent: "00020201021126580014A000000615000101065887340212MBBQR2313216031000000000005204729953034585802MY5916SURAU AR-RAUDHAH6008SELANGOR6304E5C1",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
