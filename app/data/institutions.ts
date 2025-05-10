@@ -10520,4 +10520,15 @@ coords: [1.4145420903083865, 110.40895810184749],
     supportedPayment: ["duitnow", "tng"],
     coords: [3.1710830722888312, 101.57528992513518],
   },
+  // ZackAvaricious, twitter - https://x.com/ZackAvaricious/status/1920751849826590762
+  {
+    id: 860,
+    name: "Pusat Perubatan Universiti Malaya PPUM",
+    category: "others",
+    state: "W.P. Kuala Lumpur",
+    city: "W.P. Kuala Lumpur",
+    qrImage: "https://pbs.twimg.com/media/Gqfhnq8aUAAae70?format=jpg&name=900x900",
+    qrContent: "00020201021126420014A000000615000101066033460210MD000678875204939953034585802MY5908PPUMCare6002MY62730325165094235009700393925408805201650942395479001146307161650941229299007630423E4",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
