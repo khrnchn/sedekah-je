@@ -10508,4 +10508,16 @@ coords: [1.4145420903083865, 110.40895810184749],
     qrContent: "00020201021126580014A000000615000101065887340212MBBQR2313216031000000000005204729953034585802MY5916SURAU AR-RAUDHAH6008SELANGOR6304E5C1",
     supportedPayment: ["duitnow", "tng"]
   },
+  // chairmanglc, twitter - https://x.com/chairmanGLC/status/1920714720488599647
+  {
+    id: 859,
+    name: "Surau Assahabah Seksyen 7 Kota Damansara",
+    category: "surau",
+    state: "Selangor",
+    city: "Kota Damansara",
+    qrImage: "https://pbs.twimg.com/media/Gqe_2aVbcAAE2Mj?format=jpg&name=medium",
+    qrContent: "00020201021126580014A000000615000101065887340212MBBQR1678706031000000000005204729953034585802MY5916SURAU AS SAHABAH6008SELANGOR6304E059",
+    supportedPayment: ["duitnow", "tng"],
+    coords: [3.1710830722888312, 101.57528992513518],
+  },
 ];
