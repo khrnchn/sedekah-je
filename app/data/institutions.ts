@@ -10517,6 +10517,7 @@ coords: [1.4145420903083865, 110.40895810184749],
     city: "Kota Damansara",
     qrImage: "https://pbs.twimg.com/media/Gqe_2aVbcAAE2Mj?format=jpg&name=medium",
     qrContent: "00020201021126580014A000000615000101065887340212MBBQR1678706031000000000005204729953034585802MY5916SURAU AS SAHABAH6008SELANGOR6304E059",
-    supportedPayment: ["duitnow", "tng"]
+    supportedPayment: ["duitnow", "tng"],
+    coords: [3.1710830722888312, 101.57528992513518],
   },
 ];
