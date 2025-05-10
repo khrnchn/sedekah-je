@@ -10532,4 +10532,15 @@ coords: [1.4145420903083865, 110.40895810184749],
     supportedPayment: ["duitnow", "tng"],
     coords: [3.1139431729088485, 101.6528365981497],
   },
+  // NajibAzir, twitter dm
+  {
+    id: 861,
+    name: "Masjid Ara Damansara",
+    category: "mosque",
+    state: "Selangor",
+    city: "Petaling Jaya",
+    qrImage: "https://i.ibb.co/QFfS3S5P/image.png",
+    qrContent: "00020201021126420014A000000615000101066033460210MD000085495204866153034585802MY5920MASJID ARA DAMANSARA6002MY6253032516427547386680013332264690520164275474560200817866304B0F5",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
