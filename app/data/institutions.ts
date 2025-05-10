@@ -10553,6 +10553,7 @@ coords: [1.4145420903083865, 110.40895810184749],
     city: "Petaling Jaya",
     qrImage: "https://i.ibb.co/4ZqYbWRd/image.png",
     qrContent: "00020101021126580014A000000615000101065887340212MBBQR129891003100000000000520400005303458540500.005802MY5920MASJID TENGKU KELANA6008SELANGOR6304A160",
-    supportedPayment: ["duitnow", "tng"]
+    supportedPayment: ["duitnow", "tng"],
+    coords: [3.0953224078280863, 101.59545080915031],
   },
 ];
