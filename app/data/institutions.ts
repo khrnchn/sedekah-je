@@ -10211,360 +10211,372 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 		coords: [5.759771641499046, 102.22962617116464],
 	},
-  // nrlfazlianaa_, twitter dm
-  {
-    id: 833,
-    name: "Masjid Jamek Batu 12 Puchong",
-    category: "mosque",
-    state: "Selangor",
-    city: "Puchong",
-    qrImage: "https://i.ibb.co/WWtPsTvN/image.png",
-    qrContent: "00020201021126580014A000000615000101065016640226100106020038176O81AMXA00015204482953034585802MY5925MASJID JAMEK BATU 12 PUCH6002MY62150311O81AMXA00018264DE4BBA75685667543A4802B3803AF0D3BFEB72BEA1D427E04DA19FAA8A86530A63048F19",
-    supportedPayment: ["duitnow", "tng"]
-  },
-  // frwzhjmldn, twitter dm
-  {
-    id: 834,
-    name: "Masjid An Nur Taman Maju",
-    category: "mosque",
-    state: "Melaka",
-    city: "Jasin",
-    qrImage: "https://i.ibb.co/ychHB8fh/image.png",
-    qrContent: "00020201021126580014A000000615000101065887340212MBBQR2074068031000000000005204000053034585802MY5924MASJID AN NUR TAMAN MAJU6006MELAKA6304D0AA",
-    supportedPayment: ["duitnow", "tng"]
-  },
-  // MSCDee_47, twitter dm
-  {
-    id: 835,
-    name: "Madrasah Al Huda",
-    category: "surau",
-    state: "W.P. Kuala Lumpur",
-    city: "Keramat",
-    qrImage: "https://i.ibb.co/m5FqmDXs/image.png",
-    qrContent: "00020201021126580014A000000615000101065887340212MBBQR2345541031000000000005204729953034585802MY5916MADRASAH AL HUDA6015WP KUALA LUMPUR630490B1",
-    supportedPayment: ["duitnow", "tng"]
-  },
-  // lilyy1611, twitter dm
-  {
-    id: 836,
-    name: "Masjid Ubudiyah Kampung Paya Luas",
-    category: "mosque",
-    state: "Pahang",
-    city: "Temerloh",
-    qrImage: "https://i.ibb.co/N233Gd3Z/image.png",
-    qrContent: "00020201021126610014A000000615000101065641670215QRMID0000016874041001398800945204866153034585802MY5925MJD UBUDIYAH KG PAYA LUAS6008TEMERLOH61052800063049F53",
-    supportedPayment: ["duitnow", "tng"]
-  },
-  // eidaud83, twitter dm
-  {
-    id: 837,
-    name: "Surau Saidina Abu Bakar As-Siddiq Taman Lestari Putra LEP 4",
-    category: "surau",
-    state: "Selangor",
-    city: "Seri Kembangan",
-    qrImage: "https://i.ibb.co/8Wfhn5L/image.png",
-    qrContent: "00020201021126580014A000000615000101065887340212MBBQR2179501031000000000005204729953034585802MY5925SURAU SAIYIDINA ABU BAKAR6008SELANGOR63046C21",
-    supportedPayment: ["duitnow", "tng"]
-  },
-  // khairin, facebook - https://www.facebook.com/photo.php?fbid=936841948537821&set=pb.100066360740916.-2207520000&type=3&locale=ms_MY
-  {
-    id: 838,
-    name: "Masjid Sultan Haji Ahmad Shah IIUM Gombak",
-    category: "mosque",
-    state: "Selangor",
-    city: "Gombak",
-    qrImage: "https://scontent.fkul16-1.fna.fbcdn.net/v/t39.30808-6/486445032_994746016080747_7056981972921732591_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=127cfc&_nc_ohc=hN7Jz3Qmdj8Q7kNvgGfpFRH&_nc_oc=AdmGuXynNjLTcjhdIfYR5dOr4EKqrgvk2iis7nh_79VXBUdeaEKkNDMYTtH39Wogcoo&_nc_zt=23&_nc_ht=scontent.fkul16-1.fna&_nc_gid=FuH4V5kp8CF1N8E45QkziA&oh=00_AYHGqHPEd8N9crCQcaHrH7zT8iurh4DkHRrD8GxNWr5Stg&oe=67E95304",
-    qrContent: "00020201021126560014A000000615000101068900610224630345a711f8cf1cfa5c3fe55204599953034585802MY5925IIUM MOSQUE -IHYA RAMADAN6006GOMBAK62140710QR_PAYMENT8240fad9fa96c4cf44c2427e82555ec87356eab58dd46304D06D",
-    supportedPayment: ["duitnow", "tng"]
-  },
-  // khairin, onpay - https://infaqmasjidalummah.onpay.my/order/form/tanahkubur
-  {
-    id: 839,
-    name: "Masjid Al Ummah Telok Chengai",
-    category: "mosque",
-    state: "Kedah",
-    city: "Alor Setar",
-    qrImage: "https://cdn.onpay.my/users/infaqmasjidalummah/media/uploads/Tanah%20Kubur%20Masjid%20Al-Ummah%20Telok%20Chengai%20(11).jpg",
-    qrContent: "00020201021126420014A000000615000101066033460210MD000011375204866153034585802MY5929Masjid Al Ummah Telok Chengai6002MY62530325162972045689100702990463005201632811181852001348663049199",
-    supportedPayment: ["duitnow", "tng"]
-  },
-  // khairin, website - https://masjidkotawarisan.com/
-  {
-    id: 840,
-    name: "Masjid Kota Warisan",
-    category: "mosque",
-    state: "Selangor",
-    city: "Sepang",
-    qrImage: "https://i0.wp.com/masjidkotawarisan.com/wp-content/uploads/2025/02/MKW1.jpeg?w=1080&ssl=1",
-    qrContent: "00020201021126580014A000000615000101065016640226100106620011331O42AOZA00015204597353034585802MY5919MASJID KOTA WARISAN6002MY62150311O42AOZA00018264E425515D88CD45A4140C37D4A55C570EF7E9B9E440850E575CBB7442B68E16E963045F53",
-    supportedPayment: ["duitnow", "tng"]
-  },
-  // khairin, website - https://banksahamakhirat.com/
-  {
-    id: 841,
-    name: "JAWATANKUASA SURAU AL-A’RAF",
-    category: "surau",
-    state: "Selangor",
-    city: "Bandar Baru Salak Tinggi",
-    qrImage: "https://banksahamakhirat.com/wp-content/uploads/2025/01/pembinaan-surau-salak-perdana-derma-sedeqah-masjid-qr-code-transfer-duit-dana.jpg",
-    qrContent: "00020201021126600014A000000615000101065892670228BRQR6577cd92b16709469f2dc8b65204866153034585802MY5925Jawatankuasa Surau AlAraf6006Sepang61054300062420310M00000022905246577ce843c6e1a7f4ac64fe663042A18",
-    supportedPayment: ["duitnow", "tng"]
-  },
-  // azriafnd, twitter dm
-  {
-    id: 842,
-    name: "Surau Darul Husna",
-    category: "surau",
-    state: "Selangor",
-    city: "Banting",
-    qrImage: "https://i.ibb.co/RkT2Ffqc/image.png",
-    qrContent: "00020201021126420014A000000615000101066033460210MD001210465204866153034585802MY5917SURAU DARUL HUSNA6002MY627303251690283979323009142808556052016902839819130085389071616902838011860076304C347",
-    supportedPayment: ["duitnow", "tng"]
-  },
-  // kawan aerry, twitter dm
-  {
-    id: 843,
-    name: "Masjid Saujana Puchong",
-    category: "mosque",
-    state: "Selangor",
-    city: "Puchong",
-    qrImage: "https://i.ibb.co/WLgpMk1/image.png",
-    qrContent: "00020201021126580014A000000615000101065887340212MBBQR2128689031000000000005204729953034585802MY5909MASJID SP6008SELANGOR63046136",
-    supportedPayment: ["duitnow", "tng"]
-  },
-  // Luqies, self-snap - Masjid Bt 4 Kiyai Haji Omar
-  {
-    id: 844,
-    name: "Masjid Kampong Batu 4, Klang",
-    category: "mosque",
-    state: "Selangor",
-    city: "Klang",
-    qrImage: "https://github.com/user-attachments/assets/4ce05bb1-9ae6-480c-8b45-ddee05d20925",
-    qrContent: "00020201021126420014A000000615000101066033460210MD001346985204866153034585802MY5925MASJID KAMPONG BATU EMPAT6002MY627303251717472297211006916101238052017416787991470040525071617174719045720016304EF3E",
-    supportedPayment: ["duitnow", "tng"]
-  },
-  // wzulaikha_, twitter dm
-  {
-    id: 845,
-    name: "Masjid Al Munir Kampung Selamat",
-    category: "mosque",
-    state: "Pahang",
-    city: "Kuantan",
-    qrImage: "https://i.ibb.co/VcfD7PYH/image.png",
-    qrContent: "00020201021126420014A000000615000101066033460210MD001210305204866153034585802MY5925Masjid Al-Munir, Kg. Sela6002MY6273032516902725792770098506508510520169027264750300169600716169027164814500863049472",
-    supportedPayment: ["duitnow", "tng"],
-    coords: [3.8132992660880887, 103.34569406931716],
-  },
-  // panijaz, twitter dm
-  {
-    id: 846,
-    name: "Masjid Al Muhajirin Indera Mahkota 5",
-    category: "mosque",
-    state: "Pahang",
-    city: "Indera Mahkota",
-    qrImage: "https://i.ibb.co/3Prvc0m/image.png",
-    qrContent: "00020201021126600014A000000615000101065892670228BRQR66053af2e8a12479f5ea05765204866153034585802MY5923Masjid Al Muhajirin IM56007Kuantan61052520062420310M000002807052466053af3b6230a7e11c36031630481B2",
-    supportedPayment: ["duitnow", "tng"],
-coords: [3.823771674298601, 103.2908547576707],
-  },
-  // Rimau786, twitter dm
-  {
-    id: 847,
-    name: "Surau Residensi PandanMas",
-    category: "surau",
-    state: "W.P. Kuala Lumpur",
-    city: "Kuala Lumpur",
-    qrImage: "https://i.ibb.co/0yxjpm1y/image.png",
-    qrContent: "00020201021126580014A000000615000101065887340212MBBQR1951523031000000000005204829953034585802MY5925SURAU RESIDENSI PANDANMAS6015WP KUALA LUMPUR63040357",
-	supportedPayment: ["duitnow", "tng"],
-	coords: [3.142375592220704, 101.73780012698786],
-  },
-  // aiman pokgak, taken at masjid
-  {
-    id: 848,
-    name: "Masjid Kampung Tebakang",
-    category: "mosque",
-    state: "Terengganu",
-    city: "Bukit Payong",
-    qrImage: "https://i.ibb.co/TD5WhZDp/image.png",
-    qrContent: "00020201021126420014A000000615000101066033460210MD001354655204866153034585802MY5925TABUNG DAKWAH MASJID TEBA6002MY627303251719115721517001686910129052017267316976330010857071617191135220520076304989B",
-    supportedPayment: ["duitnow", "tng"]
-  },
-  // RempahRz, twitter dm
-  {
-    id: 849,
-    name: "Surau Al-Mustaqim Bandar Cassia Batu Kawan",
-    category: "surau",
-    state: "Pulau Pinang",
-    city: "Batu Kawan",
-    qrImage: "https://i.ibb.co/S7Q5dmHM/image.png",
-    qrContent: "00020201021126890014A0000006150001010642070902240714141100019148H65442000315BSN Merchant QR041001241876435204000053034585802MY5917SURAU AL-MUSTAQIM6009AYER ITAM61051411063047E40",
-    supportedPayment: ["duitnow", "tng"],
-    coords: [5.248652577050432, 100.4342057576707],
-  },
-  // nqs587, twitter dm
-  {
-    id: 850,
-    name: "MASJID KARIAH TAMAN MARIDA SENAWANG",
-    category: "mosque",
-    state: "Negeri Sembilan",
-    city: "Senawang",
-    qrImage: "https://i.ibb.co/ksLJ6p1h/image.png",
-    qrContent: "00020201021126420014A000000615000101066033460210MD000002735204866153034585802MY5922Masjid Kariah Senawang6002MY6273032516987151622430038671554660520173311236008500143130716162007905245500163047078",
-    supportedPayment: ["duitnow", "tng"]
-  },
-  // pinkb0ngwater, twitter dm
-  {
-    id: 851,
-    name: "Masjid Bukit Kukuran Kemasik",
-    category: "mosque",
-    state: "Terengganu",
-    city: "Chukai",
-    qrImage: "https://i.ibb.co/xq3Kw2R3/image.png",
-    qrContent: "00020201021126580014A000000615000101065887340212MBBQR2126614031000000000005204729953034585802MY5921MASJID BUKIT KUKURAN 6010TERENGGANU6304EC64",
-    supportedPayment: ["duitnow", "tng"],
-    coords: [4.403925426183276, 103.4480222],
-  },
-  // eidaud83, twitter dm
-  {
-    id: 852,
-    name: "Masjid Nurul Huda Salor",
-    category: "mosque",
-    state: "Kelantan",
-    city: "Pasir Mas",
-    qrImage: "https://i.ibb.co/GftG7n3J/image.png",
-    qrContent: "00020201021126420014A000000615000101066033460210MD001380525204866153034585802MY5923Masjid Nurul Huda Salor6002MY6273032517241191602380046388378350520172411942709000106950716172411889720600363049455",
-    supportedPayment: ["duitnow", "tng"],
-    coords: [6.042578215333993, 102.20714698650606],
-  },
-  // kyziq, faris (cousin) - taken from masjid
-  // https://www.facebook.com/pages/Masjid-Kepala-Gajah/222228684470144
-  {
-    id: 853,
-    name: "Masjid As-Solihin Kampung Kepala Gajah",
-    category: "mosque",
-    state: "Pulau Pinang",
-    city: "Simpang Ampat",
-    qrImage: "https://i.ibb.co/Df45HGpP/Whats-App-Image-2025-04-05-at-11-26-43-PM.jpg",
-    qrContent: "00020201021126470014A000000615000101065641620215PBB2023000896775204869953034585802MY5925J/K QARYAH MASJID KEPALA 6013SIMPANG AMPAT62200306323844070628929563046860",
-    supportedPayment: ["duitnow", "tng"],
-    coords: [5.284405407699483, 100.49594420552943],
-  },
-  // Shaikh Danial, Taken from masjid
-  {
-    id: 854,
-    name: "Masjid Al-Ubudiah",
-    category: "mosque",
-    state: "W.P. Kuala Lumpur",
-    city: "Kuala Lumpur",
-    qrImage: "https://i.ibb.co/qYfwTtrs/QR-MASJID-AL-UBUDIAH-SEGAMBUT.jpg",
-    supportedPayment: ["duitnow", "tng"],
-    qrContent: "00020201021126580014A000000615000101065887340212MBBQR2197500031000000000005204729953034585802MY5921WAKAF PPZ-M.ALUBUDIAH6015WP KUALA LUMPUR63043DAA",
-  },
-  // kyziq, faris (cousin) - taken from masjid
-  {
-    id: 855,
-    name: "Masjid Jamek Al Ihsaniah",
-    category: "mosque",
-    state: "Pulau Pinang",
-    city: "Simpang Ampat",
-    qrImage: "https://i.ibb.co/PZ15r8mK/MASJID-JAMEK-AL-IHSANIAH-2025-04-09-at-12-05-22-AM.jpg",
-    qrContent: "00020201021126520014A000000615000101068900530220MDN162210615306028605204866153034585802MY5925MASJIDJAMEKALIHSANIAHSPG46012SIMPANGAMPAT630418A1",
-    supportedPayment: ["duitnow", "tng"],
-    coords: [5.28240315192533, 100.4758950934587],
-  },
-  // afrie, whatsapp
-  {
-    id: 856,
-    name: "Masjid Qiyammuddin Kampung Gelong",
-    category: "mosque",
-    state: "Kedah",
-    city: "Jitra",
-    qrImage: "https://i.ibb.co/9mYqLMMq/image.png",
-    qrContent: "00020201021126420014A000000615000101066033460210MD001321535204866153034585802MY5918MASJID QIYAMMUDDIN6002MY627303251711334312303003529378509052017113346340750010516071617113336149600096304CC10",
-    supportedPayment: ["duitnow", "tng"],
-    coords: [6.299841841942134, 100.4002716541283],
-  },
-  // Rimau786, twitter dm
-  {
-    id: 857,
-    name: "Masjid Al Muhaimin Kota Samarahan Sarawak",
-    category: "mosque",
-    state: "Sarawak",
-    city: "Kota Samarahan",
-    qrImage: "https://i.ibb.co/m3H09PP/image.png",
-    qrContent: "00020201021126580014A000000615000101065887340212MBBQR2123256031000000000005204729953034585802MY5918MASJID AL-MUHAIMIN6007SARAWAK6304236C",
-    supportedPayment: ["duitnow", "tng"],
-coords: [1.4145420903083865, 110.40895810184749],
-  },
-  // facebook - https://www.facebook.com/SurauArRaudhah.EcoMajestic
-  {
-    id: 858,
-    name: "Surau Ar-Raudhah",
-    category: "surau",
-    state: "Selangor",
-    city: "Semenyih",
-    qrImage: "https://i.ibb.co/fVNptn06/image.jpg",
-    qrContent: "00020201021126580014A000000615000101065887340212MBBQR2313216031000000000005204729953034585802MY5916SURAU AR-RAUDHAH6008SELANGOR6304E5C1",
-    supportedPayment: ["duitnow", "tng"]
-  },
-  // chairmanglc, twitter - https://x.com/chairmanGLC/status/1920714720488599647
-  {
-    id: 859,
-    name: "Surau Assahabah Seksyen 7 Kota Damansara",
-    category: "surau",
-    state: "Selangor",
-    city: "Kota Damansara",
-    qrImage: "https://pbs.twimg.com/media/Gqe_2aVbcAAE2Mj?format=jpg&name=medium",
-    qrContent: "00020201021126580014A000000615000101065887340212MBBQR1678706031000000000005204729953034585802MY5916SURAU AS SAHABAH6008SELANGOR6304E059",
-    supportedPayment: ["duitnow", "tng"],
-    coords: [3.1710830722888312, 101.57528992513518],
-  },
-  // ZackAvaricious, twitter - https://x.com/ZackAvaricious/status/1920751849826590762
-  {
-    id: 860,
-    name: "Pusat Perubatan Universiti Malaya PPUM",
-    category: "others",
-    state: "W.P. Kuala Lumpur",
-    city: "W.P. Kuala Lumpur",
-    qrImage: "https://pbs.twimg.com/media/Gqfhnq8aUAAae70?format=jpg&name=900x900",
-    qrContent: "00020201021126420014A000000615000101066033460210MD000678875204939953034585802MY5908PPUMCare6002MY62730325165094235009700393925408805201650942395479001146307161650941229299007630423E4",
-    supportedPayment: ["duitnow", "tng"],
-    coords: [3.1139431729088485, 101.6528365981497],
-  },
-  // NajibAzir, twitter dm
-  {
-    id: 861,
-    name: "Masjid Ara Damansara",
-    category: "mosque",
-    state: "Selangor",
-    city: "Petaling Jaya",
-    qrImage: "https://i.ibb.co/QFfS3S5P/image.png",
-    qrContent: "00020201021126420014A000000615000101066033460210MD000085495204866153034585802MY5920MASJID ARA DAMANSARA6002MY6253032516427547386680013332264690520164275474560200817866304B0F5",
-    supportedPayment: ["duitnow", "tng"],
-    coords: [3.117335994412043, 101.58337717116423],
-  },
-  // eidaud83, twitter dm
-  {
-    id: 862,
-    name: "Masjid Tengku Kelana Jaya Petra",
-    category: "mosque",
-    state: "Selangor",
-    city: "Petaling Jaya",
-    qrImage: "https://i.ibb.co/4ZqYbWRd/image.png",
-    qrContent: "00020101021126580014A000000615000101065887340212MBBQR129891003100000000000520400005303458540500.005802MY5920MASJID TENGKU KELANA6008SELANGOR6304A160",
-    supportedPayment: ["duitnow", "tng"],
-    coords: [3.0953224078280863, 101.59545080915031],
-  },
-  // lilghurabaa, twitter - https://x.com/lilghurabaa/status/1928709044694561017
-  {
-    id: 863,
-    name: "City Cat Empire",
-    category: "others",
-    state: "W.P. Kuala Lumpur",
-    city: "W.P. Kuala Lumpur",
-    qrImage: "https://pbs.twimg.com/media/GsQmodZboAAY6nZ?format=jpg&name=large",
-    qrContent: "00020201021126690014A000000615000101065887340220MAEPP111137216518055031316941420025445204000053034585802MY5915CITY CAT EMPIRE6002MY6304E6D2",
-    supportedPayment: ["duitnow", "tng"]
-  },
+	// nrlfazlianaa_, twitter dm
+	{
+		id: 833,
+		name: "Masjid Jamek Batu 12 Puchong",
+		category: "mosque",
+		state: "Selangor",
+		city: "Puchong",
+		qrImage: "https://i.ibb.co/WWtPsTvN/image.png",
+		qrContent: "00020201021126580014A000000615000101065016640226100106020038176O81AMXA00015204482953034585802MY5925MASJID JAMEK BATU 12 PUCH6002MY62150311O81AMXA00018264DE4BBA75685667543A4802B3803AF0D3BFEB72BEA1D427E04DA19FAA8A86530A63048F19",
+		supportedPayment: ["duitnow", "tng"]
+	},
+	// frwzhjmldn, twitter dm
+	{
+		id: 834,
+		name: "Masjid An Nur Taman Maju",
+		category: "mosque",
+		state: "Melaka",
+		city: "Jasin",
+		qrImage: "https://i.ibb.co/ychHB8fh/image.png",
+		qrContent: "00020201021126580014A000000615000101065887340212MBBQR2074068031000000000005204000053034585802MY5924MASJID AN NUR TAMAN MAJU6006MELAKA6304D0AA",
+		supportedPayment: ["duitnow", "tng"]
+	},
+	// MSCDee_47, twitter dm
+	{
+		id: 835,
+		name: "Madrasah Al Huda",
+		category: "surau",
+		state: "W.P. Kuala Lumpur",
+		city: "Keramat",
+		qrImage: "https://i.ibb.co/m5FqmDXs/image.png",
+		qrContent: "00020201021126580014A000000615000101065887340212MBBQR2345541031000000000005204729953034585802MY5916MADRASAH AL HUDA6015WP KUALA LUMPUR630490B1",
+		supportedPayment: ["duitnow", "tng"]
+	},
+	// lilyy1611, twitter dm
+	{
+		id: 836,
+		name: "Masjid Ubudiyah Kampung Paya Luas",
+		category: "mosque",
+		state: "Pahang",
+		city: "Temerloh",
+		qrImage: "https://i.ibb.co/N233Gd3Z/image.png",
+		qrContent: "00020201021126610014A000000615000101065641670215QRMID0000016874041001398800945204866153034585802MY5925MJD UBUDIYAH KG PAYA LUAS6008TEMERLOH61052800063049F53",
+		supportedPayment: ["duitnow", "tng"]
+	},
+	// eidaud83, twitter dm
+	{
+		id: 837,
+		name: "Surau Saidina Abu Bakar As-Siddiq Taman Lestari Putra LEP 4",
+		category: "surau",
+		state: "Selangor",
+		city: "Seri Kembangan",
+		qrImage: "https://i.ibb.co/8Wfhn5L/image.png",
+		qrContent: "00020201021126580014A000000615000101065887340212MBBQR2179501031000000000005204729953034585802MY5925SURAU SAIYIDINA ABU BAKAR6008SELANGOR63046C21",
+		supportedPayment: ["duitnow", "tng"]
+	},
+	// khairin, facebook - https://www.facebook.com/photo.php?fbid=936841948537821&set=pb.100066360740916.-2207520000&type=3&locale=ms_MY
+	{
+		id: 838,
+		name: "Masjid Sultan Haji Ahmad Shah IIUM Gombak",
+		category: "mosque",
+		state: "Selangor",
+		city: "Gombak",
+		qrImage: "https://scontent.fkul16-1.fna.fbcdn.net/v/t39.30808-6/486445032_994746016080747_7056981972921732591_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=127cfc&_nc_ohc=hN7Jz3Qmdj8Q7kNvgGfpFRH&_nc_oc=AdmGuXynNjLTcjhdIfYR5dOr4EKqrgvk2iis7nh_79VXBUdeaEKkNDMYTtH39Wogcoo&_nc_zt=23&_nc_ht=scontent.fkul16-1.fna&_nc_gid=FuH4V5kp8CF1N8E45QkziA&oh=00_AYHGqHPEd8N9crCQcaHrH7zT8iurh4DkHRrD8GxNWr5Stg&oe=67E95304",
+		qrContent: "00020201021126560014A000000615000101068900610224630345a711f8cf1cfa5c3fe55204599953034585802MY5925IIUM MOSQUE -IHYA RAMADAN6006GOMBAK62140710QR_PAYMENT8240fad9fa96c4cf44c2427e82555ec87356eab58dd46304D06D",
+		supportedPayment: ["duitnow", "tng"]
+	},
+	// khairin, onpay - https://infaqmasjidalummah.onpay.my/order/form/tanahkubur
+	{
+		id: 839,
+		name: "Masjid Al Ummah Telok Chengai",
+		category: "mosque",
+		state: "Kedah",
+		city: "Alor Setar",
+		qrImage: "https://cdn.onpay.my/users/infaqmasjidalummah/media/uploads/Tanah%20Kubur%20Masjid%20Al-Ummah%20Telok%20Chengai%20(11).jpg",
+		qrContent: "00020201021126420014A000000615000101066033460210MD000011375204866153034585802MY5929Masjid Al Ummah Telok Chengai6002MY62530325162972045689100702990463005201632811181852001348663049199",
+		supportedPayment: ["duitnow", "tng"]
+	},
+	// khairin, website - https://masjidkotawarisan.com/
+	{
+		id: 840,
+		name: "Masjid Kota Warisan",
+		category: "mosque",
+		state: "Selangor",
+		city: "Sepang",
+		qrImage: "https://i0.wp.com/masjidkotawarisan.com/wp-content/uploads/2025/02/MKW1.jpeg?w=1080&ssl=1",
+		qrContent: "00020201021126580014A000000615000101065016640226100106620011331O42AOZA00015204597353034585802MY5919MASJID KOTA WARISAN6002MY62150311O42AOZA00018264E425515D88CD45A4140C37D4A55C570EF7E9B9E440850E575CBB7442B68E16E963045F53",
+		supportedPayment: ["duitnow", "tng"]
+	},
+	// khairin, website - https://banksahamakhirat.com/
+	{
+		id: 841,
+		name: "JAWATANKUASA SURAU AL-A’RAF",
+		category: "surau",
+		state: "Selangor",
+		city: "Bandar Baru Salak Tinggi",
+		qrImage: "https://banksahamakhirat.com/wp-content/uploads/2025/01/pembinaan-surau-salak-perdana-derma-sedeqah-masjid-qr-code-transfer-duit-dana.jpg",
+		qrContent: "00020201021126600014A000000615000101065892670228BRQR6577cd92b16709469f2dc8b65204866153034585802MY5925Jawatankuasa Surau AlAraf6006Sepang61054300062420310M00000022905246577ce843c6e1a7f4ac64fe663042A18",
+		supportedPayment: ["duitnow", "tng"]
+	},
+	// azriafnd, twitter dm
+	{
+		id: 842,
+		name: "Surau Darul Husna",
+		category: "surau",
+		state: "Selangor",
+		city: "Banting",
+		qrImage: "https://i.ibb.co/RkT2Ffqc/image.png",
+		qrContent: "00020201021126420014A000000615000101066033460210MD001210465204866153034585802MY5917SURAU DARUL HUSNA6002MY627303251690283979323009142808556052016902839819130085389071616902838011860076304C347",
+		supportedPayment: ["duitnow", "tng"]
+	},
+	// kawan aerry, twitter dm
+	{
+		id: 843,
+		name: "Masjid Saujana Puchong",
+		category: "mosque",
+		state: "Selangor",
+		city: "Puchong",
+		qrImage: "https://i.ibb.co/WLgpMk1/image.png",
+		qrContent: "00020201021126580014A000000615000101065887340212MBBQR2128689031000000000005204729953034585802MY5909MASJID SP6008SELANGOR63046136",
+		supportedPayment: ["duitnow", "tng"]
+	},
+	// Luqies, self-snap - Masjid Bt 4 Kiyai Haji Omar
+	{
+		id: 844,
+		name: "Masjid Kampong Batu 4, Klang",
+		category: "mosque",
+		state: "Selangor",
+		city: "Klang",
+		qrImage: "https://github.com/user-attachments/assets/4ce05bb1-9ae6-480c-8b45-ddee05d20925",
+		qrContent: "00020201021126420014A000000615000101066033460210MD001346985204866153034585802MY5925MASJID KAMPONG BATU EMPAT6002MY627303251717472297211006916101238052017416787991470040525071617174719045720016304EF3E",
+		supportedPayment: ["duitnow", "tng"]
+	},
+	// wzulaikha_, twitter dm
+	{
+		id: 845,
+		name: "Masjid Al Munir Kampung Selamat",
+		category: "mosque",
+		state: "Pahang",
+		city: "Kuantan",
+		qrImage: "https://i.ibb.co/VcfD7PYH/image.png",
+		qrContent: "00020201021126420014A000000615000101066033460210MD001210305204866153034585802MY5925Masjid Al-Munir, Kg. Sela6002MY6273032516902725792770098506508510520169027264750300169600716169027164814500863049472",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [3.8132992660880887, 103.34569406931716],
+	},
+	// panijaz, twitter dm
+	{
+		id: 846,
+		name: "Masjid Al Muhajirin Indera Mahkota 5",
+		category: "mosque",
+		state: "Pahang",
+		city: "Indera Mahkota",
+		qrImage: "https://i.ibb.co/3Prvc0m/image.png",
+		qrContent: "00020201021126600014A000000615000101065892670228BRQR66053af2e8a12479f5ea05765204866153034585802MY5923Masjid Al Muhajirin IM56007Kuantan61052520062420310M000002807052466053af3b6230a7e11c36031630481B2",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [3.823771674298601, 103.2908547576707],
+	},
+	// Rimau786, twitter dm
+	{
+		id: 847,
+		name: "Surau Residensi PandanMas",
+		category: "surau",
+		state: "W.P. Kuala Lumpur",
+		city: "Kuala Lumpur",
+		qrImage: "https://i.ibb.co/0yxjpm1y/image.png",
+		qrContent: "00020201021126580014A000000615000101065887340212MBBQR1951523031000000000005204829953034585802MY5925SURAU RESIDENSI PANDANMAS6015WP KUALA LUMPUR63040357",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [3.142375592220704, 101.73780012698786],
+	},
+	// aiman pokgak, taken at masjid
+	{
+		id: 848,
+		name: "Masjid Kampung Tebakang",
+		category: "mosque",
+		state: "Terengganu",
+		city: "Bukit Payong",
+		qrImage: "https://i.ibb.co/TD5WhZDp/image.png",
+		qrContent: "00020201021126420014A000000615000101066033460210MD001354655204866153034585802MY5925TABUNG DAKWAH MASJID TEBA6002MY627303251719115721517001686910129052017267316976330010857071617191135220520076304989B",
+		supportedPayment: ["duitnow", "tng"]
+	},
+	// RempahRz, twitter dm
+	{
+		id: 849,
+		name: "Surau Al-Mustaqim Bandar Cassia Batu Kawan",
+		category: "surau",
+		state: "Pulau Pinang",
+		city: "Batu Kawan",
+		qrImage: "https://i.ibb.co/S7Q5dmHM/image.png",
+		qrContent: "00020201021126890014A0000006150001010642070902240714141100019148H65442000315BSN Merchant QR041001241876435204000053034585802MY5917SURAU AL-MUSTAQIM6009AYER ITAM61051411063047E40",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [5.248652577050432, 100.4342057576707],
+	},
+	// nqs587, twitter dm
+	{
+		id: 850,
+		name: "MASJID KARIAH TAMAN MARIDA SENAWANG",
+		category: "mosque",
+		state: "Negeri Sembilan",
+		city: "Senawang",
+		qrImage: "https://i.ibb.co/ksLJ6p1h/image.png",
+		qrContent: "00020201021126420014A000000615000101066033460210MD000002735204866153034585802MY5922Masjid Kariah Senawang6002MY6273032516987151622430038671554660520173311236008500143130716162007905245500163047078",
+		supportedPayment: ["duitnow", "tng"]
+	},
+	// pinkb0ngwater, twitter dm
+	{
+		id: 851,
+		name: "Masjid Bukit Kukuran Kemasik",
+		category: "mosque",
+		state: "Terengganu",
+		city: "Chukai",
+		qrImage: "https://i.ibb.co/xq3Kw2R3/image.png",
+		qrContent: "00020201021126580014A000000615000101065887340212MBBQR2126614031000000000005204729953034585802MY5921MASJID BUKIT KUKURAN 6010TERENGGANU6304EC64",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [4.403925426183276, 103.4480222],
+	},
+	// eidaud83, twitter dm
+	{
+		id: 852,
+		name: "Masjid Nurul Huda Salor",
+		category: "mosque",
+		state: "Kelantan",
+		city: "Pasir Mas",
+		qrImage: "https://i.ibb.co/GftG7n3J/image.png",
+		qrContent: "00020201021126420014A000000615000101066033460210MD001380525204866153034585802MY5923Masjid Nurul Huda Salor6002MY6273032517241191602380046388378350520172411942709000106950716172411889720600363049455",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [6.042578215333993, 102.20714698650606],
+	},
+	// kyziq, faris (cousin) - taken from masjid
+	// https://www.facebook.com/pages/Masjid-Kepala-Gajah/222228684470144
+	{
+		id: 853,
+		name: "Masjid As-Solihin Kampung Kepala Gajah",
+		category: "mosque",
+		state: "Pulau Pinang",
+		city: "Simpang Ampat",
+		qrImage: "https://i.ibb.co/Df45HGpP/Whats-App-Image-2025-04-05-at-11-26-43-PM.jpg",
+		qrContent: "00020201021126470014A000000615000101065641620215PBB2023000896775204869953034585802MY5925J/K QARYAH MASJID KEPALA 6013SIMPANG AMPAT62200306323844070628929563046860",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [5.284405407699483, 100.49594420552943],
+	},
+	// Shaikh Danial, Taken from masjid
+	{
+		id: 854,
+		name: "Masjid Al-Ubudiah",
+		category: "mosque",
+		state: "W.P. Kuala Lumpur",
+		city: "Kuala Lumpur",
+		qrImage: "https://i.ibb.co/qYfwTtrs/QR-MASJID-AL-UBUDIAH-SEGAMBUT.jpg",
+		supportedPayment: ["duitnow", "tng"],
+		qrContent: "00020201021126580014A000000615000101065887340212MBBQR2197500031000000000005204729953034585802MY5921WAKAF PPZ-M.ALUBUDIAH6015WP KUALA LUMPUR63043DAA",
+	},
+	// kyziq, faris (cousin) - taken from masjid
+	{
+		id: 855,
+		name: "Masjid Jamek Al Ihsaniah",
+		category: "mosque",
+		state: "Pulau Pinang",
+		city: "Simpang Ampat",
+		qrImage: "https://i.ibb.co/PZ15r8mK/MASJID-JAMEK-AL-IHSANIAH-2025-04-09-at-12-05-22-AM.jpg",
+		qrContent: "00020201021126520014A000000615000101068900530220MDN162210615306028605204866153034585802MY5925MASJIDJAMEKALIHSANIAHSPG46012SIMPANGAMPAT630418A1",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [5.28240315192533, 100.4758950934587],
+	},
+	// afrie, whatsapp
+	{
+		id: 856,
+		name: "Masjid Qiyammuddin Kampung Gelong",
+		category: "mosque",
+		state: "Kedah",
+		city: "Jitra",
+		qrImage: "https://i.ibb.co/9mYqLMMq/image.png",
+		qrContent: "00020201021126420014A000000615000101066033460210MD001321535204866153034585802MY5918MASJID QIYAMMUDDIN6002MY627303251711334312303003529378509052017113346340750010516071617113336149600096304CC10",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [6.299841841942134, 100.4002716541283],
+	},
+	// Rimau786, twitter dm
+	{
+		id: 857,
+		name: "Masjid Al Muhaimin Kota Samarahan Sarawak",
+		category: "mosque",
+		state: "Sarawak",
+		city: "Kota Samarahan",
+		qrImage: "https://i.ibb.co/m3H09PP/image.png",
+		qrContent: "00020201021126580014A000000615000101065887340212MBBQR2123256031000000000005204729953034585802MY5918MASJID AL-MUHAIMIN6007SARAWAK6304236C",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [1.4145420903083865, 110.40895810184749],
+	},
+	// facebook - https://www.facebook.com/SurauArRaudhah.EcoMajestic
+	{
+		id: 858,
+		name: "Surau Ar-Raudhah",
+		category: "surau",
+		state: "Selangor",
+		city: "Semenyih",
+		qrImage: "https://i.ibb.co/fVNptn06/image.jpg",
+		qrContent: "00020201021126580014A000000615000101065887340212MBBQR2313216031000000000005204729953034585802MY5916SURAU AR-RAUDHAH6008SELANGOR6304E5C1",
+		supportedPayment: ["duitnow", "tng"]
+	},
+	// chairmanglc, twitter - https://x.com/chairmanGLC/status/1920714720488599647
+	{
+		id: 859,
+		name: "Surau Assahabah Seksyen 7 Kota Damansara",
+		category: "surau",
+		state: "Selangor",
+		city: "Kota Damansara",
+		qrImage: "https://pbs.twimg.com/media/Gqe_2aVbcAAE2Mj?format=jpg&name=medium",
+		qrContent: "00020201021126580014A000000615000101065887340212MBBQR1678706031000000000005204729953034585802MY5916SURAU AS SAHABAH6008SELANGOR6304E059",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [3.1710830722888312, 101.57528992513518],
+	},
+	// ZackAvaricious, twitter - https://x.com/ZackAvaricious/status/1920751849826590762
+	{
+		id: 860,
+		name: "Pusat Perubatan Universiti Malaya PPUM",
+		category: "others",
+		state: "W.P. Kuala Lumpur",
+		city: "W.P. Kuala Lumpur",
+		qrImage: "https://pbs.twimg.com/media/Gqfhnq8aUAAae70?format=jpg&name=900x900",
+		qrContent: "00020201021126420014A000000615000101066033460210MD000678875204939953034585802MY5908PPUMCare6002MY62730325165094235009700393925408805201650942395479001146307161650941229299007630423E4",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [3.1139431729088485, 101.6528365981497],
+	},
+	// NajibAzir, twitter dm
+	{
+		id: 861,
+		name: "Masjid Ara Damansara",
+		category: "mosque",
+		state: "Selangor",
+		city: "Petaling Jaya",
+		qrImage: "https://i.ibb.co/QFfS3S5P/image.png",
+		qrContent: "00020201021126420014A000000615000101066033460210MD000085495204866153034585802MY5920MASJID ARA DAMANSARA6002MY6253032516427547386680013332264690520164275474560200817866304B0F5",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [3.117335994412043, 101.58337717116423],
+	},
+	// eidaud83, twitter dm
+	{
+		id: 862,
+		name: "Masjid Tengku Kelana Jaya Petra",
+		category: "mosque",
+		state: "Selangor",
+		city: "Petaling Jaya",
+		qrImage: "https://i.ibb.co/4ZqYbWRd/image.png",
+		qrContent: "00020101021126580014A000000615000101065887340212MBBQR129891003100000000000520400005303458540500.005802MY5920MASJID TENGKU KELANA6008SELANGOR6304A160",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [3.0953224078280863, 101.59545080915031],
+	},
+	// afrie, github pr - https://github.com/khrnchn/sedekah-je/pull/423
+	{
+		id: 863,
+		name: "Masjid Kota Raja Klang",
+		category: "mosque",
+		state: "Selangor",
+		city: "Klang",
+		qrContent: "00020201021126610014A000000615000101065018540215000001224019745031000000000005204866153034585802MY5925MASJID KOTA RAJA KLANG-QR6005KLANG610541000621501111016780000063048113",
+		qrImage: "https://github.com/user-attachments/assets/55a37264-50ac-4401-9ad8-23b9e1567439",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [3.0228356086275894, 101.45971138465858],
+	},
+	// lilghurabaa, twitter - https://x.com/lilghurabaa/status/1928709044694561017
+	{
+		id: 864,
+		name: "City Cat Empire",
+		category: "others",
+		state: "W.P. Kuala Lumpur",
+		city: "W.P. Kuala Lumpur",
+		qrImage: "https://pbs.twimg.com/media/GsQmodZboAAY6nZ?format=jpg&name=large",
+		qrContent: "00020201021126690014A000000615000101065887340220MAEPP111137216518055031316941420025445204000053034585802MY5915CITY CAT EMPIRE6002MY6304E6D2",
+		supportedPayment: ["duitnow", "tng"],
+	},
 ];
