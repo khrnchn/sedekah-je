@@ -10556,4 +10556,16 @@ coords: [1.4145420903083865, 110.40895810184749],
     supportedPayment: ["duitnow", "tng"],
     coords: [3.0953224078280863, 101.59545080915031],
   },
+  // 
+  {
+    id: 863,
+    name: "Masjid Kota Raja Klang",
+    category: "mosque",
+    state: "Selangor",
+    city: "Klang",
+    qrContent: "00020201021126610014A000000615000101065018540215000001224019745031000000000005204866153034585802MY5925MASJID KOTA RAJA KLANG-QR6005KLANG610541000621501111016780000063048113",
+    qrImage: "https://github.com/user-attachments/assets/55a37264-50ac-4401-9ad8-23b9e1567439",
+    supportedPayment: ["duitnow", "tng"],
+    coords: [3.0228356086275894, 101.45971138465858],
+  },
 ];
