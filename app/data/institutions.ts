@@ -10556,4 +10556,15 @@ coords: [1.4145420903083865, 110.40895810184749],
     supportedPayment: ["duitnow", "tng"],
     coords: [3.0953224078280863, 101.59545080915031],
   },
+  // lilghurabaa, twitter - https://x.com/lilghurabaa/status/1928709044694561017
+  {
+    id: 863,
+    name: "City Cat Empire",
+    category: "others",
+    state: "W.P. Kuala Lumpur",
+    city: "W.P. Kuala Lumpur",
+    qrImage: "https://pbs.twimg.com/media/GsQmodZboAAY6nZ?format=jpg&name=large",
+    qrContent: "00020201021126690014A000000615000101065887340220MAEPP111137216518055031316941420025445204000053034585802MY5915CITY CAT EMPIRE6002MY6304E6D2",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
