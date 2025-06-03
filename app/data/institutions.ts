@@ -10579,4 +10579,75 @@ export const institutions: Institution[] = [
 		qrContent: "00020201021126690014A000000615000101065887340220MAEPP111137216518055031316941420025445204000053034585802MY5915CITY CAT EMPIRE6002MY6304E6D2",
 		supportedPayment: ["duitnow", "tng"],
 	},
+	// phynroses, twitter dm
+	{
+		id: 865,
+		name: "Masjid Jiran Ria Heights",
+		category: "mosque",
+		state: "Sabah",
+		city: "Tawau",
+		qrImage: "",
+		qrContent: "00020201021126610014A000000615000101065641670215QRMID0000006339041001782071085204519253034585802MY5924JIRAN RIA HEIGHT ISLAMIC6005TAWAU61059100063049194",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [4.3043611671868796, 117.87971036837656],
+	},
+	// NajibAzir, twitter dm
+	{
+		id: 866,
+		name: "Madrasah Bustanul Ulum Taman Tugu",
+		category: "mosque",
+		state: "W.P. Kuala Lumpur",
+		city: "W.P. Kuala Lumpur",
+		qrImage: "",
+		qrContent: "00020201021126420014A000000615000101066033460210MD001206975204866153034585802MY5922MADRASAH BUSTANUL ULUM6002MY62730325168914930744200714027869005201723796412264007449907161689148899464005630414E7",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [3.1559181612417295, 101.68592867021813],
+	},
+	// arepond, twitter dm
+	{
+		id: 867,
+		name: "Maahad Tahfiz Al Quran Assanaa",
+		category: "mosque",
+		state: "Perak",
+		city: "Pantai Remis",
+		qrImage: "",
+		qrContent: "00020201021126580014A000000615000101065887340212MBBQR2153203031000000000005204829953034585802MY5924MHD THFZ ALQURAN ASSANAA6005PERAK630483DE",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [4.467569485196869, 100.6321152475291],
+	},
+	// UmarulDzaki, twitter dm
+	// TODO: coords
+	{
+		id: 868,
+		name: "Masjid Jamek Kampung Parit",
+		category: "mosque",
+		state: "Selangor",
+		city: "Pekan Nenas",
+		qrImage: "",
+		qrContent: "00020201021126420014A000000615000101066033460210MD000121235204866153034585802MY5925MASJID JAMEK KG PARIT SEL6002MY6253032516468780007570063230232110520166977066654100904966304829C",
+		supportedPayment: ["duitnow", "tng"],
+	},
+	// izzatsuhaimii, twitter dm
+	{
+		id: 869,
+		name: "Masjid Al-I'tisam Taman TTDI Jaya",
+		category: "mosque",
+		state: "Selangor",
+		city: "Shah Alam",
+		qrImage: "",
+		qrContent: "00020201021126580014A000000615000101065887340212MBBQR1591996031000000000005204000053034585802MY5917MASJID AL-I'TISAM6008SELANGOR6304ACFF",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [3.105134285073745, 101.5583009154264],
+	},
+	// alauddinyusof, twitter dm
+	{
+		id: 870,
+		name: "Pembinaan Masjid Baru An Nur Batu 4",
+		category: "mosque",
+		state: "Johor",
+		city: "Kota Tinggi",
+		qrImage: "",
+		qrContent: "00020201021126420014A000000615000101066033460210MD001593525204866153034585802MY5925PEMBINAAN MASJID BARU AL 6002MY627303251747810259743008258352105052017478104944010048751071617478096783980066304FCD1",
+		supportedPayment: ["duitnow", "tng"],
+	},
 ];
