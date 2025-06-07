@@ -10650,4 +10650,14 @@ export const institutions: Institution[] = [
 		qrContent: "00020201021126420014A000000615000101066033460210MD001593525204866153034585802MY5925PEMBINAAN MASJID BARU AL 6002MY627303251747810259743008258352105052017478104944010048751071617478096783980066304FCD1",
 		supportedPayment: ["duitnow", "tng"],
 	},
+  // 
+  {
+    id: 871,
+    name: "Surau Islamiah Taman Bukit Jati",
+    category: "surau",
+    state: "Selangor",
+    city: "Klang",
+    qrImage: "https://github.com/user-attachments/assets/76da06b9-ca88-43b5-b481-a4410b2bde9a",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
