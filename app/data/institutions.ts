@@ -10658,6 +10658,8 @@ export const institutions: Institution[] = [
     state: "Selangor",
     city: "Klang",
     qrImage: "https://github.com/user-attachments/assets/76da06b9-ca88-43b5-b481-a4410b2bde9a",
-    supportedPayment: ["duitnow", "tng"]
+    supportedPayment: ["duitnow", "tng"],
+    qrContent: "00020201021126420014A000000615000101066033460210MD000904305204539953034585802MY5914SURAU ISLAMIAH6002MY62730325167047481114400921245718005201706072795810003250007161670474165367007630444B0",
+    coords: [3.03628776889229, 101.46434443583978],
   },
 ];
