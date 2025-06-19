@@ -10621,7 +10621,7 @@ export const institutions: Institution[] = [
 		id: 868,
 		name: "Masjid Jamek Kampung Parit",
 		category: "mosque",
-		state: "Selangor",
+		state: "Johor",
 		city: "Pekan Nenas",
 		qrImage: "",
 		qrContent: "00020201021126420014A000000615000101066033460210MD000121235204866153034585802MY5925MASJID JAMEK KG PARIT SEL6002MY6253032516468780007570063230232110520166977066654100904966304829C",
