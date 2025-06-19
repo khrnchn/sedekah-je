@@ -10673,4 +10673,15 @@ export const institutions: Institution[] = [
     qrContent: "00020201021126520014A000000615000101068900530220MDN161838284275252105204866153034585802MY5925MASJIDTABUNGHAJIKELANAJAY6012PETALINGJAYA6304C733",
     supportedPayment: ["duitnow", "tng"]
   },
+  // doonosh, twitter dm
+  {
+    id: 873,
+    name: "Surau Darul Aman Kampung Kanchong Darat",
+    category: "surau",
+    state: "Selangor",
+    city: "Banting",
+    qrImage: "https://i.ibb.co/hRK6s0LX/image.png",
+    qrContent: "00020201021126420014A000000615000101066033460210MD001346655204556153034585802MY5916Surau Darul Aman6002MY627303251717334981547009856192587052017173350058920015123071617173341668470076304F2C4",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
