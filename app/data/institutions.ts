@@ -10685,4 +10685,14 @@ export const institutions: Institution[] = [
     supportedPayment: ["duitnow", "tng"],
     coords: [2.775382215678669, 101.48236985767137],
   },
+  // 
+  {
+    id: 874,
+    name: "Masjid At-Taqwa Bandar Bukit Mahkota",
+    category: "mosque",
+    state: "Selangor",
+    city: "Kajang",
+    qrImage: "https://github.com/user-attachments/assets/55c3a456-5bcf-40eb-b8f5-554329a3d334",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
