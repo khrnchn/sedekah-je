@@ -1,7 +1,6 @@
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import React from "react";
-import { toast } from "sonner";
 import { Button } from "./ui/button";
 
 const RawakFooter = () => {
@@ -17,32 +16,16 @@ const RawakFooter = () => {
 					</p>
 				</Button>
 			</Link>
-			{/* https://forms.gle/epGv61AnEWcjYe1C8 */}
-			<a href="#">
+			<Link href="/auth">
 				<Button
 					variant="outline"
 					className="bg-gradient-to-br from-blue-500 to-blue-300 border border-blue-400 rounded-full hover:from-blue-700 hover:to-blue-500 transition-colors duration-300"
-					onClick={() => {
-						toast(
-							<div className="flex flex-col gap-2">
-								<p>
-									Sila DM gambar QR dan maklumat masjid di akaun twitter
-									SedekahJe -{" "}
-									<span className="font-bold text-blue-500">
-										<Link href="https://x.com/sedekahje" target="_blank">
-											x.com/sedekahje
-										</Link>
-									</span>
-								</p>
-							</div>,
-						);
-					}}
 				>
 					<p className="text-black font-medium bold dark:text-white">
 						Nak Tambah QR?
 					</p>
 				</Button>
-			</a>
+			</Link>
 		</footer>
 	);
 };

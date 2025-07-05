@@ -73,10 +73,10 @@ export const institutions = pgTable("institutions", {
 		.default("pending")
 		.notNull()
 		.$type<(typeof institutionStatuses)[number]>(),
-	contributorId: integer("contributor_id").references(() => users.id),
+	contributorId: text("contributor_id").references(() => users.id),
 	contributorRemarks: text("contributor_remarks"),
 	sourceUrl: text("source_url"),
-	reviewedBy: integer("reviewed_by").references(() => users.id),
+	reviewedBy: text("reviewed_by").references(() => users.id),
 	reviewedAt: timestamp("reviewed_at"),
 	adminNotes: text("admin_notes"),
 
