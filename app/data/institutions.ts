@@ -8276,7 +8276,7 @@ export const institutions: Institution[] = [
 		name: "Masjid Dato Penghulu Menteri Sg Ujong",
 		category: "mosque",
 		state: "Negeri Sembilan",
-		city: " Nilai",
+		city: "Nilai",
 		qrImage: "",
 		qrContent:
 			"00020201021126420014A000000615000101066033460210MD001227135204866153034585802MY5925MASJID DATO PENGHULU MENT6002MY6273032516951825791480059656805290520169527698219900950590716169518233077500663041C0D",
@@ -8324,7 +8324,7 @@ export const institutions: Institution[] = [
 		name: "Surau As-Siddiqin Bandar Tasik Puteri",
 		category: "surau",
 		state: "Selangor",
-		city: " Rawang",
+		city: "Rawang",
 		qrImage: "",
 		qrContent:
 			"00020201021126580014A000000615000101065887340212MBBQR1555667031000000000005204000053034585802MY5917SURAU AS-SIDDIQIN6008SELANGOR6304A1EE",
