@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { boolean, pgTable, serial, text, varchar } from "drizzle-orm/pg-core";
+import { boolean, pgTable, text, varchar } from "drizzle-orm/pg-core";
 import { timestamps } from "./helpers";
 import { institutions } from "./institutions";
 import { qrImages } from "./qr-images";
@@ -7,7 +7,7 @@ import { qrImages } from "./qr-images";
 export const userRoles = ["user", "admin"] as const;
 
 export const users = pgTable("users", {
-	id: serial("id").primaryKey(),
+	id: text("id").primaryKey(),
 	email: varchar("email", { length: 255 }).unique().notNull(),
 	username: varchar("username", { length: 100 }).unique(),
 	name: varchar("name", { length: 255 }),

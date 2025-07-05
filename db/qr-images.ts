@@ -16,7 +16,7 @@ export const qrImages = pgTable("qr_images", {
 	institutionId: integer("institution_id")
 		.notNull()
 		.references(() => institutions.id),
-	uploadedBy: integer("uploaded_by")
+	uploadedBy: text("uploaded_by")
 		.notNull()
 		.references(() => users.id),
 	filename: varchar("filename", { length: 255 }).notNull(),
