@@ -1,0 +1,8 @@
+---
+description: general sedekahje codebase rules
+globs:
+alwaysApply: false
+---
+
+1. avoid using pgenums because its hard to manage on prod when we want to add or remove values. use object constants instead
+2. avoid using useEffect to fetch data. fetch at server component, then pass in as props if the child component needs it.
