@@ -27,7 +27,11 @@ export const auth = betterAuth({
 		expiresIn: 60 * 60 * 24 * 7, // 7 days
 		updateAge: 60 * 60 * 24, // 1 day
 	},
-	secret:
-		process.env.BETTER_AUTH_SECRET || "fallback-secret-change-in-production",
+	secret: (() => {
+		if (!process.env.BETTER_AUTH_SECRET) {
+			throw new Error("BETTER_AUTH_SECRET environment variable is required");
+		}
+		return process.env.BETTER_AUTH_SECRET;
+	})(),
 	baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
 });
