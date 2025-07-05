@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import type {
   DndContextProps,
   DraggableSyntheticListeners,
@@ -8,13 +7,13 @@ import type {
   UniqueIdentifier,
 } from "@dnd-kit/core";
 import {
-  closestCenter,
-  defaultDropAnimationSideEffects,
   DndContext,
   DragOverlay,
   KeyboardSensor,
   MouseSensor,
   TouchSensor,
+  closestCenter,
+  defaultDropAnimationSideEffects,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
@@ -24,19 +23,20 @@ import {
   restrictToVerticalAxis,
 } from "@dnd-kit/modifiers";
 import {
+  SortableContext,
+  type SortableContextProps,
   arrayMove,
   horizontalListSortingStrategy,
-  SortableContext,
   useSortable,
   verticalListSortingStrategy,
-  type SortableContextProps,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Slot, type SlotProps } from "@radix-ui/react-slot";
+import * as React from "react";
 
+import { Button, type ButtonProps } from "@/components/ui/button";
 import { composeRefs } from "@/lib/compose-refs";
 import { cn } from "@/lib/utils";
-import { Button, type ButtonProps } from "@/components/ui/button";
 
 const orientationConfig = {
   vertical: {

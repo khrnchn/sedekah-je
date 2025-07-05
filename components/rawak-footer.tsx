@@ -1,8 +1,8 @@
+import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
-import { ExternalLink } from "lucide-react";
 
 const RawakFooter = () => {
 	return (
@@ -26,13 +26,16 @@ const RawakFooter = () => {
 						toast(
 							<div className="flex flex-col gap-2">
 								<p>
-									Sila DM gambar QR dan maklumat masjid di akaun twitter SedekahJe - {" "}
+									Sila DM gambar QR dan maklumat masjid di akaun twitter
+									SedekahJe -{" "}
 									<span className="font-bold text-blue-500">
-										<Link href="https://x.com/sedekahje" target="_blank">x.com/sedekahje</Link>
+										<Link href="https://x.com/sedekahje" target="_blank">
+											x.com/sedekahje
+										</Link>
 									</span>
 								</p>
-							</div>
-						)
+							</div>,
+						);
 					}}
 				>
 					<p className="text-black font-medium bold dark:text-white">

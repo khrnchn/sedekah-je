@@ -16,7 +16,6 @@ import { notFound } from "next/navigation";
 import { Suspense, useCallback, useState } from "react";
 import type React from "react";
 
-
 type Props = {
 	params: {
 		slug: string;
@@ -72,7 +71,7 @@ const InstitutionPage = ({ params }: Props) => {
 				<Suspense fallback={<div>Loading...</div>}>
 					<GetdoaFooter />
 				</Suspense>
-				<PageFooter/>
+				<PageFooter />
 			</PageSection>
 		</>
 	);
