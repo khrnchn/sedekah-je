@@ -5534,7 +5534,7 @@ export const institutions: Institution[] = [
 		id: 455,
 		name: "Masjid Jamek Layang-Layangan",
 		category: "mosque",
-		state: "W.P Labuan",
+		state: "W.P. Labuan",
 		city: "Labuan",
 		qrImage: "",
 		qrContent:
@@ -5546,7 +5546,7 @@ export const institutions: Institution[] = [
 		id: 456,
 		name: "Masjid Al-Falah Kampung Bukit Kalam",
 		category: "mosque",
-		state: "W.P Labuan",
+		state: "W.P. Labuan",
 		city: "Labuan",
 		qrImage: "",
 		qrContent:
@@ -8311,7 +8311,7 @@ export const institutions: Institution[] = [
 		id: 685,
 		name: "Pembangunan Masjid Ustaz Ahyad",
 		category: "others",
-		state: " Kelantan ",
+		state: "Kelantan",
 		city: " Kota Bharu",
 		qrImage: "",
 		qrContent:
@@ -8323,7 +8323,7 @@ export const institutions: Institution[] = [
 		id: 686,
 		name: "Surau As-Siddiqin Bandar Tasik Puteri",
 		category: "surau",
-		state: " Selangor",
+		state: "Selangor",
 		city: " Rawang",
 		qrImage: "",
 		qrContent:
@@ -9802,8 +9802,8 @@ export const institutions: Institution[] = [
 		id: 801,
 		name: "Surau Tengah Kampung Batu 30",
 		category: "surau",
-		state: "Serendah",
-		city: "Selangor",
+		state: "Selangor",
+		city: "Serendah",
 		qrImage:
 			"https://pbs.twimg.com/media/GdOa8sNboAAAJZd?format=jpg&name=medium",
 		qrContent:
@@ -10650,39 +10650,39 @@ export const institutions: Institution[] = [
 		qrContent: "00020201021126420014A000000615000101066033460210MD001593525204866153034585802MY5925PEMBINAAN MASJID BARU AL 6002MY627303251747810259743008258352105052017478104944010048751071617478096783980066304FCD1",
 		supportedPayment: ["duitnow", "tng"],
 	},
-  // 
-  {
-    id: 871,
-    name: "Surau Islamiah Taman Bukit Jati",
-    category: "surau",
-    state: "Selangor",
-    city: "Klang",
-    qrImage: "https://github.com/user-attachments/assets/76da06b9-ca88-43b5-b481-a4410b2bde9a",
-    supportedPayment: ["duitnow", "tng"],
-    qrContent: "00020201021126420014A000000615000101066033460210MD000904305204539953034585802MY5914SURAU ISLAMIAH6002MY62730325167047481114400921245718005201706072795810003250007161670474165367007630444B0",
-    coords: [3.03628776889229, 101.46434443583978],
-  },
-  // NajibAzir, twitter dm
-  {
-    id: 872,
-    name: "Masjid Tabung Haji Kelana Jaya",
-    category: "mosque",
-    state: "Selangor",
-    city: "Kelana Jaya",
-    qrImage: "https://i.ibb.co/1Y8xctGP/image.png",
-    qrContent: "00020201021126520014A000000615000101068900530220MDN161838284275252105204866153034585802MY5925MASJIDTABUNGHAJIKELANAJAY6012PETALINGJAYA6304C733",
-    supportedPayment: ["duitnow", "tng"]
-  },
-  // doonosh, twitter dm
-  {
-    id: 873,
-    name: "Surau Darul Aman Kampung Kanchong Darat",
-    category: "surau",
-    state: "Selangor",
-    city: "Banting",
-    qrImage: "https://i.ibb.co/hRK6s0LX/image.png",
-    qrContent: "00020201021126420014A000000615000101066033460210MD001346655204556153034585802MY5916Surau Darul Aman6002MY627303251717334981547009856192587052017173350058920015123071617173341668470076304F2C4",
-    supportedPayment: ["duitnow", "tng"],
-    coords: [2.775382215678669, 101.48236985767137],
-  },
+	// 
+	{
+		id: 871,
+		name: "Surau Islamiah Taman Bukit Jati",
+		category: "surau",
+		state: "Selangor",
+		city: "Klang",
+		qrImage: "https://github.com/user-attachments/assets/76da06b9-ca88-43b5-b481-a4410b2bde9a",
+		supportedPayment: ["duitnow", "tng"],
+		qrContent: "00020201021126420014A000000615000101066033460210MD000904305204539953034585802MY5914SURAU ISLAMIAH6002MY62730325167047481114400921245718005201706072795810003250007161670474165367007630444B0",
+		coords: [3.03628776889229, 101.46434443583978],
+	},
+	// NajibAzir, twitter dm
+	{
+		id: 872,
+		name: "Masjid Tabung Haji Kelana Jaya",
+		category: "mosque",
+		state: "Selangor",
+		city: "Kelana Jaya",
+		qrImage: "https://i.ibb.co/1Y8xctGP/image.png",
+		qrContent: "00020201021126520014A000000615000101068900530220MDN161838284275252105204866153034585802MY5925MASJIDTABUNGHAJIKELANAJAY6012PETALINGJAYA6304C733",
+		supportedPayment: ["duitnow", "tng"]
+	},
+	// doonosh, twitter dm
+	{
+		id: 873,
+		name: "Surau Darul Aman Kampung Kanchong Darat",
+		category: "surau",
+		state: "Selangor",
+		city: "Banting",
+		qrImage: "https://i.ibb.co/hRK6s0LX/image.png",
+		qrContent: "00020201021126420014A000000615000101066033460210MD001346655204556153034585802MY5916Surau Darul Aman6002MY627303251717334981547009856192587052017173350058920015123071617173341668470076304F2C4",
+		supportedPayment: ["duitnow", "tng"],
+		coords: [2.775382215678669, 101.48236985767137],
+	},
 ];
