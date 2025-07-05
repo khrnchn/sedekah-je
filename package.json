@@ -14,7 +14,8 @@
 		"artisan:plop": "NODE_OPTIONS='--import tsx' plop --plopfile=plopfile.ts",
 		"db:seed": "bun db/main.ts",
 		"db:truncate": "bun db/truncate.ts",
-		"clean": "rm -rf node_modules/ .next/ bun.lock*"
+		"clean": "rm -rf node_modules/ .next/ bun.lock*",
+		"prepare": "husky"
 	},
 	"dependencies": {
 		"@dnd-kit/core": "^6.3.1",
@@ -94,6 +95,8 @@
 		"@types/react": "^18",
 		"@types/react-dom": "^18",
 		"drizzle-kit": "^0.30.1",
+		"husky": "^9.1.7",
+		"lint-staged": "^16.1.2",
 		"only-allow": "^1.2.1",
 		"postcss": "^8",
 		"tailwindcss": "^3.4.1",
@@ -106,5 +109,8 @@
 			"path": "node_modules/git-cz",
 			"useEmoji": true
 		}
+	},
+	"lint-staged": {
+		"*.{js,jsx,ts,tsx,json,css,md}": ["biome check --write"]
 	}
 }
