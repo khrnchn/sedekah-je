@@ -12,6 +12,8 @@ export const users = pgTable("users", {
 	username: varchar("username", { length: 100 }).unique(),
 	name: varchar("name", { length: 255 }),
 	avatarUrl: text("avatar_url"),
+	image: text("image"), // For Better Auth compatibility
+	emailVerified: boolean("email_verified").default(false).notNull(), // For Better Auth
 	role: varchar("role", { length: 20 })
 		.default("user")
 		.notNull()

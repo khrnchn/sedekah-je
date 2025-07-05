@@ -2,3 +2,4 @@
 export * from "./users";
 export * from "./institutions";
 export * from "./qr-images";
+export * from "./auth";
