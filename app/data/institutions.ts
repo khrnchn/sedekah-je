@@ -8288,7 +8288,7 @@ export const institutions: Institution[] = [
 		name: "Masjid Mukim Jembal Tok Ku Kota Jembal",
 		category: "mosque",
 		state: "Kelantan",
-		city: " Kota Bharu",
+		city: "Kota Bharu",
 		qrImage: "",
 		qrContent:
 			"00020201021126420014A000000615000101066033460210MD001345285204866153034585802MY5925J/Kuasa Masjid Mukim Jemb6002MY62730325171694601957100238227689205201717049544099004769407161716945706710008630493D1",
@@ -8300,7 +8300,7 @@ export const institutions: Institution[] = [
 		name: "Masjid Mukim Pendek",
 		category: "mosque",
 		state: "Kelantan",
-		city: " Kota Bharu",
+		city: "Kota Bharu",
 		qrImage: "",
 		qrContent:
 			"00020201021126610014A000000615000101065641670215QRMID0000000231031001290010095204866153034585802MY5919MASJID MUKIM PENDEK6010KOTA BHARU610515100630456AA",
@@ -8312,7 +8312,7 @@ export const institutions: Institution[] = [
 		name: "Pembangunan Masjid Ustaz Ahyad",
 		category: "others",
 		state: "Kelantan",
-		city: " Kota Bharu",
+		city: "Kota Bharu",
 		qrImage: "",
 		qrContent:
 			"00020201021126420014A000000615000101066033460210MD001305415204866153034585802MY5925Pembangunan Masjid Ustaz 6002MY6273032517085178400890062376803230520171929267703900969440716170851681652600263042586",
