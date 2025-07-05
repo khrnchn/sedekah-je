@@ -1,6 +1,5 @@
 import { relations } from "drizzle-orm";
 import { boolean, pgTable, serial, text, varchar } from "drizzle-orm/pg-core";
-import { contributions } from "./contributions";
 import { timestamps } from "./helpers";
 import { institutions } from "./institutions";
 import { qrImages } from "./qr-images";
@@ -19,10 +18,9 @@ export const users = pgTable("users", {
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
-	contributions: many(contributions),
 	institutionsContributed: many(institutions),
 	qrImagesUploaded: many(qrImages),
-	reviewedContributions: many(contributions, { relationName: "reviewer" }),
+	institutionsReviewed: many(institutions, { relationName: "reviewer" }),
 }));
 
 export type User = typeof users.$inferSelect;
