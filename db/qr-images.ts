@@ -13,8 +13,12 @@ import { users } from "./users";
 
 export const qrImages = pgTable("qr_images", {
 	id: serial("id").primaryKey(),
-	institutionId: integer("institution_id").notNull(),
-	uploadedBy: integer("uploaded_by").notNull(),
+	institutionId: integer("institution_id")
+		.notNull()
+		.references(() => institutions.id),
+	uploadedBy: integer("uploaded_by")
+		.notNull()
+		.references(() => users.id),
 	filename: varchar("filename", { length: 255 }).notNull(),
 	originalName: varchar("original_name", { length: 255 }),
 	mimeType: varchar("mime_type", { length: 100 }),
