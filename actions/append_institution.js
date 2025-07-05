@@ -20,28 +20,27 @@ const {
 
 // Sanitize inputs to prevent injection
 function sanitizeForJavaScript(input) {
-	if (typeof input !== 'string') return '';
+	if (typeof input !== "string") return "";
 	// Remove any HTML tags
-	input = input.replace(/<[^>]*>/g, '');
+	input = input.replace(/<[^>]*>/g, "");
 	// Escape special characters
-	input = input.replace(/["'\\]/g, (char) => '\\' + char);
+	input = input.replace(/["'\\]/g, (char) => "\\" + char);
 	// Remove any control characters
-	input = input.replace(/[\x00-\x1F\x7F-\x9F]/g, '');
+	input = input.replace(/[\x00-\x1F\x7F-\x9F]/g, "");
 	// Limit length to prevent buffer overflow
 	return input.slice(0, 1000);
 }
 
 // Sanitize all inputs
-const sanitizedTypeOfInstitute = sanitizeForJavaScript(typeOfInstitute || '');
-const sanitizedNameOfTheMasjid = sanitizeForJavaScript(nameOfTheMasjid || '');
-const sanitizedNameOfTheCity = sanitizeForJavaScript(nameOfTheCity || '');
-const sanitizedState = sanitizeForJavaScript(state || '');
-const sanitizedRemarks = sanitizeForJavaScript(remarks || '');
+const sanitizedTypeOfInstitute = sanitizeForJavaScript(typeOfInstitute || "");
+const sanitizedNameOfTheMasjid = sanitizeForJavaScript(nameOfTheMasjid || "");
+const sanitizedNameOfTheCity = sanitizeForJavaScript(nameOfTheCity || "");
+const sanitizedState = sanitizeForJavaScript(state || "");
+const sanitizedRemarks = sanitizeForJavaScript(remarks || "");
 
 // Validate QR code URL - only accept http/https URLs
-const sanitizedQrCodeImage = (qrCodeImage && /^https?:\/\//i.test(qrCodeImage))
-	? qrCodeImage
-	: '';
+const sanitizedQrCodeImage =
+	qrCodeImage && /^https?:\/\//i.test(qrCodeImage) ? qrCodeImage : "";
 
 if (!sanitizedQrCodeImage) {
 	console.warn("Invalid or missing QR code URL - proceeding without QR code");
@@ -65,7 +64,7 @@ async function decodeQRCode(url, retries = 1) {
 
 		// Download the image
 		const response = await axios.get(url, {
-			responseType: 'arraybuffer',
+			responseType: "arraybuffer",
 			timeout: 15000, // 15 seconds
 			/* Not sure if needed, to avoid being blocked by the server
 			headers: { 
@@ -84,7 +83,7 @@ async function decodeQRCode(url, retries = 1) {
 		const code = jsQR(
 			new Uint8ClampedArray(image.data),
 			image.info.width,
-			image.info.height
+			image.info.height,
 		);
 
 		if (code) {
@@ -105,9 +104,11 @@ async function decodeQRCode(url, retries = 1) {
 		console.error(`Error decoding QR code: ${error.message}`);
 
 		// If it's a timeout error, try again with more retries
-		if (error.message.includes('timeout')) {
+		if (error.message.includes("timeout")) {
 			if (retries > 0) {
-				console.log(`Timeout occurred, retrying QR code decoding (${retries} retries left)...`);
+				console.log(
+					`Timeout occurred, retrying QR code decoding (${retries} retries left)...`,
+				);
 				await new Promise((resolve) => setTimeout(resolve, 2000));
 				return decodeQRCode(url, retries - 1);
 			}
@@ -138,8 +139,8 @@ async function decodeQRCode(url, retries = 1) {
 		const idMatches = fileContent.match(/id:\s*(\d+),/g);
 		const nextId = idMatches
 			? Math.max(
-				...idMatches.map((id) => Number.parseInt(id.match(/\d+/)[0])),
-			) + 1
+					...idMatches.map((id) => Number.parseInt(id.match(/\d+/)[0])),
+				) + 1
 			: 1;
 
 		console.log(`Using next ID: ${nextId}`);
@@ -147,14 +148,17 @@ async function decodeQRCode(url, retries = 1) {
 		// Decode QR code - proceed even if it fails
 		let qrContent = "";
 		let qrDecodeStatus = "FAILED";
-		let qrDecodeAttempts = 0;
+		const qrDecodeAttempts = 0;
 		try {
 			qrContent = await decodeQRCode(sanitizedQrCodeImage);
 			if (qrContent) {
 				qrDecodeStatus = "SUCCESS";
 			}
 		} catch (error) {
-			console.warn("Failed to decode QR code, proceeding without QR content:", error.message);
+			console.warn(
+				"Failed to decode QR code, proceeding without QR content:",
+				error.message,
+			);
 		}
 
 		// Set environment variables for GitHub Actions
@@ -170,7 +174,7 @@ async function decodeQRCode(url, retries = 1) {
 		process.env.QR_CONTENT = qrContent;
 
 		// Escape double quotes in qrContent to prevent syntax errors
-		const escapedQrContent = (qrContent || '').replace(/"/g, '\\"');
+		const escapedQrContent = (qrContent || "").replace(/"/g, '\\"');
 
 		let supportedPayment = '["duitnow", "tng"]';
 		if (sanitizedQrCodeImage.includes("tngdigital")) {
@@ -185,7 +189,8 @@ async function decodeQRCode(url, retries = 1) {
 		if (qrContent) {
 			qrFields.push(`qrContent: "${escapedQrContent}"`);
 		}
-		const qrFieldsString = qrFields.length > 0 ? `\n    ${qrFields.join(",\n    ")},` : "";
+		const qrFieldsString =
+			qrFields.length > 0 ? `\n    ${qrFields.join(",\n    ")},` : "";
 
 		// Create a new institution entry
 		const newInstitution = `  // ${sanitizedRemarks}

@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge";
 import type { Institution } from "../app/types/institutions";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+	return twMerge(clsx(inputs));
 }
 
 /**
@@ -12,23 +12,23 @@ export function cn(...inputs: ClassValue[]) {
  * @returns Slugified string
  */
 export const slugify = (str: string) =>
-  str
-    .toLowerCase()
-    .replace(/ /g, "-")
-    .replace(/[^a-z0-9-]/g, "");
+	str
+		.toLowerCase()
+		.replace(/ /g, "-")
+		.replace(/[^a-z0-9-]/g, "");
 
 /** Remove duplicates based on institution name
  * @param institutions Array of institutions
  * @returns Array of institutions without duplicates
  */
 export function removeDuplicateInstitutions(institutions: Institution[]) {
-  return institutions.filter(
-    (institution, index, self) =>
-      index ===
-      self.findIndex(
-        (t) => t.name.toLowerCase() === institution.name.toLowerCase()
-      )
-  );
+	return institutions.filter(
+		(institution, index, self) =>
+			index ===
+			self.findIndex(
+				(t) => t.name.toLowerCase() === institution.name.toLowerCase(),
+			),
+	);
 }
 
 /** Shuffle the institutions
@@ -36,19 +36,19 @@ export function removeDuplicateInstitutions(institutions: Institution[]) {
  * @returns Array of institutions shuffled
  */
 export function shuffleInstitutions(institutions: Institution[]) {
-  return institutions.sort(() => Math.random() - 0.5);
+	return institutions.sort(() => Math.random() - 0.5);
 }
 
 export function formatDate(
-  date: Date | string | number,
-  opts: Intl.DateTimeFormatOptions = {}
+	date: Date | string | number,
+	opts: Intl.DateTimeFormatOptions = {},
 ) {
-  return new Intl.DateTimeFormat("en-US", {
-    month: opts.month ?? "long",
-    day: opts.day ?? "numeric",
-    year: opts.year ?? "numeric",
-    ...opts,
-  }).format(new Date(date));
+	return new Intl.DateTimeFormat("en-US", {
+		month: opts.month ?? "long",
+		day: opts.day ?? "numeric",
+		year: opts.year ?? "numeric",
+		...opts,
+	}).format(new Date(date));
 }
 
 /**
@@ -71,13 +71,13 @@ export function formatDate(
  * toSentenceCase('status_update_log')  // Returns: 'Status update log'
  */
 export function toSentenceCase(str: string) {
-  return str
-    .replace(/_/g, " ")
-    .replace(/([A-Z])/g, " $1")
-    .toLowerCase()
-    .replace(/^\w/, (c) => c.toUpperCase())
-    .replace(/\s+/g, " ")
-    .trim();
+	return str
+		.replace(/_/g, " ")
+		.replace(/([A-Z])/g, " $1")
+		.toLowerCase()
+		.replace(/^\w/, (c) => c.toUpperCase())
+		.replace(/\s+/g, " ")
+		.trim();
 }
 
 /**
@@ -95,29 +95,29 @@ export function toSentenceCase(str: string) {
  * toTitleCase('user_profile_page')   // Returns: 'User Profile Page'
  */
 export function toTitleCase(str: string): string {
-  return str
-    .toLowerCase()
-    .split(/[\s_]+/)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+	return str
+		.toLowerCase()
+		.split(/[\s_]+/)
+		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(" ");
 }
 
 /**
  * @see https://github.com/radix-ui/primitives/blob/main/packages/core/primitive/src/primitive.tsx
  */
 export function composeEventHandlers<E>(
-  originalEventHandler?: (event: E) => void,
-  ourEventHandler?: (event: E) => void,
-  { checkForDefaultPrevented = true } = {}
+	originalEventHandler?: (event: E) => void,
+	ourEventHandler?: (event: E) => void,
+	{ checkForDefaultPrevented = true } = {},
 ) {
-  return function handleEvent(event: E) {
-    originalEventHandler?.(event);
+	return function handleEvent(event: E) {
+		originalEventHandler?.(event);
 
-    if (
-      checkForDefaultPrevented === false ||
-      !(event as unknown as Event).defaultPrevented
-    ) {
-      return ourEventHandler?.(event);
-    }
-  };
+		if (
+			checkForDefaultPrevented === false ||
+			!(event as unknown as Event).defaultPrevented
+		) {
+			return ourEventHandler?.(event);
+		}
+	};
 }

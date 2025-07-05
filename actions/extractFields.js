@@ -19,7 +19,7 @@ try {
 
 // Function to sanitize string inputs
 function sanitizeString(str) {
-	if (typeof str !== 'string') return '';
+	if (typeof str !== "string") return "";
 	return str.trim();
 }
 
@@ -28,7 +28,7 @@ function isValidUrl(urlString) {
 	try {
 		// Basic URL validation
 		const url = new URL(urlString);
-		return url.protocol === 'http:' || url.protocol === 'https:';
+		return url.protocol === "http:" || url.protocol === "https:";
 	} catch {
 		return false;
 	}
@@ -57,7 +57,7 @@ function extractFields(text) {
 					value = urlMatch[1];
 				} else {
 					console.warn(`No valid URL found in QR Code Image field: "${value}"`);
-					value = ''; // Clear invalid URLs
+					value = ""; // Clear invalid URLs
 				}
 			}
 		}
