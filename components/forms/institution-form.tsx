@@ -6,21 +6,25 @@ import {
 } from "@/app/_actions/submit-institution";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { toast } from "@/components/ui/use-toast";
-import type { states } from "@/db/institutions";
-import { useAuth } from "@/hooks/use-auth";
 import {
 	categories as CATEGORY_OPTIONS,
-	type InstitutionFormData,
 	states as STATE_OPTIONS,
+} from "@/db/institutions";
+import { useAuth } from "@/hooks/use-auth";
+import {
+	type InstitutionFormData,
 	institutionFormSchema,
 } from "@/lib/validations/institution";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import jsQR from "jsqr";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useFormState } from "react-dom";
 import { useForm } from "react-hook-form";
 
-const initialState: SubmitInstitutionFormState = { status: "success" };
+const initialState: SubmitInstitutionFormState = { status: "idle" };
 
 export default function InstitutionForm() {
 	const { user } = useAuth();
@@ -33,6 +37,11 @@ export default function InstitutionForm() {
 	const [prefilledState, setPrefilledState] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
+	/* QR extraction and social media */
+	const [qrContent, setQrContent] = useState<string | null>(null);
+	const [qrExtracting, setQrExtracting] = useState(false);
+	const [socialMediaExpanded, setSocialMediaExpanded] = useState(false);
+
 	/* React Hook Form */
 	const form = useForm<InstitutionFormData>({
 		resolver: zodResolver(institutionFormSchema),
@@ -44,17 +53,22 @@ export default function InstitutionForm() {
 			facebook: "",
 			instagram: "",
 			website: "",
+			contributorRemarks: "",
+			fromSocialMedia: false,
+			sourceUrl: "",
 			contributorId: user?.id ?? "",
 		},
 	});
 
 	const {
 		register,
-		handleSubmit,
 		formState: { errors },
 		setValue,
 		reset,
+		watch,
 	} = form;
+
+	const fromSocialMedia = watch("fromSocialMedia");
 
 	/** Geolocation + reverse-geocode */
 	async function fetchLocation() {
@@ -68,6 +82,8 @@ export default function InstitutionForm() {
 							`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`,
 						);
 						const data = await res.json();
+						console.log("Reverse geocoding data:", data);
+
 						if (data.address) {
 							const city =
 								data.address.town ||
@@ -78,7 +94,7 @@ export default function InstitutionForm() {
 							setPrefilledCity(city);
 							setPrefilledState(state);
 							setValue("city", city);
-							setValue("state", state as (typeof states)[number]);
+							setValue("state", state as (typeof STATE_OPTIONS)[number]);
 						}
 					} catch (err) {
 						console.error("Reverse geocoding failed", err);
@@ -99,14 +115,87 @@ export default function InstitutionForm() {
 		}
 	}
 
+	/* Handle QR image upload and extraction */
+	async function handleQrImageChange(
+		event: React.ChangeEvent<HTMLInputElement>,
+	) {
+		const file = event.target.files?.[0];
+		if (!file) {
+			setQrContent(null);
+			return;
+		}
+
+		setQrExtracting(true);
+		setQrContent(null);
+
+		try {
+			const canvas = document.createElement("canvas");
+			const ctx = canvas.getContext("2d");
+			const img = new Image();
+
+			img.onload = () => {
+				canvas.width = img.width;
+				canvas.height = img.height;
+				ctx?.drawImage(img, 0, 0);
+
+				const imageData = ctx?.getImageData(0, 0, canvas.width, canvas.height);
+				if (imageData) {
+					const code = jsQR(imageData.data, imageData.width, imageData.height);
+					if (code) {
+						setQrContent(code.data);
+						toast({
+							title: "QR kod berjaya dikesan!",
+							description: "Kandungan QR kod telah diekstrak.",
+						});
+					} else {
+						toast({
+							title: "QR kod tidak dapat dikesan",
+							description: "Admin akan mengekstrak kandungan QR secara manual.",
+						});
+					}
+				}
+				setQrExtracting(false);
+			};
+
+			img.onerror = () => {
+				toast({
+					title: "Ralat memproses gambar",
+					description: "Tidak dapat memproses fail gambar.",
+				});
+				setQrExtracting(false);
+			};
+
+			img.src = URL.createObjectURL(file);
+		} catch (error) {
+			console.error("QR extraction error:", error);
+			toast({
+				title: "Ralat mengekstrak QR",
+				description: "Admin akan mengekstrak kandungan QR secara manual.",
+			});
+			setQrExtracting(false);
+		}
+	}
+
 	/* Toast feedback */
+	const firstRender = useRef(true);
 	useEffect(() => {
+		if (firstRender.current) {
+			firstRender.current = false;
+			return;
+		}
+
 		if (state.status === "success") {
 			toast({
 				title: "Terima kasih!",
 				description: "Sumbangan anda sedang disemak.",
 			});
 			reset();
+			// Clear file input manually as it isn't controlled by React Hook Form
+			const fileInput = document.getElementById(
+				"qrImage",
+			) as HTMLInputElement | null;
+			if (fileInput) fileInput.value = "";
+			setQrContent(null);
 			setIsSubmitting(false);
 		} else if (state.status === "error") {
 			console.log("Server validation errors:", state.errors);
@@ -119,44 +208,20 @@ export default function InstitutionForm() {
 		}
 	}, [state, reset]);
 
-	/* Form submission */
-	const onSubmit = async (data: InstitutionFormData) => {
-		console.log("Form submitted with data:", data);
-		setIsSubmitting(true);
-
-		// Check if QR image is selected
-		const fileInput = document.querySelector(
-			'input[name="qrImage"]',
-		) as HTMLInputElement;
-		if (!fileInput?.files?.[0]) {
+	/* onSubmit just toggles loading & lets native submission proceed */
+	async function onClientSubmit(e: React.FormEvent<HTMLFormElement>) {
+		const isValid = await form.trigger();
+		if (!isValid) {
+			e.preventDefault();
 			toast({
 				title: "Ralat",
-				description: "Sila pilih gambar QR kod",
+				description: "Sila semak borang anda. Terdapat ralat.",
 			});
-			setIsSubmitting(false);
 			return;
 		}
 
-		const formData = new FormData();
-		for (const [key, value] of Object.entries(data)) {
-			if (value !== undefined && value !== "") {
-				formData.append(key, value as string);
-			} else if (
-				key === "facebook" ||
-				key === "instagram" ||
-				key === "website"
-			) {
-				// For social media fields, append empty string to maintain consistency
-				formData.append(key, "");
-			}
-		}
-
-		// Add the QR image file
-		formData.append("qrImage", fileInput.files[0]);
-
-		console.log("Submitting form data:", Array.from(formData.entries()));
-		formAction(formData);
-	};
+		setIsSubmitting(true);
+	}
 
 	if (step === "question") {
 		return (
@@ -179,147 +244,233 @@ export default function InstitutionForm() {
 
 	return (
 		<form
-			onSubmit={handleSubmit(onSubmit)}
+			action={formAction}
+			onSubmit={onClientSubmit}
 			encType="multipart/form-data"
 			className="space-y-6 max-w-lg mx-auto"
 		>
-			{/* Hidden contributorId */}
-			<input
-				type="hidden"
-				{...register("contributorId")}
-				value={user?.id ?? ""}
-			/>
-
-			<div className="space-y-2">
-				<label htmlFor="qrImage" className="font-medium">
-					Gambar Kod QR (wajib)
-				</label>
-				<Input
-					id="qrImage"
-					type="file"
-					name="qrImage"
-					accept="image/*"
-					required
-					capture="environment"
+			<fieldset disabled={isSubmitting} className="space-y-6">
+				{/* Hidden contributorId */}
+				<input
+					type="hidden"
+					{...register("contributorId")}
+					value={user?.id ?? ""}
 				/>
-			</div>
 
-			<div className="space-y-2">
-				<label htmlFor="name" className="font-medium">
-					Nama Institusi
-				</label>
-				<Input
-					id="name"
-					{...register("name")}
-					placeholder="Contoh: Masjid Al-Falah"
-					className={errors.name ? "border-red-500" : ""}
-				/>
-				{errors.name && (
-					<p className="text-sm text-red-500">{errors.name.message}</p>
-				)}
-			</div>
-
-			<div className="space-y-2">
-				<label htmlFor="category" className="font-medium">
-					Kategori
-				</label>
-				<select
-					id="category"
-					{...register("category")}
-					className={`w-full h-10 px-3 border rounded-md bg-background ${errors.category ? "border-red-500" : ""}`}
-					defaultValue=""
-				>
-					<option value="" disabled>
-						Pilih kategori
-					</option>
-					{CATEGORY_OPTIONS.map((c) => (
-						<option key={c} value={c} className="capitalize">
-							{c}
-						</option>
-					))}
-				</select>
-				{errors.category && (
-					<p className="text-sm text-red-500">{errors.category.message}</p>
-				)}
-			</div>
-
-			<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 				<div className="space-y-2">
-					<label htmlFor="state" className="font-medium">
-						Negeri
+					<label htmlFor="qrImage" className="font-medium">
+						Gambar Kod QR (wajib)
+					</label>
+					<Input
+						id="qrImage"
+						type="file"
+						name="qrImage"
+						accept="image/*"
+						required
+						capture="environment"
+						onChange={handleQrImageChange}
+					/>
+					{qrExtracting && (
+						<p className="text-sm text-blue-600">Mengekstrak kandungan QR...</p>
+					)}
+					{qrContent && (
+						<div className="p-3 bg-green-50 border border-green-200 rounded-md">
+							<p className="text-sm font-medium text-green-800">QR Content:</p>
+							<p className="text-sm text-green-700 break-all">{qrContent}</p>
+						</div>
+					)}
+				</div>
+
+				<div className="space-y-2">
+					<label htmlFor="name" className="font-medium">
+						Nama Institusi
+					</label>
+					<Input
+						id="name"
+						{...register("name")}
+						placeholder="Contoh: Masjid Al-Falah"
+						className={errors.name ? "border-red-500" : ""}
+					/>
+					{errors.name && (
+						<p className="text-sm text-red-500">{errors.name.message}</p>
+					)}
+				</div>
+
+				<div className="space-y-2">
+					<label htmlFor="category" className="font-medium">
+						Kategori
 					</label>
 					<select
-						id="state"
-						{...register("state")}
-						className={`w-full h-10 px-3 border rounded-md bg-background ${errors.state ? "border-red-500" : ""}`}
-						defaultValue={prefilledState || ""}
+						id="category"
+						{...register("category")}
+						className={`w-full h-10 px-3 border rounded-md bg-background ${errors.category ? "border-red-500" : ""}`}
+						defaultValue=""
 					>
 						<option value="" disabled>
-							Negeri
+							Pilih kategori
 						</option>
-						{STATE_OPTIONS.map((s) => (
-							<option key={s} value={s} className="capitalize">
-								{s}
+						{CATEGORY_OPTIONS.map((c) => (
+							<option key={c} value={c} className="capitalize">
+								{c}
 							</option>
 						))}
 					</select>
-					{errors.state && (
-						<p className="text-sm text-red-500">{errors.state.message}</p>
+					{errors.category && (
+						<p className="text-sm text-red-500">{errors.category.message}</p>
 					)}
 				</div>
+
+				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+					<div className="space-y-2">
+						<label htmlFor="state" className="font-medium">
+							Negeri
+						</label>
+						<select
+							id="state"
+							{...register("state")}
+							className={`w-full h-10 px-3 border rounded-md bg-background ${errors.state ? "border-red-500" : ""}`}
+							defaultValue={prefilledState || ""}
+						>
+							<option value="" disabled>
+								Negeri
+							</option>
+							{STATE_OPTIONS.map((s) => (
+								<option key={s} value={s} className="capitalize">
+									{s}
+								</option>
+							))}
+						</select>
+						{errors.state && (
+							<p className="text-sm text-red-500">{errors.state.message}</p>
+						)}
+					</div>
+					<div className="space-y-2">
+						<label htmlFor="city" className="font-medium">
+							Bandar
+						</label>
+						<Input
+							id="city"
+							{...register("city")}
+							placeholder="Contoh: Shah Alam"
+							className={errors.city ? "border-red-500" : ""}
+							defaultValue={prefilledCity}
+						/>
+						{errors.city && (
+							<p className="text-sm text-red-500">{errors.city.message}</p>
+						)}
+					</div>
+				</div>
+
 				<div className="space-y-2">
-					<label htmlFor="city" className="font-medium">
-						Bandar
+					<label htmlFor="contributorRemarks" className="font-medium">
+						Catatan Tambahan (pilihan)
 					</label>
-					<Input
-						id="city"
-						{...register("city")}
-						placeholder="Contoh: Shah Alam"
-						className={errors.city ? "border-red-500" : ""}
-						defaultValue={prefilledCity}
+					<textarea
+						id="contributorRemarks"
+						{...register("contributorRemarks")}
+						placeholder="Catatan atau maklumat tambahan tentang institusi ini..."
+						className={`w-full min-h-[80px] px-3 py-2 border rounded-md bg-background resize-vertical ${errors.contributorRemarks ? "border-red-500" : ""}`}
 					/>
-					{errors.city && (
-						<p className="text-sm text-red-500">{errors.city.message}</p>
+					{errors.contributorRemarks && (
+						<p className="text-sm text-red-500">
+							{errors.contributorRemarks.message}
+						</p>
 					)}
 				</div>
-			</div>
 
-			<div className="space-y-2">
-				<label htmlFor="facebook" className="font-medium">
-					Media Sosial (pilihan)
-				</label>
-				<Input
-					id="facebook"
-					{...register("facebook")}
-					placeholder="Facebook URL"
-					className={`mb-2 ${errors.facebook ? "border-red-500" : ""}`}
-				/>
-				{errors.facebook && (
-					<p className="text-sm text-red-500">{errors.facebook.message}</p>
-				)}
-				<Input
-					id="instagram"
-					{...register("instagram")}
-					placeholder="Instagram URL"
-					className={`mb-2 ${errors.instagram ? "border-red-500" : ""}`}
-				/>
-				{errors.instagram && (
-					<p className="text-sm text-red-500">{errors.instagram.message}</p>
-				)}
-				<Input
-					id="website"
-					{...register("website")}
-					placeholder="Website URL"
-					className={errors.website ? "border-red-500" : ""}
-				/>
-				{errors.website && (
-					<p className="text-sm text-red-500">{errors.website.message}</p>
-				)}
-			</div>
+				<div className="space-y-2">
+					<div className="flex items-center space-x-2">
+						<input
+							type="checkbox"
+							id="fromSocialMedia"
+							{...register("fromSocialMedia")}
+							className="rounded"
+						/>
+						<label htmlFor="fromSocialMedia" className="font-medium">
+							Saya mendapat maklumat ini dari media sosial
+						</label>
+					</div>
+					{fromSocialMedia && (
+						<div className="space-y-2 pl-6">
+							<label htmlFor="sourceUrl" className="font-medium text-sm">
+								URL Sumber (pilihan)
+							</label>
+							<Input
+								id="sourceUrl"
+								{...register("sourceUrl")}
+								placeholder="https://facebook.com/post/123 atau Instagram URL"
+								className={errors.sourceUrl ? "border-red-500" : ""}
+							/>
+							{errors.sourceUrl && (
+								<p className="text-sm text-red-500">
+									{errors.sourceUrl.message}
+								</p>
+							)}
+						</div>
+					)}
+				</div>
 
-			<Button type="submit" className="w-full" disabled={isSubmitting}>
-				{isSubmitting ? "Menghantar..." : "Hantar"}
-			</Button>
+				<div className="space-y-2">
+					<button
+						type="button"
+						onClick={() => setSocialMediaExpanded(!socialMediaExpanded)}
+						className="flex items-center space-x-2 font-medium text-gray-700 hover:text-gray-900"
+					>
+						<span>Media Sosial (pilihan)</span>
+						{socialMediaExpanded ? (
+							<ChevronUp className="w-4 h-4" />
+						) : (
+							<ChevronDown className="w-4 h-4" />
+						)}
+					</button>
+					{socialMediaExpanded && (
+						<div className="space-y-2 pl-4 border-l-2 border-gray-200">
+							<Input
+								id="facebook"
+								{...register("facebook")}
+								placeholder="Facebook URL"
+								className={errors.facebook ? "border-red-500" : ""}
+							/>
+							{errors.facebook && (
+								<p className="text-sm text-red-500">
+									{errors.facebook.message}
+								</p>
+							)}
+							<Input
+								id="instagram"
+								{...register("instagram")}
+								placeholder="Instagram URL"
+								className={errors.instagram ? "border-red-500" : ""}
+							/>
+							{errors.instagram && (
+								<p className="text-sm text-red-500">
+									{errors.instagram.message}
+								</p>
+							)}
+							<Input
+								id="website"
+								{...register("website")}
+								placeholder="Website URL"
+								className={errors.website ? "border-red-500" : ""}
+							/>
+							{errors.website && (
+								<p className="text-sm text-red-500">{errors.website.message}</p>
+							)}
+						</div>
+					)}
+				</div>
+
+				<Button type="submit" className="w-full" disabled={isSubmitting}>
+					{isSubmitting ? (
+						<>
+							<Spinner size="small" className="mr-2" />
+							Menghantar...
+						</>
+					) : (
+						"Hantar"
+					)}
+				</Button>
+			</fieldset>
 		</form>
 	);
 }
