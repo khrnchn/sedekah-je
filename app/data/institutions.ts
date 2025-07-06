@@ -10743,4 +10743,14 @@ export const institutions: Institution[] = [
 		supportedPayment: ["duitnow", "tng"],
 		coords: [2.775382215678669, 101.48236985767137],
 	},
+  // 
+  {
+    id: 874,
+    name: "Masjid Tabung Haji Kelana Jaya",
+    category: "mosque",
+    state: "Selangor",
+    city: "Kelana Jaya",
+    qrImage: "https://github.com/user-attachments/assets/72bb5760-11d5-4be2-b2b8-ff8aa0619dd2",
+    supportedPayment: ["duitnow", "tng"]
+  },
 ];
