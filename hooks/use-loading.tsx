@@ -7,8 +7,8 @@ export function useLoading() {
 	const stopLoading = useCallback(() => setIsLoading(false), []);
 
 	const withLoading = useCallback(
-		(asyncFunction: any) => {
-			return async (...args: any) => {
+		<T extends (...args: unknown[]) => Promise<unknown>>(asyncFunction: T) => {
+			return async (...args: Parameters<T>) => {
 				try {
 					startLoading();
 					return await asyncFunction(...args);

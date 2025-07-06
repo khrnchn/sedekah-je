@@ -13,46 +13,50 @@ export function useNavigationLoading() {
 	const router = useRouter();
 	const [isNavigating, setIsNavigating] = useState(false);
 	const [shouldShowOverlay, setShouldShowOverlay] = useState(true);
+	const [isLoading, setIsLoading] = useState(false);
 
-	const handleNavigation = async (
-		navigationFn: () => Promise<void> | void,
-		options: NavigateOptions = {},
-	) => {
-		const { showOverlay = true, onSuccess, onError } = options;
+	const handleNavigation = useCallback(
+		async (
+			navigationFn: () => Promise<void> | void,
+			options: NavigateOptions = {},
+		) => {
+			const { showOverlay = true, onSuccess, onError } = options;
 
-		try {
-			setIsNavigating(true);
-			setShouldShowOverlay(showOverlay);
+			try {
+				setIsNavigating(true);
+				setShouldShowOverlay(showOverlay);
 
-			await Promise.all([
-				navigationFn(),
-				new Promise((resolve) => setTimeout(resolve, 100)),
-			]);
+				await Promise.all([
+					navigationFn(),
+					new Promise((resolve) => setTimeout(resolve, 100)),
+				]);
 
-			onSuccess?.();
-		} catch (error) {
-			onError?.(error);
-			console.error("Navigation error:", error);
-		} finally {
-			setTimeout(() => {
-				setIsNavigating(false);
-				setShouldShowOverlay(true);
-			}, 200);
-		}
-	};
+				onSuccess?.();
+			} catch (error) {
+				onError?.(error);
+				console.error("Navigation error:", error);
+			} finally {
+				setTimeout(() => {
+					setIsNavigating(false);
+					setShouldShowOverlay(true);
+				}, 200);
+			}
+		},
+		[],
+	);
 
 	const navigate = useCallback(
 		async (path: string, options: NavigateOptions = {}) => {
 			await handleNavigation(() => router.push(path), options);
 		},
-		[router],
+		[router, handleNavigation],
 	);
 
 	const back = useCallback(
 		async (options: NavigateOptions = {}) => {
 			await handleNavigation(() => router.back(), options);
 		},
-		[router],
+		[router, handleNavigation],
 	);
 
 	const LoadingOverlay = useCallback(() => {

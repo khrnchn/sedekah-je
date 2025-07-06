@@ -3,6 +3,7 @@ import { slugify } from "@/lib/utils";
 import chromium from "@sparticuz/chromium";
 import { type NextRequest, NextResponse } from "next/server";
 import puppeteer from "puppeteer-core";
+import type { Browser } from "puppeteer-core";
 
 export async function GET(
 	request: NextRequest,
@@ -18,7 +19,7 @@ export async function GET(
 		return new NextResponse("Not found", { status: 404 });
 	}
 
-	let browser;
+	let browser: Browser | undefined;
 	try {
 		// Setup chrome options
 		const executablePath = await chromium.executablePath();

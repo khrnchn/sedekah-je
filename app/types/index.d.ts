@@ -22,9 +22,6 @@ type GetDoaResponse = {
 	category_names: Array<string>;
 };
 
-import type { DataTableConfig } from "@/config/data-table";
-import type { filterSchema } from "@/lib/parsers";
-
 // before this is the below code, but cant pass precommit hook due to some type error - @typescript-eslint/ban-types
 // export type Prettify<T> = {
 //     [K in keyof T]: T[K];

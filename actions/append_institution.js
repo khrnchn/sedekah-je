@@ -22,13 +22,13 @@ const {
 function sanitizeForJavaScript(input) {
 	if (typeof input !== "string") return "";
 	// Remove any HTML tags
-	input = input.replace(/<[^>]*>/g, "");
+	let sanitized = input.replace(/<[^>]*>/g, "");
 	// Escape special characters
-	input = input.replace(/["'\\]/g, (char) => "\\" + char);
-	// Remove any control characters
-	input = input.replace(/[\x00-\x1F\x7F-\x9F]/g, "");
+	sanitized = sanitized.replace(/["'\\]/g, (char) => `\\${char}`);
+	// Remove any control characters by keeping only printable characters
+	sanitized = sanitized.replace(/[^\x20-\x7E]/g, "");
 	// Limit length to prevent buffer overflow
-	return input.slice(0, 1000);
+	return sanitized.slice(0, 1000);
 }
 
 // Sanitize all inputs
