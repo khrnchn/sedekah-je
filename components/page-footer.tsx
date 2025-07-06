@@ -78,7 +78,7 @@ export default function PageFooter() {
 	return (
 		<footer
 			aria-labelledby="footer-heading"
-			className={`bg-[hsl(var(--background))] text-[hsl(var(--foreground))]`}
+			className={"bg-[hsl(var(--background))] text-[hsl(var(--foreground))]"}
 		>
 			<h2 id="footer-heading" className="sr-only">
 				Footer

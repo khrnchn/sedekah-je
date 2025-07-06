@@ -10,13 +10,14 @@ export function getErrorMessage(err: unknown) {
 			return issue.message;
 		});
 		return errors.join("\n");
-	} else if (err instanceof Error) {
-		return err.message;
-	} else if (isRedirectError(err)) {
-		throw err;
-	} else {
-		return unknownError;
 	}
+	if (err instanceof Error) {
+		return err.message;
+	}
+	if (isRedirectError(err)) {
+		throw err;
+	}
+	return unknownError;
 }
 
 export function showErrorToast(err: unknown) {
