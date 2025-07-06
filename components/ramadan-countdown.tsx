@@ -38,7 +38,7 @@ const calculateRamadanInfo = async () => {
 			hijriDay: 0,
 			totalDays,
 			progressPercentage: 0,
-			hijriDate: `Ramadan not started yet`,
+			hijriDate: "Ramadan not started yet",
 		};
 	}
 
