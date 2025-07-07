@@ -1,31 +1,5 @@
+import { categories, states } from "@/lib/institution-constants";
 import { z } from "zod";
-
-export const categories = [
-	"mosque",
-	"surau",
-	"tahfiz",
-	"kebajikan",
-	"others",
-] as const;
-
-export const states = [
-	"Johor",
-	"Kedah",
-	"Kelantan",
-	"Melaka",
-	"Negeri Sembilan",
-	"Pahang",
-	"Perak",
-	"Perlis",
-	"Pulau Pinang",
-	"Sabah",
-	"Sarawak",
-	"Selangor",
-	"Terengganu",
-	"W.P. Kuala Lumpur",
-	"W.P. Labuan",
-	"W.P. Putrajaya",
-] as const;
 
 const socialUrl = z
 	.string()
@@ -63,6 +37,9 @@ export const institutionFormSchema = z.object({
 	facebook: socialUrl,
 	instagram: socialUrl,
 	website: socialUrl,
+	contributorRemarks: z.string().optional(),
+	fromSocialMedia: z.boolean().optional(),
+	sourceUrl: socialUrl,
 	contributorId: z.string().min(1),
 });
 
