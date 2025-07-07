@@ -9,65 +9,64 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { GoogleIcon } from "@/components/ui/icons";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { authClient } from "@/lib/auth-client";
-import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
+import { signInWithGoogle } from "@/lib/auth-client";
+// import { Input } from "@/components/ui/input";
+// import { Label } from "@/components/ui/label";
+// import { authClient } from "@/lib/auth-client";
+// import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 export default function AuthForm() {
-	const [isSignUp, setIsSignUp] = useState(false);
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [name, setName] = useState("");
-	const [showPassword, setShowPassword] = useState(false);
-	const [isLoading, setIsLoading] = useState(false);
+	// const [isSignUp, setIsSignUp] = useState(false);
+	// const [email, setEmail] = useState("");
+	// const [password, setPassword] = useState("");
+	// const [name, setName] = useState("");
+	// const [showPassword, setShowPassword] = useState(false);
+	// const [isLoading, setIsLoading] = useState(false);
 
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
-		setIsLoading(true);
+	// const handleSubmit = async (e: React.FormEvent) => {
+	//	e.preventDefault();
+	//	setIsLoading(true);
 
-		try {
-			if (isSignUp) {
-				const result = await authClient.signUp.email({
-					email,
-					password,
-					name,
-				});
+	//	try {
+	//		if (isSignUp) {
+	//			const result = await authClient.signUp.email({
+	//				email,
+	//				password,
+	//				name,
+	//			});
 
-				if (result.error) {
-					toast.error(result.error.message || "Gagal membuat akaun");
-				} else {
-					toast.success("Akaun berjaya dibuat! Sila log masuk.");
-					setIsSignUp(false);
-				}
-			} else {
-				const result = await authClient.signIn.email({
-					email,
-					password,
-				});
+	//			if (result.error) {
+	//				toast.error(result.error.message || "Gagal membuat akaun");
+	//			} else {
+	//				toast.success("Akaun berjaya dibuat! Sila log masuk.");
+	//				setIsSignUp(false);
+	//			}
+	//		} else {
+	//			const result = await authClient.signIn.email({
+	//				email,
+	//				password,
+	//			});
 
-				if (result.error) {
-					toast.error(result.error.message || "Gagal log masuk");
-				} else {
-					toast.success("Berjaya log masuk!");
-					window.location.href = "/";
-				}
-			}
-		} catch (error) {
-			console.error("Auth error:", error);
-			toast.error(isSignUp ? "Gagal membuat akaun" : "Gagal log masuk");
-		} finally {
-			setIsLoading(false);
-		}
-	};
+	//			if (result.error) {
+	//				toast.error(result.error.message || "Gagal log masuk");
+	//			} else {
+	//				toast.success("Berjaya log masuk!");
+	//				window.location.href = "/";
+	//			}
+	//		}
+	//	} catch (error) {
+	//		console.error("Auth error:", error);
+	//		toast.error(isSignUp ? "Gagal membuat akaun" : "Gagal log masuk");
+	//	} finally {
+	//		setIsLoading(false);
+	//	}
+	// };
 
 	const handleGoogleSignIn = async () => {
 		try {
-			await authClient.signIn.social({
-				provider: "google",
-			});
+			await signInWithGoogle();
 		} catch (error) {
 			toast.error("Gagal log masuk dengan Google");
 		}
@@ -76,17 +75,11 @@ export default function AuthForm() {
 	return (
 		<Card className="w-full max-w-md">
 			<CardHeader className="text-center">
-				<CardTitle className="text-2xl font-bold">
-					{isSignUp ? "Daftar Akaun" : "Log Masuk"}
-				</CardTitle>
-				<CardDescription>
-					{isSignUp
-						? "Buat akaun baru untuk menggunakan SedekahJe"
-						: "Masuk ke akaun SedekahJe anda"}
-				</CardDescription>
+				<CardTitle className="text-2xl font-bold">Log Masuk</CardTitle>
+				<CardDescription>Masuk ke akaun SedekahJe anda</CardDescription>
 			</CardHeader>
 			<CardContent>
-				<form onSubmit={handleSubmit} className="space-y-4">
+				{/* <form onSubmit={handleSubmit} className="space-y-4">
 					{isSignUp && (
 						<div className="space-y-2">
 							<Label htmlFor="name">Nama</Label>
@@ -159,7 +152,7 @@ export default function AuthForm() {
 
 				<div className="mt-4 text-center">
 					<span className="text-sm text-gray-600">atau</span>
-				</div>
+				</div> */}
 
 				<Button
 					type="button"
@@ -171,7 +164,7 @@ export default function AuthForm() {
 					Log Masuk dengan Google
 				</Button>
 
-				<div className="mt-6 text-center">
+				{/* <div className="mt-6 text-center">
 					<button
 						type="button"
 						onClick={() => setIsSignUp(!isSignUp)}
@@ -181,7 +174,7 @@ export default function AuthForm() {
 							? "Sudah ada akaun? Log masuk di sini"
 							: "Belum ada akaun? Daftar di sini"}
 					</button>
-				</div>
+				</div> */}
 			</CardContent>
 		</Card>
 	);

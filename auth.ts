@@ -13,9 +13,9 @@ export const auth = betterAuth({
 			verification: schema.verifications,
 		},
 	}),
-	emailAndPassword: {
-		enabled: true,
-	},
+	// emailAndPassword: {
+	//	enabled: true,
+	// },
 	socialProviders: {
 		google: {
 			// always ask the user to select an account
