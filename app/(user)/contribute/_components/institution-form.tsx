@@ -306,10 +306,11 @@ export default function InstitutionForm() {
 				</div>
 
 				<div className="space-y-2">
-					<button
+					<Button
 						type="button"
+						variant="ghost"
 						onClick={() => setSocialMediaExpanded(!socialMediaExpanded)}
-						className="flex items-center space-x-2 font-medium text-gray-700 hover:text-gray-900"
+						className="flex items-center space-x-2 font-medium p-0 h-auto hover:bg-transparent"
 					>
 						<span>Social Media</span>
 						{socialMediaExpanded ? (
@@ -317,7 +318,7 @@ export default function InstitutionForm() {
 						) : (
 							<ChevronDown className="w-4 h-4" />
 						)}
-					</button>
+					</Button>
 					{socialMediaExpanded && (
 						<div className="space-y-2 pl-4 border-l-2 border-gray-200">
 							<Input
