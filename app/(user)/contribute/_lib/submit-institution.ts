@@ -39,6 +39,8 @@ export async function submitInstitution(
 		fromSocialMedia: formData.has("fromSocialMedia"),
 		sourceUrl: formData.get("sourceUrl"),
 		contributorId: formData.get("contributorId"),
+		lat: formData.get("lat"),
+		lon: formData.get("lon"),
 	} as Record<string, unknown>;
 
 	console.log("Raw form data:", raw);
@@ -92,6 +94,42 @@ export async function submitInstitution(
 		console.error("Error processing QR image:", err);
 	}
 
+	// Determine coords
+	let coords: [number, number] | undefined;
+	if (parsed.data.lat && parsed.data.lon) {
+		coords = [
+			Number.parseFloat(parsed.data.lat),
+			Number.parseFloat(parsed.data.lon),
+		];
+	} else {
+		// Attempt geocoding using Nominatim (as proxy to OSRM) based on name + city + state
+		try {
+			const query = `${parsed.data.name}, ${parsed.data.city}, ${parsed.data.state}, Malaysia`;
+			const res = await fetch(
+				`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(
+					query,
+				)}`,
+				{
+					headers: { "User-Agent": "sedekahje-bot" },
+				},
+			);
+			if (res.ok) {
+				const results = (await res.json()) as Array<{
+					lat: string;
+					lon: string;
+				}>;
+				if (results.length > 0) {
+					coords = [
+						Number.parseFloat(results[0].lat),
+						Number.parseFloat(results[0].lon),
+					];
+				}
+			}
+		} catch (e) {
+			console.error("Geocoding failed:", e);
+		}
+	}
+
 	// --- Insert Institution (status defaults to "pending")
 	try {
 		const [{ id: _newId }] = await db
@@ -103,6 +141,7 @@ export async function submitInstitution(
 				city: parsed.data.city,
 				qrImage: qrImageUrl,
 				qrContent,
+				coords,
 				socialMedia: {
 					facebook:
 						parsed.data.facebook && parsed.data.facebook !== ""

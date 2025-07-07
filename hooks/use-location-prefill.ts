@@ -62,6 +62,8 @@ export function useLocationPrefill(
 							setPrefilledState(state);
 							setValue("city", city);
 							setValue("state", state as (typeof STATE_OPTIONS)[number]);
+							setValue("lat", latitude.toString());
+							setValue("lon", longitude.toString());
 						}
 					} catch (err) {
 						console.error("Reverse geocoding failed", err);
