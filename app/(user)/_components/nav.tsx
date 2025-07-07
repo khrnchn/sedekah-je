@@ -9,8 +9,14 @@ import {
 	DrawerTitle,
 	DrawerTrigger,
 } from "@/components/ui/drawer";
+import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
-import { BarChart, HeartHandshake, LayoutDashboard } from "lucide-react";
+import {
+	BarChart,
+	HeartHandshake,
+	LayoutDashboard,
+	LogOut,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -36,6 +42,12 @@ const links = [
 export function Nav() {
 	const pathname = usePathname();
 	const [open, setOpen] = useState(false);
+	const { signOut } = useAuth();
+
+	const handleSignOut = async () => {
+		setOpen(false);
+		await signOut();
+	};
 
 	return (
 		<div className="fixed bottom-4 left-0 right-0 z-50 flex justify-center md:hidden">
@@ -67,6 +79,16 @@ export function Nav() {
 								<span className="mt-1 text-xs font-medium">{link.name}</span>
 							</Link>
 						))}
+					</div>
+					<div className="p-4 border-t">
+						<Button
+							variant="ghost"
+							className="w-full flex items-center justify-center text-red-500"
+							onClick={handleSignOut}
+						>
+							<LogOut className="size-5 mr-2" />
+							<span className="text-sm font-medium">Logout</span>
+						</Button>
 					</div>
 				</DrawerContent>
 			</Drawer>
