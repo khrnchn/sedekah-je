@@ -3,7 +3,11 @@
 import {
 	type SubmitInstitutionFormState,
 	submitInstitution,
-} from "@/app/_actions/submit-institution";
+} from "@/app/(user)/contribute/_lib/submit-institution";
+import {
+	type InstitutionFormData,
+	institutionFormSchema,
+} from "@/app/(user)/contribute/_lib/validations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
@@ -12,12 +16,9 @@ import {
 	states as STATE_OPTIONS,
 } from "@/db/institutions";
 import { useAuth } from "@/hooks/use-auth";
-import {
-	type InstitutionFormData,
-	institutionFormSchema,
-} from "@/lib/validations/institution";
+import { useLocationPrefill } from "@/hooks/use-location-prefill";
+import { useQrExtraction } from "@/hooks/use-qr-extraction";
 import { zodResolver } from "@hookform/resolvers/zod";
-import jsQR from "jsqr";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useFormState } from "react-dom";
@@ -30,16 +31,9 @@ export default function InstitutionForm() {
 	const { user } = useAuth();
 	const [state, formAction] = useFormState(submitInstitution, initialState);
 
-	/* Step management */
-	const [step, setStep] = useState<"question" | "form">("question");
-	const [loadingLocation, setLoadingLocation] = useState(false);
-	const [prefilledCity, setPrefilledCity] = useState("");
-	const [prefilledState, setPrefilledState] = useState("");
-	const [isSubmitting, setIsSubmitting] = useState(false);
-
 	/* QR extraction and social media */
-	const [qrContent, setQrContent] = useState<string | null>(null);
-	const [qrExtracting, setQrExtracting] = useState(false);
+	const { qrContent, qrExtracting, handleQrImageChange, clearQrContent } =
+		useQrExtraction();
 	const [socialMediaExpanded, setSocialMediaExpanded] = useState(false);
 
 	/* React Hook Form */
@@ -70,107 +64,15 @@ export default function InstitutionForm() {
 
 	const fromSocialMedia = watch("fromSocialMedia");
 
-	/** Geolocation + reverse-geocode */
-	async function fetchLocation() {
-		setLoadingLocation(true);
-		try {
-			navigator.geolocation.getCurrentPosition(
-				async (pos) => {
-					const { latitude, longitude } = pos.coords;
-					try {
-						const res = await fetch(
-							`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`,
-						);
-						const data = await res.json();
-						console.log("Reverse geocoding data:", data);
-
-						if (data.address) {
-							const city =
-								data.address.town ||
-								data.address.city ||
-								data.address.village ||
-								"";
-							const state = data.address.state || "";
-							setPrefilledCity(city);
-							setPrefilledState(state);
-							setValue("city", city);
-							setValue("state", state as (typeof STATE_OPTIONS)[number]);
-						}
-					} catch (err) {
-						console.error("Reverse geocoding failed", err);
-					} finally {
-						setLoadingLocation(false);
-						setStep("form");
-					}
-				},
-				() => {
-					/* error */
-					setLoadingLocation(false);
-					setStep("form");
-				},
-			);
-		} catch (e) {
-			setLoadingLocation(false);
-			setStep("form");
-		}
-	}
-
-	/* Handle QR image upload and extraction */
-	async function handleQrImageChange(
-		event: React.ChangeEvent<HTMLInputElement>,
-	) {
-		const file = event.target.files?.[0];
-		if (!file) {
-			setQrContent(null);
-			return;
-		}
-
-		setQrExtracting(true);
-		setQrContent(null);
-
-		try {
-			const canvas = document.createElement("canvas");
-			const ctx = canvas.getContext("2d");
-			const img = new Image();
-
-			img.onload = () => {
-				canvas.width = img.width;
-				canvas.height = img.height;
-				ctx?.drawImage(img, 0, 0);
-
-				const imageData = ctx?.getImageData(0, 0, canvas.width, canvas.height);
-				if (imageData) {
-					const code = jsQR(imageData.data, imageData.width, imageData.height);
-					if (code) {
-						setQrContent(code.data);
-						toast("QR code detected successfully!", {
-							description: "QR code content has been extracted.",
-						});
-					} else {
-						toast("QR code could not be detected", {
-							description: "Admin will extract QR content manually.",
-						});
-					}
-				}
-				setQrExtracting(false);
-			};
-
-			img.onerror = () => {
-				toast("Error processing image", {
-					description: "Unable to process image file.",
-				});
-				setQrExtracting(false);
-			};
-
-			img.src = URL.createObjectURL(file);
-		} catch (error) {
-			console.error("QR extraction error:", error);
-			toast("Error extracting QR", {
-				description: "Admin will extract QR content manually.",
-			});
-			setQrExtracting(false);
-		}
-	}
+	/* Step + location management via custom hook */
+	const {
+		step,
+		setStep,
+		loadingLocation,
+		fetchLocation,
+		prefilledCity,
+		prefilledState,
+	} = useLocationPrefill(setValue);
 
 	/* Toast feedback */
 	useEffect(() => {
@@ -180,23 +82,21 @@ export default function InstitutionForm() {
 			toast.success("Thank you!", {
 				description: "Your contribution is being reviewed.",
 			});
-			reset();
+			form.reset();
 			// Clear file input manually as it isn't controlled by React Hook Form
 			const fileInput = document.getElementById(
 				"qrImage",
 			) as HTMLInputElement | null;
 			if (fileInput) fileInput.value = "";
-			setQrContent(null);
-			setIsSubmitting(false);
+			clearQrContent();
 		} else if (state.status === "error") {
 			console.log("Server validation errors:", state.errors);
 			toast.error("Error", {
 				description:
 					"Please check your form. There are errors in the submitted data.",
 			});
-			setIsSubmitting(false);
 		}
-	}, [state, reset]);
+	}, [state, form.reset, clearQrContent]);
 
 	/* onSubmit just toggles loading & lets native submission proceed */
 	async function onClientSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -210,7 +110,6 @@ export default function InstitutionForm() {
 		}
 
 		toast("Submitting…", { description: "Processing your contribution." });
-		setIsSubmitting(true);
 	}
 
 	if (step === "question") {
@@ -239,7 +138,7 @@ export default function InstitutionForm() {
 			encType="multipart/form-data"
 			className="space-y-6 max-w-lg mx-auto pb-20 md:pb-6"
 		>
-			<fieldset disabled={isSubmitting} className="space-y-6">
+			<fieldset disabled={qrExtracting} className="space-y-6">
 				{/* Hidden contributorId */}
 				<input
 					type="hidden"
@@ -450,8 +349,8 @@ export default function InstitutionForm() {
 					)}
 				</div>
 
-				<Button type="submit" className="w-full" disabled={isSubmitting}>
-					{isSubmitting ? (
+				<Button type="submit" className="w-full" disabled={qrExtracting}>
+					{qrExtracting ? (
 						<>
 							<Spinner size="small" className="mr-2" />
 							Submitting...

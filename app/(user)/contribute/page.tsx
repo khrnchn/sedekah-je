@@ -1,7 +1,7 @@
 "use client";
 
+import InstitutionForm from "@/app/(user)/contribute/_components/institution-form";
 import { ProtectedRoute } from "@/components/auth/protected-route";
-import InstitutionForm from "@/components/forms/institution-form";
 import PageSection from "@/components/ui/pageSection";
 
 export default function ContributePage() {

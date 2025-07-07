@@ -3,11 +3,11 @@
 import { randomUUID } from "node:crypto";
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { institutionFormSchema } from "@/app/(user)/contribute/_lib/validations";
 import type { Category } from "@/app/types/institutions";
 import { db } from "@/db";
 import { institutions } from "@/db/institutions";
 import type { states } from "@/db/institutions";
-import { institutionFormSchema } from "@/lib/validations/institution";
 import jsQR from "jsqr";
 import { revalidatePath } from "next/cache";
 import sharp from "sharp";
