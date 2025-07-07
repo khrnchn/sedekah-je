@@ -129,6 +129,7 @@ export async function submitInstitution(
 					parsed.data.sourceUrl !== ""
 						? parsed.data.sourceUrl
 						: undefined,
+				supportedPayment: ["duitnow", "tng"],
 			})
 			.returning({ id: institutions.id });
 

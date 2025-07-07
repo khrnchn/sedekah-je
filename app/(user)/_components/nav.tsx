@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { BarChart, HeartHandshake, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 const links = [
 	{
@@ -27,10 +28,11 @@ const links = [
 
 export function Nav() {
 	const pathname = usePathname();
+	const [open, setOpen] = useState(false);
 
 	return (
 		<div className="fixed bottom-4 left-0 right-0 z-50 flex justify-center md:hidden">
-			<Drawer>
+			<Drawer open={open} onOpenChange={setOpen}>
 				<DrawerTrigger asChild>
 					<Button variant="outline" className="rounded-full shadow-lg border-2">
 						Menu
@@ -42,6 +44,7 @@ export function Nav() {
 							<Link
 								key={link.href}
 								href={link.href}
+								onClick={() => setOpen(false)}
 								className={cn(
 									"flex flex-col items-center justify-center rounded-lg p-3 hover:bg-accent",
 									pathname === link.href && "bg-accent text-accent-foreground",
