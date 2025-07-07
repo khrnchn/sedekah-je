@@ -1,7 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import {
+	Drawer,
+	DrawerContent,
+	DrawerDescription,
+	DrawerHeader,
+	DrawerTitle,
+	DrawerTrigger,
+} from "@/components/ui/drawer";
 import { cn } from "@/lib/utils";
 import { BarChart, HeartHandshake, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
@@ -39,6 +46,12 @@ export function Nav() {
 					</Button>
 				</DrawerTrigger>
 				<DrawerContent>
+					<DrawerHeader>
+						<DrawerTitle className="sr-only">Menu</DrawerTitle>
+						<DrawerDescription className="sr-only">
+							Navigation links for your account
+						</DrawerDescription>
+					</DrawerHeader>
 					<div className="grid grid-cols-3 gap-2 p-4">
 						{links.map((link) => (
 							<Link

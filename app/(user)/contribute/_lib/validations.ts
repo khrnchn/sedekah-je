@@ -41,6 +41,8 @@ export const institutionFormSchema = z.object({
 	fromSocialMedia: z.boolean().optional(),
 	sourceUrl: socialUrl,
 	contributorId: z.string().min(1),
+	lat: z.string().optional(),
+	lon: z.string().optional(),
 });
 
 // Separate schema for client-side validation (without file)
