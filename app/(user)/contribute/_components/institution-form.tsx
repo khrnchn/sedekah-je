@@ -20,7 +20,7 @@ import { useLocationPrefill } from "@/hooks/use-location-prefill";
 import { useQrExtraction } from "@/hooks/use-qr-extraction";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useFormState } from "react-dom";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -51,6 +51,8 @@ export default function InstitutionForm() {
 			fromSocialMedia: false,
 			sourceUrl: "",
 			contributorId: user?.id ?? "",
+			lat: "",
+			lon: "",
 		},
 	});
 
@@ -74,16 +76,18 @@ export default function InstitutionForm() {
 		prefilledState,
 	} = useLocationPrefill(setValue);
 
-	/* Toast feedback */
+	/* Toast feedback – make sure we act once per status change */
+	const lastStatusRef = useRef<SubmitInstitutionFormState["status"]>("idle");
 	useEffect(() => {
-		console.log("Form state updated:", state);
+		if (state.status === lastStatusRef.current) return; // no change
+		lastStatusRef.current = state.status;
+
 		if (state.status === "success") {
 			console.log("Success state detected, showing toast");
 			toast.success("Thank you!", {
 				description: "Your contribution is being reviewed.",
 			});
 			form.reset();
-			// Clear file input manually as it isn't controlled by React Hook Form
 			const fileInput = document.getElementById(
 				"qrImage",
 			) as HTMLInputElement | null;
@@ -96,7 +100,7 @@ export default function InstitutionForm() {
 					"Please check your form. There are errors in the submitted data.",
 			});
 		}
-	}, [state, form.reset, clearQrContent]);
+	}, [state, clearQrContent, form]);
 
 	/* onSubmit just toggles loading & lets native submission proceed */
 	async function onClientSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -145,6 +149,8 @@ export default function InstitutionForm() {
 					{...register("contributorId")}
 					value={user?.id ?? ""}
 				/>
+				<input type="hidden" {...register("lat")} />
+				<input type="hidden" {...register("lon")} />
 
 				<div className="space-y-2">
 					<label htmlFor="qrImage" className="font-medium">
