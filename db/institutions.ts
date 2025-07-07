@@ -1,3 +1,4 @@
+import { categories, states } from "@/lib/institution-constants";
 import { relations } from "drizzle-orm";
 import {
 	boolean,
@@ -10,35 +11,10 @@ import {
 	varchar,
 } from "drizzle-orm/pg-core";
 import { timestamps } from "./helpers";
-import { qrImages } from "./qr-images";
 import { users } from "./users";
 
-export const categories = [
-	"mosque",
-	"surau",
-	"tahfiz",
-	"kebajikan",
-	"others",
-] as const;
-
-export const states = [
-	"Johor",
-	"Kedah",
-	"Kelantan",
-	"Melaka",
-	"Negeri Sembilan",
-	"Pahang",
-	"Perak",
-	"Perlis",
-	"Pulau Pinang",
-	"Sabah",
-	"Sarawak",
-	"Selangor",
-	"Terengganu",
-	"W.P. Kuala Lumpur",
-	"W.P. Labuan",
-	"W.P. Putrajaya",
-] as const;
+// Re-export for other modules depending on db/institutions exports
+export { categories, states };
 
 export const supportedPayments = ["duitnow", "tng", "boost"] as const;
 
@@ -98,7 +74,6 @@ export const institutionsRelations = relations(
 			references: [users.id],
 			relationName: "reviewer",
 		}),
-		qrImages: many(qrImages),
 	}),
 );
 

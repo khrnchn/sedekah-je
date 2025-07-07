@@ -13,6 +13,7 @@ import { revalidatePath } from "next/cache";
 import sharp from "sharp";
 
 export type SubmitInstitutionFormState =
+	| { status: "idle" }
 	| { status: "success" }
 	| { status: "error"; errors: Record<string, string[]> };
 
@@ -34,6 +35,9 @@ export async function submitInstitution(
 		facebook: formData.get("facebook"),
 		instagram: formData.get("instagram"),
 		website: formData.get("website"),
+		contributorRemarks: formData.get("contributorRemarks"),
+		fromSocialMedia: formData.has("fromSocialMedia"),
+		sourceUrl: formData.get("sourceUrl"),
 		contributorId: formData.get("contributorId"),
 	} as Record<string, unknown>;
 
@@ -114,12 +118,24 @@ export async function submitInstitution(
 							: undefined,
 				},
 				contributorId: parsed.data.contributorId,
+				contributorRemarks:
+					parsed.data.contributorRemarks &&
+					parsed.data.contributorRemarks !== ""
+						? parsed.data.contributorRemarks
+						: undefined,
+				sourceUrl:
+					parsed.data.fromSocialMedia &&
+					parsed.data.sourceUrl &&
+					parsed.data.sourceUrl !== ""
+						? parsed.data.sourceUrl
+						: undefined,
+				supportedPayment: ["duitnow", "tng"],
 			})
 			.returning({ id: institutions.id });
 
 		// --- Revalidate paths that show institution list
 		revalidatePath("/");
-		revalidatePath("/(user)/my-contributions");
+		revalidatePath("/my-contributions");
 
 		console.log("Institution successfully created with ID:", _newId);
 		return { status: "success" };
