@@ -23,7 +23,7 @@ This document outlines the implementation plan for the sedekah.je admin dashboar
 
 ## 🎯 Core Admin Features
 
-### 1. **Dashboard Overview**
+### 2. **Dashboard Overview**
 - **Institution Statistics**
   - Total institutions (static + dynamic)
   - Pending approvals count
@@ -38,7 +38,7 @@ This document outlines the implementation plan for the sedekah.je admin dashboar
   - Recent approvals/rejections
   - User activity highlights
 
-### 2. **Institution Management**
+### 1. **Institution Management**
 - **Pending Approvals Queue**
   - List all pending institutions
   - Filter by category, state, contributor
