@@ -1,15 +1,65 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import {
+	Drawer,
+	DrawerContent,
+	DrawerDescription,
+	DrawerHeader,
+	DrawerTitle,
+	DrawerTrigger,
+} from "@/components/ui/drawer";
 import { useAuth } from "@/hooks/use-auth";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
+import {
+	BarChart,
+	HeartHandshake,
+	Home,
+	LayoutDashboard,
+	LogOut,
+	Menu,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
 import { ModeToggle } from "./mode-toggle";
 import { UserNavDesktop } from "./user-nav";
 
+const links = [
+	{
+		name: "Home",
+		href: "/",
+		icon: Home,
+	},
+	{
+		name: "Contributions",
+		href: "/my-contributions",
+		icon: LayoutDashboard,
+	},
+	{
+		name: "Contribute",
+		href: "/contribute",
+		icon: HeartHandshake,
+	},
+	{
+		name: "Leaderboard",
+		href: "/leaderboard",
+		icon: BarChart,
+	},
+];
+
 export const Header = () => {
   const isMobile = useIsMobile();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, signOut } = useAuth();
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+
+  const handleSignOut = async () => {
+    setOpen(false);
+    await signOut();
+  };
 
   return (
     <>
@@ -28,6 +78,54 @@ export const Header = () => {
           </p>
         </div>
 
+        {/* Mobile Menu - Top Left */}
+        {isMobile && isAuthenticated && (
+          <div className="absolute top-5 left-5 md:hidden">
+            <Drawer open={open} onOpenChange={setOpen}>
+              <DrawerTrigger asChild>
+                <Button variant="outline" size="icon" className="rounded-full shadow-lg border-2">
+                  <Menu className="h-4 w-4" />
+                </Button>
+              </DrawerTrigger>
+              <DrawerContent>
+                <DrawerHeader>
+                  <DrawerTitle className="sr-only">Menu</DrawerTitle>
+                  <DrawerDescription className="sr-only">
+                    Navigation links for your account
+                  </DrawerDescription>
+                </DrawerHeader>
+                <div className="grid grid-cols-2 gap-2 p-4">
+                  {links.map((link) => (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setOpen(false)}
+                      className={cn(
+                        "flex flex-col items-center justify-center rounded-lg p-3 hover:bg-accent",
+                        pathname === link.href && "bg-accent text-accent-foreground",
+                      )}
+                    >
+                      <link.icon className="size-5" />
+                      <span className="mt-1 text-xs font-medium">{link.name}</span>
+                    </Link>
+                  ))}
+                </div>
+                <div className="p-4 border-t">
+                  <Button
+                    variant="ghost"
+                    className="w-full flex items-center justify-center text-red-500"
+                    onClick={handleSignOut}
+                  >
+                    <LogOut className="size-5 mr-2" />
+                    <span className="text-sm font-medium">Logout</span>
+                  </Button>
+                </div>
+              </DrawerContent>
+            </Drawer>
+          </div>
+        )}
+
+        {/* Theme Toggle - Top Right */}
         <div className="absolute top-5 right-5 flex items-center gap-2">
           <ModeToggle />
         </div>
