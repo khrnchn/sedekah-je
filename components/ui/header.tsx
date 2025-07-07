@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/hooks/use-auth";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,6 +9,7 @@ import { UserNavDesktop } from "./user-nav";
 
 export const Header = () => {
   const isMobile = useIsMobile();
+  const { isAuthenticated } = useAuth();
 
   return (
     <>
@@ -32,7 +34,7 @@ export const Header = () => {
       </header>
 
       {/* Desktop Navigation */}
-      {!isMobile && (
+      {!isMobile && isAuthenticated && (
         <div className="hidden md:flex justify-center py-4 border-b">
           <UserNavDesktop />
         </div>
