@@ -1,18 +1,18 @@
-"use client";
-
-import { Header } from "@/components/ui/header";
-import { Nav } from "./_components/nav";
+import { auth } from "@/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { ClientLayout } from "./_components/client-layout";
 
 interface UserLayoutProps {
 	children: React.ReactNode;
 }
 
-export default function UserLayout({ children }: UserLayoutProps) {
-	return (
-		<>
-			<Header />
-			<main className="flex-1">{children}</main>
-			<Nav />
-		</>
-	);
+export default async function UserLayout({ children }: UserLayoutProps) {
+	const session = await auth.api.getSession({ headers: headers() });
+
+	if (!session) {
+		redirect("/auth");
+	}
+
+	return <ClientLayout>{children}</ClientLayout>;
 }

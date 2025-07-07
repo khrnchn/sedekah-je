@@ -173,23 +173,11 @@ export function UserNav() {
 
 export function UserNavDesktop() {
 	const pathname = usePathname();
-	const { user, isAuthenticated, signOut } = useAuth();
+	const { signOut } = useAuth();
 
 	const handleSignOut = async () => {
 		await signOut();
 	};
-
-	if (!isAuthenticated) {
-		return (
-			<div className="hidden md:flex items-center gap-4">
-				<Link href="/auth">
-					<Button variant="outline" size="sm">
-						Login
-					</Button>
-				</Link>
-			</div>
-		);
-	}
 
 	return (
 		<div className="hidden md:flex items-center gap-6">
