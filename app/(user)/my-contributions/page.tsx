@@ -1,9 +1,5 @@
-"use client";
-
 import { ProtectedRoute } from "@/components/auth/protected-route";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
 	Card,
 	CardContent,
@@ -14,78 +10,31 @@ import {
 import PageSection from "@/components/ui/pageSection";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import {
-	Calendar,
-	Camera,
-	CheckCircle,
-	CheckCircle2,
-	Clock,
-	MapPin,
-	Plus,
-	Star,
-	XCircle,
-} from "lucide-react";
+import { CheckCircle2, Clock, XCircle } from "lucide-react";
 
-export default function MyContributionsPage() {
-	// Mock data for now
-	const userStats = {
+import { getMyContributions } from "@/app/(user)/my-contributions/_lib/queries";
+
+export default async function MyContributionsPage() {
+	const data = await getMyContributions();
+
+	const userStats = data?.stats ?? {
 		totalContributions: 0,
 		approvedContributions: 0,
 		pendingContributions: 0,
 		rejectedContributions: 0,
-		joinDate: "2024-01-15",
-		name: "New User",
-		avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704d",
 	};
 
-	const contributions = [
-		{
-			id: 1,
-			name: "Masjid Al-Ghufran",
-			status: "approved",
-			date: "2024-03-15",
-			type: "Update",
-		},
-		{
-			id: 2,
-			name: "Masjid Jamek Al-Manar",
-			status: "pending",
-			date: "2024-03-14",
-			type: "New",
-		},
-		{
-			id: 3,
-			name: "Masjid Bandar Saujana Putra",
-			status: "rejected",
-			date: "2024-03-13",
-			type: "Update",
-		},
-		{
-			id: 4,
-			name: "Masjid Lestari Putra",
-			status: "approved",
-			date: "2024-03-12",
-			type: "Update",
-		},
-		{
-			id: 5,
-			name: "Masjid Tuminah Hamidi",
-			status: "approved",
-			date: "2024-03-11",
-			type: "New",
-		},
-	];
+	const contributions = data?.contributions ?? [];
 
-	const getTypeIcon = (type: string) => {
-		switch (type) {
-			case "institution":
-				return <Plus className="h-5 w-5 text-primary" />;
-			case "location":
-				return <MapPin className="h-5 w-5 text-[hsl(var(--chart-2))]" />;
-			case "image":
-				return <Camera className="h-5 w-5 text-[hsl(var(--chart-1))]" />;
-			default:
-				return <Star className="h-5 w-5 text-[hsl(var(--chart-4))]" />;
+	const formatDate = (date: string) => {
+		try {
+			return new Intl.DateTimeFormat("ms-MY", {
+				day: "numeric",
+				month: "short",
+				year: "numeric",
+			}).format(new Date(date));
+		} catch {
+			return date;
 		}
 	};
 
@@ -191,7 +140,7 @@ export default function MyContributionsPage() {
 														{contribution.name}
 													</div>
 													<div className="text-xs md:text-sm text-muted-foreground">
-														{contribution.date}
+														{formatDate(contribution.date)}
 													</div>
 												</div>
 												<div className="flex items-center gap-2">
@@ -229,7 +178,7 @@ export default function MyContributionsPage() {
 															{contribution.name}
 														</div>
 														<div className="text-xs md:text-sm text-muted-foreground">
-															{contribution.date}
+															{formatDate(contribution.date)}
 														</div>
 													</div>
 													<div className="flex items-center gap-2">
@@ -267,7 +216,7 @@ export default function MyContributionsPage() {
 															{contribution.name}
 														</div>
 														<div className="text-xs md:text-sm text-muted-foreground">
-															{contribution.date}
+															{formatDate(contribution.date)}
 														</div>
 													</div>
 													<div className="flex items-center gap-2">
@@ -305,7 +254,7 @@ export default function MyContributionsPage() {
 															{contribution.name}
 														</div>
 														<div className="text-xs md:text-sm text-muted-foreground">
-															{contribution.date}
+															{formatDate(contribution.date)}
 														</div>
 													</div>
 													<div className="flex items-center gap-2">
