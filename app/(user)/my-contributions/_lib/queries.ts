@@ -56,7 +56,7 @@ export async function getMyContributions(): Promise<MyContributionsResponse | nu
 		name: inst.name,
 		status: inst.status as ContributionItem["status"],
 		date: inst.createdAt?.toISOString() ?? "",
-		type: "institution",
+		type: inst.category,
 	}));
 
 	return { stats, contributions };
