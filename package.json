@@ -113,6 +113,6 @@
 		}
 	},
 	"lint-staged": {
-		"*.{js,jsx,ts,tsx,json,css,md}": ["biome check --write"]
+		"*.{js,jsx,ts,tsx,json,css}": ["biome check --write"]
 	}
 }
