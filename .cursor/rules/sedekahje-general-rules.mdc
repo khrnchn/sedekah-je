@@ -7,3 +7,19 @@ alwaysApply: false
 1. avoid using pgenums because its hard to manage on prod when we want to add or remove values. use object constants instead
 2. avoid using useEffect to fetch data. fetch at server component, then pass in as props if the child component needs it.
 3. its a public repository, so please be extra careful when dealing with things related to security.
+4. When implementing a feature/module, follow this folder structure:
+   - `page.tsx`: The main page component that serves as the entry point
+   - `_lib/`: Contains business logic, utilities, database queries, and other non-UI code
+     - `queries.ts`: Server actions/queries to fetch data (e.g., getMyContributions)
+     - `actions.ts`: Create, update, delete operations (e.g., approveContribution)
+     - `validations.ts`: Zod schemas for form validation
+     - `types.ts`: TypeScript interfaces and types
+     - `helpers.ts`: Utility functions specific to the module
+   - `_components/`: Contains React components specific to this feature/module
+   
+   For example, in a "my-contributions" feature:
+   - `page.tsx`: Main page that displays user contributions
+   - `_lib/queries.ts`: Server actions/queries to fetch contributions
+   - `_components/stats-card.tsx`: UI component for displaying contribution statistics
+
+   This structure helps maintain separation of concerns and makes the codebase more organized and maintainable. For reference, see the implementation in `app/(user)/contribute`.
