@@ -20,36 +20,21 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/hooks/use-auth";
+import type { categories, states } from "@/lib/institution-constants";
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDownIcon, MoreHorizontalIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 import { approveInstitution, rejectInstitution } from "../_lib/queries";
 
 type PendingInstitution = {
 	id: number;
 	name: string;
-	category: "surau" | "mosque" | "tahfiz" | "kebajikan" | "others";
-	state:
-		| "Johor"
-		| "Kedah"
-		| "Kelantan"
-		| "Melaka"
-		| "Negeri Sembilan"
-		| "Pahang"
-		| "Perak"
-		| "Perlis"
-		| "Pulau Pinang"
-		| "Sabah"
-		| "Sarawak"
-		| "Selangor"
-		| "Terengganu"
-		| "W.P. Kuala Lumpur"
-		| "W.P. Labuan"
-		| "W.P. Putrajaya";
+	category: (typeof categories)[number];
+	state: (typeof states)[number];
 	city: string;
 	contributorName: string | null;
 	contributorId: string | null;
@@ -254,7 +239,6 @@ export const columns: ColumnDef<PendingInstitution>[] = [
 		enableHiding: false,
 		cell: ({ row }) => {
 			const institution = row.original;
-			const { toast } = useToast();
 			const { user } = useAuth();
 			const router = useRouter();
 			const [actionDialog, setActionDialog] = useState<{
@@ -272,17 +256,10 @@ export const columns: ColumnDef<PendingInstitution>[] = [
 					notes,
 				);
 				if (result.success) {
-					toast({
-						title: "Institution approved",
-						description: `Successfully approved ${institution.name}`,
-					});
+					toast.success(`Successfully approved ${institution.name}`);
 					router.refresh();
 				} else {
-					toast({
-						title: "Error",
-						description: "Failed to approve institution",
-						variant: "destructive",
-					});
+					toast.error("Failed to approve institution");
 				}
 				setActionDialog({ isOpen: false, type: null });
 			};
@@ -294,17 +271,10 @@ export const columns: ColumnDef<PendingInstitution>[] = [
 					notes,
 				);
 				if (result.success) {
-					toast({
-						title: "Institution rejected",
-						description: `Successfully rejected ${institution.name}`,
-					});
+					toast.success(`Successfully rejected ${institution.name}`);
 					router.refresh();
 				} else {
-					toast({
-						title: "Error",
-						description: "Failed to reject institution",
-						variant: "destructive",
-					});
+					toast.error("Failed to reject institution");
 				}
 				setActionDialog({ isOpen: false, type: null });
 			};
@@ -339,9 +309,12 @@ export const columns: ColumnDef<PendingInstitution>[] = [
 						<DropdownMenuContent align="end">
 							<DropdownMenuLabel>Actions</DropdownMenuLabel>
 							<DropdownMenuItem
-								onClick={() =>
-									navigator.clipboard.writeText(institution.id.toString())
-								}
+								onClick={() => {
+									navigator.clipboard.writeText(institution.id.toString());
+									toast.success("Institution ID copied to clipboard", {
+										description: "You can now paste it to the admin",
+									});
+								}}
 							>
 								Copy institution ID
 							</DropdownMenuItem>
@@ -351,7 +324,7 @@ export const columns: ColumnDef<PendingInstitution>[] = [
 									View details
 								</Link>
 							</DropdownMenuItem>
-							<DropdownMenuItem
+							{/* <DropdownMenuItem
 								onClick={() =>
 									setActionDialog({ isOpen: true, type: "approve" })
 								}
@@ -366,7 +339,7 @@ export const columns: ColumnDef<PendingInstitution>[] = [
 								className="text-red-600"
 							>
 								Reject
-							</DropdownMenuItem>
+							</DropdownMenuItem> */}
 						</DropdownMenuContent>
 					</DropdownMenu>
 				</>
