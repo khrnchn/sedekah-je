@@ -1,7 +1,7 @@
-import Script from 'next/script'
+import Script from "next/script";
 
 export function ThemeScript() {
-    const themeScript = `
+	const themeScript = `
         (function() {
             function getThemePreference() {
                 if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
@@ -14,16 +14,16 @@ export function ThemeScript() {
             document.documentElement.classList.toggle('dark', theme === 'dark')
             document.documentElement.style.colorScheme = theme
         })()
-    `
-    
-    return (
-        <Script
-            id="theme-script"
-            strategy="beforeInteractive"
-            // biome-ignore lint/security/noDangerouslySetInnerHtml: Required for theme initialization before hydration
-            dangerouslySetInnerHTML={{
-                __html: themeScript
-            }}
-        />
-    )
-} 
+    `;
+
+	return (
+		<Script
+			id="theme-script"
+			strategy="beforeInteractive"
+			// biome-ignore lint/security/noDangerouslySetInnerHtml: Required for theme initialization before hydration
+			dangerouslySetInnerHTML={{
+				__html: themeScript,
+			}}
+		/>
+	);
+}
