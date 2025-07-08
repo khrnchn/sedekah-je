@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { categories, states } from "@/lib/institution-constants";
 import type { ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
 import { ArrowUpDownIcon } from "lucide-react";
 
 type RejectedInstitution = {
@@ -103,7 +104,7 @@ export const columns: ColumnDef<RejectedInstitution>[] = [
 		},
 		cell: ({ row }) => {
 			const date = row.getValue("reviewedAt") as Date | null;
-			return <div>{date ? new Date(date).toLocaleDateString() : "-"}</div>;
+			return <div>{date ? format(new Date(date), "d MMM yyyy") : "-"}</div>;
 		},
 	},
 ];

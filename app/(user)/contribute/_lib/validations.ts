@@ -4,6 +4,7 @@ import { z } from "zod";
 const socialUrl = z
 	.string()
 	.optional()
+	.nullable()
 	.refine(
 		(val) => {
 			if (!val || val === "") return true; // Empty is valid

@@ -21,11 +21,38 @@ import { useQrExtraction } from "@/hooks/use-qr-extraction";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { useFormState } from "react-dom";
+import { useFormState, useFormStatus } from "react-dom";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 const initialState: SubmitInstitutionFormState = { status: "idle" };
+
+function FormFields({
+	children,
+	qrExtracting,
+}: {
+	children: React.ReactNode;
+	qrExtracting: boolean;
+}) {
+	const { pending } = useFormStatus();
+	const isSubmitting = pending || qrExtracting;
+
+	return (
+		<fieldset disabled={isSubmitting} className="space-y-6">
+			{children}
+			<Button type="submit" className="w-full" disabled={isSubmitting}>
+				{isSubmitting ? (
+					<>
+						<Spinner size="small" className="mr-2" />
+						{qrExtracting ? "Extracting QR..." : "Submitting..."}
+					</>
+				) : (
+					"Submit"
+				)}
+			</Button>
+		</fieldset>
+	);
+}
 
 export default function InstitutionForm() {
 	const { user } = useAuth();
@@ -112,8 +139,6 @@ export default function InstitutionForm() {
 			});
 			return;
 		}
-
-		toast("Submitting…", { description: "Processing your contribution." });
 	}
 
 	if (step === "question") {
@@ -142,7 +167,7 @@ export default function InstitutionForm() {
 			encType="multipart/form-data"
 			className="space-y-6 max-w-lg mx-auto pb-20 md:pb-6"
 		>
-			<fieldset disabled={qrExtracting} className="space-y-6">
+			<FormFields qrExtracting={qrExtracting}>
 				{/* Hidden contributorId */}
 				<input
 					type="hidden"
@@ -355,18 +380,7 @@ export default function InstitutionForm() {
 						</div>
 					)}
 				</div>
-
-				<Button type="submit" className="w-full" disabled={qrExtracting}>
-					{qrExtracting ? (
-						<>
-							<Spinner size="small" className="mr-2" />
-							Submitting...
-						</>
-					) : (
-						"Submit"
-					)}
-				</Button>
-			</fieldset>
+			</FormFields>
 		</form>
 	);
 }
