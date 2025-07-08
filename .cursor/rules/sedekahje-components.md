@@ -1,3 +1,9 @@
+---
+description: sedekahje component rules
+globs:
+alwaysApply: false
+---
+
 # Component Rules - sedekah.je
 
 ## Component Patterns

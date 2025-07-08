@@ -1,3 +1,9 @@
+---
+description: sedekahje business logic rules
+globs:
+alwaysApply: false
+---
+
 # Business Logic Rules - sedekah.je
 
 ## Project Context

@@ -1,3 +1,9 @@
+---
+description: sedekahje architecture rules
+globs:
+alwaysApply: false
+---
+
 # Architecture Rules - sedekah.je
 
 ## File Structure & Organization
