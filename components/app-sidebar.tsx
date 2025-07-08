@@ -4,7 +4,7 @@ import type * as React from "react";
 
 import { getPendingInstitutionsCount } from "@/app/(admin)/admin/institutions/_lib/queries";
 import { auth } from "@/auth";
-import { NavDocuments } from "@/components/nav-documents";
+import { NavInstitutions } from "@/components/nav-institutions";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import { SidebarThemeToggle } from "@/components/sidebar-theme-toggle";
@@ -153,7 +153,7 @@ export async function AppSidebar({
 			</SidebarHeader>
 			<SidebarContent>
 				<NavMain items={data.navMain} />
-				<NavDocuments items={institutionsWithBadge} />
+				<NavInstitutions items={institutionsWithBadge} />
 				<SidebarGroup className="mt-auto">
 					<SidebarGroupContent>
 						<SidebarMenu>
