@@ -448,10 +448,10 @@ export function DataTable({
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<Button variant="outline" size="sm">
-								<ColumnsIcon />
+								<ColumnsIcon className="h-4 w-4 mr-2" />
 								<span className="hidden lg:inline">Customize Columns</span>
 								<span className="lg:hidden">Columns</span>
-								<ChevronDownIcon />
+								<ChevronDownIcon className="h-4 w-4 mr-2" />
 							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end" className="w-56">
@@ -479,7 +479,7 @@ export function DataTable({
 						</DropdownMenuContent>
 					</DropdownMenu>
 					<Button variant="outline" size="sm">
-						<PlusIcon />
+						<PlusIcon className="h-4 w-4 mr-2" />
 						<span className="hidden lg:inline">Add Section</span>
 					</Button>
 				</div>
@@ -581,7 +581,7 @@ export function DataTable({
 								disabled={!table.getCanPreviousPage()}
 							>
 								<span className="sr-only">Go to first page</span>
-								<ChevronsLeftIcon />
+								<ChevronsLeftIcon className="h-4 w-4 mr-2" />
 							</Button>
 							<Button
 								variant="outline"
@@ -591,7 +591,7 @@ export function DataTable({
 								disabled={!table.getCanPreviousPage()}
 							>
 								<span className="sr-only">Go to previous page</span>
-								<ChevronLeftIcon />
+								<ChevronLeftIcon className="h-4 w-4 mr-2" />
 							</Button>
 							<Button
 								variant="outline"
@@ -601,7 +601,7 @@ export function DataTable({
 								disabled={!table.getCanNextPage()}
 							>
 								<span className="sr-only">Go to next page</span>
-								<ChevronRightIcon />
+								<ChevronRightIcon className="h-4 w-4 mr-2" />
 							</Button>
 							<Button
 								variant="outline"
@@ -611,7 +611,7 @@ export function DataTable({
 								disabled={!table.getCanNextPage()}
 							>
 								<span className="sr-only">Go to last page</span>
-								<ChevronsRightIcon />
+								<ChevronsRightIcon className="h-4 w-4 mr-2" />
 							</Button>
 						</div>
 					</div>
