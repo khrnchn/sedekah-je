@@ -25,3 +25,15 @@ export async function getPendingInstitutions() {
 		.where(eq(institutions.status, "pending"))
 		.orderBy(institutions.createdAt);
 }
+
+/**
+ * Get the count of pending institutions for display in sidebar badges
+ */
+export async function getPendingInstitutionsCount() {
+	const result = await db
+		.select({ count: institutions.id })
+		.from(institutions)
+		.where(eq(institutions.status, "pending"));
+
+	return result.length;
+}
