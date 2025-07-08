@@ -2,6 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Dialog,
 	DialogContent,
@@ -29,14 +30,30 @@ import { useState } from "react";
 import { approveInstitution, rejectInstitution } from "../_lib/queries";
 
 type PendingInstitution = {
-	id: string;
+	id: number;
 	name: string;
-	category: string;
-	state: string;
+	category: "surau" | "mosque" | "tahfiz" | "kebajikan" | "others";
+	state:
+		| "Johor"
+		| "Kedah"
+		| "Kelantan"
+		| "Melaka"
+		| "Negeri Sembilan"
+		| "Pahang"
+		| "Perak"
+		| "Perlis"
+		| "Pulau Pinang"
+		| "Sabah"
+		| "Sarawak"
+		| "Selangor"
+		| "Terengganu"
+		| "W.P. Kuala Lumpur"
+		| "W.P. Labuan"
+		| "W.P. Putrajaya";
 	city: string;
 	contributorName: string | null;
 	contributorId: string | null;
-	createdAt: Date | null;
+	createdAt: Date;
 };
 
 type ActionDialogProps = {
@@ -120,6 +137,27 @@ async function handleReject(
 }
 
 export const columns: ColumnDef<PendingInstitution>[] = [
+	{
+		id: "select",
+		header: ({ table }) => (
+			<Checkbox
+				checked={table.getIsAllPageRowsSelected()}
+				onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+				aria-label="Select all"
+				className="translate-y-[2px]"
+			/>
+		),
+		cell: ({ row }) => (
+			<Checkbox
+				checked={row.getIsSelected()}
+				onCheckedChange={(value) => row.toggleSelected(!!value)}
+				aria-label="Select row"
+				className="translate-y-[2px]"
+			/>
+		),
+		enableSorting: false,
+		enableHiding: false,
+	},
 	{
 		accessorKey: "id",
 		header: "ID",
@@ -229,7 +267,7 @@ export const columns: ColumnDef<PendingInstitution>[] = [
 
 			const onApprove = async (notes: string) => {
 				const result = await handleApprove(
-					institution.id,
+					institution.id.toString(),
 					user?.id || "",
 					notes,
 				);
@@ -251,7 +289,7 @@ export const columns: ColumnDef<PendingInstitution>[] = [
 
 			const onReject = async (notes: string) => {
 				const result = await handleReject(
-					institution.id,
+					institution.id.toString(),
 					user?.id || "",
 					notes,
 				);
@@ -301,7 +339,9 @@ export const columns: ColumnDef<PendingInstitution>[] = [
 						<DropdownMenuContent align="end">
 							<DropdownMenuLabel>Actions</DropdownMenuLabel>
 							<DropdownMenuItem
-								onClick={() => navigator.clipboard.writeText(institution.id)}
+								onClick={() =>
+									navigator.clipboard.writeText(institution.id.toString())
+								}
 							>
 								Copy institution ID
 							</DropdownMenuItem>
