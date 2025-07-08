@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import Script from "next/script";
 
 import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeScript } from "@/components/theme-script";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
 
@@ -113,6 +114,7 @@ export default function RootLayout({
 	return (
 		<html lang="ms" suppressHydrationWarning>
 			<head>
+				<ThemeScript />
 				<Script
 					id="json-ld"
 					type="application/ld+json"
@@ -146,7 +148,12 @@ export default function RootLayout({
 			>
 				<NuqsAdapter>
 					<QueryProvider>
-						<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+						<ThemeProvider
+							attribute="class"
+							defaultTheme="system"
+							enableSystem
+							disableTransitionOnChange
+						>
 							{children}
 							<Analytics />
 							<Toaster richColors />
