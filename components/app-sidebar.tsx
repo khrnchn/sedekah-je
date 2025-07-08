@@ -2,7 +2,11 @@ import { HomeIcon, SettingsIcon, TrendingUpIcon } from "lucide-react";
 import { headers } from "next/headers";
 import type * as React from "react";
 
-import { getPendingInstitutionsCount } from "@/app/(admin)/admin/institutions/_lib/queries";
+import {
+	getApprovedInstitutionsCount,
+	getPendingInstitutionsCount,
+	getRejectedInstitutionsCount,
+} from "@/app/(admin)/admin/institutions/_lib/queries";
 import { auth } from "@/auth";
 import { NavInstitutions } from "@/components/nav-institutions";
 import { NavMain } from "@/components/nav-main";
@@ -31,25 +35,6 @@ const data = {
 			title: "Dashboard",
 			url: "/admin/dashboard",
 			icon: "LayoutDashboard",
-		},
-		{
-			title: "Institutions",
-			url: "/admin/institutions",
-			icon: "Building",
-			items: [
-				{
-					title: "Pending Review",
-					url: "/admin/institutions/pending",
-				},
-				{
-					title: "Approved",
-					url: "/admin/institutions/approved",
-				},
-				{
-					title: "Rejected",
-					url: "/admin/institutions/rejected",
-				},
-			],
 		},
 		{
 			title: "Users",
@@ -106,6 +91,8 @@ export async function AppSidebar({
 	...props
 }: React.ComponentProps<typeof Sidebar>) {
 	let pendingCount = 0;
+	let approvedCount = 0;
+	let rejectedCount = 0;
 	let currentUser = {
 		name: "Admin",
 		email: "admin@sedekah.je",
@@ -113,7 +100,11 @@ export async function AppSidebar({
 	};
 
 	try {
-		pendingCount = await getPendingInstitutionsCount();
+		[pendingCount, approvedCount, rejectedCount] = await Promise.all([
+			getPendingInstitutionsCount(),
+			getApprovedInstitutionsCount(),
+			getRejectedInstitutionsCount(),
+		]);
 
 		// Get current user session
 		const session = await auth.api.getSession({
@@ -132,13 +123,32 @@ export async function AppSidebar({
 		console.error("Error fetching sidebar data:", error);
 	}
 
-	const institutionsWithBadge = data.institutions.map((item) => ({
-		...item,
-		badge:
-			item.name === "Pending Review" && pendingCount > 0
-				? pendingCount
-				: undefined,
-	}));
+	const institutionsWithBadge = data.institutions.map((item) => {
+		let badge: number | undefined;
+		let badgeVariant:
+			| "default"
+			| "secondary"
+			| "destructive"
+			| "outline"
+			| "success" = "default";
+
+		if (item.name === "Pending Review" && pendingCount > 0) {
+			badge = pendingCount;
+			badgeVariant = "destructive";
+		} else if (item.name === "Approved" && approvedCount > 0) {
+			badge = approvedCount;
+			badgeVariant = "success";
+		} else if (item.name === "Rejected" && rejectedCount > 0) {
+			badge = rejectedCount;
+			badgeVariant = "destructive";
+		}
+
+		return {
+			...item,
+			badge,
+			badgeVariant,
+		};
+	});
 
 	return (
 		<Sidebar collapsible="offcanvas" {...props}>

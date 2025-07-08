@@ -116,6 +116,32 @@ export async function getPendingInstitutionsCount() {
 }
 
 /**
+ * Get the count of approved institutions for display in sidebar badges
+ */
+export async function getApprovedInstitutionsCount() {
+	await requireAdminSession();
+	const result = await db
+		.select({ count: institutions.id })
+		.from(institutions)
+		.where(eq(institutions.status, "approved"));
+
+	return result.length;
+}
+
+/**
+ * Get the count of rejected institutions for display in sidebar badges
+ */
+export async function getRejectedInstitutionsCount() {
+	await requireAdminSession();
+	const result = await db
+		.select({ count: institutions.id })
+		.from(institutions)
+		.where(eq(institutions.status, "rejected"));
+
+	return result.length;
+}
+
+/**
  * Approve a pending institution
  */
 export async function approveInstitution(
