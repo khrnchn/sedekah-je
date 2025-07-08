@@ -11,6 +11,7 @@ import {
 import type { Institution } from "@/db/institutions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
+import { ExternalLink, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { forwardRef, useImperativeHandle, useTransition } from "react";
 import { useForm } from "react-hook-form";
@@ -90,6 +91,7 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 			handleSubmit,
 			getValues,
 			trigger,
+			watch,
 			formState: { errors },
 		} = useForm<LocalFormData>({
 			resolver: zodResolver(dynamicSchema),
@@ -107,6 +109,18 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 				qrContent: institution.qrContent ?? "",
 			},
 		});
+
+		const facebookUrl = watch("facebook");
+		const instagramUrl = watch("instagram");
+		const websiteUrl = watch("website");
+
+		const generateGoogleSearchUrl = (
+			platform: string,
+			institutionName: string,
+		) => {
+			const query = `${platform} ${institutionName}`;
+			return `https://www.google.com/search?q=${encodeURIComponent(query)}`;
+		};
 
 		function buildPayload(formData: LocalFormData) {
 			const {
@@ -280,11 +294,40 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 							<label htmlFor="facebook" className="font-medium">
 								Facebook URL
 							</label>
-							<Input
-								id="facebook"
-								placeholder="https://facebook.com/..."
-								{...register("facebook")}
-							/>
+							<div className="flex gap-2">
+								<Input
+									id="facebook"
+									placeholder="https://facebook.com/..."
+									{...register("facebook")}
+								/>
+								{facebookUrl ? (
+									<Button
+										type="button"
+										variant="outline"
+										size="icon"
+										onClick={() => window.open(facebookUrl, "_blank")}
+									>
+										<ExternalLink className="h-4 w-4" />
+									</Button>
+								) : (
+									<Button
+										type="button"
+										variant="outline"
+										size="icon"
+										onClick={() =>
+											window.open(
+												generateGoogleSearchUrl(
+													"facebook",
+													institution.name || "",
+												),
+												"_blank",
+											)
+										}
+									>
+										<Search className="h-4 w-4" />
+									</Button>
+								)}
+							</div>
 							{errors.facebook && (
 								<p className="text-sm text-red-500">
 									{errors.facebook.message as string}
@@ -295,11 +338,40 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 							<label htmlFor="instagram" className="font-medium">
 								Instagram URL
 							</label>
-							<Input
-								id="instagram"
-								placeholder="https://instagram.com/..."
-								{...register("instagram")}
-							/>
+							<div className="flex gap-2">
+								<Input
+									id="instagram"
+									placeholder="https://instagram.com/..."
+									{...register("instagram")}
+								/>
+								{instagramUrl ? (
+									<Button
+										type="button"
+										variant="outline"
+										size="icon"
+										onClick={() => window.open(instagramUrl, "_blank")}
+									>
+										<ExternalLink className="h-4 w-4" />
+									</Button>
+								) : (
+									<Button
+										type="button"
+										variant="outline"
+										size="icon"
+										onClick={() =>
+											window.open(
+												generateGoogleSearchUrl(
+													"instagram",
+													institution.name || "",
+												),
+												"_blank",
+											)
+										}
+									>
+										<Search className="h-4 w-4" />
+									</Button>
+								)}
+							</div>
 							{errors.instagram && (
 								<p className="text-sm text-red-500">
 									{errors.instagram.message as string}
@@ -310,11 +382,40 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 							<label htmlFor="website" className="font-medium">
 								Website URL
 							</label>
-							<Input
-								id="website"
-								placeholder="https://..."
-								{...register("website")}
-							/>
+							<div className="flex gap-2">
+								<Input
+									id="website"
+									placeholder="https://..."
+									{...register("website")}
+								/>
+								{websiteUrl ? (
+									<Button
+										type="button"
+										variant="outline"
+										size="icon"
+										onClick={() => window.open(websiteUrl, "_blank")}
+									>
+										<ExternalLink className="h-4 w-4" />
+									</Button>
+								) : (
+									<Button
+										type="button"
+										variant="outline"
+										size="icon"
+										onClick={() =>
+											window.open(
+												generateGoogleSearchUrl(
+													"website",
+													institution.name || "",
+												),
+												"_blank",
+											)
+										}
+									>
+										<Search className="h-4 w-4" />
+									</Button>
+								)}
+							</div>
 							{errors.website && (
 								<p className="text-sm text-red-500">
 									{errors.website.message as string}
@@ -370,13 +471,25 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 							>
 								Source URL (if from social media)
 							</label>
-							<Input
-								id="sourceUrl"
-								{...register("sourceUrl")}
-								disabled
-								className="bg-background"
-								placeholder="No source URL provided"
-							/>
+							<div className="flex gap-2">
+								<Input
+									id="sourceUrl"
+									{...register("sourceUrl")}
+									disabled
+									className="bg-background"
+									placeholder="No source URL provided"
+								/>
+								{institution.sourceUrl && (
+									<Button
+										type="button"
+										variant="outline"
+										size="icon"
+										onClick={() => window.open(institution.sourceUrl, "_blank")}
+									>
+										<ExternalLink className="h-4 w-4" />
+									</Button>
+								)}
+							</div>
 						</div>
 						<div className="space-y-2">
 							<label
