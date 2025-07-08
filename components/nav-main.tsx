@@ -1,6 +1,14 @@
 "use client";
 
-import { type LucideIcon, MailIcon, PlusCircleIcon } from "lucide-react";
+import {
+	BarChart,
+	Building,
+	LayoutDashboard,
+	type LucideIcon,
+	MailIcon,
+	PlusCircleIcon,
+	Users,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,13 +19,20 @@ import {
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
+const iconMap: Record<string, LucideIcon> = {
+	LayoutDashboard,
+	Building,
+	Users,
+	BarChart,
+};
+
 export function NavMain({
 	items,
 }: {
 	items: {
 		title: string;
 		url: string;
-		icon?: LucideIcon;
+		icon?: string;
 	}[];
 }) {
 	return (
@@ -43,14 +58,17 @@ export function NavMain({
 					</SidebarMenuItem>
 				</SidebarMenu>
 				<SidebarMenu>
-					{items.map((item) => (
-						<SidebarMenuItem key={item.title}>
-							<SidebarMenuButton tooltip={item.title}>
-								{item.icon && <item.icon />}
-								<span>{item.title}</span>
-							</SidebarMenuButton>
-						</SidebarMenuItem>
-					))}
+					{items.map((item) => {
+						const IconComponent = item.icon ? iconMap[item.icon] : null;
+						return (
+							<SidebarMenuItem key={item.title}>
+								<SidebarMenuButton tooltip={item.title}>
+									{IconComponent && <IconComponent />}
+									<span>{item.title}</span>
+								</SidebarMenuButton>
+							</SidebarMenuItem>
+						);
+					})}
 				</SidebarMenu>
 			</SidebarGroupContent>
 		</SidebarGroup>
