@@ -1,13 +1,16 @@
 import { AdminDashboardLayout } from "@/components/admin-dashboard-layout";
 import { AppSidebar } from "@/components/app-sidebar";
+import {
+	AsyncDashboardStats,
+	AsyncDashboardStatsProgressive,
+} from "@/components/async-dashboard-stats";
 import { AsyncSectionCards } from "@/components/async-section-cards";
-import { AsyncDashboardStats, AsyncDashboardStatsProgressive } from "@/components/async-dashboard-stats";
 import { ChartAreaInteractive } from "@/components/chart-area-interactive";
 import { DataTable } from "@/components/data-table";
+import { LoadingIndicator } from "@/components/ui/loading-indicator";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TableSkeleton } from "@/components/ui/table-skeleton";
-import { LoadingIndicator } from "@/components/ui/loading-indicator";
 import { Suspense } from "react";
 
 // Simulated async components for demo
@@ -86,12 +89,16 @@ export default function StreamingDemoPage() {
 
 							<div className="grid gap-6 lg:grid-cols-2">
 								<div className="space-y-3">
-									<h3 className="font-medium">Original: Parallel Data Fetching</h3>
+									<h3 className="font-medium">
+										Original: Parallel Data Fetching
+									</h3>
 									<AsyncDashboardStats />
 								</div>
 
 								<div className="space-y-3">
-									<h3 className="font-medium">Progressive: Individual Suspense</h3>
+									<h3 className="font-medium">
+										Progressive: Individual Suspense
+									</h3>
 									<AsyncDashboardStatsProgressive />
 								</div>
 							</div>
@@ -196,7 +203,9 @@ export default function StreamingDemoPage() {
 									</p>
 								</div>
 								<div className="rounded-lg border p-4">
-									<h3 className="font-semibold mb-2">3. Parallel Data Fetching</h3>
+									<h3 className="font-semibold mb-2">
+										3. Parallel Data Fetching
+									</h3>
 									<p className="text-sm text-muted-foreground">
 										Promise.all() pattern to fetch data concurrently
 									</p>
