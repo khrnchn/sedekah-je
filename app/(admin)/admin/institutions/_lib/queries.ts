@@ -156,6 +156,7 @@ export async function getPendingInstitutionById(id: number) {
 			status: institutions.status,
 			contributorName: users.name,
 			contributorId: users.id,
+			contributorEmail: users.email,
 			contributorRemarks: institutions.contributorRemarks,
 			sourceUrl: institutions.sourceUrl,
 			createdAt: institutions.createdAt,

@@ -10,6 +10,7 @@ import {
 } from "@/db/institutions";
 import type { Institution } from "@/db/institutions";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { forwardRef, useImperativeHandle, useTransition } from "react";
 import { useForm } from "react-hook-form";
@@ -24,6 +25,7 @@ type Props = {
 		contributorRemarks?: string;
 		contributorName?: string | null;
 		contributorId?: string | null;
+		contributorEmail?: string | null;
 		createdAt?: Date;
 	};
 };
@@ -38,18 +40,11 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 		const [isPending, startTransition] = useTransition();
 
 		const formattedSubmissionDate = institution.createdAt
-			? new Date(institution.createdAt).toLocaleDateString("en-MY", {
-					year: "numeric",
-					month: "long",
-					day: "numeric",
-				})
+			? format(new Date(institution.createdAt), "d MMMM yyyy")
 			: "N/A";
 
 		const formattedSubmissionTime = institution.createdAt
-			? new Date(institution.createdAt).toLocaleTimeString("en-MY", {
-					hour: "2-digit",
-					minute: "2-digit",
-				})
+			? format(new Date(institution.createdAt), "p")
 			: "N/A";
 
 		// Helper schema for optional valid URL
@@ -346,9 +341,14 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 									<div className="font-medium">
 										{institution.contributorName || "Anonymous User"}
 									</div>
-									<div className="text-sm text-muted-foreground">
+									{/* <div className="text-sm text-muted-foreground">
 										ID: {institution.contributorId || "anonymous"}
-									</div>
+									</div> */}
+									{institution.contributorEmail && (
+										<div className="text-sm text-muted-foreground">
+											{institution.contributorEmail}
+										</div>
+									)}
 								</div>
 							</div>
 							<div className="space-y-2">
