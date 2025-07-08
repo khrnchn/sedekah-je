@@ -191,6 +191,10 @@ export default function PendingInstitutionsTable({
 					))}
 				</SelectContent>
 			</Select>
+
+			<div className="flex items-center text-sm text-muted-foreground">
+				Showing {filteredData.length} of {institutions.length} institutions
+			</div>
 		</>
 	);
 
