@@ -37,6 +37,21 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 		const router = useRouter();
 		const [isPending, startTransition] = useTransition();
 
+		const formattedSubmissionDate = institution.createdAt
+			? new Date(institution.createdAt).toLocaleDateString("en-MY", {
+					year: "numeric",
+					month: "long",
+					day: "numeric",
+				})
+			: "N/A";
+
+		const formattedSubmissionTime = institution.createdAt
+			? new Date(institution.createdAt).toLocaleTimeString("en-MY", {
+					hour: "2-digit",
+					minute: "2-digit",
+				})
+			: "N/A";
+
 		// Helper schema for optional valid URL
 		const urlOrEmpty = z
 			.string()
@@ -341,24 +356,9 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 									Submission Date
 								</div>
 								<div className="p-3 bg-background rounded-md border">
-									<div className="font-medium">
-										{new Date(institution.createdAt).toLocaleDateString(
-											"en-MY",
-											{
-												year: "numeric",
-												month: "long",
-												day: "numeric",
-											},
-										)}
-									</div>
+									<div className="font-medium">{formattedSubmissionDate}</div>
 									<div className="text-sm text-muted-foreground">
-										{new Date(institution.createdAt).toLocaleTimeString(
-											"en-MY",
-											{
-												hour: "2-digit",
-												minute: "2-digit",
-											},
-										)}
+										{formattedSubmissionTime}
 									</div>
 								</div>
 							</div>
