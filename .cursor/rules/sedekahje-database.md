@@ -1,3 +1,9 @@
+---
+description: sedekahje database rules
+globs:
+alwaysApply: false
+---
+
 # Database Rules - sedekah.je
 
 ## Database Structure
