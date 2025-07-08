@@ -1,9 +1,12 @@
 import { SettingsIcon, TrendingUpIcon } from "lucide-react";
+import { headers } from "next/headers";
 import type * as React from "react";
 
 import { getPendingInstitutionsCount } from "@/app/(admin)/admin/institutions/_lib/queries";
+import { auth } from "@/auth";
 import { NavDocuments } from "@/components/nav-documents";
 import { NavMain } from "@/components/nav-main";
+import { NavUser } from "@/components/nav-user";
 import { SidebarThemeToggle } from "@/components/sidebar-theme-toggle";
 import {
 	Sidebar,
@@ -18,11 +21,6 @@ import {
 } from "@/components/ui/sidebar";
 
 const data = {
-	user: {
-		name: "Admin",
-		email: "admin@sedekah.je",
-		avatar: "/avatars/admin.jpg",
-	},
 	navMain: [
 		{
 			title: "Dashboard",
@@ -103,11 +101,30 @@ export async function AppSidebar({
 	...props
 }: React.ComponentProps<typeof Sidebar>) {
 	let pendingCount = 0;
+	let currentUser = {
+		name: "Admin",
+		email: "admin@sedekah.je",
+		avatar: "/avatars/admin.jpg",
+	};
+
 	try {
 		pendingCount = await getPendingInstitutionsCount();
+
+		// Get current user session
+		const session = await auth.api.getSession({
+			headers: await headers(),
+		});
+
+		if (session?.user) {
+			currentUser = {
+				name: session.user.name || "Admin",
+				email: session.user.email || "admin@sedekah.je",
+				avatar: session.user.image || "/avatars/admin.jpg",
+			};
+		}
 	} catch (error) {
-		// Silently handle error - will show 0 count
-		console.error("Error fetching pending count:", error);
+		// Silently handle error - will show defaults
+		console.error("Error fetching sidebar data:", error);
 	}
 
 	const institutionsWithBadge = data.institutions.map((item) => ({
@@ -154,7 +171,7 @@ export async function AppSidebar({
 				</SidebarGroup>
 			</SidebarContent>
 			<SidebarFooter>
-				{/* TODO: Make NavUser work with server components */}
+				<NavUser user={currentUser} />
 			</SidebarFooter>
 		</Sidebar>
 	);
