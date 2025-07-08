@@ -1,3 +1,9 @@
+---
+description: sedekahje authentication rules
+globs:
+alwaysApply: false
+---
+
 # Authentication Rules - sedekah.je
 
 ## Better Auth Setup

@@ -1,3 +1,9 @@
+---
+description: sedekahje general rules
+globs:
+alwaysApply: false
+---
+
 # General Rules - sedekah.je
 
 This is a Next.js 14 Malaysian QR code directory for mosques, suraus, and other religious institutions.

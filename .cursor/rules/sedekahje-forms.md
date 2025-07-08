@@ -1,3 +1,9 @@
+---
+description: sedekahje form handling rules
+globs:
+alwaysApply: false
+---
+
 # Form Handling Rules - sedekah.je
 
 ## Form with Server Actions Pattern
