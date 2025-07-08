@@ -1,14 +1,13 @@
-// page.tsx – server component
+// page.tsx – server component with streaming
 
 import { AdminDashboardLayout } from "@/components/admin-dashboard-layout";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { getPendingInstitutions } from "../_lib/queries";
-import PendingInstitutionsTable from "./pending-table";
+import { Suspense } from "react";
+import AsyncPendingData from "./async-pending-data";
+import PendingTableLoading from "./table-loading";
 
-export default async function PendingInstitutionsPage() {
-	const institutions = await getPendingInstitutions();
-
+export default function PendingInstitutionsPage() {
 	return (
 		<SidebarProvider>
 			<AppSidebar variant="inset" />
@@ -21,7 +20,9 @@ export default async function PendingInstitutionsPage() {
 					title="Pending Institutions"
 					description="Review and manage institutions awaiting approval"
 				>
-					<PendingInstitutionsTable initialData={institutions} />
+					<Suspense fallback={<PendingTableLoading />}>
+						<AsyncPendingData />
+					</Suspense>
 				</AdminDashboardLayout>
 			</SidebarInset>
 		</SidebarProvider>
