@@ -1,28 +1,10 @@
-"use client";
-
-import {
-	BarChartIcon,
-	BuildingIcon,
-	CheckCircleIcon,
-	ClockIcon,
-	FolderIcon,
-	KeyIcon,
-	LayoutDashboardIcon,
-	MailIcon,
-	Moon,
-	SettingsIcon,
-	Sun,
-	TrendingUpIcon,
-	UsersIcon,
-	XCircleIcon,
-} from "lucide-react";
+import { SettingsIcon, TrendingUpIcon } from "lucide-react";
 import type * as React from "react";
-import { useEffect, useState } from "react";
 
+import { getPendingInstitutionsCount } from "@/app/(admin)/admin/institutions/_lib/queries";
 import { NavDocuments } from "@/components/nav-documents";
 import { NavMain } from "@/components/nav-main";
-import { NavSecondary } from "@/components/nav-secondary";
-import { NavUser } from "@/components/nav-user";
+import { SidebarThemeToggle } from "@/components/sidebar-theme-toggle";
 import {
 	Sidebar,
 	SidebarContent,
@@ -34,7 +16,6 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useTheme } from "next-themes";
 
 const data = {
 	user: {
@@ -46,12 +27,12 @@ const data = {
 		{
 			title: "Dashboard",
 			url: "/admin/dashboard",
-			icon: LayoutDashboardIcon,
+			icon: "LayoutDashboard",
 		},
 		{
 			title: "Institutions",
 			url: "/admin/institutions",
-			icon: BuildingIcon,
+			icon: "Building",
 			items: [
 				{
 					title: "Pending Review",
@@ -70,7 +51,7 @@ const data = {
 		{
 			title: "Users",
 			url: "/admin/users",
-			icon: UsersIcon,
+			icon: "Users",
 			items: [
 				{
 					title: "Directory",
@@ -89,7 +70,7 @@ const data = {
 		{
 			title: "Analytics",
 			url: "/admin/analytics",
-			icon: BarChartIcon,
+			icon: "BarChart",
 		},
 	],
 	navSecondary: [
@@ -103,38 +84,31 @@ const data = {
 		{
 			name: "Pending Review",
 			url: "/admin/institutions/pending",
-			icon: ClockIcon,
+			icon: "Clock",
 		},
 		{
 			name: "Approved",
 			url: "/admin/institutions/approved",
-			icon: CheckCircleIcon,
+			icon: "CheckCircle",
 		},
 		{
 			name: "Rejected",
 			url: "/admin/institutions/rejected",
-			icon: XCircleIcon,
+			icon: "XCircle",
 		},
 	],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-	const [pendingCount, setPendingCount] = useState<number>(0);
-	const { theme, setTheme } = useTheme();
-
-	useEffect(() => {
-		const fetchPendingCount = async () => {
-			try {
-				const response = await fetch("/api/admin/institutions/pending/count");
-				const data = await response.json();
-				setPendingCount(data.count);
-			} catch (error) {
-				console.error("Error fetching pending count:", error);
-			}
-		};
-
-		fetchPendingCount();
-	}, []);
+export async function AppSidebar({
+	...props
+}: React.ComponentProps<typeof Sidebar>) {
+	let pendingCount = 0;
+	try {
+		pendingCount = await getPendingInstitutionsCount();
+	} catch (error) {
+		// Silently handle error - will show 0 count
+		console.error("Error fetching pending count:", error);
+	}
 
 	const institutionsWithBadge = data.institutions.map((item) => ({
 		...item,
@@ -174,24 +148,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 									</a>
 								</SidebarMenuButton>
 							</SidebarMenuItem>
-							<SidebarMenuItem>
-								<SidebarMenuButton
-									onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-								>
-									{theme === "light" ? (
-										<Moon className="h-4 w-4" />
-									) : (
-										<Sun className="h-4 w-4" />
-									)}
-									<span>{theme === "light" ? "Dark mode" : "Light mode"}</span>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
+							<SidebarThemeToggle />
 						</SidebarMenu>
 					</SidebarGroupContent>
 				</SidebarGroup>
 			</SidebarContent>
 			<SidebarFooter>
-				<NavUser user={data.user} />
+				{/* TODO: Make NavUser work with server components */}
 			</SidebarFooter>
 		</Sidebar>
 	);
