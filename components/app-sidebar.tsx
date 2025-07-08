@@ -1,4 +1,4 @@
-import { SettingsIcon, TrendingUpIcon } from "lucide-react";
+import { HomeIcon, SettingsIcon, TrendingUpIcon } from "lucide-react";
 import { headers } from "next/headers";
 import type * as React from "react";
 
@@ -22,6 +22,11 @@ import {
 
 const data = {
 	navMain: [
+		{
+			title: "Home",
+			url: "/",
+			icon: "Home",
+		},
 		{
 			title: "Dashboard",
 			url: "/admin/dashboard",
