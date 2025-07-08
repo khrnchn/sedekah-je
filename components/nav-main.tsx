@@ -3,6 +3,7 @@
 import {
 	BarChart,
 	Building,
+	Home as HomeIcon,
 	LayoutDashboard,
 	type LucideIcon,
 	MailIcon,
@@ -25,6 +26,7 @@ const iconMap: Record<string, LucideIcon> = {
 	Building,
 	Users,
 	BarChart,
+	Home: HomeIcon,
 };
 
 export function NavMain({
