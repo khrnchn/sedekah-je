@@ -1,14 +1,13 @@
-// page.tsx – server component
+// page.tsx – server component with streaming
 
 import { AdminDashboardLayout } from "@/components/admin-dashboard-layout";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { getRejectedInstitutions } from "../_lib/queries";
-import RejectedInstitutionsTable from "./rejected-table";
+import { Suspense } from "react";
+import AsyncRejectedData from "./async-rejected-data";
+import RejectedTableLoading from "./table-loading";
 
-export default async function RejectedInstitutionsPage() {
-	const institutions = await getRejectedInstitutions();
-
+export default function RejectedInstitutionsPage() {
 	return (
 		<SidebarProvider>
 			<AppSidebar variant="inset" />
@@ -21,7 +20,9 @@ export default async function RejectedInstitutionsPage() {
 					title="Rejected Institutions"
 					description="Review and manage institutions that have been rejected"
 				>
-					<RejectedInstitutionsTable initialData={institutions} />
+					<Suspense fallback={<RejectedTableLoading />}>
+						<AsyncRejectedData />
+					</Suspense>
 				</AdminDashboardLayout>
 			</SidebarInset>
 		</SidebarProvider>
