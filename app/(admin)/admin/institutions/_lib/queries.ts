@@ -53,6 +53,31 @@ export async function getPendingInstitutions() {
 }
 
 /**
+ * Fetch all institutions that have been rejected.
+ * Joins contributor information when available for display purposes.
+ */
+export async function getRejectedInstitutions() {
+	await requireAdminSession();
+	return await db
+		.select({
+			id: institutions.id,
+			name: institutions.name,
+			category: institutions.category,
+			state: institutions.state,
+			city: institutions.city,
+			contributorName: users.name,
+			contributorId: users.id,
+			createdAt: institutions.createdAt,
+			reviewedAt: institutions.reviewedAt,
+			reviewedBy: institutions.reviewedBy,
+		})
+		.from(institutions)
+		.leftJoin(users, eq(institutions.contributorId, users.id))
+		.where(eq(institutions.status, "rejected"))
+		.orderBy(institutions.createdAt);
+}
+
+/**
  * Get the count of pending institutions for display in sidebar badges
  */
 export async function getPendingInstitutionsCount() {
