@@ -1,6 +1,5 @@
 "use client";
 
-import { institutions } from "@/app/data/institutions";
 import {
 	CommandDialog,
 	CommandEmpty,
@@ -9,11 +8,15 @@ import {
 	CommandItem,
 	CommandList,
 } from "@/components/ui/command";
+import type { Institution } from "@/db/institutions";
+import { getInstitutions } from "@/lib/queries/institutions";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export function GlobalCommand() {
 	const [open, setOpen] = useState(false);
+	const [institutions, setInstitutions] = useState<Institution[]>([]);
+	const [loading, setLoading] = useState(false);
 	const router = useRouter();
 
 	useEffect(() => {
@@ -28,6 +31,22 @@ export function GlobalCommand() {
 		return () => document.removeEventListener("keydown", down);
 	}, []);
 
+	useEffect(() => {
+		if (open && institutions.length === 0) {
+			setLoading(true);
+			getInstitutions()
+				.then((data) => {
+					setInstitutions(data);
+				})
+				.catch((error) => {
+					console.error("Failed to fetch institutions:", error);
+				})
+				.finally(() => {
+					setLoading(false);
+				});
+		}
+	}, [open, institutions.length]);
+
 	const handleSelectInstitution = (id: number) => {
 		setOpen(false);
 		router.push(`/admin/institutions/approved/${id}`);
@@ -37,7 +56,9 @@ export function GlobalCommand() {
 		<CommandDialog open={open} onOpenChange={setOpen}>
 			<CommandInput placeholder="Cari institusi..." />
 			<CommandList>
-				<CommandEmpty>Tiada institusi dijumpai.</CommandEmpty>
+				<CommandEmpty>
+					{loading ? "Memuat institusi..." : "Tiada institusi dijumpai."}
+				</CommandEmpty>
 				<CommandGroup heading="Institusi">
 					{institutions.map((institution) => (
 						<CommandItem
