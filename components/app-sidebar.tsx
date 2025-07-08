@@ -15,6 +15,7 @@ import {
 	XCircleIcon,
 } from "lucide-react";
 import type * as React from "react";
+import { useEffect, useState } from "react";
 
 import { NavDocuments } from "@/components/nav-documents";
 import { NavMain } from "@/components/nav-main";
@@ -113,6 +114,27 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+	const [pendingCount, setPendingCount] = useState<number>(0);
+
+	useEffect(() => {
+		const fetchPendingCount = async () => {
+			try {
+				const response = await fetch("/api/admin/institutions/pending/count");
+				const data = await response.json();
+				setPendingCount(data.count);
+			} catch (error) {
+				console.error("Error fetching pending count:", error);
+			}
+		};
+
+		fetchPendingCount();
+	}, []);
+
+	const institutionsWithBadge = data.institutions.map((item) => ({
+		...item,
+		badge: item.name === "Pending Review" ? pendingCount : undefined,
+	}));
+
 	return (
 		<Sidebar collapsible="offcanvas" {...props}>
 			<SidebarHeader>
@@ -123,7 +145,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 							className="data-[slot=sidebar-menu-button]:!p-1.5"
 						>
 							<a href="/admin/dashboard">
-								<TrendingUpIcon className="h-5 w-5" />
+								<TrendingUpIcon className="h-4 w-4" />
 								<span className="text-base font-semibold">
 									sedekah.je Admin
 								</span>
@@ -134,7 +156,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			</SidebarHeader>
 			<SidebarContent>
 				<NavMain items={data.navMain} />
-				<NavDocuments items={data.institutions} />
+				<NavDocuments items={institutionsWithBadge} />
 				<NavSecondary items={data.navSecondary} className="mt-auto" />
 			</SidebarContent>
 			<SidebarFooter>

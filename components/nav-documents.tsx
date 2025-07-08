@@ -7,6 +7,7 @@ import {
 	ShareIcon,
 } from "lucide-react";
 
+import { Badge } from "@/components/ui/badge";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -30,20 +31,24 @@ export function NavDocuments({
 		name: string;
 		url: string;
 		icon: LucideIcon;
+		badge?: number;
 	}[];
 }) {
 	const { isMobile } = useSidebar();
 
 	return (
 		<SidebarGroup className="group-data-[collapsible=icon]:hidden">
-			<SidebarGroupLabel>Documents</SidebarGroupLabel>
+			<SidebarGroupLabel>Institutions</SidebarGroupLabel>
 			<SidebarMenu>
 				{items.map((item) => (
 					<SidebarMenuItem key={item.name}>
 						<SidebarMenuButton asChild>
 							<a href={item.url}>
-								<item.icon />
+								<item.icon className="h-4 w-4" />
 								<span>{item.name}</span>
+								{item.badge && item.badge > 0 && (
+									<Badge variant="destructive">{item.badge}</Badge>
+								)}
 							</a>
 						</SidebarMenuButton>
 						<DropdownMenu>
@@ -52,21 +57,21 @@ export function NavDocuments({
 									showOnHover
 									className="rounded-sm data-[state=open]:bg-accent"
 								>
-									<MoreHorizontalIcon />
+									<MoreHorizontalIcon className="h-4 w-4" />
 									<span className="sr-only">More</span>
 								</SidebarMenuAction>
 							</DropdownMenuTrigger>
 							<DropdownMenuContent
-								className="w-24 rounded-lg"
+								className="w-32 rounded-lg"
 								side={isMobile ? "bottom" : "right"}
 								align={isMobile ? "end" : "start"}
 							>
-								<DropdownMenuItem>
-									<FolderIcon />
+								<DropdownMenuItem className="gap-2">
+									<FolderIcon className="h-4 w-4" />
 									<span>Open</span>
 								</DropdownMenuItem>
-								<DropdownMenuItem>
-									<ShareIcon />
+								<DropdownMenuItem className="gap-2">
+									<ShareIcon className="h-4 w-4" />
 									<span>Share</span>
 								</DropdownMenuItem>
 							</DropdownMenuContent>
@@ -75,7 +80,7 @@ export function NavDocuments({
 				))}
 				<SidebarMenuItem>
 					<SidebarMenuButton className="text-sidebar-foreground/70">
-						<MoreHorizontalIcon className="text-sidebar-foreground/70" />
+						<MoreHorizontalIcon className="h-4 w-4 text-sidebar-foreground/70" />
 						<span>More</span>
 					</SidebarMenuButton>
 				</SidebarMenuItem>

@@ -46,7 +46,8 @@
 		--card-foreground: 0 0% 98%;
 		--popover: 240 10% 3.9%;
 		--popover-foreground: 0 0% 98%;
-		--primary: 142 86% 28%; /* Changed to keep the same green in dark mode */
+		--primary: 142 86% 28%;
+		/* Changed to keep the same green in dark mode */
 		--primary-foreground: 240 5.9% 10%;
 		--secondary: 240 3.7% 15.9%;
 		--secondary-foreground: 0 0% 98%;
@@ -122,16 +123,8 @@
 	100% {
 		border-color: transparent;
 	}
+
 	50% {
 		border-color: hsl(var(--primary) / 0.5);
-	}
-}
-
-@layer base {
-	* {
-		@apply border-border;
-	}
-	body {
-		@apply bg-background text-foreground;
 	}
 }
