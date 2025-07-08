@@ -3,6 +3,14 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
+import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
@@ -10,9 +18,15 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDownIcon, MoreHorizontalIcon } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { approveInstitution, rejectInstitution } from "../_lib/queries";
 
 type PendingInstitution = {
 	id: string;
@@ -24,6 +38,86 @@ type PendingInstitution = {
 	contributorId: string | null;
 	createdAt: Date | null;
 };
+
+type ActionDialogProps = {
+	isOpen: boolean;
+	onClose: () => void;
+	onConfirm: (notes: string) => void;
+	title: string;
+	description: string;
+	actionLabel: string;
+	actionStyle?: "success" | "destructive";
+};
+
+function ActionDialog({
+	isOpen,
+	onClose,
+	onConfirm,
+	title,
+	description,
+	actionLabel,
+	actionStyle = "success",
+}: ActionDialogProps) {
+	const [notes, setNotes] = useState("");
+
+	return (
+		<Dialog open={isOpen} onOpenChange={onClose}>
+			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>{title}</DialogTitle>
+					<DialogDescription>{description}</DialogDescription>
+				</DialogHeader>
+				<div className="py-4">
+					<Textarea
+						placeholder="Enter any notes or comments about this decision..."
+						value={notes}
+						onChange={(e) => setNotes(e.target.value)}
+						className="min-h-[100px]"
+					/>
+				</div>
+				<DialogFooter>
+					<Button variant="outline" onClick={onClose}>
+						Cancel
+					</Button>
+					<Button
+						variant={actionStyle === "destructive" ? "destructive" : "default"}
+						onClick={() => onConfirm(notes)}
+					>
+						{actionLabel}
+					</Button>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
+	);
+}
+
+async function handleApprove(
+	id: string,
+	reviewerId: string,
+	adminNotes?: string,
+) {
+	try {
+		await approveInstitution(Number(id), reviewerId, adminNotes);
+		return { success: true };
+	} catch (error) {
+		console.error("Failed to approve institution:", error);
+		return { success: false, error };
+	}
+}
+
+async function handleReject(
+	id: string,
+	reviewerId: string,
+	adminNotes?: string,
+) {
+	try {
+		await rejectInstitution(Number(id), reviewerId, adminNotes);
+		return { success: true };
+	} catch (error) {
+		console.error("Failed to reject institution:", error);
+		return { success: false, error };
+	}
+}
 
 export const columns: ColumnDef<PendingInstitution>[] = [
 	{
@@ -122,32 +216,120 @@ export const columns: ColumnDef<PendingInstitution>[] = [
 		enableHiding: false,
 		cell: ({ row }) => {
 			const institution = row.original;
+			const { toast } = useToast();
+			const { user } = useAuth();
+			const router = useRouter();
+			const [actionDialog, setActionDialog] = useState<{
+				isOpen: boolean;
+				type: "approve" | "reject" | null;
+			}>({
+				isOpen: false,
+				type: null,
+			});
+
+			const onApprove = async (notes: string) => {
+				const result = await handleApprove(
+					institution.id,
+					user?.id || "",
+					notes,
+				);
+				if (result.success) {
+					toast({
+						title: "Institution approved",
+						description: `Successfully approved ${institution.name}`,
+					});
+					router.refresh();
+				} else {
+					toast({
+						title: "Error",
+						description: "Failed to approve institution",
+						variant: "destructive",
+					});
+				}
+				setActionDialog({ isOpen: false, type: null });
+			};
+
+			const onReject = async (notes: string) => {
+				const result = await handleReject(
+					institution.id,
+					user?.id || "",
+					notes,
+				);
+				if (result.success) {
+					toast({
+						title: "Institution rejected",
+						description: `Successfully rejected ${institution.name}`,
+					});
+					router.refresh();
+				} else {
+					toast({
+						title: "Error",
+						description: "Failed to reject institution",
+						variant: "destructive",
+					});
+				}
+				setActionDialog({ isOpen: false, type: null });
+			};
 
 			return (
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="ghost" className="h-8 w-8 p-0">
-							<span className="sr-only">Open menu</span>
-							<MoreHorizontalIcon className="h-4 w-4" />
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align="end">
-						<DropdownMenuLabel>Actions</DropdownMenuLabel>
-						<DropdownMenuItem
-							onClick={() => navigator.clipboard.writeText(institution.id)}
-						>
-							Copy institution ID
-						</DropdownMenuItem>
-						<DropdownMenuSeparator />
-						<DropdownMenuItem asChild>
-							<Link href={`/institutions/${institution.id}`}>View details</Link>
-						</DropdownMenuItem>
-						<DropdownMenuItem className="text-green-600">
-							Approve
-						</DropdownMenuItem>
-						<DropdownMenuItem className="text-red-600">Reject</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
+				<>
+					<ActionDialog
+						isOpen={actionDialog.isOpen && actionDialog.type === "approve"}
+						onClose={() => setActionDialog({ isOpen: false, type: null })}
+						onConfirm={onApprove}
+						title="Approve Institution"
+						description={`Are you sure you want to approve ${institution.name}? Add any notes about your decision below.`}
+						actionLabel="Approve"
+						actionStyle="success"
+					/>
+					<ActionDialog
+						isOpen={actionDialog.isOpen && actionDialog.type === "reject"}
+						onClose={() => setActionDialog({ isOpen: false, type: null })}
+						onConfirm={onReject}
+						title="Reject Institution"
+						description={`Are you sure you want to reject ${institution.name}? Add any notes about your decision below.`}
+						actionLabel="Reject"
+						actionStyle="destructive"
+					/>
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button variant="ghost" className="h-8 w-8 p-0">
+								<span className="sr-only">Open menu</span>
+								<MoreHorizontalIcon className="h-4 w-4" />
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end">
+							<DropdownMenuLabel>Actions</DropdownMenuLabel>
+							<DropdownMenuItem
+								onClick={() => navigator.clipboard.writeText(institution.id)}
+							>
+								Copy institution ID
+							</DropdownMenuItem>
+							<DropdownMenuSeparator />
+							<DropdownMenuItem asChild>
+								<Link href={`/institutions/${institution.id}`}>
+									View details
+								</Link>
+							</DropdownMenuItem>
+							<DropdownMenuItem
+								onClick={() =>
+									setActionDialog({ isOpen: true, type: "approve" })
+								}
+								className="text-green-600"
+							>
+								Approve
+							</DropdownMenuItem>
+							<DropdownMenuItem
+								onClick={() =>
+									setActionDialog({ isOpen: true, type: "reject" })
+								}
+								className="text-red-600"
+							>
+								Reject
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				</>
 			);
 		},
 	},

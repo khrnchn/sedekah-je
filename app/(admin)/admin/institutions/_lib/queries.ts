@@ -37,3 +37,43 @@ export async function getPendingInstitutionsCount() {
 
 	return result.length;
 }
+
+/**
+ * Approve a pending institution
+ */
+export async function approveInstitution(
+	id: number,
+	reviewerId: string,
+	adminNotes?: string,
+) {
+	return await db
+		.update(institutions)
+		.set({
+			status: "approved",
+			reviewedBy: reviewerId,
+			reviewedAt: new Date(),
+			adminNotes,
+		})
+		.where(eq(institutions.id, id))
+		.returning();
+}
+
+/**
+ * Reject a pending institution
+ */
+export async function rejectInstitution(
+	id: number,
+	reviewerId: string,
+	adminNotes?: string,
+) {
+	return await db
+		.update(institutions)
+		.set({
+			status: "rejected",
+			reviewedBy: reviewerId,
+			reviewedAt: new Date(),
+			adminNotes,
+		})
+		.where(eq(institutions.id, id))
+		.returning();
+}
