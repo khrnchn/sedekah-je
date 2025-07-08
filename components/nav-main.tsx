@@ -8,6 +8,7 @@ import {
 	type LucideIcon,
 	MailIcon,
 	PlusCircleIcon,
+	TwitterIcon,
 	Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -55,11 +56,18 @@ export function NavMain({
 						</SidebarMenuButton>
 						<Button
 							size="icon"
-							className="h-9 w-9 shrink-0 group-data-[collapsible=icon]:opacity-0"
+							className="h-9 w-9 shrink-0 group-data-[collapsible=icon]:opacity-0 bg-[#1DA1F2] hover:bg-[#1a8cd8] border-[#1DA1F2] text-white hover:text-white dark:bg-[#1DA1F2] dark:hover:bg-[#1a8cd8] dark:border-[#1DA1F2] dark:text-white dark:hover:text-white"
 							variant="outline"
+							asChild
 						>
-							<MailIcon className="h-5 w-5" />
-							<span className="sr-only">Inbox</span>
+							<a
+								href="https://x.com/sedekahje"
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								<TwitterIcon className="h-5 w-5" />
+								<span className="sr-only">Follow us on X (Twitter)</span>
+							</a>
 						</Button>
 					</SidebarMenuItem>
 				</SidebarMenu>
