@@ -77,7 +77,7 @@ Key pain-points today:
   * [x] Wire **Save changes** action (mutates institution record).
 [x] **QR Code Preview**
   * [x] Reuse `QrCodeDisplay` with larger size (320px) (done)
-  * [ ] Add **Lightbox / Download / Copy** buttons (pending)
+  * [x] Add **Lightbox / Download / Copy** buttons (implemented in QrImageToolbar)
 [x] **Approve / Reject with Notes**
   * [x] Hoist approve/reject server actions.
   * [x] Capture `adminNotes` textarea; persist.
@@ -91,10 +91,10 @@ Key pain-points today:
 [ ] **Testing & QA**
   * [ ] Manual scan of QR codes across payment types.
   * [ ] Edge cases: missing `qrContent`, invalid QR.
-[ ] **Manual QR Extraction**
-  * [ ] Image toolbox (Copy / Download / Open / QRaptor)
-  * [ ] Manual QR content textarea & validation
-  * [ ] Save manual qrContent & add audit note
+[x] **Manual QR Extraction**
+  * [x] Image toolbox (Copy / Download / Open / QRaptor)
+  * [x] Manual QR content textarea & validation
+  * [x] Save manual qrContent & add audit note
 
 ## 7. Blockers / Open Questions
 * Do we require multi-round reviews (i.e., multiple admins)? → If yes, we need `institution_reviews` table. - nope

@@ -17,7 +17,8 @@ export default async function PendingInstitutionReviewPage({ params }: Props) {
 		notFound();
 	}
 
-	const [institution] = await getPendingInstitutionById(idNum);
+	const results = await getPendingInstitutionById(idNum);
+	const institution = results[0];
 
 	if (!institution) {
 		notFound();
