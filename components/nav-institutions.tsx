@@ -41,6 +41,12 @@ export function NavInstitutions({
 		url: string;
 		icon: string;
 		badge?: number;
+		badgeVariant?:
+			| "default"
+			| "secondary"
+			| "destructive"
+			| "outline"
+			| "success";
 	}[];
 }) {
 	const { isMobile } = useSidebar();
@@ -58,7 +64,20 @@ export function NavInstitutions({
 									{IconComponent && <IconComponent className="h-4 w-4" />}
 									<span>{item.name}</span>
 									{item.badge && item.badge > 0 && (
-										<Badge variant="destructive">{item.badge}</Badge>
+										<Badge
+											variant={
+												item.badgeVariant === "success"
+													? "secondary"
+													: item.badgeVariant || "destructive"
+											}
+											className={
+												item.badgeVariant === "success"
+													? "bg-green-500 text-white hover:bg-green-600"
+													: ""
+											}
+										>
+											{item.badge}
+										</Badge>
 									)}
 								</a>
 							</SidebarMenuButton>
