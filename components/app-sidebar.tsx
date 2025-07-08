@@ -129,7 +129,10 @@ export async function AppSidebar({
 
 	const institutionsWithBadge = data.institutions.map((item) => ({
 		...item,
-		badge: item.name === "Pending Review" ? pendingCount : undefined,
+		badge:
+			item.name === "Pending Review" && pendingCount > 0
+				? pendingCount
+				: undefined,
 	}));
 
 	return (
