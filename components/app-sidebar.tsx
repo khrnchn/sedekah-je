@@ -9,7 +9,9 @@ import {
 	KeyIcon,
 	LayoutDashboardIcon,
 	MailIcon,
+	Moon,
 	SettingsIcon,
+	Sun,
 	TrendingUpIcon,
 	UsersIcon,
 	XCircleIcon,
@@ -25,11 +27,14 @@ import {
 	Sidebar,
 	SidebarContent,
 	SidebarFooter,
+	SidebarGroup,
+	SidebarGroupContent,
 	SidebarHeader,
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { useTheme } from "next-themes";
 
 const data = {
 	user: {
@@ -115,6 +120,7 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	const [pendingCount, setPendingCount] = useState<number>(0);
+	const { theme, setTheme } = useTheme();
 
 	useEffect(() => {
 		const fetchPendingCount = async () => {
@@ -157,7 +163,32 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			<SidebarContent>
 				<NavMain items={data.navMain} />
 				<NavDocuments items={institutionsWithBadge} />
-				<NavSecondary items={data.navSecondary} className="mt-auto" />
+				<SidebarGroup className="mt-auto">
+					<SidebarGroupContent>
+						<SidebarMenu>
+							<SidebarMenuItem>
+								<SidebarMenuButton asChild>
+									<a href="/admin/settings">
+										<SettingsIcon className="h-4 w-4" />
+										<span>Settings</span>
+									</a>
+								</SidebarMenuButton>
+							</SidebarMenuItem>
+							<SidebarMenuItem>
+								<SidebarMenuButton
+									onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+								>
+									{theme === "light" ? (
+										<Moon className="h-4 w-4" />
+									) : (
+										<Sun className="h-4 w-4" />
+									)}
+									<span>{theme === "light" ? "Dark mode" : "Light mode"}</span>
+								</SidebarMenuButton>
+							</SidebarMenuItem>
+						</SidebarMenu>
+					</SidebarGroupContent>
+				</SidebarGroup>
 			</SidebarContent>
 			<SidebarFooter>
 				<NavUser user={data.user} />
