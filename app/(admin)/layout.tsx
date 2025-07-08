@@ -14,15 +14,12 @@ export default async function AdminLayout({
 		headers: await headers(),
 	});
 
-	if (!session) {
-		redirect("/auth");
-	}
-
-	// Check if user has admin role
+	// The middleware is now responsible for redirecting unauthenticated users.
+	// We will proceed assuming a session exists. If not, the DB query will fail gracefully.
 	const user = await db
 		.select()
 		.from(users)
-		.where(eq(users.id, session.user.id))
+		.where(eq(users.id, session?.user.id ?? ""))
 		.limit(1);
 
 	if (!user[0] || user[0].role !== "admin") {

@@ -180,7 +180,7 @@ export const columns: ColumnDef<PendingInstitution>[] = [
 		},
 		cell: ({ row }) => (
 			<Link
-				href={`/institutions/${row.getValue("id")}`}
+				href={`/admin/institutions/pending/${row.getValue("id")}`}
 				className="font-medium hover:underline"
 			>
 				{row.getValue("name")}
@@ -347,7 +347,7 @@ export const columns: ColumnDef<PendingInstitution>[] = [
 							</DropdownMenuItem>
 							<DropdownMenuSeparator />
 							<DropdownMenuItem asChild>
-								<Link href={`/institutions/${institution.id}`}>
+								<Link href={`/admin/institutions/pending/${institution.id}`}>
 									View details
 								</Link>
 							</DropdownMenuItem>
