@@ -46,11 +46,11 @@ This document outlines the implementation plan for the sedekah.je admin dashboar
   - Bulk actions (approve/reject multiple)
 - **Review Interface**
   - Institution details view
-  - QR code preview and validation
-  - Google Maps integration for location verification
+  - QR code preview
   - Contributor information
   - Admin notes and review history
   - One-click approve/reject with comments
+  - Admin can edit all the details submitted by contributor
 - **All Institutions Browser**
   - View all institutions (static + dynamic)
   - Edit institution details
