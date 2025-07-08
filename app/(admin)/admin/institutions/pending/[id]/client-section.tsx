@@ -1,6 +1,7 @@
 "use client";
 
 import QrCodeDisplay from "@/components/ui/qrCodeDisplay";
+import type { supportedPayments } from "@/db/institutions";
 import Image from "next/image";
 import { useRef } from "react";
 import InstitutionReviewForm, {
@@ -14,7 +15,7 @@ type Props = {
 		id: number;
 		name: string;
 		qrContent: string | null;
-		supportedPayment: string[];
+		supportedPayment: (typeof supportedPayments)[number][] | null;
 		qrImage: string | null;
 		[key: string]: unknown;
 	};
@@ -40,7 +41,10 @@ export default function ClientSection({ institution }: Props) {
 						<>
 							<QrCodeDisplay
 								qrContent={institution.qrContent}
-								supportedPayment={institution.supportedPayment ?? []}
+								supportedPayment={
+									(institution.supportedPayment ??
+										[]) as (typeof supportedPayments)[number][]
+								}
 								size={320}
 							/>
 							<p className="text-sm text-muted-foreground">
