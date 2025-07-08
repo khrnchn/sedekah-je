@@ -4,22 +4,22 @@ import { Suspense } from "react";
 // Mock data fetching functions (replace with actual API calls)
 async function getTotalInstitutions() {
 	// Simulate API call
-	await new Promise(resolve => setTimeout(resolve, 500));
+	await new Promise((resolve) => setTimeout(resolve, 500));
 	return { value: "1,234", change: "+12%", label: "Total Institutions" };
 }
 
 async function getPendingReviews() {
-	await new Promise(resolve => setTimeout(resolve, 800));
+	await new Promise((resolve) => setTimeout(resolve, 800));
 	return { value: "23", change: "+2", label: "Pending Review" };
 }
 
 async function getActiveUsers() {
-	await new Promise(resolve => setTimeout(resolve, 600));
+	await new Promise((resolve) => setTimeout(resolve, 600));
 	return { value: "456", change: "+5%", label: "Active Users" };
 }
 
 async function getQRScans() {
-	await new Promise(resolve => setTimeout(resolve, 700));
+	await new Promise((resolve) => setTimeout(resolve, 700));
 	return { value: "8,901", change: "+18%", label: "QR Scans" };
 }
 
