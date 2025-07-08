@@ -67,12 +67,12 @@ export function NavInstitutions({
 										<Badge
 											variant={
 												item.badgeVariant === "success"
-													? "secondary"
+													? "default"
 													: item.badgeVariant || "destructive"
 											}
 											className={
 												item.badgeVariant === "success"
-													? "bg-green-500 text-white hover:bg-green-600"
+													? "bg-primary text-primary-foreground hover:bg-primary/90 duration-200 ease-linear"
 													: ""
 											}
 										>

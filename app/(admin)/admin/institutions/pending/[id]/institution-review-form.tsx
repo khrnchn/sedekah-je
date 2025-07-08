@@ -476,7 +476,6 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 									id="sourceUrl"
 									{...register("sourceUrl")}
 									disabled
-									className="bg-background"
 									placeholder="No source URL provided"
 								/>
 								{institution.sourceUrl && (
@@ -503,7 +502,6 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 								rows={3}
 								{...register("contributorRemarks")}
 								disabled
-								className="bg-background"
 								placeholder="No additional notes provided"
 							/>
 						</div>
