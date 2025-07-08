@@ -33,7 +33,7 @@ const iconMap: Record<string, LucideIcon> = {
 	XCircle,
 };
 
-export function NavDocuments({
+export function NavInstitutions({
 	items,
 }: {
 	items: {
