@@ -15,6 +15,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
 	Table,
 	TableBody,
@@ -60,6 +61,8 @@ interface DataTableProps<TData, TValue> {
 	onSelectionChange?: (selectedRows: TData[]) => void;
 	leftToolbarContent?: React.ReactNode;
 	rightToolbarContent?: React.ReactNode;
+	isLoading?: boolean;
+	loadingRowCount?: number;
 }
 
 export function ReusableDataTable<TData, TValue>({
@@ -75,6 +78,8 @@ export function ReusableDataTable<TData, TValue>({
 	onSelectionChange,
 	leftToolbarContent,
 	rightToolbarContent,
+	isLoading = false,
+	loadingRowCount = 5,
 }: DataTableProps<TData, TValue>) {
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -193,7 +198,17 @@ export function ReusableDataTable<TData, TValue>({
 						))}
 					</TableHeader>
 					<TableBody>
-						{table.getRowModel().rows?.length ? (
+						{isLoading ? (
+							Array.from({ length: loadingRowCount }).map((_, index) => (
+								<TableRow key={`loading-${index}`}>
+									{columns.map((_, colIndex) => (
+										<TableCell key={`loading-cell-${colIndex}`}>
+											<Skeleton className="h-4 w-full" />
+										</TableCell>
+									))}
+								</TableRow>
+							))
+						) : table.getRowModel().rows?.length ? (
 							table.getRowModel().rows.map((row) => (
 								<TableRow
 									key={row.id}
