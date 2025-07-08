@@ -7,6 +7,7 @@ import {
 	categories as CATEGORY_OPTIONS,
 	states as STATE_OPTIONS,
 } from "@/db/institutions";
+import type { Institution } from "@/db/institutions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { forwardRef, useImperativeHandle, useTransition } from "react";
@@ -16,15 +17,8 @@ import { z } from "zod";
 import { updateInstitutionByAdmin } from "../../_lib/queries";
 
 type Props = {
-	institution: {
+	institution: Partial<Institution> & {
 		id: number;
-		name?: string;
-		category?: string;
-		state?: string;
-		city?: string;
-		address?: string;
-		qrContent?: string | null;
-		[key: string]: unknown;
 	};
 };
 
@@ -40,8 +34,8 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 		// dynamically build schema based on whether original qrContent exists
 		const dynamicSchema = z.object({
 			name: z.string().min(1, "Name is required"),
-			category: z.string().min(1),
-			state: z.string().min(1),
+			category: z.enum(CATEGORY_OPTIONS),
+			state: z.enum(STATE_OPTIONS),
 			city: z.string().min(1),
 			address: z.string().optional(),
 			qrContent: institution.qrContent
@@ -63,8 +57,8 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 			resolver: zodResolver(dynamicSchema),
 			defaultValues: {
 				name: institution.name ?? "",
-				category: institution.category ?? "",
-				state: institution.state ?? "",
+				category: institution.category || CATEGORY_OPTIONS[0],
+				state: institution.state || STATE_OPTIONS[0],
 				city: institution.city ?? "",
 				address: institution.address ?? "",
 				qrContent: institution.qrContent ?? "",
