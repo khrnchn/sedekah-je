@@ -78,6 +78,31 @@ export async function getRejectedInstitutions() {
 }
 
 /**
+ * Fetch all institutions that have been approved.
+ * Joins contributor information when available for display purposes.
+ */
+export async function getApprovedInstitutions() {
+	await requireAdminSession();
+	return await db
+		.select({
+			id: institutions.id,
+			name: institutions.name,
+			category: institutions.category,
+			state: institutions.state,
+			city: institutions.city,
+			contributorName: users.name,
+			contributorId: users.id,
+			createdAt: institutions.createdAt,
+			reviewedAt: institutions.reviewedAt,
+			reviewedBy: institutions.reviewedBy,
+		})
+		.from(institutions)
+		.leftJoin(users, eq(institutions.contributorId, users.id))
+		.where(eq(institutions.status, "approved"))
+		.orderBy(institutions.createdAt);
+}
+
+/**
  * Get the count of pending institutions for display in sidebar badges
  */
 export async function getPendingInstitutionsCount() {
@@ -167,6 +192,42 @@ export async function getPendingInstitutionById(id: number) {
 		.from(institutions)
 		.leftJoin(users, eq(institutions.contributorId, users.id))
 		.where(and(eq(institutions.id, id), eq(institutions.status, "pending")))
+		.limit(1);
+}
+
+/**
+ * Fetch a single approved institution by ID. Includes contributor information.
+ */
+export async function getApprovedInstitutionById(id: number) {
+	await requireAdminSession();
+	return await db
+		.select({
+			id: institutions.id,
+			name: institutions.name,
+			description: institutions.description,
+			category: institutions.category,
+			state: institutions.state,
+			city: institutions.city,
+			address: institutions.address,
+			supportedPayment: institutions.supportedPayment,
+			qrImage: institutions.qrImage,
+			qrContent: institutions.qrContent,
+			coords: institutions.coords,
+			socialMedia: institutions.socialMedia,
+			status: institutions.status,
+			contributorName: users.name,
+			contributorId: users.id,
+			contributorEmail: users.email,
+			contributorRemarks: institutions.contributorRemarks,
+			sourceUrl: institutions.sourceUrl,
+			createdAt: institutions.createdAt,
+			reviewedBy: institutions.reviewedBy,
+			reviewedAt: institutions.reviewedAt,
+			adminNotes: institutions.adminNotes,
+		})
+		.from(institutions)
+		.leftJoin(users, eq(institutions.contributorId, users.id))
+		.where(and(eq(institutions.id, id), eq(institutions.status, "approved")))
 		.limit(1);
 }
 
