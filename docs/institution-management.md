@@ -23,8 +23,13 @@
 ## Progress
 - [x] `getPendingInstitutions()` implemented.
 - [x] Basic Pending Approvals page created.
-- [ ] Approve / Reject actions.
-- [ ] Bulk operations & filters.
+- [x] Approve / Reject actions.
+- [x] Bulk operations & filters:
+  - [x] Add row selection to the table
+  - [x] Add bulk approve/reject actions in the table toolbar
+  - [x] Add category/state filter dropdowns (using shared constants)
+  - [x] Replace empty-string Select values with sentinel "all"
+- [x] Refactor: server page + client PendingInstitutionsTable.
 - [ ] Navigation entry for the new page.
 
 ## Blockers / Notes

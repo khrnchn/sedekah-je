@@ -45,7 +45,7 @@ import {
 	ChevronsRightIcon,
 	ColumnsIcon,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -56,6 +56,10 @@ interface DataTableProps<TData, TValue> {
 	enablePagination?: boolean;
 	pageSize?: number;
 	emptyStateMessage?: string;
+	enableRowSelection?: boolean;
+	onSelectionChange?: (selectedRows: TData[]) => void;
+	leftToolbarContent?: React.ReactNode;
+	rightToolbarContent?: React.ReactNode;
 }
 
 export function ReusableDataTable<TData, TValue>({
@@ -67,10 +71,15 @@ export function ReusableDataTable<TData, TValue>({
 	enablePagination = true,
 	pageSize = 10,
 	emptyStateMessage = "No results found.",
+	enableRowSelection = false,
+	onSelectionChange,
+	leftToolbarContent,
+	rightToolbarContent,
 }: DataTableProps<TData, TValue>) {
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+	const [rowSelection, setRowSelection] = useState({});
 
 	const table = useReactTable({
 		data,
@@ -84,10 +93,13 @@ export function ReusableDataTable<TData, TValue>({
 		onColumnVisibilityChange: setColumnVisibility,
 		getFacetedRowModel: getFacetedRowModel(),
 		getFacetedUniqueValues: getFacetedUniqueValues(),
+		enableRowSelection,
+		onRowSelectionChange: setRowSelection,
 		state: {
 			sorting,
 			columnFilters,
 			columnVisibility,
+			rowSelection,
 		},
 		initialState: {
 			pagination: {
@@ -96,53 +108,69 @@ export function ReusableDataTable<TData, TValue>({
 		},
 	});
 
+	// Call parent callback only when selection actually changes
+	// biome-ignore lint/correctness/useExhaustiveDependencies: We only want to trigger on rowSelection changes
+	useEffect(() => {
+		if (!onSelectionChange) return;
+		const selectedRows = table
+			.getSelectedRowModel()
+			.rows.map((row) => row.original);
+		onSelectionChange(selectedRows as TData[]);
+	}, [rowSelection]);
+
 	return (
 		<div className="space-y-4">
 			<div className="flex items-center justify-between">
-				<div className="flex flex-1 items-center space-x-2">
+				<div className="flex items-center space-x-2">
 					{searchKey && (
-						<Input
-							placeholder={searchPlaceholder}
-							value={
-								(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""
-							}
-							onChange={(event) =>
-								table.getColumn(searchKey)?.setFilterValue(event.target.value)
-							}
-							className="h-8 w-[150px] lg:w-[250px]"
-						/>
+						<div className="w-[150px] lg:w-[250px]">
+							<Input
+								placeholder={searchPlaceholder}
+								value={
+									(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""
+								}
+								onChange={(event) =>
+									table.getColumn(searchKey)?.setFilterValue(event.target.value)
+								}
+								className="h-8"
+							/>
+						</div>
+					)}
+					{leftToolbarContent}
+				</div>
+				<div className="flex items-center space-x-2">
+					{rightToolbarContent}
+					{enableColumnVisibility && (
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Button variant="outline" size="sm" className="ml-auto h-8">
+									<ColumnsIcon className="mr-2 h-4 w-4" />
+									View
+									<ChevronDownIcon className="ml-2 h-4 w-4" />
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent align="end" className="w-[150px]">
+								{table
+									.getAllColumns()
+									.filter((column) => column.getCanHide())
+									.map((column) => {
+										return (
+											<DropdownMenuCheckboxItem
+												key={column.id}
+												className="capitalize"
+												checked={column.getIsVisible()}
+												onCheckedChange={(value) =>
+													column.toggleVisibility(!!value)
+												}
+											>
+												{column.id}
+											</DropdownMenuCheckboxItem>
+										);
+									})}
+							</DropdownMenuContent>
+						</DropdownMenu>
 					)}
 				</div>
-				{enableColumnVisibility && (
-					<DropdownMenu>
-						<DropdownMenuTrigger asChild>
-							<Button variant="outline" size="sm" className="ml-auto h-8">
-								<ColumnsIcon className="mr-2 h-4 w-4" />
-								View
-								<ChevronDownIcon className="ml-2 h-4 w-4" />
-							</Button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end" className="w-[150px]">
-							{table
-								.getAllColumns()
-								.filter((column) => column.getCanHide())
-								.map((column) => {
-									return (
-										<DropdownMenuCheckboxItem
-											key={column.id}
-											className="capitalize"
-											checked={column.getIsVisible()}
-											onCheckedChange={(value) =>
-												column.toggleVisibility(!!value)
-											}
-										>
-											{column.id}
-										</DropdownMenuCheckboxItem>
-									);
-								})}
-						</DropdownMenuContent>
-					</DropdownMenu>
-				)}
 			</div>
 			<div className="overflow-auto rounded-lg border">
 				<Table>
