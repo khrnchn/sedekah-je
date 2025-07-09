@@ -1,3 +1,5 @@
+"use client";
+
 import { mockGetDoa, useGetDoa } from "@/hooks/use-getdoa";
 
 const GetdoaFooter = () => {
