@@ -1,7 +1,14 @@
 import { db } from "@/db";
 import { institutions } from "@/db/schema";
-import { and, eq, ilike, inArray, or } from "drizzle-orm";
+import type {
+	categories as categoryOptions,
+	states as stateOptions,
+} from "@/lib/institution-constants";
+import { and, count, eq, ilike, inArray, or } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
+
+type Category = (typeof categoryOptions)[number];
+type State = (typeof stateOptions)[number];
 
 export async function GET(request: NextRequest) {
 	const { searchParams } = new URL(request.url);
@@ -36,16 +43,7 @@ export async function GET(request: NextRequest) {
 			if (categories.length > 0) {
 				// Type assertion needed for Drizzle's strict typing
 				conditions.push(
-					inArray(
-						institutions.category,
-						categories as (
-							| "mosque"
-							| "surau"
-							| "tahfiz"
-							| "kebajikan"
-							| "others"
-						)[],
-					),
+					inArray(institutions.category, categories as Category[]),
 				);
 			}
 		}
@@ -53,33 +51,12 @@ export async function GET(request: NextRequest) {
 		// State filter
 		if (state) {
 			// Type assertion needed for Drizzle's strict typing
-			conditions.push(
-				eq(
-					institutions.state,
-					state as
-						| "Johor"
-						| "Kedah"
-						| "Kelantan"
-						| "Melaka"
-						| "Negeri Sembilan"
-						| "Pahang"
-						| "Perak"
-						| "Perlis"
-						| "Pulau Pinang"
-						| "Sabah"
-						| "Sarawak"
-						| "Selangor"
-						| "Terengganu"
-						| "W.P. Kuala Lumpur"
-						| "W.P. Labuan"
-						| "W.P. Putrajaya",
-				),
-			);
+			conditions.push(eq(institutions.state, state as State));
 		}
 
 		// Get total count for pagination
 		const totalQuery = db
-			.select({ count: institutions.id })
+			.select({ count: count() })
 			.from(institutions)
 			.where(and(...conditions));
 
@@ -97,7 +74,7 @@ export async function GET(request: NextRequest) {
 			totalQuery,
 		]);
 
-		const total = totalResult.length;
+		const total = totalResult[0]?.count ?? 0;
 		const hasMore = offset + limit < total;
 
 		return NextResponse.json({
