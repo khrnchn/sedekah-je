@@ -1,9 +1,14 @@
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Pool } from "pg";
+import { env } from "@/env";
+import { drizzle } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
 import * as schema from "./schema";
 
-const pool = new Pool({
-	connectionString: process.env.DATABASE_URL,
+// Create postgres client with Supabase-compatible settings
+// Disable prefetch as it is not supported for "Transaction" pool mode
+const client = postgres(env.DATABASE_URL, {
+	prepare: false,
+	// Additional settings for better performance and compatibility
+	max: 10,
 });
 
-export const db = drizzle(pool, { schema });
+export const db = drizzle(client, { schema });
