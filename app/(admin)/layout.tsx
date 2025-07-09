@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { GlobalCommand } from "@/components/global-command";
+import { Toaster } from "@/components/ui/sonner";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
@@ -31,6 +32,7 @@ export default async function AdminLayout({
 		<>
 			{children}
 			<GlobalCommand />
+			<Toaster />
 		</>
 	);
 }
