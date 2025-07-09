@@ -4,7 +4,6 @@ import { findNearest, getDistance } from "geolib";
 import type { GeolibInputCoordinates } from "geolib/es/types";
 import { debounce } from "lodash-es";
 import { useRouter, useSearchParams } from "next/navigation";
-import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import CollapsibleCustomMap from "@/components/custom-map";
@@ -13,18 +12,17 @@ import { Card } from "@/components/ui/card";
 import InstitutionCard from "@/components/ui/institution-card";
 import PageSection from "@/components/ui/pageSection";
 import { Skeleton } from "@/components/ui/skeleton";
-import { removeDuplicateInstitutions, shuffleInstitutions } from "@/lib/utils";
 
 import FilterCategory from "@/components/filter-category";
 import FilterState from "@/components/filter-state";
 import FilteredCount from "@/components/filtered-count";
-import RamadanCountdown from "@/components/ramadan-countdown";
 import Search from "@/components/search";
 import { Button } from "@/components/ui/button";
 import { HelpCircle, MapIcon } from "lucide-react";
 import Link from "next/link";
 
 import type { Institution as OldInstitution } from "@/app/types/institutions";
+import RamadanCountdown from "@/components/ramadan-countdown";
 import type { Institution } from "@/db/schema";
 
 type SearchParams = {
@@ -250,7 +248,7 @@ export function PageClient({
 
 	return (
 		<PageSection>
-			<RamadanCountdown />
+			{/* <RamadanCountdown /> */}
 			<FilterCategory
 				onCategoryChange={handleCategoryChange}
 				selectedState={selectedState}
