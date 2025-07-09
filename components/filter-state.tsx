@@ -52,10 +52,13 @@ const states = [
 type Props = {
 	onStateChange: (state: string) => void;
 	className?: string;
+	initialState?: string;
 };
 
-const FilterState = ({ onStateChange, className }: Props) => {
-	const [selectedState, setSelectedState] = useState<string>(ALL_STATES);
+const FilterState = ({ onStateChange, className, initialState }: Props) => {
+	// Convert empty string to ALL_STATES for display, but keep actual state value
+	const initialValue = initialState && initialState !== "" ? initialState : ALL_STATES;
+	const [selectedState, setSelectedState] = useState<string>(initialValue);
 
 	const handleStateChange = (currentValue: string) => {
 		const newState = currentValue === ALL_STATES ? "" : currentValue;

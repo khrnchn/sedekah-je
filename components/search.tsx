@@ -2,17 +2,21 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Search as SearchIcon } from "lucide-react";
 import type React from "react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
 type SearchProps = {
 	onSearchChange: (query: string) => void;
 	className?: string;
+	initialValue?: string;
 };
 
-const Search = ({ onSearchChange, className }: SearchProps) => {
+const Search = ({ onSearchChange, className, initialValue }: SearchProps) => {
+	const [searchValue, setSearchValue] = useState(initialValue || "");
 	const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		onSearchChange(e.target.value);
+		const value = e.target.value;
+		setSearchValue(value);
+		onSearchChange(value);
 	};
 
 	const inputRef = useRef<HTMLInputElement>(null);
@@ -30,6 +34,7 @@ const Search = ({ onSearchChange, className }: SearchProps) => {
 				type="search"
 				placeholder="Cari masjid/surau/institusi..."
 				className="w-full rounded-lg bg-background text-sm border"
+				value={searchValue}
 				onChange={handleSearchChange}
 			/>
 		</div>
