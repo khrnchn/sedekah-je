@@ -67,7 +67,7 @@ export const Header = () => {
         <Link href="/">
           <Image src="/masjid.svg" alt="Masjid" width={100} height={100} />
         </Link>
-        <div className="hidden md:flex flex-col items-center md:items-start">
+        <div className="flex flex-col items-center md:items-start">
           <Link href="/">
             <h1 className="text-2xl md:text-3xl font-bold text-foreground">
               SedekahJe

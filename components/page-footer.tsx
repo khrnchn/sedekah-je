@@ -1,5 +1,7 @@
 "use client";
 
+import { Separator } from "@/components/ui/separator";
+import { ExternalLink, Heart } from "lucide-react";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 
@@ -43,6 +45,7 @@ const navigation = {
 		},
 	],
 	partners: [
+		{ name: "Cari Fatwa", href: "https://carifatwa.com" },
 		{ name: "Quran Manzil", href: "https://quran-manzil.com" },
 		{ name: "Quran Sunnah AI", href: "https://quran-sunnah-ai.com" },
 		{ name: "Belasungkawa", href: "https://belasungkawa.my" },
@@ -62,7 +65,7 @@ const navigation = {
 		},
 		{
 			name: "Data Trafik",
-			href: "https://analytics.farhanhelmy.com/share/OrlbJdQSaPiFFLqT/sedekah.je",
+			href: "https://analytics.farhanhelmy.com/share/qqGVUCdO8JGBoSk5/sedekah.je",
 		},
 		{ name: "Logo", href: "https://www.flaticon.com/free-icons/holy" },
 	],
@@ -70,6 +73,10 @@ const navigation = {
 		{
 			name: "Portfolio Saya",
 			href: "https://khairin.my",
+		},
+		{
+			name: "Dropjual.com",
+			href: "https://dropjual.com",
 		},
 	],
 };
@@ -80,115 +87,185 @@ export default function PageFooter() {
 	return (
 		<footer
 			aria-labelledby="footer-heading"
-			className={"bg-[hsl(var(--background))] text-[hsl(var(--foreground))]"}
+			className="bg-gradient-to-br from-background to-muted/20 border-t border-border/40 mt-16"
 		>
 			<h2 id="footer-heading" className="sr-only">
 				Footer
 			</h2>
 			<div className="mx-auto max-w-7xl px-6 py-12 sm:py-16 lg:px-8 lg:py-20">
-				<div className="xl:grid xl:grid-cols-3 xl:gap-8">
-					<div className="space-y-5 xl:col-span-1">
-						<Image
-							alt="Logo Masjid SedekahJe"
-							src="/masjid.svg"
-							width={100}
-							height={20}
-							title="Logo created by Freepik - Flaticon"
-							className="cursor-pointer"
-						/>
-						<p className="text-sm leading-6">
+				<div className="xl:grid xl:grid-cols-3 xl:gap-12">
+					{/* Brand Section */}
+					<div className="space-y-6 xl:col-span-1">
+						<div className="flex items-center space-x-3">
+							<Image
+								alt="Logo Masjid SedekahJe"
+								src="/masjid.svg"
+								width={40}
+								height={40}
+								title="Logo created by Freepik - Flaticon"
+								className="rounded-lg"
+							/>
+							<div>
+								<h3 className="text-lg font-bold text-foreground">
+									sedekah.je
+								</h3>
+								<p className="text-xs text-muted-foreground">QR Directory</p>
+							</div>
+						</div>
+
+						<p className="text-sm leading-6 text-muted-foreground max-w-md">
 							Senarai QR masjid, surau, dan institusi yang dikumpulkan oleh
-							netizen.
+							netizen untuk memudahkan sedekah dan sumbangan.
 						</p>
-						<div className="flex space-x-6">
+
+						{/* Social Links */}
+						<div className="flex space-x-4">
 							{navigation.social.map((item) => (
 								<a
 									key={item.name}
 									href={item.href}
 									target="_blank"
-									className="hover:text-gray-500"
+									className="group flex items-center justify-center w-10 h-10 rounded-full bg-muted/50 hover:bg-muted transition-colors duration-200"
 									rel="noreferrer"
+									title={`Follow us on ${item.name}`}
 								>
 									<span className="sr-only">{item.name}</span>
-									<item.icon aria-hidden="true" className="h-6 w-6" />
+									<item.icon
+										aria-hidden="true"
+										className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors"
+									/>
 								</a>
 							))}
 						</div>
-						<p className="text-xs text-left mt-5">
-							&copy; {new Date().getFullYear()} Hak Cipta Terpelihara.
-							<br /> Dibina oleh{" "}
-							<a
-								href="https://github.com/khrnchn/sedekah-je/graphs/contributors"
-								target="_blank"
-								className="text-blue-500 hover:underline"
-								rel="noreferrer"
-							>
-								Khairin Chan dan kawan kawan.
-							</a>
-						</p>
 					</div>
-					<div className="mt-4 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">
-						<div className="md:grid md:grid-cols-2 md:gap-8">
+
+					{/* Links Section */}
+					<div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 xl:col-span-2 xl:mt-0">
+						<div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
+							{/* Resources */}
 							<div>
-								<h3 className="text-sm font-semibold leading-6 underline">
+								<h3 className="text-sm font-semibold leading-6 text-foreground mb-4">
 									Rujukan
 								</h3>
-								<ul className="mt-4 space-y-4">
+								<ul className="space-y-3">
 									{navigation.resources.map((item) => (
 										<li key={item.name}>
 											<a
 												href={item.href}
 												target="_blank"
-												className="text-sm leading-6 hover:text-gray-900"
+												className="group flex items-center text-sm leading-6 text-muted-foreground hover:text-foreground transition-colors duration-200"
 												rel="noreferrer"
 											>
 												{item.name}
+												<ExternalLink className="ml-1 h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
 											</a>
 										</li>
 									))}
 								</ul>
 							</div>
-							<div className="mt-4 md:mt-0">
-								<h3 className="text-sm font-semibold leading-6 underline">
+
+							{/* Partners */}
+							<div>
+								<h3 className="text-sm font-semibold leading-6 text-foreground mb-4">
 									Lawati Juga
 								</h3>
-								<ul className="mt-4 space-y-4">
-									{navigation.partners.map((item) => (
+								<ul className="space-y-3">
+									{navigation.partners.slice(0, 6).map((item) => (
 										<li key={item.name}>
 											<a
 												href={`${item.href}?ref=sedekah.je`}
 												target="_blank"
-												className="text-sm leading-6 hover:text-gray-900"
+												className="group flex items-center text-sm leading-6 text-muted-foreground hover:text-foreground transition-colors duration-200"
 												rel="noreferrer"
 											>
 												{item.name}
+												<ExternalLink className="ml-1 h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
 											</a>
 										</li>
 									))}
 								</ul>
 							</div>
 						</div>
-						<div className="md:grid md:grid-cols-2 md:gap-8">
+
+						<div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
+							{/* More Partners */}
 							<div>
-								<h3 className="text-sm font-semibold leading-6 underline">
+								<h3 className="text-sm font-semibold leading-6 text-foreground mb-4">
+									Projek Rakan
+								</h3>
+								<ul className="space-y-3">
+									{navigation.partners.slice(6).map((item) => (
+										<li key={item.name}>
+											<a
+												href={`${item.href}?ref=sedekah.je`}
+												target="_blank"
+												className="group flex items-center text-sm leading-6 text-muted-foreground hover:text-foreground transition-colors duration-200"
+												rel="noreferrer"
+											>
+												{item.name}
+												<ExternalLink className="ml-1 h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+											</a>
+										</li>
+									))}
+								</ul>
+							</div>
+
+							{/* Other Projects */}
+							<div>
+								<h3 className="text-sm font-semibold leading-6 text-foreground mb-4">
 									Projek Lain
 								</h3>
-								<ul className="mt-4 space-y-4">
+								<ul className="space-y-3">
 									{navigation.projects.map((item) => (
 										<li key={item.name}>
 											<a
 												href={`${item.href}?ref=sedekah.je`}
 												target="_blank"
-												className="text-sm leading-6 hover:text-gray-900"
+												className="group flex items-center text-sm leading-6 text-muted-foreground hover:text-foreground transition-colors duration-200"
 												rel="noreferrer"
 											>
 												{item.name}
+												<ExternalLink className="ml-1 h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
 											</a>
 										</li>
 									))}
 								</ul>
 							</div>
 						</div>
+					</div>
+				</div>
+
+				{/* Footer Bottom */}
+				<Separator className="my-8" />
+				<div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+					<p className="text-xs text-muted-foreground">
+						&copy; {new Date().getFullYear()} Hak Cipta Terpelihara. Dibina
+						dengan{" "}
+						<Heart className="inline h-3 w-3 text-red-500" aria-hidden="true" />{" "}
+						oleh{" "}
+						<a
+							href="https://github.com/khrnchn/sedekah-je/graphs/contributors"
+							target="_blank"
+							className="text-primary hover:underline font-medium"
+							rel="noreferrer"
+						>
+							Khairin Chan dan kawan-kawan
+						</a>
+						.
+					</p>
+					<div className="flex items-center gap-4 text-xs text-muted-foreground">
+						<a href="/faq" className="hover:text-foreground transition-colors">
+							Soalan Lazim
+						</a>
+						<span>•</span>
+						<a
+							href="https://github.com/khrnchn/sedekah-je"
+							target="_blank"
+							className="hover:text-foreground transition-colors"
+							rel="noreferrer"
+						>
+							Sumber Kod
+						</a>
 					</div>
 				</div>
 			</div>
