@@ -11,7 +11,6 @@ import {
 	varchar,
 } from "drizzle-orm/pg-core";
 import { timestamps } from "./helpers";
-import { users } from "./users";
 
 // Re-export for other modules depending on db/institutions exports
 export { categories, states };
@@ -62,20 +61,7 @@ export const institutions = pgTable("institutions", {
 	...timestamps,
 });
 
-export const institutionsRelations = relations(
-	institutions,
-	({ one, many }) => ({
-		contributor: one(users, {
-			fields: [institutions.contributorId],
-			references: [users.id],
-		}),
-		reviewer: one(users, {
-			fields: [institutions.reviewedBy],
-			references: [users.id],
-			relationName: "reviewer",
-		}),
-	}),
-);
+// Relations will be defined in schema.ts to avoid circular imports
 
 export type Institution = typeof institutions.$inferSelect;
 export type NewInstitution = typeof institutions.$inferInsert;

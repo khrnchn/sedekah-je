@@ -1,5 +1,4 @@
 import { HomeIcon, SettingsIcon, TrendingUpIcon } from "lucide-react";
-import { headers } from "next/headers";
 import type * as React from "react";
 
 import {
@@ -7,7 +6,6 @@ import {
 	getPendingInstitutionsCount,
 	getRejectedInstitutionsCount,
 } from "@/app/(admin)/admin/institutions/_lib/queries";
-import { auth } from "@/auth";
 import { NavInstitutions } from "@/components/nav-institutions";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
@@ -56,6 +54,11 @@ const data = {
 			],
 		},
 		{
+			title: "Claims",
+			url: "/admin/claims",
+			icon: "Crown",
+		},
+		{
 			title: "Analytics",
 			url: "/admin/analytics",
 			icon: "BarChart",
@@ -87,16 +90,23 @@ const data = {
 	],
 };
 
-export async function AppSidebar({
-	...props
-}: React.ComponentProps<typeof Sidebar>) {
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+	user?: {
+		name?: string;
+		email?: string;
+		image?: string;
+	};
+}
+
+export async function AppSidebar({ user, ...props }: AppSidebarProps) {
 	let pendingCount = 0;
 	let approvedCount = 0;
 	let rejectedCount = 0;
-	let currentUser = {
-		name: "Admin",
-		email: "admin@sedekah.je",
-		avatar: "/avatars/admin.jpg",
+
+	const currentUser = {
+		name: user?.name || "Admin",
+		email: user?.email || "admin@sedekah.je",
+		avatar: user?.image || "/avatars/admin.jpg",
 	};
 
 	try {
@@ -105,19 +115,6 @@ export async function AppSidebar({
 			getApprovedInstitutionsCount(),
 			getRejectedInstitutionsCount(),
 		]);
-
-		// Get current user session
-		const session = await auth.api.getSession({
-			headers: await headers(),
-		});
-
-		if (session?.user) {
-			currentUser = {
-				name: session.user.name || "Admin",
-				email: session.user.email || "admin@sedekah.je",
-				avatar: session.user.image || "/avatars/admin.jpg",
-			};
-		}
 	} catch (error) {
 		// Silently handle error - will show defaults
 		console.error("Error fetching sidebar data:", error);
