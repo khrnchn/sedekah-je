@@ -3,9 +3,9 @@
 import { findNearest, getDistance } from "geolib";
 import type { GeolibInputCoordinates } from "geolib/es/types";
 import { debounce } from "lodash-es";
+import { useRouter, useSearchParams } from "next/navigation";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 
 import CollapsibleCustomMap from "@/components/custom-map";
 import RawakFooter from "@/components/rawak-footer";
@@ -24,8 +24,8 @@ import { Button } from "@/components/ui/button";
 import { HelpCircle, MapIcon } from "lucide-react";
 import Link from "next/link";
 
-import type { Institution } from "@/db/schema";
 import type { Institution as OldInstitution } from "@/app/types/institutions";
+import type { Institution } from "@/db/schema";
 
 type SearchParams = {
 	search?: string;
@@ -41,21 +41,25 @@ type Props = {
 
 const limit = 15;
 
-export function PageClient({ initialInstitutions, initialSearchParams }: Props) {
+export function PageClient({
+	initialInstitutions,
+	initialSearchParams,
+}: Props) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
-	
+
 	// URL state
 	const [query, setQuery] = useState<string>(initialSearchParams.search || "");
 	const [selectedCategories, setSelectedCategories] = useState<string[]>(
-		initialSearchParams.category?.split(",").filter(Boolean) || []
+		initialSearchParams.category?.split(",").filter(Boolean) || [],
 	);
 	const [selectedState, setSelectedState] = useState<string>(
-		initialSearchParams.state || ""
+		initialSearchParams.state || "",
 	);
-	
+
 	// Component state
-	const [institutions, setInstitutions] = useState<Institution[]>(initialInstitutions);
+	const [institutions, setInstitutions] =
+		useState<Institution[]>(initialInstitutions);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
 	const [offset, setOffset] = useState<number>(0);
@@ -74,7 +78,7 @@ export function PageClient({ initialInstitutions, initialSearchParams }: Props) 
 
 	// Convert database Institution to component-compatible format
 	const adaptedInstitutions = useMemo(() => {
-		return institutions.map(inst => ({
+		return institutions.map((inst) => ({
 			...inst,
 			description: inst.description || undefined,
 			supportedPayment: inst.supportedPayment || undefined,
@@ -102,22 +106,27 @@ export function PageClient({ initialInstitutions, initialSearchParams }: Props) 
 	const updateURL = useCallback(
 		(newQuery: string, newCategories: string[], newState: string) => {
 			const params = new URLSearchParams();
-			
+
 			if (newQuery) params.set("search", newQuery);
-			if (newCategories.length > 0) params.set("category", newCategories.join(","));
+			if (newCategories.length > 0)
+				params.set("category", newCategories.join(","));
 			if (newState) params.set("state", newState);
-			
+
 			const newURL = params.toString() ? `/?${params.toString()}` : "/";
 			router.push(newURL, { scroll: false });
 		},
-		[router]
+		[router],
 	);
 
 	const debouncedUpdateURL = useMemo(
-		() => debounce((newQuery: string, newCategories: string[], newState: string) => {
-			updateURL(newQuery, newCategories, newState);
-		}, 500),
-		[updateURL]
+		() =>
+			debounce(
+				(newQuery: string, newCategories: string[], newState: string) => {
+					updateURL(newQuery, newCategories, newState);
+				},
+				500,
+			),
+		[updateURL],
 	);
 
 	const handleSearch = useCallback(
@@ -127,7 +136,7 @@ export function PageClient({ initialInstitutions, initialSearchParams }: Props) 
 			setAllItemsLoaded(false);
 			debouncedUpdateURL(newQuery, selectedCategories, selectedState);
 		},
-		[debouncedUpdateURL, selectedCategories, selectedState]
+		[debouncedUpdateURL, selectedCategories, selectedState],
 	);
 
 	const handleStateChange = useCallback(
@@ -137,7 +146,7 @@ export function PageClient({ initialInstitutions, initialSearchParams }: Props) 
 			setAllItemsLoaded(false);
 			debouncedUpdateURL(query, selectedCategories, state);
 		},
-		[debouncedUpdateURL, query, selectedCategories]
+		[debouncedUpdateURL, query, selectedCategories],
 	);
 
 	const handleCategoryChange = useCallback(
@@ -147,7 +156,7 @@ export function PageClient({ initialInstitutions, initialSearchParams }: Props) 
 			setAllItemsLoaded(false);
 			debouncedUpdateURL(query, categories, selectedState);
 		},
-		[debouncedUpdateURL, query, selectedState]
+		[debouncedUpdateURL, query, selectedState],
 	);
 
 	const observer = useRef<IntersectionObserver | null>(null);
@@ -165,19 +174,19 @@ export function PageClient({ initialInstitutions, initialSearchParams }: Props) 
 
 			if (node) observer.current.observe(node);
 		},
-		[isLoading]
+		[isLoading],
 	);
 
 	const displayedInstitutions = filteredInstitutions.slice(0, offset + limit);
 	const isFiltered = useMemo(
 		() => query !== "" || selectedCategories.length > 0 || selectedState !== "",
-		[query, selectedCategories, selectedState]
+		[query, selectedCategories, selectedState],
 	);
 	const filteredInstitutionsContainsClosest = useMemo(
 		() =>
 			filteredInstitutions.findIndex((i) => i.id === closestInstitution?.id) !==
 			-1,
-		[filteredInstitutions, closestInstitution]
+		[filteredInstitutions, closestInstitution],
 	);
 
 	useEffect(() => {
@@ -214,7 +223,7 @@ export function PageClient({ initialInstitutions, initialSearchParams }: Props) 
 		const closestCoordinate = findNearest(currentUserCoordinate, listOfCoords);
 		const distanceToCurrentUserInMeter = getDistance(
 			currentUserCoordinate,
-			closestCoordinate
+			closestCoordinate,
 		);
 
 		const c = {
@@ -259,7 +268,11 @@ export function PageClient({ initialInstitutions, initialSearchParams }: Props) 
 						/>
 					</div>
 					<div className="w-full sm:w-4/5">
-						<Search onSearchChange={handleSearch} className="w-full" initialValue={query} />
+						<Search
+							onSearchChange={handleSearch}
+							className="w-full"
+							initialValue={query}
+						/>
 					</div>
 				</div>
 
@@ -328,7 +341,7 @@ export function PageClient({ initialInstitutions, initialSearchParams }: Props) 
 						.filter((i) =>
 							filteredInstitutionsContainsClosest && closestInstitution
 								? i.id !== closestInstitution.id
-								: true
+								: true,
 						)
 						.map((institution, i) => (
 							<InstitutionCard
