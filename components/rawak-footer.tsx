@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/hooks/use-auth";
+import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -22,7 +23,7 @@ const RawakFooter = () => {
 	};
 
 	return (
-		<footer className="h-8 w-full p-8 flex items-center justify-center fixed bottom-0 left-0 right-0 bg-background border-t-2 border-border shadow-sm gap-4">
+		<footer className="h-8 w-full p-8 flex items-center justify-center fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-sm border-t-2 border-border shadow-sm gap-4">
 			<Link href="/rawak">
 				<Button
 					variant="outline"
@@ -39,6 +40,7 @@ const RawakFooter = () => {
 				onClick={handleAddQrClick}
 				disabled={isLoading}
 			>
+				{isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
 				<p className="text-black font-medium bold dark:text-white">
 					Nak Tambah QR?
 				</p>
