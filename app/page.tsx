@@ -1,9 +1,9 @@
-import { Suspense } from "react";
-import { getInstitutions } from "@/lib/queries/institutions";
-import { PageClient } from "./page-client";
+import { Card } from "@/components/ui/card";
 import { Header } from "@/components/ui/header";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Card } from "@/components/ui/card";
+import { getInstitutions } from "@/lib/queries/institutions";
+import { Suspense } from "react";
+import { PageClient } from "./page-client";
 
 type SearchParams = {
 	search?: string;

@@ -17,7 +17,7 @@ const FilterCategory = ({
 	initialCategories,
 }: Props) => {
 	const [selectedCategories, setSelectedCategories] = useState<string[]>(
-		initialCategories || []
+		initialCategories || [],
 	);
 
 	const mappedCategories = Object.keys(categories).map((category) => ({
