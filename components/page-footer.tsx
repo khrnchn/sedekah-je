@@ -46,17 +46,17 @@ const navigation = {
 	],
 	partners: [
 		{ name: "Cari Fatwa", href: "https://carifatwa.com" },
+		{ name: "GetDoa", href: "https://getdoa.com" },
+		{ name: "Kelas Mengaji Online", href: "https://kelasmengaji.online" },
+		{ name: "Saham Akhirat", href: "https://sahamakhirat.org" },
+		{ name: "Belasungkawa", href: "https://belasungkawa.my" },
 		{ name: "Quran Manzil", href: "https://quran-manzil.com" },
 		{ name: "Quran Sunnah AI", href: "https://quran-sunnah-ai.com" },
-		{ name: "Belasungkawa", href: "https://belasungkawa.my" },
 		{ name: "Meem", href: "https://usemeem.com" },
 		{ name: "duaa.my", href: "https://duaa.my" },
 		{ name: "SemakHadis.com", href: "https://semakhadis.com" },
 		{ name: "CariTadika.my", href: "https://caritadika.my" },
 		{ name: "e-Masjid.my", href: "https://e-masjid.my" },
-		{ name: "GetDoa", href: "https://getdoa.com" },
-		{ name: "Saham Akhirat", href: "https://sahamakhirat.org" },
-		{ name: "Kelas Mengaji Online", href: "https://kelasmengaji.online" },
 	],
 	resources: [
 		{
@@ -167,7 +167,7 @@ export default function PageFooter() {
 							{/* Partners */}
 							<div>
 								<h3 className="text-sm font-semibold leading-6 text-foreground mb-4">
-									Lawati Juga
+									Projek Komuniti
 								</h3>
 								<ul className="space-y-3">
 									{navigation.partners.slice(0, 6).map((item) => (
@@ -191,7 +191,7 @@ export default function PageFooter() {
 							{/* More Partners */}
 							<div>
 								<h3 className="text-sm font-semibold leading-6 text-foreground mb-4">
-									Projek Rakan
+									Projek Komuniti
 								</h3>
 								<ul className="space-y-3">
 									{navigation.partners.slice(6).map((item) => (
