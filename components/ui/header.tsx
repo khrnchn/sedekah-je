@@ -2,23 +2,23 @@
 
 import { Button } from "@/components/ui/button";
 import {
-	Drawer,
-	DrawerContent,
-	DrawerDescription,
-	DrawerHeader,
-	DrawerTitle,
-	DrawerTrigger,
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
 } from "@/components/ui/drawer";
 import { useAuth } from "@/hooks/use-auth";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import {
-	BarChart,
-	HeartHandshake,
-	Home,
-	LayoutDashboard,
-	LogOut,
-	Menu,
+  BarChart,
+  HeartHandshake,
+  Home,
+  LayoutDashboard,
+  LogOut,
+  Menu,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -28,26 +28,26 @@ import { ModeToggle } from "./mode-toggle";
 import { UserNavDesktop } from "./user-nav";
 
 const links = [
-	{
-		name: "Home",
-		href: "/",
-		icon: Home,
-	},
-	{
-		name: "Contributions",
-		href: "/my-contributions",
-		icon: LayoutDashboard,
-	},
-	{
-		name: "Contribute",
-		href: "/contribute",
-		icon: HeartHandshake,
-	},
-	{
-		name: "Leaderboard",
-		href: "/leaderboard",
-		icon: BarChart,
-	},
+  {
+    name: "Home",
+    href: "/",
+    icon: Home,
+  },
+  {
+    name: "Contributions",
+    href: "/my-contributions",
+    icon: LayoutDashboard,
+  },
+  {
+    name: "Contribute",
+    href: "/contribute",
+    icon: HeartHandshake,
+  },
+  {
+    name: "Leaderboard",
+    href: "/leaderboard",
+    icon: BarChart,
+  },
 ];
 
 export const Header = () => {
@@ -74,7 +74,7 @@ export const Header = () => {
             </h1>
           </Link>
           <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 text-center md:text-left">
-            List of mosques, prayer rooms, and institutions.
+            Senarai QR masjid, surau, dan institusi.
           </p>
         </div>
 
