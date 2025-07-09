@@ -57,7 +57,8 @@ type Props = {
 
 const FilterState = ({ onStateChange, className, initialState }: Props) => {
 	// Convert empty string to ALL_STATES for display, but keep actual state value
-	const initialValue = initialState && initialState !== "" ? initialState : ALL_STATES;
+	const initialValue =
+		initialState && initialState !== "" ? initialState : ALL_STATES;
 	const [selectedState, setSelectedState] = useState<string>(initialValue);
 
 	const handleStateChange = (currentValue: string) => {
