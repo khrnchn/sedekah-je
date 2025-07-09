@@ -57,14 +57,14 @@ export default function DashboardPage() {
 								<div className="space-y-4">
 									<Suspense
 										fallback={
-											<div className="h-48 bg-muted rounded-lg animate-pulse" />
+											<div className="h-56 bg-muted rounded-lg animate-pulse" />
 										}
 									>
 										<TopContributors />
 									</Suspense>
 									<Suspense
 										fallback={
-											<div className="h-48 bg-muted rounded-lg animate-pulse" />
+											<div className="h-56 bg-muted rounded-lg animate-pulse" />
 										}
 									>
 										<ActivityFeed />
