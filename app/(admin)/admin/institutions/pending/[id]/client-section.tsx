@@ -9,6 +9,7 @@ import InstitutionReviewForm, {
 	type ReviewFormHandle,
 } from "./institution-review-form";
 import QrImageToolbar from "./qr-image-toolbar";
+import QrReplacementUpload from "./qr-replacement-upload";
 import ReviewActions from "./review-actions";
 
 type Props = {
@@ -29,6 +30,11 @@ type Props = {
 
 export default function ClientSection({ institution }: Props) {
 	const formRef = useRef<ReviewFormHandle | null>(null);
+
+	const handleQrReplacementSuccess = () => {
+		// Refresh the page to show the updated QR code
+		window.location.reload();
+	};
 
 	return (
 		<>
@@ -80,13 +86,31 @@ export default function ClientSection({ institution }: Props) {
 										<div className="font-medium text-sm mb-1">QR Content:</div>
 										{institution.qrContent}
 									</div>
+
+									{/* Original uploaded QR image */}
+									{institution.qrImage && (
+										<div className="w-full border-t pt-4">
+											<div className="text-sm font-medium mb-2">
+												Original Uploaded Image:
+											</div>
+											<div className="flex justify-center">
+												<Image
+													src={institution.qrImage}
+													alt="Original QR Code Upload"
+													width={200}
+													height={200}
+													className="rounded-lg border"
+												/>
+											</div>
+										</div>
+									)}
 								</>
 							) : (
 								<div className="flex flex-col items-center gap-4 w-full">
 									<div className="text-sm text-muted-foreground p-4 bg-amber-50 border border-amber-200 rounded-md text-center">
 										QR code content could not be automatically extracted. Please
 										use the tools below to manually inspect and enter the QR
-										string.
+										string, or upload a new QR code image.
 									</div>
 									<div className="flex justify-center">
 										<Image
@@ -98,6 +122,14 @@ export default function ClientSection({ institution }: Props) {
 										/>
 									</div>
 									<QrImageToolbar imageUrl={institution.qrImage || ""} />
+
+									{/* QR Replacement Upload */}
+									<div className="w-full border-t pt-4">
+										<QrReplacementUpload
+											institutionId={institution.id}
+											onSuccess={handleQrReplacementSuccess}
+										/>
+									</div>
 								</div>
 							)}
 						</CardContent>
