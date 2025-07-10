@@ -3,7 +3,8 @@
 import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions, users } from "@/db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 
 // Helper to ensure the current request is being made by an authenticated admin.
@@ -49,7 +50,7 @@ export async function getPendingInstitutions() {
 		.from(institutions)
 		.leftJoin(users, eq(institutions.contributorId, users.id))
 		.where(eq(institutions.status, "pending"))
-		.orderBy(institutions.createdAt);
+		.orderBy(desc(institutions.createdAt));
 }
 
 /**
@@ -74,7 +75,7 @@ export async function getRejectedInstitutions() {
 		.from(institutions)
 		.leftJoin(users, eq(institutions.contributorId, users.id))
 		.where(eq(institutions.status, "rejected"))
-		.orderBy(institutions.createdAt);
+		.orderBy(desc(institutions.createdAt));
 }
 
 /**
@@ -99,7 +100,7 @@ export async function getApprovedInstitutions() {
 		.from(institutions)
 		.leftJoin(users, eq(institutions.contributorId, users.id))
 		.where(eq(institutions.status, "approved"))
-		.orderBy(institutions.createdAt);
+		.orderBy(desc(institutions.createdAt));
 }
 
 /**
@@ -151,7 +152,7 @@ export async function approveInstitution(
 ) {
 	const session = await requireAdminSession();
 	const reviewerId = session.user.id;
-	return await db
+	const result = await db
 		.update(institutions)
 		.set({
 			status: "approved",
@@ -161,6 +162,13 @@ export async function approveInstitution(
 		})
 		.where(eq(institutions.id, id))
 		.returning();
+
+	// Revalidate relevant pages to update the UI
+	revalidatePath("/admin/institutions/pending");
+	revalidatePath("/admin/institutions/approved");
+	revalidatePath("/admin/dashboard");
+
+	return result;
 }
 
 /**
@@ -173,7 +181,7 @@ export async function rejectInstitution(
 ) {
 	const session = await requireAdminSession();
 	const reviewerId = session.user.id;
-	return await db
+	const result = await db
 		.update(institutions)
 		.set({
 			status: "rejected",
@@ -183,6 +191,13 @@ export async function rejectInstitution(
 		})
 		.where(eq(institutions.id, id))
 		.returning();
+
+	// Revalidate relevant pages to update the UI
+	revalidatePath("/admin/institutions/pending");
+	revalidatePath("/admin/institutions/rejected");
+	revalidatePath("/admin/dashboard");
+
+	return result;
 }
 
 /**
