@@ -44,10 +44,10 @@ function FormFields({
 				{isSubmitting ? (
 					<>
 						<Spinner size="small" className="mr-2" />
-						{qrExtracting ? "Extracting QR..." : "Submitting..."}
+						{qrExtracting ? "Mengekstrak kandungan QR" : "Hantar"}
 					</>
 				) : (
-					"Submit"
+					"Hantar"
 				)}
 			</Button>
 		</fieldset>
@@ -111,8 +111,8 @@ export default function InstitutionForm() {
 
 		if (state.status === "success") {
 			console.log("Success state detected, showing toast");
-			toast.success("Thank you!", {
-				description: "Your contribution is being reviewed.",
+			toast.success("Jazakallahu khair. Terima kasih!", {
+				description: "Sumbangan anda sedang disemak.",
 			});
 			form.reset();
 			const fileInput = document.getElementById(
@@ -122,9 +122,9 @@ export default function InstitutionForm() {
 			clearQrContent();
 		} else if (state.status === "error") {
 			console.log("Server validation errors:", state.errors);
-			toast.error("Error", {
+			toast.error("Ralat", {
 				description:
-					"Please check your form. There are errors in the submitted data.",
+					"Sila semak semula borang anda. Terdapat ralat dalam data yang dihantar.",
 			});
 		}
 	}, [state, clearQrContent, form]);
@@ -134,8 +134,8 @@ export default function InstitutionForm() {
 		const isValid = await form.trigger();
 		if (!isValid) {
 			e.preventDefault();
-			toast.error("Error", {
-				description: "Please check your form. There are errors.",
+			toast.error("Ralat", {
+				description: "Sila semak borang anda. Terdapat ralat.",
 			});
 			return;
 		}
@@ -145,17 +145,17 @@ export default function InstitutionForm() {
 		return (
 			<div className="max-w-lg mx-auto space-y-6 text-center">
 				<h2 className="text-xl font-semibold">
-					Are you currently at the institution location?
+					Adakah anda sedang berada di lokasi institusi?
 				</h2>
 				<div className="flex justify-center gap-4">
 					<Button onClick={fetchLocation} disabled={loadingLocation}>
-						Yes
+						Ya
 					</Button>
 					<Button variant="secondary" onClick={() => setStep("form")}>
-						No
+						Tidak
 					</Button>
 				</div>
-				{loadingLocation && <p>Detecting location…</p>}
+				{loadingLocation && <p>Mengesan lokasi...</p>}
 			</div>
 		);
 	}
@@ -179,7 +179,7 @@ export default function InstitutionForm() {
 
 				<div className="space-y-2">
 					<label htmlFor="qrImage" className="font-medium">
-						QR Code Image <span className="text-red-500">*</span>
+						Gambar Kod QR <span className="text-red-500">*</span>
 					</label>
 					<Input
 						id="qrImage"
@@ -191,11 +191,13 @@ export default function InstitutionForm() {
 						onChange={handleQrImageChange}
 					/>
 					{qrExtracting && (
-						<p className="text-sm text-blue-600">Extracting QR content...</p>
+						<p className="text-sm text-blue-600">Mengekstrak kandungan QR...</p>
 					)}
 					{qrContent && (
 						<div className="p-3 bg-green-50 border border-green-200 rounded-md">
-							<p className="text-sm font-medium text-green-800">QR Content:</p>
+							<p className="text-sm font-medium text-green-800">
+								Kandungan QR:
+							</p>
 							<p className="text-sm text-green-700 break-all">{qrContent}</p>
 						</div>
 					)}
@@ -203,12 +205,12 @@ export default function InstitutionForm() {
 
 				<div className="space-y-2">
 					<label htmlFor="name" className="font-medium">
-						Institution Name <span className="text-red-500">*</span>
+						Nama Institusi <span className="text-red-500">*</span>
 					</label>
 					<Input
 						id="name"
 						{...register("name")}
-						placeholder="Example: Al-Falah Mosque"
+						placeholder="Contoh: Masjid Al-Falah"
 						className={errors.name ? "border-red-500" : ""}
 					/>
 					{errors.name && (
@@ -218,7 +220,7 @@ export default function InstitutionForm() {
 
 				<div className="space-y-2">
 					<label htmlFor="category" className="font-medium">
-						Category <span className="text-red-500">*</span>
+						Kategori <span className="text-red-500">*</span>
 					</label>
 					<select
 						id="category"
@@ -227,11 +229,11 @@ export default function InstitutionForm() {
 						defaultValue=""
 					>
 						<option value="" disabled>
-							Select category
+							Pilih kategori
 						</option>
 						{CATEGORY_OPTIONS.map((c) => (
 							<option key={c} value={c} className="capitalize">
-								{c}
+								{c.charAt(0).toUpperCase() + c.slice(1)}
 							</option>
 						))}
 					</select>
@@ -243,7 +245,7 @@ export default function InstitutionForm() {
 				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 					<div className="space-y-2">
 						<label htmlFor="state" className="font-medium">
-							State <span className="text-red-500">*</span>
+							Negeri <span className="text-red-500">*</span>
 						</label>
 						<select
 							id="state"
@@ -252,7 +254,7 @@ export default function InstitutionForm() {
 							defaultValue={prefilledState || ""}
 						>
 							<option value="" disabled>
-								Select state
+								Pilih negeri
 							</option>
 							{STATE_OPTIONS.map((s) => (
 								<option key={s} value={s} className="capitalize">
@@ -266,12 +268,12 @@ export default function InstitutionForm() {
 					</div>
 					<div className="space-y-2">
 						<label htmlFor="city" className="font-medium">
-							City <span className="text-red-500">*</span>
+							Bandar/Daerah <span className="text-red-500">*</span>
 						</label>
 						<Input
 							id="city"
 							{...register("city")}
-							placeholder="Example: Shah Alam"
+							placeholder="Contoh: Shah Alam"
 							className={errors.city ? "border-red-500" : ""}
 							defaultValue={prefilledCity}
 						/>
@@ -283,12 +285,12 @@ export default function InstitutionForm() {
 
 				<div className="space-y-2">
 					<label htmlFor="contributorRemarks" className="font-medium">
-						Additional Notes
+						Info Tambahan
 					</label>
 					<textarea
 						id="contributorRemarks"
 						{...register("contributorRemarks")}
-						placeholder="Any additional notes or information about this institution..."
+						placeholder="Info tambahan berkenaan intitusi ini"
 						className={`w-full min-h-[80px] px-3 py-2 border rounded-md bg-background resize-vertical ${errors.contributorRemarks ? "border-red-500" : ""}`}
 					/>
 					{errors.contributorRemarks && (
@@ -307,13 +309,13 @@ export default function InstitutionForm() {
 							className="rounded"
 						/>
 						<label htmlFor="fromSocialMedia" className="font-medium">
-							I got this information from social media
+							Saya dapat informasi ini dari media sosial
 						</label>
 					</div>
 					{fromSocialMedia && (
 						<div className="space-y-2 pl-6">
 							<label htmlFor="sourceUrl" className="font-medium text-sm">
-								Source URL
+								Alamat Web
 							</label>
 							<Input
 								id="sourceUrl"
@@ -337,7 +339,7 @@ export default function InstitutionForm() {
 						onClick={() => setSocialMediaExpanded(!socialMediaExpanded)}
 						className="flex items-center space-x-2 font-medium p-0 h-auto hover:bg-transparent"
 					>
-						<span>Social Media</span>
+						<span>Media sosial</span>
 						{socialMediaExpanded ? (
 							<ChevronUp className="w-4 h-4" />
 						) : (
@@ -349,7 +351,7 @@ export default function InstitutionForm() {
 							<Input
 								id="facebook"
 								{...register("facebook")}
-								placeholder="Facebook URL"
+								placeholder="Facebook"
 								className={errors.facebook ? "border-red-500" : ""}
 							/>
 							{errors.facebook && (
@@ -360,7 +362,7 @@ export default function InstitutionForm() {
 							<Input
 								id="instagram"
 								{...register("instagram")}
-								placeholder="Instagram URL"
+								placeholder="Instagram"
 								className={errors.instagram ? "border-red-500" : ""}
 							/>
 							{errors.instagram && (
@@ -371,7 +373,7 @@ export default function InstitutionForm() {
 							<Input
 								id="website"
 								{...register("website")}
-								placeholder="Website URL"
+								placeholder="Laman Web"
 								className={errors.website ? "border-red-500" : ""}
 							/>
 							{errors.website && (

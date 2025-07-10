@@ -12,26 +12,26 @@ import { usePathname } from "next/navigation";
 
 const userNavItems = [
 	{
-		title: "Home",
+		title: "Laman Utama",
 		href: "/",
 		icon: Home,
-		description: "Return to homepage"
+		description: "Kembali ke laman utama"
 	},
 	{
-		title: "Add Institution",
+		title: "Tambah Institusi",
 		href: "/contribute",
 		icon: Plus,
-		description: "Add new institution",
-		badge: "Active"
+		description: "Tambah institusi baru",
+		badge: "Aktif"
 	},
 	{
-		title: "Leaderboard",
+		title: "Carta Penyumbang",
 		href: "/leaderboard",
 		icon: Trophy,
-		description: "View contributor rankings"
+		description: "Lihat carta"
 	},
 	{
-		title: "My Contributions",
+		title: "Sumbangan Saya",
 		href: "/my-contributions",
 		icon: BarChart3,
 		description: "Track your contributions"
@@ -40,10 +40,10 @@ const userNavItems = [
 
 const secondaryNavItems = [
 	{
-		title: "Settings",
+		title: "Tetapan",
 		href: "/settings",
 		icon: Settings,
-		description: "Change account settings"
+		description: "Tukar tetapan akaun"
 	}
 ];
 
@@ -162,7 +162,7 @@ export function UserNav() {
 							onClick={handleSignOut}
 						>
 							<LogOut className="h-4 w-4 mr-2" />
-							Logout
+							Log Keluar
 						</Button>
 					</div>
 				</div>
@@ -212,7 +212,7 @@ export function UserNavDesktop() {
 				onClick={handleSignOut}
 			>
 				<LogOut className="h-4 w-4 mr-2" />
-				Logout
+				Log Keluar
 			</Button>
 		</div>
 	);

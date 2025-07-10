@@ -91,7 +91,7 @@ async function LeaderboardContent() {
 							{stats.totalContributors}
 						</div>
 						<p className="text-xs md:text-sm text-muted-foreground">
-							Contributors
+							Penyumbang
 						</p>
 					</CardContent>
 				</Card>
@@ -102,7 +102,7 @@ async function LeaderboardContent() {
 							{stats.totalContributions}
 						</div>
 						<p className="text-xs md:text-sm text-muted-foreground">
-							Contributions
+							Jumlah Sumbangan
 						</p>
 					</CardContent>
 				</Card>
@@ -113,7 +113,7 @@ async function LeaderboardContent() {
 							{stats.mostActiveContributions}
 						</div>
 						<p className="text-xs md:text-sm text-muted-foreground">
-							Most Active
+							Paling Aktif
 						</p>
 					</CardContent>
 				</Card>
@@ -123,7 +123,7 @@ async function LeaderboardContent() {
 						<div className="text-xl md:text-2xl font-bold">
 							{stats.verificationRate}%
 						</div>
-						<p className="text-xs md:text-sm text-muted-foreground">Verified</p>
+						<p className="text-xs md:text-sm text-muted-foreground">Disahkan</p>
 					</CardContent>
 				</Card>
 			</div>
@@ -145,7 +145,7 @@ async function LeaderboardContent() {
 										{topContributors[1].name}
 									</div>
 									<div className="text-xs md:text-sm text-muted-foreground">
-										{topContributors[1].contributions} contributions
+										{topContributors[1].contributions} sumbangan
 									</div>
 								</div>
 								<div className="w-full h-16 md:h-24 bg-slate-300/50 rounded-t-lg flex items-center justify-center mt-2">
@@ -170,7 +170,7 @@ async function LeaderboardContent() {
 										{topContributors[0].name}
 									</div>
 									<div className="text-xs md:text-sm text-muted-foreground">
-										{topContributors[0].contributions} contributions
+										{topContributors[0].contributions} sumbangan
 									</div>
 								</div>
 								<div className="w-full h-20 md:h-32 bg-yellow-400/50 rounded-t-lg flex items-center justify-center mt-2">
@@ -195,7 +195,7 @@ async function LeaderboardContent() {
 										{topContributors[2].name}
 									</div>
 									<div className="text-xs md:text-sm text-muted-foreground">
-										{topContributors[2].contributions} contributions
+										{topContributors[2].contributions} sumbangan
 									</div>
 								</div>
 								<div className="w-full h-12 md:h-20 bg-amber-500/50 rounded-t-lg flex items-center justify-center mt-2">
@@ -209,9 +209,9 @@ async function LeaderboardContent() {
 
 					<Card>
 						<CardHeader>
-							<CardTitle>Full List</CardTitle>
+							<CardTitle>Senarai Penuh</CardTitle>
 							<CardDescription>
-								All contributors in the sedekah.je community
+								Senarai semua penyumbang komuniti SedekahJe
 							</CardDescription>
 						</CardHeader>
 						<CardContent>
@@ -235,7 +235,7 @@ async function LeaderboardContent() {
 												{contributor.name}
 											</div>
 											<div className="text-xs md:text-sm text-muted-foreground">
-												{contributor.contributions} contributions
+												{contributor.contributions} sumbangan
 											</div>
 										</div>
 									</div>
@@ -254,9 +254,11 @@ export default function LeaderboardPage() {
 		<PageSection>
 			<div className="space-y-8">
 				<div className="text-center">
-					<h1 className="text-3xl font-bold tracking-tight">Leaderboard</h1>
+					<h1 className="text-3xl font-bold tracking-tight">
+						Carta Penyumbang
+					</h1>
 					<p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
-						See the top contributors in the sedekah.je community
+						Lihat penyumbang teratas dalam komuniti sedekah.je
 					</p>
 				</div>
 

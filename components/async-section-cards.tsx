@@ -96,7 +96,7 @@ export function AsyncSectionCards() {
 				}
 			>
 				<AsyncSectionCard
-					title="Pending Review"
+					title="Sedang Disemak"
 					value="23"
 					description="Needs attention"
 					trend="+2"

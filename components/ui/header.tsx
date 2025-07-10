@@ -29,22 +29,22 @@ import { UserNavDesktop } from "./user-nav";
 
 const links = [
   {
-    name: "Home",
+    name: "Laman Utama",
     href: "/",
     icon: Home,
   },
   {
-    name: "Contributions",
+    name: "Semua sumbangan",
     href: "/my-contributions",
     icon: LayoutDashboard,
   },
   {
-    name: "Contribute",
+    name: "Sumbang QR",
     href: "/contribute",
     icon: HeartHandshake,
   },
   {
-    name: "Leaderboard",
+    name: "Carta Penyumbang",
     href: "/leaderboard",
     icon: BarChart,
   },

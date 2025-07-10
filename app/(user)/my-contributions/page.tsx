@@ -70,10 +70,10 @@ export default async function MyContributionsPage() {
 				<div className="space-y-8">
 					<div className="text-center">
 						<h1 className="text-3xl font-bold tracking-tight">
-							My Contributions
+							Sumbangan Saya
 						</h1>
 						<p className="text-muted-foreground mt-2 max-w-2xl mx-auto">
-							Track and manage your contributions to the sedekah.je community
+							Urus sumbangan anda kepada komuniti SedekahJe
 						</p>
 					</div>
 
@@ -84,7 +84,7 @@ export default async function MyContributionsPage() {
 									{userStats.totalContributions}
 								</div>
 								<p className="text-xs md:text-sm text-muted-foreground">
-									Total Contributions
+									Jumlah Sumbangan
 								</p>
 							</CardContent>
 						</Card>
@@ -94,7 +94,7 @@ export default async function MyContributionsPage() {
 									{userStats.approvedContributions}
 								</div>
 								<p className="text-xs md:text-sm text-muted-foreground">
-									Approved
+									Diluluskan
 								</p>
 							</CardContent>
 						</Card>
@@ -104,7 +104,7 @@ export default async function MyContributionsPage() {
 									{userStats.pendingContributions}
 								</div>
 								<p className="text-xs md:text-sm text-muted-foreground">
-									Pending Review
+									Sedang Disemak
 								</p>
 							</CardContent>
 						</Card>
@@ -112,18 +112,18 @@ export default async function MyContributionsPage() {
 
 					<Card>
 						<CardHeader>
-							<CardTitle>Contribution History</CardTitle>
+							<CardTitle>Sejarah Sumbangan</CardTitle>
 							<CardDescription>
-								Your recent contributions and their status
+								Sumbangan terkini anda dan status sumbangan
 							</CardDescription>
 						</CardHeader>
 						<CardContent>
 							<Tabs defaultValue="all" className="w-full">
 								<TabsList>
-									<TabsTrigger value="all">All</TabsTrigger>
-									<TabsTrigger value="approved">Approved</TabsTrigger>
-									<TabsTrigger value="pending">Pending</TabsTrigger>
-									<TabsTrigger value="rejected">Rejected</TabsTrigger>
+									<TabsTrigger value="all">Semua</TabsTrigger>
+									<TabsTrigger value="approved">Diluluskan</TabsTrigger>
+									<TabsTrigger value="pending">Sedang Disemak</TabsTrigger>
+									<TabsTrigger value="rejected">Ditolak</TabsTrigger>
 								</TabsList>
 								<TabsContent value="all" className="mt-4">
 									<div className="space-y-4">

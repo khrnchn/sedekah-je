@@ -28,7 +28,7 @@ import {
 const data = {
 	navMain: [
 		{
-			title: "Home",
+			title: "Laman Utama",
 			url: "/",
 			icon: "Home",
 		},
