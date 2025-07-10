@@ -55,11 +55,11 @@ const data = {
 				},
 			],
 		},
-		{
-			title: "Analytics",
-			url: "/admin/analytics",
-			icon: "BarChart",
-		},
+		// {
+		// 	title: "Analytics",
+		// 	url: "/admin/analytics",
+		// 	icon: "BarChart",
+		// },
 	],
 	navSecondary: [
 		{

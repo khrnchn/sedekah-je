@@ -1,4 +1,4 @@
-import { AdminDashboardLayout } from "@/components/admin-dashboard-layout";
+import { AdminLayout } from "@/components/admin-layout";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -8,8 +8,9 @@ export default function ApprovedInstitutionDetailLoading() {
 		<SidebarProvider>
 			<AppSidebar variant="inset" />
 			<SidebarInset>
-				<AdminDashboardLayout
+				<AdminLayout
 					breadcrumbs={[
+						{ label: "Dashboard", href: "/admin/dashboard" },
 						{ label: "Institutions", href: "/admin/institutions" },
 						{ label: "Approved", href: "/admin/institutions/approved" },
 						{ label: "Loading..." },
@@ -167,7 +168,7 @@ export default function ApprovedInstitutionDetailLoading() {
 							</div>
 						</div>
 					</div>
-				</AdminDashboardLayout>
+				</AdminLayout>
 			</SidebarInset>
 		</SidebarProvider>
 	);
