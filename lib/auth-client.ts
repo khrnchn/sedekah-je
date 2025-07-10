@@ -1,9 +1,14 @@
 import { createAuthClient } from "better-auth/react";
 
 export const authClient = createAuthClient({
-	baseURL: process.env.NEXT_PUBLIC_VERCEL_URL
-		? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-		: "http://localhost:3000",
+	baseURL:
+		typeof window !== "undefined"
+			? window.location.hostname === "sedekah.je"
+				? "https://sedekah.je"
+				: window.location.origin
+			: process.env.NODE_ENV === "production"
+				? "https://sedekah.je"
+				: "http://localhost:3000",
 });
 
 export const signInWithGoogle = async () => {
