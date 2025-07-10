@@ -35,9 +35,9 @@ const faqCategories = [
 					"Saya ada beberapa gambar kod QR yang diambil dari masjid. Bagaimanakah cara untuk saya menyumbang?",
 				answer: (
 					<>
-						Anda boleh klik butang "Nak Tambah QR?" untuk menyumbang kod QR
-						baru. Sila semak terlebih dahulu jika masjid tersebut telah
-						tersenarai di laman web kami. Anda perlu{" "}
+						Anda boleh klik butang "Log Masuk" untuk menyumbang kod QR baru.
+						Sila semak terlebih dahulu jika masjid tersebut telah tersenarai di
+						laman web kami. Anda perlu{" "}
 						<Link
 							href="/contribute"
 							className="text-blue-500 dark:text-blue-400 hover:underline font-medium"
