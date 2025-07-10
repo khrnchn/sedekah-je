@@ -162,7 +162,7 @@ export async function AppSidebar({
 						>
 							<a href="/admin/dashboard">
 								<Image
-									src="/masjid/masjid-figma.svg"
+									src="/masjid.svg"
 									alt="Masjid Icon"
 									width={16}
 									height={16}
