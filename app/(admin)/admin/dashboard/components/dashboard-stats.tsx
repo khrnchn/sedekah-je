@@ -1,11 +1,17 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building2, CheckCircle, Clock, XCircle } from "lucide-react";
-import { getDashboardStats } from "../queries";
 
-export async function DashboardStats() {
-	const stats = await getDashboardStats();
+interface DashboardStatsProps {
+	data: {
+		total: number;
+		pending: number;
+		approved: number;
+		rejected: number;
+	};
+}
 
+export function DashboardStats({ data: stats }: DashboardStatsProps) {
 	const statCards = [
 		{
 			title: "Total Institutions",
