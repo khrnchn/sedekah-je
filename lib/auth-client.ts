@@ -25,4 +25,15 @@ export const signInWithGoogle = async () => {
 	}
 };
 
-export const { useSession, signOut } = authClient;
+export const { useSession } = authClient;
+
+export const signOut = async () => {
+	await authClient.signOut({
+		fetchOptions: {
+			onSuccess: () => {
+				// Force a full page reload to ensure clean state
+				window.location.href = "/";
+			},
+		},
+	});
+};
