@@ -108,6 +108,24 @@ export default function ClientSection({ institution }: Props) {
 										<div className="font-medium text-sm mb-1">QR Content:</div>
 										{institution.qrContent}
 									</div>
+
+									{/* Original uploaded QR image */}
+									{institution.qrImage && (
+										<div className="w-full border-t pt-4">
+											<div className="text-sm font-medium mb-2">
+												Original Uploaded Image:
+											</div>
+											<div className="flex justify-center">
+												<Image
+													src={institution.qrImage}
+													alt="Original QR Code Upload"
+													width={200}
+													height={200}
+													className="rounded-lg border"
+												/>
+											</div>
+										</div>
+									)}
 								</>
 							) : (
 								<div className="flex flex-col items-center gap-4 w-full">
