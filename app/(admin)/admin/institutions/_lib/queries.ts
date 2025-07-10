@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions, users } from "@/db/schema";
 import { and, desc, eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { headers } from "next/headers";
 
 // Helper to ensure the current request is being made by an authenticated admin.
@@ -34,113 +34,149 @@ async function requireAdminSession() {
  * Fetch all institutions that are currently pending approval.
  * Joins contributor information when available for display purposes.
  */
-export async function getPendingInstitutions() {
-	await requireAdminSession();
-	return await db
-		.select({
-			id: institutions.id,
-			name: institutions.name,
-			category: institutions.category,
-			state: institutions.state,
-			city: institutions.city,
-			contributorName: users.name,
-			contributorId: users.id,
-			createdAt: institutions.createdAt,
-		})
-		.from(institutions)
-		.leftJoin(users, eq(institutions.contributorId, users.id))
-		.where(eq(institutions.status, "pending"))
-		.orderBy(desc(institutions.createdAt));
-}
+export const getPendingInstitutions = unstable_cache(
+	async () => {
+		return await db
+			.select({
+				id: institutions.id,
+				name: institutions.name,
+				category: institutions.category,
+				state: institutions.state,
+				city: institutions.city,
+				contributorName: users.name,
+				contributorId: users.id,
+				createdAt: institutions.createdAt,
+			})
+			.from(institutions)
+			.leftJoin(users, eq(institutions.contributorId, users.id))
+			.where(eq(institutions.status, "pending"))
+			.orderBy(desc(institutions.createdAt));
+	},
+	["pending-institutions-list"],
+	{
+		tags: ["institutions-data", "pending-institutions"],
+		revalidate: 300, // 5 minutes fallback
+	},
+);
 
 /**
  * Fetch all institutions that have been rejected.
  * Joins contributor information when available for display purposes.
  */
-export async function getRejectedInstitutions() {
-	await requireAdminSession();
-	return await db
-		.select({
-			id: institutions.id,
-			name: institutions.name,
-			category: institutions.category,
-			state: institutions.state,
-			city: institutions.city,
-			contributorName: users.name,
-			contributorId: users.id,
-			createdAt: institutions.createdAt,
-			reviewedAt: institutions.reviewedAt,
-			reviewedBy: institutions.reviewedBy,
-		})
-		.from(institutions)
-		.leftJoin(users, eq(institutions.contributorId, users.id))
-		.where(eq(institutions.status, "rejected"))
-		.orderBy(desc(institutions.createdAt));
-}
+export const getRejectedInstitutions = unstable_cache(
+	async () => {
+		return await db
+			.select({
+				id: institutions.id,
+				name: institutions.name,
+				category: institutions.category,
+				state: institutions.state,
+				city: institutions.city,
+				contributorName: users.name,
+				contributorId: users.id,
+				createdAt: institutions.createdAt,
+				reviewedAt: institutions.reviewedAt,
+				reviewedBy: institutions.reviewedBy,
+			})
+			.from(institutions)
+			.leftJoin(users, eq(institutions.contributorId, users.id))
+			.where(eq(institutions.status, "rejected"))
+			.orderBy(desc(institutions.createdAt));
+	},
+	["rejected-institutions-list"],
+	{
+		tags: ["institutions-data", "rejected-institutions"],
+		revalidate: 300, // 5 minutes fallback
+	},
+);
 
 /**
  * Fetch all institutions that have been approved.
  * Joins contributor information when available for display purposes.
  */
-export async function getApprovedInstitutions() {
-	await requireAdminSession();
-	return await db
-		.select({
-			id: institutions.id,
-			name: institutions.name,
-			category: institutions.category,
-			state: institutions.state,
-			city: institutions.city,
-			contributorName: users.name,
-			contributorId: users.id,
-			createdAt: institutions.createdAt,
-			reviewedAt: institutions.reviewedAt,
-			reviewedBy: institutions.reviewedBy,
-		})
-		.from(institutions)
-		.leftJoin(users, eq(institutions.contributorId, users.id))
-		.where(eq(institutions.status, "approved"))
-		.orderBy(desc(institutions.createdAt));
-}
+export const getApprovedInstitutions = unstable_cache(
+	async () => {
+		return await db
+			.select({
+				id: institutions.id,
+				name: institutions.name,
+				category: institutions.category,
+				state: institutions.state,
+				city: institutions.city,
+				contributorName: users.name,
+				contributorId: users.id,
+				createdAt: institutions.createdAt,
+				reviewedAt: institutions.reviewedAt,
+				reviewedBy: institutions.reviewedBy,
+			})
+			.from(institutions)
+			.leftJoin(users, eq(institutions.contributorId, users.id))
+			.where(eq(institutions.status, "approved"))
+			.orderBy(desc(institutions.createdAt));
+	},
+	["approved-institutions-list"],
+	{
+		tags: ["institutions-data", "approved-institutions"],
+		revalidate: 300, // 5 minutes fallback
+	},
+);
 
 /**
  * Get the count of pending institutions for display in sidebar badges
  */
-export async function getPendingInstitutionsCount() {
-	await requireAdminSession();
-	const result = await db
-		.select({ count: institutions.id })
-		.from(institutions)
-		.where(eq(institutions.status, "pending"));
+export const getPendingInstitutionsCount = unstable_cache(
+	async () => {
+		const result = await db
+			.select({ count: institutions.id })
+			.from(institutions)
+			.where(eq(institutions.status, "pending"));
 
-	return result.length;
-}
+		return result.length;
+	},
+	["pending-institutions-count"],
+	{
+		tags: ["institutions-count", "pending-institutions"],
+		revalidate: 300, // 5 minutes fallback
+	},
+);
 
 /**
  * Get the count of approved institutions for display in sidebar badges
  */
-export async function getApprovedInstitutionsCount() {
-	await requireAdminSession();
-	const result = await db
-		.select({ count: institutions.id })
-		.from(institutions)
-		.where(eq(institutions.status, "approved"));
+export const getApprovedInstitutionsCount = unstable_cache(
+	async () => {
+		const result = await db
+			.select({ count: institutions.id })
+			.from(institutions)
+			.where(eq(institutions.status, "approved"));
 
-	return result.length;
-}
+		return result.length;
+	},
+	["approved-institutions-count"],
+	{
+		tags: ["institutions-count", "approved-institutions"],
+		revalidate: 300, // 5 minutes fallback
+	},
+);
 
 /**
  * Get the count of rejected institutions for display in sidebar badges
  */
-export async function getRejectedInstitutionsCount() {
-	await requireAdminSession();
-	const result = await db
-		.select({ count: institutions.id })
-		.from(institutions)
-		.where(eq(institutions.status, "rejected"));
+export const getRejectedInstitutionsCount = unstable_cache(
+	async () => {
+		const result = await db
+			.select({ count: institutions.id })
+			.from(institutions)
+			.where(eq(institutions.status, "rejected"));
 
-	return result.length;
-}
+		return result.length;
+	},
+	["rejected-institutions-count"],
+	{
+		tags: ["institutions-count", "rejected-institutions"],
+		revalidate: 300, // 5 minutes fallback
+	},
+);
 
 /**
  * Approve a pending institution
@@ -167,6 +203,14 @@ export async function approveInstitution(
 	revalidatePath("/admin/institutions/pending");
 	revalidatePath("/admin/institutions/approved");
 	revalidatePath("/admin/dashboard");
+
+	// Revalidate cached counts for sidebar badges
+	revalidateTag("institutions-count");
+	revalidateTag("pending-institutions");
+	revalidateTag("approved-institutions");
+
+	// Revalidate cached data tables
+	revalidateTag("institutions-data");
 
 	return result;
 }
@@ -196,6 +240,14 @@ export async function rejectInstitution(
 	revalidatePath("/admin/institutions/pending");
 	revalidatePath("/admin/institutions/rejected");
 	revalidatePath("/admin/dashboard");
+
+	// Revalidate cached counts for sidebar badges
+	revalidateTag("institutions-count");
+	revalidateTag("pending-institutions");
+	revalidateTag("rejected-institutions");
+
+	// Revalidate cached data tables
+	revalidateTag("institutions-data");
 
 	return result;
 }
