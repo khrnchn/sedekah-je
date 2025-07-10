@@ -1,13 +1,12 @@
 "use server";
 
 import { randomUUID } from "node:crypto";
-import { promises as fs } from "node:fs";
-import path from "node:path";
 import { institutionFormSchema } from "@/app/(user)/contribute/_lib/validations";
 import type { Category } from "@/app/types/institutions";
 import { db } from "@/db";
 import { institutions } from "@/db/institutions";
 import type { states } from "@/db/institutions";
+import { r2Storage } from "@/lib/r2-client";
 import jsQR from "jsqr";
 import { revalidatePath } from "next/cache";
 import sharp from "sharp";
@@ -65,15 +64,8 @@ export async function submitInstitution(
 			const arrayBuffer = await qrImageFile.arrayBuffer();
 			const buffer = Buffer.from(arrayBuffer);
 
-			const ext = qrImageFile.name.split(".").pop() ?? "png";
-			const filename = `${randomUUID()}.${ext}`;
-			const relativePath = path.join("uploads", filename);
-			const diskPath = path.join(process.cwd(), "public", relativePath);
-
-			await fs.mkdir(path.dirname(diskPath), { recursive: true });
-			await fs.writeFile(diskPath, buffer);
-
-			qrImageUrl = `/${relativePath.replace(/\\/g, "/")}`;
+			// Upload to R2
+			qrImageUrl = await r2Storage.uploadFile(buffer, qrImageFile.name);
 
 			// Attempt QR decode
 			try {

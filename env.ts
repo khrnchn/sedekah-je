@@ -12,6 +12,13 @@ export const env = createEnv({
 		SUPABASE_URL: z.string().url().optional(),
 		SUPABASE_ANON_KEY: z.string().optional(),
 		SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
+
+		// Cloudflare R2 Storage
+		R2_ENDPOINT: z.string().url(),
+		R2_ACCESS_KEY_ID: z.string(),
+		R2_SECRET_ACCESS_KEY: z.string(),
+		R2_BUCKET_NAME: z.string(),
+		R2_PUBLIC_URL: z.string().url(),
 	},
 
 	/**
