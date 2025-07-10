@@ -1,20 +1,31 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-	getInstitutionsByCategory,
-	getInstitutionsByState,
-	getMonthlyGrowth,
-} from "../queries";
 import { CategoryChart } from "./charts/category-chart";
 import { MonthlyChart } from "./charts/monthly-chart";
 import { StateChart } from "./charts/state-chart";
 
-export async function DashboardCharts() {
-	const [categoryData, stateData, monthlyData] = await Promise.all([
-		getInstitutionsByCategory(),
-		getInstitutionsByState(),
-		getMonthlyGrowth(),
-	]);
+interface DashboardChartsProps {
+	categoryData: Array<{
+		category: string;
+		count: number;
+	}>;
+	stateData: Array<{
+		state: string;
+		count: number;
+	}>;
+	monthlyData: Array<{
+		month: string;
+		total: number;
+		pending: number;
+		approved: number;
+		rejected: number;
+	}>;
+}
 
+export function DashboardCharts({
+	categoryData,
+	stateData,
+	monthlyData,
+}: DashboardChartsProps) {
 	// Transform monthly data for the chart
 	const monthlyChartData = monthlyData.map((item) => ({
 		month: item.month,
