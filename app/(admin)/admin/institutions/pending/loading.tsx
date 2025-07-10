@@ -1,4 +1,4 @@
-import { AdminDashboardLayout } from "@/components/admin-dashboard-layout";
+import { AdminLayout } from "@/components/admin-layout";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -8,8 +8,9 @@ export default function PendingInstitutionsLoading() {
 		<SidebarProvider>
 			<AppSidebar variant="inset" />
 			<SidebarInset>
-				<AdminDashboardLayout
+				<AdminLayout
 					breadcrumbs={[
+						{ label: "Dashboard", href: "/admin/dashboard" },
 						{ label: "Institutions", href: "/admin/institutions" },
 						{ label: "Pending" },
 					]}
@@ -65,7 +66,7 @@ export default function PendingInstitutionsLoading() {
 							</div>
 						</div>
 					</div>
-				</AdminDashboardLayout>
+				</AdminLayout>
 			</SidebarInset>
 		</SidebarProvider>
 	);
