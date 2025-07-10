@@ -1,5 +1,6 @@
-import { HomeIcon, SettingsIcon, TrendingUpIcon } from "lucide-react";
+import { HomeIcon, SettingsIcon } from "lucide-react";
 import { headers } from "next/headers";
+import Image from "next/image";
 import type * as React from "react";
 
 import {
@@ -160,7 +161,13 @@ export async function AppSidebar({
 							className="data-[slot=sidebar-menu-button]:!p-1.5"
 						>
 							<a href="/admin/dashboard">
-								<TrendingUpIcon className="h-4 w-4" />
+								<Image
+									src="/masjid/masjid-figma.svg"
+									alt="Masjid Icon"
+									width={16}
+									height={16}
+									className="h-4 w-4"
+								/>
 								<span className="text-base font-semibold">
 									sedekah.je Admin
 								</span>
