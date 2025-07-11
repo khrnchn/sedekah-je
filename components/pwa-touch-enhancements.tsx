@@ -218,20 +218,30 @@ export function SwipeGesture({
 }
 
 // PWA install prompt
+interface BeforeInstallPromptEvent extends Event {
+	prompt(): Promise<void>;
+	userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
+}
+
 export function PWAInstallPrompt() {
-	const [installPrompt, setInstallPrompt] = useState<Event | null>(null);
+	const [installPrompt, setInstallPrompt] =
+		useState<BeforeInstallPromptEvent | null>(null);
 	const [showPrompt, setShowPrompt] = useState(false);
 
 	useEffect(() => {
-		const handler = (e: Event) => {
+		const handler = (e: BeforeInstallPromptEvent) => {
 			e.preventDefault();
 			setInstallPrompt(e);
 			setShowPrompt(true);
 		};
 
-		window.addEventListener("beforeinstallprompt", handler);
+		window.addEventListener("beforeinstallprompt", handler as EventListener);
 
-		return () => window.removeEventListener("beforeinstallprompt", handler);
+		return () =>
+			window.removeEventListener(
+				"beforeinstallprompt",
+				handler as EventListener,
+			);
 	}, []);
 
 	const handleInstall = async () => {
