@@ -34,7 +34,7 @@ const userNavItems = [
 		title: "Sumbangan Saya",
 		href: "/my-contributions",
 		icon: BarChart3,
-		description: "Track your contributions"
+		description: "Lihat sumbangan anda"
 	}
 ];
 

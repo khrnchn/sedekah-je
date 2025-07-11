@@ -44,7 +44,7 @@ function FormFields({
 				{isSubmitting ? (
 					<>
 						<Spinner size="small" className="mr-2" />
-						{qrExtracting ? "Mengekstrak kandungan QR" : "Hantar"}
+						{qrExtracting ? "Mengekstrak kandungan QR" : "Menghantar..."}
 					</>
 				) : (
 					"Hantar"
@@ -290,7 +290,7 @@ export default function InstitutionForm() {
 					<textarea
 						id="contributorRemarks"
 						{...register("contributorRemarks")}
-						placeholder="Info tambahan berkenaan intitusi ini"
+						placeholder="Info tambahan berkenaan institusi ini"
 						className={`w-full min-h-[80px] px-3 py-2 border rounded-md bg-background resize-vertical ${errors.contributorRemarks ? "border-red-500" : ""}`}
 					/>
 					{errors.contributorRemarks && (
@@ -320,7 +320,7 @@ export default function InstitutionForm() {
 							<Input
 								id="sourceUrl"
 								{...register("sourceUrl")}
-								placeholder="https://facebook.com/post/123 or Instagram URL"
+								placeholder="https://facebook.com/post/123 atau URL Instagram"
 								className={errors.sourceUrl ? "border-red-500" : ""}
 							/>
 							{errors.sourceUrl && (

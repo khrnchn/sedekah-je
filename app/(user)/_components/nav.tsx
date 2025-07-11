@@ -61,7 +61,7 @@ export function Nav() {
 					<DrawerHeader>
 						<DrawerTitle className="sr-only">Menu</DrawerTitle>
 						<DrawerDescription className="sr-only">
-							Navigation links for your account
+							Pautan navigasi untuk akaun anda
 						</DrawerDescription>
 					</DrawerHeader>
 					<div className="grid grid-cols-3 gap-2 p-4">

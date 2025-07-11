@@ -46,8 +46,7 @@ export function useQrExtraction() {
 						});
 					} else {
 						toast("Kod QR tidak dapat dikesan", {
-							description:
-								" Admin akan mengekstrak kandungan QR secara manual.",
+							description: "Admin akan mengekstrak kandungan QR secara manual.",
 						});
 					}
 				}

@@ -42,7 +42,7 @@ export function useLocationPrefill(
 						) {
 							const suggestedName = data.display_name.split(",")[0].trim();
 
-							toast("Intitusi dikesan", {
+							toast("Institusi dikesan", {
 								description: `Gunakan "${suggestedName}" sebagai nama institusi?`,
 								action: {
 									label: "Guna nama",
