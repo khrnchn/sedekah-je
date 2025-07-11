@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import type { Institution } from "@/db/institutions";
 import {
 	categories as CATEGORY_OPTIONS,
 	states as STATE_OPTIONS,
-} from "@/db/institutions";
-import type { Institution } from "@/db/institutions";
+} from "@/lib/institution-constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { ExternalLink, Search } from "lucide-react";

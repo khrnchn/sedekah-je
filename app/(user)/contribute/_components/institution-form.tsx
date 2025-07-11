@@ -7,13 +7,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import {
-	categories as CATEGORY_OPTIONS,
-	states as STATE_OPTIONS,
-} from "@/db/institutions";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocationPrefill } from "@/hooks/use-location-prefill";
 import { useQrExtraction } from "@/hooks/use-qr-extraction";
+import {
+	categories as CATEGORY_OPTIONS,
+	states as STATE_OPTIONS,
+} from "@/lib/institution-constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useState } from "react";
