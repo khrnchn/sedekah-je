@@ -28,6 +28,7 @@ const iconMap: Record<string, LucideIcon> = {
 	Users,
 	BarChart,
 	Home: HomeIcon,
+	Mail: MailIcon,
 };
 
 export function NavMain({

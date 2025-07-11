@@ -57,7 +57,7 @@ const data = {
 		{
 			title: "Claims",
 			url: "/admin/claims",
-			icon: "Crown",
+			icon: "Mail",
 		},
 		{
 			title: "Analytics",
