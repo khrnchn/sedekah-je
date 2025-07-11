@@ -13,6 +13,8 @@ import { toast } from "sonner";
 export function useQrExtraction() {
 	const [qrContent, setQrContent] = useState<string | null>(null);
 	const [qrExtracting, setQrExtracting] = useState(false);
+	const [qrExtractionFailed, setQrExtractionFailed] = useState(false);
+	const [hasAttemptedExtraction, setHasAttemptedExtraction] = useState(false);
 
 	async function handleQrImageChange(
 		event: React.ChangeEvent<HTMLInputElement>,
@@ -20,11 +22,15 @@ export function useQrExtraction() {
 		const file = event.target.files?.[0];
 		if (!file) {
 			setQrContent(null);
+			setQrExtractionFailed(false);
+			setHasAttemptedExtraction(false);
 			return;
 		}
 
 		setQrExtracting(true);
 		setQrContent(null);
+		setQrExtractionFailed(false);
+		setHasAttemptedExtraction(true);
 
 		try {
 			const canvas = document.createElement("canvas");
@@ -41,10 +47,12 @@ export function useQrExtraction() {
 					const code = jsQR(imageData.data, imageData.width, imageData.height);
 					if (code) {
 						setQrContent(code.data);
+						setQrExtractionFailed(false);
 						toast("Kod QR telah dikesan dengan jayanya!", {
 							description: "Kandungan kod QR telah diekstrak.",
 						});
 					} else {
+						setQrExtractionFailed(true);
 						toast("Kod QR tidak dapat dikesan", {
 							description: "Admin akan mengekstrak kandungan QR secara manual.",
 						});
@@ -54,6 +62,7 @@ export function useQrExtraction() {
 			};
 
 			img.onerror = () => {
+				setQrExtractionFailed(true);
 				toast("Ralat memproses imej", {
 					description: "Tidak dapat memproses fail imej.",
 				});
@@ -63,6 +72,7 @@ export function useQrExtraction() {
 			img.src = URL.createObjectURL(file);
 		} catch (error) {
 			console.error("QR extraction error:", error);
+			setQrExtractionFailed(true);
 			toast("Ralat mengekstrak QR", {
 				description: "Admin akan mengekstrak kandungan QR secara manual.",
 			});
@@ -72,11 +82,15 @@ export function useQrExtraction() {
 
 	function clearQrContent() {
 		setQrContent(null);
+		setQrExtractionFailed(false);
+		setHasAttemptedExtraction(false);
 	}
 
 	return {
 		qrContent,
 		qrExtracting,
+		qrExtractionFailed,
+		hasAttemptedExtraction,
 		handleQrImageChange,
 		clearQrContent,
 	};

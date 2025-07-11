@@ -1,4 +1,3 @@
-import { getInstitutionBySlug } from "@/lib/queries/institutions";
 import { CategoryColor } from "@/app/types/institutions";
 import CollapsibleCustomMap from "@/components/custom-map";
 import GetdoaFooter from "@/components/getdoa-footer";
@@ -8,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Header } from "@/components/ui/header";
 import InstitutionCard from "@/components/ui/institution-card";
 import PageSection from "@/components/ui/pageSection";
+import { getInstitutionBySlug } from "@/lib/queries/institutions";
 import { MapIcon } from "lucide-react";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";

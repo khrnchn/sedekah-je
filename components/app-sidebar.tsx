@@ -56,11 +56,12 @@ const data = {
 				},
 			],
 		},
-		// {
-		// 	title: "Analytics",
-		// 	url: "/admin/analytics",
-		// 	icon: "BarChart",
-		// },
+		{
+			title: "Analytics",
+			url: "https://analytics.farhanhelmy.com/share/qqGVUCdO8JGBoSk5/sedekah.je",
+			icon: "BarChart",
+			external: true,
+		},
 	],
 	navSecondary: [
 		{

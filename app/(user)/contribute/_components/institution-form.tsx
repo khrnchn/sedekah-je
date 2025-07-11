@@ -1,10 +1,6 @@
 "use client";
 
 import {
-	type SubmitInstitutionFormState,
-	submitInstitution,
-} from "@/app/(user)/contribute/_lib/submit-institution";
-import {
 	type InstitutionFormData,
 	institutionFormSchema,
 } from "@/app/(user)/contribute/_lib/validations";
@@ -20,48 +16,58 @@ import { useLocationPrefill } from "@/hooks/use-location-prefill";
 import { useQrExtraction } from "@/hooks/use-qr-extraction";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { submitInstitution } from "../_lib/submit-institution";
 
-const initialState: SubmitInstitutionFormState = { status: "idle" };
-
-function FormFields({
-	children,
+function SubmitButton({
+	isSubmitting,
 	qrExtracting,
+	qrExtractionFailed,
+	hasAttemptedExtraction,
+	qrContent,
 }: {
-	children: React.ReactNode;
+	isSubmitting: boolean;
 	qrExtracting: boolean;
+	qrExtractionFailed: boolean;
+	hasAttemptedExtraction: boolean;
+	qrContent: string | null;
 }) {
-	const { pending } = useFormStatus();
-	const isSubmitting = pending || qrExtracting;
+	const isDisabled =
+		isSubmitting || qrExtracting || (hasAttemptedExtraction && !qrContent);
 
 	return (
-		<fieldset disabled={isSubmitting} className="space-y-6">
-			{children}
-			<Button type="submit" className="w-full" disabled={isSubmitting}>
-				{isSubmitting ? (
-					<>
-						<Spinner size="small" className="mr-2" />
-						{qrExtracting ? "Mengekstrak kandungan QR" : "Menghantar..."}
-					</>
-				) : (
-					"Hantar"
-				)}
-			</Button>
-		</fieldset>
+		<Button type="submit" className="w-full" disabled={isDisabled}>
+			{isSubmitting ? (
+				<>
+					<Spinner size="small" className="mr-2" />
+					{qrExtracting ? "Mengekstrak kandungan QR" : "Menghantar..."}
+				</>
+			) : (
+				"Hantar"
+			)}
+		</Button>
 	);
 }
 
 export default function InstitutionForm() {
 	const { user } = useAuth();
-	const [state, formAction] = useFormState(submitInstitution, initialState);
 
 	/* QR extraction and social media */
-	const { qrContent, qrExtracting, handleQrImageChange, clearQrContent } =
-		useQrExtraction();
+	const {
+		qrContent,
+		qrExtracting,
+		qrExtractionFailed,
+		hasAttemptedExtraction,
+		handleQrImageChange,
+		clearQrContent,
+	} = useQrExtraction();
 	const [socialMediaExpanded, setSocialMediaExpanded] = useState(false);
+	const [fileUploadMode, setFileUploadMode] = useState<"camera" | "gallery">(
+		"gallery",
+	);
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	/* React Hook Form */
 	const form = useForm<InstitutionFormData>({
@@ -80,11 +86,13 @@ export default function InstitutionForm() {
 			contributorId: user?.id ?? "",
 			lat: "",
 			lon: "",
+			qrExtractionSuccess: false,
 		},
 	});
 
 	const {
 		register,
+		handleSubmit,
 		formState: { errors },
 		setValue,
 		reset,
@@ -93,81 +101,89 @@ export default function InstitutionForm() {
 
 	const fromSocialMedia = watch("fromSocialMedia");
 
-	/* Step + location management via custom hook */
-	const {
-		step,
-		setStep,
-		loadingLocation,
-		fetchLocation,
-		prefilledCity,
-		prefilledState,
-	} = useLocationPrefill(setValue);
-
-	/* Toast feedback – make sure we act once per status change */
-	const lastStatusRef = useRef<SubmitInstitutionFormState["status"]>("idle");
+	/* Update contributorId when user changes */
 	useEffect(() => {
-		if (state.status === lastStatusRef.current) return; // no change
-		lastStatusRef.current = state.status;
+		if (user?.id) {
+			setValue("contributorId", user.id);
+		}
+	}, [user?.id, setValue]);
 
-		if (state.status === "success") {
-			console.log("Success state detected, showing toast");
-			toast.success("Jazakallahu khair. Terima kasih!", {
-				description: "Sumbangan anda sedang disemak.",
-			});
-			form.reset();
-			const fileInput = document.getElementById(
+	/* Update QR extraction success status */
+	useEffect(() => {
+		setValue("qrExtractionSuccess", !!qrContent);
+	}, [qrContent, setValue]);
+
+	/* Location management via custom hook */
+	const { loadingLocation, fetchLocation, prefilledCity, prefilledState } =
+		useLocationPrefill(setValue);
+
+	const [useCurrentLocation, setUseCurrentLocation] = useState(false);
+
+	/* Form submission handler */
+	const onSubmit = async (data: InstitutionFormData) => {
+		setIsSubmitting(true);
+
+		try {
+			const formData = new FormData();
+
+			// Add form fields
+			for (const [key, value] of Object.entries(data)) {
+				if (value !== undefined && value !== null) {
+					formData.append(key, value.toString());
+				}
+			}
+
+			// Add QR image file
+			const qrImageInput = document.getElementById(
 				"qrImage",
-			) as HTMLInputElement | null;
-			if (fileInput) fileInput.value = "";
-			clearQrContent();
-		} else if (state.status === "error") {
-			console.log("Server validation errors:", state.errors);
-			toast.error("Ralat", {
-				description:
-					"Sila semak semula borang anda. Terdapat ralat dalam data yang dihantar.",
-			});
-		}
-	}, [state, clearQrContent, form]);
+			) as HTMLInputElement;
+			if (qrImageInput?.files?.[0]) {
+				formData.append("qrImage", qrImageInput.files[0]);
+			}
 
-	/* onSubmit just toggles loading & lets native submission proceed */
-	async function onClientSubmit(e: React.FormEvent<HTMLFormElement>) {
-		const isValid = await form.trigger();
-		if (!isValid) {
-			e.preventDefault();
-			toast.error("Ralat", {
-				description: "Sila semak borang anda. Terdapat ralat.",
-			});
-			return;
-		}
-	}
+			const result = await submitInstitution(undefined, formData);
 
-	if (step === "question") {
-		return (
-			<div className="max-w-lg mx-auto space-y-6 text-center">
-				<h2 className="text-xl font-semibold">
-					Adakah anda sedang berada di lokasi institusi?
-				</h2>
-				<div className="flex justify-center gap-4">
-					<Button onClick={fetchLocation} disabled={loadingLocation}>
-						Ya
-					</Button>
-					<Button variant="secondary" onClick={() => setStep("form")}>
-						Tidak
-					</Button>
-				</div>
-				{loadingLocation && <p>Mengesan lokasi...</p>}
-			</div>
-		);
-	}
+			if (result.status === "success") {
+				toast.success("Jazakallahu khair. Terima kasih!", {
+					description: "Sumbangan anda sedang disemak.",
+				});
+				reset();
+				if (qrImageInput) qrImageInput.value = "";
+				clearQrContent();
+			} else if (result.status === "error") {
+				toast.error("Ralat", {
+					description:
+						"Sila semak borang anda. Terdapat ralat dalam data yang dihantar.",
+				});
+			}
+		} catch (error) {
+			console.error("Form submission error:", error);
+			toast.error("Ralat", {
+				description: "Sesuatu yang tidak kena berlaku. Sila cuba lagi.",
+			});
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
+
+	const handleLocationToggle = (checked: boolean) => {
+		setUseCurrentLocation(checked);
+		if (checked) {
+			fetchLocation();
+		} else {
+			// Clear location data when unchecked
+			setValue("lat", "");
+			setValue("lon", "");
+		}
+	};
 
 	return (
 		<form
-			action={formAction}
-			onSubmit={onClientSubmit}
+			onSubmit={handleSubmit(onSubmit)}
 			encType="multipart/form-data"
 			className="space-y-6 max-w-lg mx-auto pb-20 md:pb-6"
 		>
-			<FormFields qrExtracting={qrExtracting}>
+			<fieldset disabled={isSubmitting || qrExtracting} className="space-y-6">
 				{/* Hidden contributorId */}
 				<input
 					type="hidden"
@@ -176,18 +192,56 @@ export default function InstitutionForm() {
 				/>
 				<input type="hidden" {...register("lat")} />
 				<input type="hidden" {...register("lon")} />
+				<input type="hidden" {...register("qrExtractionSuccess")} />
+
+				{/* Location toggle */}
+				<div className="space-y-2">
+					<div className="flex items-center space-x-2">
+						<input
+							type="checkbox"
+							id="useCurrentLocation"
+							checked={useCurrentLocation}
+							onChange={(e) => handleLocationToggle(e.target.checked)}
+							className="rounded"
+							disabled={loadingLocation}
+						/>
+						<label htmlFor="useCurrentLocation" className="font-medium">
+							Saya berada di lokasi ini sekarang
+						</label>
+					</div>
+					{loadingLocation && (
+						<p className="text-sm text-blue-600 pl-6">Mengesan lokasi…</p>
+					)}
+				</div>
 
 				<div className="space-y-2">
 					<label htmlFor="qrImage" className="font-medium">
 						Gambar Kod QR <span className="text-red-500">*</span>
 					</label>
+					<div className="flex gap-2 mb-2">
+						<Button
+							type="button"
+							variant={fileUploadMode === "gallery" ? "default" : "outline"}
+							size="sm"
+							onClick={() => setFileUploadMode("gallery")}
+						>
+							Galeri
+						</Button>
+						<Button
+							type="button"
+							variant={fileUploadMode === "camera" ? "default" : "outline"}
+							size="sm"
+							onClick={() => setFileUploadMode("camera")}
+						>
+							Kamera
+						</Button>
+					</div>
 					<Input
 						id="qrImage"
 						type="file"
 						name="qrImage"
 						accept="image/*"
-						required
-						capture="environment"
+						capture={fileUploadMode === "camera" ? "environment" : undefined}
 						onChange={handleQrImageChange}
 					/>
 					{qrExtracting && (
@@ -200,6 +254,36 @@ export default function InstitutionForm() {
 							</p>
 							<p className="text-sm text-green-700 break-all">{qrContent}</p>
 						</div>
+					)}
+					{!qrExtracting && qrExtractionFailed && hasAttemptedExtraction && (
+						<div className="p-3 bg-red-50 border border-red-200 rounded-md">
+							<p className="text-sm font-medium text-red-800">
+								Kod QR tidak dapat dikesan
+							</p>
+							<p className="text-sm text-red-700">Cuba petua ini:</p>
+							<ul className="text-sm text-red-600 list-disc list-inside mt-1 space-y-1">
+								<li>Pangkas imej lebih dekat kepada kod QR</li>
+								<li>Pastikan imej jelas dan tidak kabur</li>
+								<li>Semak kod QR tidak terlalu kecil</li>
+								<li>Pastikan pencahayaan/kontras yang baik</li>
+							</ul>
+						</div>
+					)}
+					{!qrExtracting &&
+						hasAttemptedExtraction &&
+						!qrContent &&
+						!qrExtractionFailed && (
+							<div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+								<p className="text-sm font-medium text-yellow-800">
+									Memproses kod QR...
+								</p>
+							</div>
+						)}
+					{errors.qrExtractionSuccess && (
+						<p className="text-sm text-red-500">
+							Sila muat naik imej kod QR yang sah dan boleh diproses dengan
+							jayanya
+						</p>
 					)}
 				</div>
 
@@ -233,7 +317,7 @@ export default function InstitutionForm() {
 						</option>
 						{CATEGORY_OPTIONS.map((c) => (
 							<option key={c} value={c} className="capitalize">
-								{c.charAt(0).toUpperCase() + c.slice(1)}
+								{c}
 							</option>
 						))}
 					</select>
@@ -268,7 +352,7 @@ export default function InstitutionForm() {
 					</div>
 					<div className="space-y-2">
 						<label htmlFor="city" className="font-medium">
-							Bandar/Daerah <span className="text-red-500">*</span>
+							Bandar <span className="text-red-500">*</span>
 						</label>
 						<Input
 							id="city"
@@ -339,7 +423,7 @@ export default function InstitutionForm() {
 						onClick={() => setSocialMediaExpanded(!socialMediaExpanded)}
 						className="flex items-center space-x-2 font-medium p-0 h-auto hover:bg-transparent"
 					>
-						<span>Media sosial</span>
+						<span>Social Media</span>
 						{socialMediaExpanded ? (
 							<ChevronUp className="w-4 h-4" />
 						) : (
@@ -351,7 +435,7 @@ export default function InstitutionForm() {
 							<Input
 								id="facebook"
 								{...register("facebook")}
-								placeholder="Facebook"
+								placeholder="Facebook URL"
 								className={errors.facebook ? "border-red-500" : ""}
 							/>
 							{errors.facebook && (
@@ -362,7 +446,7 @@ export default function InstitutionForm() {
 							<Input
 								id="instagram"
 								{...register("instagram")}
-								placeholder="Instagram"
+								placeholder="Instagram URL"
 								className={errors.instagram ? "border-red-500" : ""}
 							/>
 							{errors.instagram && (
@@ -373,7 +457,7 @@ export default function InstitutionForm() {
 							<Input
 								id="website"
 								{...register("website")}
-								placeholder="Laman Web"
+								placeholder="Website URL"
 								className={errors.website ? "border-red-500" : ""}
 							/>
 							{errors.website && (
@@ -382,7 +466,14 @@ export default function InstitutionForm() {
 						</div>
 					)}
 				</div>
-			</FormFields>
+				<SubmitButton
+					isSubmitting={isSubmitting}
+					qrExtracting={qrExtracting}
+					qrExtractionFailed={qrExtractionFailed}
+					hasAttemptedExtraction={hasAttemptedExtraction}
+					qrContent={qrContent}
+				/>
+			</fieldset>
 		</form>
 	);
 }

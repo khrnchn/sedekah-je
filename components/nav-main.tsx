@@ -37,6 +37,7 @@ export function NavMain({
 		title: string;
 		url: string;
 		icon?: string;
+		external?: boolean;
 	}[];
 }) {
 	return (
@@ -77,10 +78,21 @@ export function NavMain({
 						return (
 							<SidebarMenuItem key={item.title}>
 								<SidebarMenuButton asChild tooltip={item.title}>
-									<Link href={item.url}>
-										{IconComponent && <IconComponent />}
-										<span>{item.title}</span>
-									</Link>
+									{item.external ? (
+										<a
+											href={item.url}
+											target="_blank"
+											rel="noopener noreferrer"
+										>
+											{IconComponent && <IconComponent />}
+											<span>{item.title}</span>
+										</a>
+									) : (
+										<Link href={item.url}>
+											{IconComponent && <IconComponent />}
+											<span>{item.title}</span>
+										</Link>
+									)}
 								</SidebarMenuButton>
 							</SidebarMenuItem>
 						);

@@ -1,7 +1,7 @@
 "use server";
 
 import { randomUUID } from "node:crypto";
-import { institutionFormSchema } from "@/app/(user)/contribute/_lib/validations";
+import { institutionFormServerSchema } from "@/app/(user)/contribute/_lib/validations";
 import type { Category } from "@/app/types/institutions";
 import { db } from "@/db";
 import { institutions } from "@/db/institutions";
@@ -44,7 +44,7 @@ export async function submitInstitution(
 
 	console.log("Raw form data:", raw);
 
-	const parsed = institutionFormSchema.safeParse(raw);
+	const parsed = institutionFormServerSchema.safeParse(raw);
 	if (!parsed.success) {
 		console.log("Validation failed:", parsed.error.flatten().fieldErrors);
 		return {
@@ -94,17 +94,24 @@ export async function submitInstitution(
 			Number.parseFloat(parsed.data.lon),
 		];
 	} else {
-		// Attempt geocoding using Nominatim (as proxy to OSRM) based on name + city + state
+		// Attempt geocoding using Nominatim with timeout
 		try {
 			const query = `${parsed.data.name}, ${parsed.data.city}, ${parsed.data.state}, Malaysia`;
+			const controller = new AbortController();
+			const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
 			const res = await fetch(
 				`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(
 					query,
 				)}`,
 				{
 					headers: { "User-Agent": "sedekahje-bot" },
+					signal: controller.signal,
 				},
 			);
+
+			clearTimeout(timeoutId);
+
 			if (res.ok) {
 				const results = (await res.json()) as Array<{
 					lat: string;
