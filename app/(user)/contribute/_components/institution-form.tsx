@@ -1,10 +1,6 @@
 "use client";
 
 import {
-	type SubmitInstitutionFormState,
-	submitInstitution,
-} from "@/app/(user)/contribute/_lib/submit-institution";
-import {
 	type InstitutionFormData,
 	institutionFormSchema,
 } from "@/app/(user)/contribute/_lib/validations";
@@ -20,48 +16,43 @@ import { useLocationPrefill } from "@/hooks/use-location-prefill";
 import { useQrExtraction } from "@/hooks/use-qr-extraction";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { submitInstitution } from "../_lib/submit-institution";
 
-const initialState: SubmitInstitutionFormState = { status: "idle" };
-
-function FormFields({
-	children,
+function SubmitButton({
+	isSubmitting,
 	qrExtracting,
 }: {
-	children: React.ReactNode;
+	isSubmitting: boolean;
 	qrExtracting: boolean;
 }) {
-	const { pending } = useFormStatus();
-	const isSubmitting = pending || qrExtracting;
-
 	return (
-		<fieldset disabled={isSubmitting} className="space-y-6">
-			{children}
-			<Button type="submit" className="w-full" disabled={isSubmitting}>
-				{isSubmitting ? (
-					<>
-						<Spinner size="small" className="mr-2" />
-						{qrExtracting ? "Extracting QR..." : "Submitting..."}
-					</>
-				) : (
-					"Submit"
-				)}
-			</Button>
-		</fieldset>
+		<Button type="submit" className="w-full" disabled={isSubmitting}>
+			{isSubmitting ? (
+				<>
+					<Spinner size="small" className="mr-2" />
+					{qrExtracting ? "Extracting QR..." : "Submitting..."}
+				</>
+			) : (
+				"Submit"
+			)}
+		</Button>
 	);
 }
 
 export default function InstitutionForm() {
 	const { user } = useAuth();
-	const [state, formAction] = useFormState(submitInstitution, initialState);
 
 	/* QR extraction and social media */
 	const { qrContent, qrExtracting, handleQrImageChange, clearQrContent } =
 		useQrExtraction();
 	const [socialMediaExpanded, setSocialMediaExpanded] = useState(false);
+	const [fileUploadMode, setFileUploadMode] = useState<"camera" | "gallery">(
+		"gallery",
+	);
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	/* React Hook Form */
 	const form = useForm<InstitutionFormData>({
@@ -85,6 +76,7 @@ export default function InstitutionForm() {
 
 	const {
 		register,
+		handleSubmit,
 		formState: { errors },
 		setValue,
 		reset,
@@ -92,6 +84,13 @@ export default function InstitutionForm() {
 	} = form;
 
 	const fromSocialMedia = watch("fromSocialMedia");
+
+	/* Update contributorId when user changes */
+	useEffect(() => {
+		if (user?.id) {
+			setValue("contributorId", user.id);
+		}
+	}, [user?.id, setValue]);
 
 	/* Step + location management via custom hook */
 	const {
@@ -103,43 +102,52 @@ export default function InstitutionForm() {
 		prefilledState,
 	} = useLocationPrefill(setValue);
 
-	/* Toast feedback – make sure we act once per status change */
-	const lastStatusRef = useRef<SubmitInstitutionFormState["status"]>("idle");
-	useEffect(() => {
-		if (state.status === lastStatusRef.current) return; // no change
-		lastStatusRef.current = state.status;
+	/* Form submission handler */
+	const onSubmit = async (data: InstitutionFormData) => {
+		setIsSubmitting(true);
 
-		if (state.status === "success") {
-			console.log("Success state detected, showing toast");
-			toast.success("Thank you!", {
-				description: "Your contribution is being reviewed.",
-			});
-			form.reset();
-			const fileInput = document.getElementById(
+		try {
+			const formData = new FormData();
+
+			// Add form fields
+			for (const [key, value] of Object.entries(data)) {
+				if (value !== undefined && value !== null) {
+					formData.append(key, value.toString());
+				}
+			}
+
+			// Add QR image file
+			const qrImageInput = document.getElementById(
 				"qrImage",
-			) as HTMLInputElement | null;
-			if (fileInput) fileInput.value = "";
-			clearQrContent();
-		} else if (state.status === "error") {
-			console.log("Server validation errors:", state.errors);
-			toast.error("Error", {
-				description:
-					"Please check your form. There are errors in the submitted data.",
-			});
-		}
-	}, [state, clearQrContent, form]);
+			) as HTMLInputElement;
+			if (qrImageInput?.files?.[0]) {
+				formData.append("qrImage", qrImageInput.files[0]);
+			}
 
-	/* onSubmit just toggles loading & lets native submission proceed */
-	async function onClientSubmit(e: React.FormEvent<HTMLFormElement>) {
-		const isValid = await form.trigger();
-		if (!isValid) {
-			e.preventDefault();
+			const result = await submitInstitution(undefined, formData);
+
+			if (result.status === "success") {
+				toast.success("Thank you!", {
+					description: "Your contribution is being reviewed.",
+				});
+				reset();
+				if (qrImageInput) qrImageInput.value = "";
+				clearQrContent();
+			} else if (result.status === "error") {
+				toast.error("Error", {
+					description:
+						"Please check your form. There are errors in the submitted data.",
+				});
+			}
+		} catch (error) {
+			console.error("Form submission error:", error);
 			toast.error("Error", {
-				description: "Please check your form. There are errors.",
+				description: "Something went wrong. Please try again.",
 			});
-			return;
+		} finally {
+			setIsSubmitting(false);
 		}
-	}
+	};
 
 	if (step === "question") {
 		return (
@@ -162,12 +170,11 @@ export default function InstitutionForm() {
 
 	return (
 		<form
-			action={formAction}
-			onSubmit={onClientSubmit}
+			onSubmit={handleSubmit(onSubmit)}
 			encType="multipart/form-data"
 			className="space-y-6 max-w-lg mx-auto pb-20 md:pb-6"
 		>
-			<FormFields qrExtracting={qrExtracting}>
+			<fieldset disabled={isSubmitting || qrExtracting} className="space-y-6">
 				{/* Hidden contributorId */}
 				<input
 					type="hidden"
@@ -181,13 +188,30 @@ export default function InstitutionForm() {
 					<label htmlFor="qrImage" className="font-medium">
 						QR Code Image <span className="text-red-500">*</span>
 					</label>
+					<div className="flex gap-2 mb-2">
+						<Button
+							type="button"
+							variant={fileUploadMode === "gallery" ? "default" : "outline"}
+							size="sm"
+							onClick={() => setFileUploadMode("gallery")}
+						>
+							Gallery
+						</Button>
+						<Button
+							type="button"
+							variant={fileUploadMode === "camera" ? "default" : "outline"}
+							size="sm"
+							onClick={() => setFileUploadMode("camera")}
+						>
+							Camera
+						</Button>
+					</div>
 					<Input
 						id="qrImage"
 						type="file"
 						name="qrImage"
 						accept="image/*"
-						required
-						capture="environment"
+						capture={fileUploadMode === "camera" ? "environment" : undefined}
 						onChange={handleQrImageChange}
 					/>
 					{qrExtracting && (
@@ -380,7 +404,8 @@ export default function InstitutionForm() {
 						</div>
 					)}
 				</div>
-			</FormFields>
+				<SubmitButton isSubmitting={isSubmitting} qrExtracting={qrExtracting} />
+			</fieldset>
 		</form>
 	);
 }
