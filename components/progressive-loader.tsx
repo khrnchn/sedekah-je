@@ -2,7 +2,7 @@
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
-import { Suspense, lazy, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 interface ProgressiveLoaderProps {
 	children: React.ReactNode;
@@ -68,9 +68,13 @@ export function LazyComponentLoader({
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
-			loader().then((module) => {
-				setLazyComponent(() => module.default);
-			});
+			loader()
+				.then((module) => {
+					setLazyComponent(module.default);
+				})
+				.catch((error) => {
+					console.error("Failed to load lazy component:", error);
+				});
 		}, delay);
 
 		return () => clearTimeout(timer);
