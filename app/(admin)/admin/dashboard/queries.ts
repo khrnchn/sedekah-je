@@ -3,7 +3,7 @@
 import { db } from "@/db";
 import { institutions, users } from "@/db/schema";
 import { states } from "@/lib/institution-constants";
-import { and, count, eq, gte, sql } from "drizzle-orm";
+import { and, count, eq, gte, ne, sql } from "drizzle-orm";
 
 /**
  * Get all dashboard data in a single optimized query to reduce connection usage
@@ -35,7 +35,8 @@ export async function getDashboardData() {
 	return {
 		stats: dashboardStats,
 		categoryData,
-		stateData: completeStateData, // Use complete state distribution for consistency
+		stateData: stateData, // Use ranked state data for dashboard charts
+		stateDataForMap: completeStateData, // Complete state data for map visualization
 		recentSubmissions,
 		topContributors,
 		latestActivities,
@@ -126,7 +127,7 @@ export async function getRecentSubmissions() {
 }
 
 /**
- * Get top contributors by number of submissions
+ * Get top contributors by number of submissions (excluding superadmin)
  */
 export async function getTopContributors() {
 	const result = await db
@@ -137,7 +138,12 @@ export async function getTopContributors() {
 		})
 		.from(institutions)
 		.leftJoin(users, eq(institutions.contributorId, users.id))
-		.where(eq(institutions.status, "approved"))
+		.where(
+			and(
+				eq(institutions.status, "approved"),
+				ne(users.email, "khairin13chan@gmail.com"),
+			),
+		)
 		.groupBy(users.name, users.email)
 		.orderBy(sql`count DESC`)
 		.limit(5);

@@ -1,7 +1,6 @@
 import { relations } from "drizzle-orm";
 import { boolean, pgTable, text, varchar } from "drizzle-orm/pg-core";
 import { timestamps } from "./helpers";
-import { institutions } from "./institutions";
 
 export const userRoles = ["user", "admin"] as const;
 
@@ -21,10 +20,7 @@ export const users = pgTable("users", {
 	...timestamps,
 });
 
-export const usersRelations = relations(users, ({ many }) => ({
-	institutionsContributed: many(institutions),
-	institutionsReviewed: many(institutions, { relationName: "reviewer" }),
-}));
+// Relations will be defined in schema.ts to avoid circular imports
 
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;

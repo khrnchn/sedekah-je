@@ -4,6 +4,7 @@ import type { Institution } from "@/app/types/institutions";
 import Share from "@/components/share";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import ClaimButton from "@/components/ui/claim-button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -68,6 +69,8 @@ const InstitutionCard = forwardRef<
       coords,
       isClosest,
       distanceToCurrentUserInMeter,
+      contributorId,
+      contributor,
     },
     ref,
   ) => {
@@ -390,6 +393,15 @@ const InstitutionCard = forwardRef<
                   )}
                 </motion.div>
                 <div className="flex gap-2 mt-auto">
+                  {/* Claim Button */}
+                  <ClaimButton
+                    institutionId={id}
+                    institutionName={name}
+                    hasContributor={!!contributorId}
+                    contributorEmail={contributor?.email}
+                    className="text-xs"
+                  />
+
                   {/* Download Button */}
                   <Tooltip>
                     <TooltipTrigger asChild>

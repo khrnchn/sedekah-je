@@ -1,0 +1,2 @@
+ALTER TABLE "institution_claims" ALTER COLUMN "institution_id" SET DATA TYPE integer;--> statement-breakpoint
+ALTER TABLE "institution_claims" ADD CONSTRAINT "institution_claims_institution_id_institutions_id_fk" FOREIGN KEY ("institution_id") REFERENCES "public"."institutions"("id") ON DELETE cascade ON UPDATE no action;

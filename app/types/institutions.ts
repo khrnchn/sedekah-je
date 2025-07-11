@@ -27,6 +27,10 @@ export type Institution = {
 	qrContent?: string;
 	supportedPayment?: PaymentOption[];
 	coords?: [number, number];
+	contributorId?: string | null;
+	contributor?: {
+		email?: string | null;
+	} | null;
 };
 
 export enum CategoryColor {
