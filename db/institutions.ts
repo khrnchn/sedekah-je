@@ -1,8 +1,7 @@
-import { categories, states } from "@/lib/institution-constants";
+import type { categories, states } from "@/lib/institution-constants";
 import { relations } from "drizzle-orm";
 import {
 	boolean,
-	integer,
 	jsonb,
 	pgTable,
 	serial,
@@ -12,9 +11,6 @@ import {
 } from "drizzle-orm/pg-core";
 import { timestamps } from "./helpers";
 import { users } from "./users";
-
-// Re-export for other modules depending on db/institutions exports
-export { categories, states };
 
 export const supportedPayments = ["duitnow", "tng", "boost"] as const;
 

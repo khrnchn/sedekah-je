@@ -4,7 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import type { InstitutionFormData } from "@/app/(user)/contribute/_lib/validations";
-import type { states as STATE_OPTIONS } from "@/db/institutions";
+import type { states as STATE_OPTIONS } from "@/lib/institution-constants";
 import type { UseFormSetValue } from "react-hook-form";
 
 /**
