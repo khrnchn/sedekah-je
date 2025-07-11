@@ -123,8 +123,8 @@ export default function ClaimsTable({
 	if (claims.length === 0) {
 		return (
 			<div className="text-center py-12">
-				<Crown className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-				<p className="text-gray-500">No {status} claims to display</p>
+				<Crown className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+				<p className="text-muted-foreground">No {status} claims to display</p>
 			</div>
 		);
 	}
@@ -140,7 +140,7 @@ export default function ClaimsTable({
 									<CardTitle className="text-lg line-clamp-2">
 										{claim.institution?.name || "Unknown Institution"}
 									</CardTitle>
-									<p className="text-sm text-gray-500 mt-1">
+									<p className="text-sm text-muted-foreground mt-1">
 										{claim.institution?.city}, {claim.institution?.state}
 									</p>
 								</div>
@@ -165,37 +165,43 @@ export default function ClaimsTable({
 						<CardContent className="pt-0">
 							<div className="space-y-3">
 								<div>
-									<p className="text-sm font-medium text-gray-700">Claimant:</p>
-									<p className="text-sm text-gray-900">
+									<p className="text-sm font-medium text-muted-foreground">
+										Claimant:
+									</p>
+									<p className="text-sm text-foreground">
 										{claim.claimant?.name || "Unknown User"}
 									</p>
-									<p className="text-sm text-gray-500">
+									<p className="text-sm text-muted-foreground">
 										{claim.claimant?.email || "No email"}
 									</p>
 								</div>
 
 								{claim.claimReason && (
 									<div>
-										<p className="text-sm font-medium text-gray-700">Reason:</p>
-										<p className="text-sm text-gray-900 line-clamp-3">
+										<p className="text-sm font-medium text-muted-foreground">
+											Reason:
+										</p>
+										<p className="text-sm text-foreground line-clamp-3">
 											{claim.claimReason}
 										</p>
 									</div>
 								)}
 
 								<div>
-									<p className="text-sm font-medium text-gray-700">Date:</p>
-									<p className="text-sm text-gray-500">
+									<p className="text-sm font-medium text-muted-foreground">
+										Date:
+									</p>
+									<p className="text-sm text-muted-foreground">
 										{new Date(claim.createdAt).toLocaleDateString("en-US")}
 									</p>
 								</div>
 
 								{claim.adminNotes && (
 									<div>
-										<p className="text-sm font-medium text-gray-700">
+										<p className="text-sm font-medium text-muted-foreground">
 											Admin Notes:
 										</p>
-										<p className="text-sm text-gray-900 line-clamp-3">
+										<p className="text-sm text-foreground line-clamp-3">
 											{claim.adminNotes}
 										</p>
 									</div>
@@ -253,7 +259,9 @@ export default function ClaimsTable({
 						<div className="space-y-2">
 							<Label htmlFor="adminNotes">
 								Admin Notes{" "}
-								<span className="text-sm text-gray-500">(optional)</span>
+								<span className="text-sm text-muted-foreground">
+									(optional)
+								</span>
 							</Label>
 							<Textarea
 								id="adminNotes"
