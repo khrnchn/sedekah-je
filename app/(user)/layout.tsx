@@ -1,7 +1,6 @@
 import { auth } from "@/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { ClientLayout } from "./_components/client-layout";
 
 interface UserLayoutProps {
 	children: React.ReactNode;
@@ -14,5 +13,5 @@ export default async function UserLayout({ children }: UserLayoutProps) {
 		redirect("/auth");
 	}
 
-	return <ClientLayout>{children}</ClientLayout>;
+	return children;
 }
