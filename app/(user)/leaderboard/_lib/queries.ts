@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { institutions, users } from "@/db/schema";
-import { and, count, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq, ne } from "drizzle-orm";
 
 export interface LeaderboardStats {
 	totalContributors: number;
@@ -77,14 +77,20 @@ export async function getLeaderboardData(): Promise<LeaderboardData> {
 				)
 			: 0;
 
-	// Get top contributors
+	// Get top contributors (excluding superadmin)
 	const topContributorsResult = await db
 		.select({
 			contributorId: institutions.contributorId,
 			contributionCount: count().as("contributionCount"),
 		})
 		.from(institutions)
-		.where(eq(institutions.isActive, true))
+		.innerJoin(users, eq(institutions.contributorId, users.id))
+		.where(
+			and(
+				eq(institutions.isActive, true),
+				ne(users.email, "khairin13chan@gmail.com"),
+			),
+		)
 		.groupBy(institutions.contributorId)
 		.orderBy(desc(count()))
 		.limit(5);

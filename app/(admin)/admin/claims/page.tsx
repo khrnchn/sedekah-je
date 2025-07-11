@@ -1,4 +1,4 @@
-import { AdminDashboardLayout } from "@/components/admin-dashboard-layout";
+import { AdminLayout } from "@/components/admin-layout";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import ClaimsClientPage from "./client-page";
@@ -8,13 +8,13 @@ export default function ClaimsPage() {
 		<SidebarProvider>
 			<AppSidebar variant="inset" />
 			<SidebarInset>
-				<AdminDashboardLayout
+				<AdminLayout
 					title="Institution Claims Management"
 					description="Manage institution claims from users"
 					breadcrumbs={[{ label: "Claims" }]}
 				>
 					<ClaimsClientPage />
-				</AdminDashboardLayout>
+				</AdminLayout>
 			</SidebarInset>
 		</SidebarProvider>
 	);

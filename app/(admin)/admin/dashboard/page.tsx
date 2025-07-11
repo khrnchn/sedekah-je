@@ -52,7 +52,7 @@ async function DashboardContent() {
 					<div className="lg:col-span-2">
 						<DashboardMap
 							institutions={dashboardData.institutionsWithCoords}
-							stateData={dashboardData.stateData}
+							stateData={dashboardData.stateDataForMap}
 						/>
 					</div>
 					<div className="space-y-4">
