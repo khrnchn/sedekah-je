@@ -1,7 +1,7 @@
 "use server";
 
 import { randomUUID } from "node:crypto";
-import { institutionFormSchema } from "@/app/(user)/contribute/_lib/validations";
+import { institutionFormServerSchema } from "@/app/(user)/contribute/_lib/validations";
 import type { Category } from "@/app/types/institutions";
 import { db } from "@/db";
 import { institutions } from "@/db/institutions";
@@ -44,7 +44,7 @@ export async function submitInstitution(
 
 	console.log("Raw form data:", raw);
 
-	const parsed = institutionFormSchema.safeParse(raw);
+	const parsed = institutionFormServerSchema.safeParse(raw);
 	if (!parsed.success) {
 		console.log("Validation failed:", parsed.error.flatten().fieldErrors);
 		return {
