@@ -44,9 +44,17 @@ export const institutionFormSchema = z.object({
 	contributorId: z.string().min(1),
 	lat: z.string().optional(),
 	lon: z.string().optional(),
+	qrExtractionSuccess: z.boolean().refine((val) => val === true, {
+		message: "QR code must be successfully extracted before submission",
+	}),
 });
 
-// Separate schema for client-side validation (without file)
+// Server-side schema (without client-only validation fields)
+export const institutionFormServerSchema = institutionFormSchema.omit({
+	qrExtractionSuccess: true,
+});
+
+// Client-side schema (includes QR validation)
 export const institutionFormClientSchema = institutionFormSchema;
 
 export type InstitutionFormData = z.infer<typeof institutionFormSchema>;

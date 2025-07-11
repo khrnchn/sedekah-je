@@ -24,12 +24,21 @@ import { submitInstitution } from "../_lib/submit-institution";
 function SubmitButton({
 	isSubmitting,
 	qrExtracting,
+	qrExtractionFailed,
+	hasAttemptedExtraction,
+	qrContent,
 }: {
 	isSubmitting: boolean;
 	qrExtracting: boolean;
+	qrExtractionFailed: boolean;
+	hasAttemptedExtraction: boolean;
+	qrContent: string | null;
 }) {
+	const isDisabled =
+		isSubmitting || qrExtracting || (hasAttemptedExtraction && !qrContent);
+
 	return (
-		<Button type="submit" className="w-full" disabled={isSubmitting}>
+		<Button type="submit" className="w-full" disabled={isDisabled}>
 			{isSubmitting ? (
 				<>
 					<Spinner size="small" className="mr-2" />
@@ -46,8 +55,14 @@ export default function InstitutionForm() {
 	const { user } = useAuth();
 
 	/* QR extraction and social media */
-	const { qrContent, qrExtracting, handleQrImageChange, clearQrContent } =
-		useQrExtraction();
+	const {
+		qrContent,
+		qrExtracting,
+		qrExtractionFailed,
+		hasAttemptedExtraction,
+		handleQrImageChange,
+		clearQrContent,
+	} = useQrExtraction();
 	const [socialMediaExpanded, setSocialMediaExpanded] = useState(false);
 	const [fileUploadMode, setFileUploadMode] = useState<"camera" | "gallery">(
 		"gallery",
@@ -71,6 +86,7 @@ export default function InstitutionForm() {
 			contributorId: user?.id ?? "",
 			lat: "",
 			lon: "",
+			qrExtractionSuccess: false,
 		},
 	});
 
@@ -91,6 +107,11 @@ export default function InstitutionForm() {
 			setValue("contributorId", user.id);
 		}
 	}, [user?.id, setValue]);
+
+	/* Update QR extraction success status */
+	useEffect(() => {
+		setValue("qrExtractionSuccess", !!qrContent);
+	}, [qrContent, setValue]);
 
 	/* Location management via custom hook */
 	const { loadingLocation, fetchLocation, prefilledCity, prefilledState } =
@@ -171,6 +192,7 @@ export default function InstitutionForm() {
 				/>
 				<input type="hidden" {...register("lat")} />
 				<input type="hidden" {...register("lon")} />
+				<input type="hidden" {...register("qrExtractionSuccess")} />
 
 				{/* Location toggle */}
 				<div className="space-y-2">
@@ -230,6 +252,36 @@ export default function InstitutionForm() {
 							<p className="text-sm font-medium text-green-800">QR Content:</p>
 							<p className="text-sm text-green-700 break-all">{qrContent}</p>
 						</div>
+					)}
+					{!qrExtracting && qrExtractionFailed && hasAttemptedExtraction && (
+						<div className="p-3 bg-red-50 border border-red-200 rounded-md">
+							<p className="text-sm font-medium text-red-800">
+								QR code could not be detected
+							</p>
+							<p className="text-sm text-red-700">Try these tips:</p>
+							<ul className="text-sm text-red-600 list-disc list-inside mt-1 space-y-1">
+								<li>Crop the image closer to the QR code</li>
+								<li>Ensure the image is clear and not blurry</li>
+								<li>Check that the QR code is not too small</li>
+								<li>Make sure there's good lighting/contrast</li>
+							</ul>
+						</div>
+					)}
+					{!qrExtracting &&
+						hasAttemptedExtraction &&
+						!qrContent &&
+						!qrExtractionFailed && (
+							<div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+								<p className="text-sm font-medium text-yellow-800">
+									Processing QR code...
+								</p>
+							</div>
+						)}
+					{errors.qrExtractionSuccess && (
+						<p className="text-sm text-red-500">
+							Please upload a valid QR code image that can be successfully
+							processed
+						</p>
 					)}
 				</div>
 
@@ -412,7 +464,13 @@ export default function InstitutionForm() {
 						</div>
 					)}
 				</div>
-				<SubmitButton isSubmitting={isSubmitting} qrExtracting={qrExtracting} />
+				<SubmitButton
+					isSubmitting={isSubmitting}
+					qrExtracting={qrExtracting}
+					qrExtractionFailed={qrExtractionFailed}
+					hasAttemptedExtraction={hasAttemptedExtraction}
+					qrContent={qrContent}
+				/>
 			</fieldset>
 		</form>
 	);

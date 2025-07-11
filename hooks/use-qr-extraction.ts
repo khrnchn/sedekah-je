@@ -13,6 +13,8 @@ import { toast } from "sonner";
 export function useQrExtraction() {
 	const [qrContent, setQrContent] = useState<string | null>(null);
 	const [qrExtracting, setQrExtracting] = useState(false);
+	const [qrExtractionFailed, setQrExtractionFailed] = useState(false);
+	const [hasAttemptedExtraction, setHasAttemptedExtraction] = useState(false);
 
 	async function handleQrImageChange(
 		event: React.ChangeEvent<HTMLInputElement>,
@@ -20,11 +22,15 @@ export function useQrExtraction() {
 		const file = event.target.files?.[0];
 		if (!file) {
 			setQrContent(null);
+			setQrExtractionFailed(false);
+			setHasAttemptedExtraction(false);
 			return;
 		}
 
 		setQrExtracting(true);
 		setQrContent(null);
+		setQrExtractionFailed(false);
+		setHasAttemptedExtraction(true);
 
 		try {
 			const canvas = document.createElement("canvas");
@@ -41,12 +47,15 @@ export function useQrExtraction() {
 					const code = jsQR(imageData.data, imageData.width, imageData.height);
 					if (code) {
 						setQrContent(code.data);
+						setQrExtractionFailed(false);
 						toast("QR code detected successfully!", {
 							description: "QR code content has been extracted.",
 						});
 					} else {
-						toast("QR code could not be detected", {
-							description: "Admin will extract QR content manually.",
+						setQrExtractionFailed(true);
+						toast.error("QR code could not be detected", {
+							description:
+								"Try cropping the image closer to the QR code, ensure it's clear and not blurry.",
 						});
 					}
 				}
@@ -54,8 +63,10 @@ export function useQrExtraction() {
 			};
 
 			img.onerror = () => {
-				toast("Error processing image", {
-					description: "Unable to process image file.",
+				setQrExtractionFailed(true);
+				toast.error("Error processing image", {
+					description:
+						"Unable to process image file. Please try a different image.",
 				});
 				setQrExtracting(false);
 			};
@@ -63,8 +74,10 @@ export function useQrExtraction() {
 			img.src = URL.createObjectURL(file);
 		} catch (error) {
 			console.error("QR extraction error:", error);
-			toast("Error extracting QR", {
-				description: "Admin will extract QR content manually.",
+			setQrExtractionFailed(true);
+			toast.error("Error extracting QR", {
+				description:
+					"Something went wrong processing the image. Please try again.",
 			});
 			setQrExtracting(false);
 		}
@@ -72,11 +85,15 @@ export function useQrExtraction() {
 
 	function clearQrContent() {
 		setQrContent(null);
+		setQrExtractionFailed(false);
+		setHasAttemptedExtraction(false);
 	}
 
 	return {
 		qrContent,
 		qrExtracting,
+		qrExtractionFailed,
+		hasAttemptedExtraction,
 		handleQrImageChange,
 		clearQrContent,
 	};
