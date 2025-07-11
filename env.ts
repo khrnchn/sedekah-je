@@ -1,7 +1,25 @@
 import { createEnv } from "@t3-oss/env-core";
+import { z } from "zod";
 
 export const env = createEnv({
-	server: {},
+	server: {
+		// Database
+		DATABASE_URL: z.string().url().min(1),
+		// Optional: Direct URL for migrations (bypasses connection pooling)
+		DIRECT_URL: z.string().url().optional(),
+
+		// Supabase (optional, for additional integrations)
+		SUPABASE_URL: z.string().url().optional(),
+		SUPABASE_ANON_KEY: z.string().optional(),
+		SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
+
+		// Cloudflare R2 Storage
+		R2_ENDPOINT: z.string().url(),
+		R2_ACCESS_KEY_ID: z.string(),
+		R2_SECRET_ACCESS_KEY: z.string(),
+		R2_BUCKET_NAME: z.string(),
+		R2_PUBLIC_URL: z.string().url(),
+	},
 
 	/**
 	 * The prefix that client-side variables must have. This is enforced both at
@@ -9,7 +27,11 @@ export const env = createEnv({
 	 */
 	clientPrefix: "NEXT_PUBLIC_",
 
-	client: {},
+	client: {
+		// Supabase public configuration
+		NEXT_PUBLIC_SUPABASE_URL: z.string().url().optional(),
+		NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().optional(),
+	},
 
 	/**
 	 * What object holds the environment variables at runtime. This is usually

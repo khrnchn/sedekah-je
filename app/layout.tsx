@@ -84,6 +84,18 @@ export const metadata: Metadata = {
 			"Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
 		images: "https://sedekah.je/sedekahje-twitter.png",
 	},
+	manifest: "/manifest.json",
+	appleWebApp: {
+		capable: true,
+		statusBarStyle: "default",
+		title: "Sedekah Je",
+	},
+	other: {
+		"mobile-web-app-capable": "yes",
+		"apple-mobile-web-app-capable": "yes",
+		"apple-mobile-web-app-status-bar-style": "default",
+		"apple-mobile-web-app-title": "Sedekah Je",
+	},
 };
 
 export const viewport: Viewport = {
@@ -133,6 +145,26 @@ export default function RootLayout({
 								"query-input": "required name=search_term_string",
 							},
 						}),
+					}}
+				/>
+				<Script
+					id="register-sw"
+					strategy="afterInteractive"
+					// biome-ignore lint/security/noDangerouslySetInnerHtml: Required for service worker registration
+					dangerouslySetInnerHTML={{
+						__html: `
+							if ('serviceWorker' in navigator) {
+								window.addEventListener('load', function() {
+									navigator.serviceWorker.register('/sw.js')
+										.then(function(registration) {
+											console.log('SW registered: ', registration);
+										})
+										.catch(function(registrationError) {
+											console.log('SW registration failed: ', registrationError);
+										});
+								});
+							}
+						`,
 					}}
 				/>
 				<Script

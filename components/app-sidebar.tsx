@@ -1,4 +1,5 @@
-import { HomeIcon, SettingsIcon, TrendingUpIcon } from "lucide-react";
+import { SettingsIcon } from "lucide-react";
+import Image from "next/image";
 import type * as React from "react";
 
 import {
@@ -60,8 +61,9 @@ const data = {
 		},
 		{
 			title: "Analytics",
-			url: "/admin/analytics",
+			url: "https://analytics.farhanhelmy.com/share/qqGVUCdO8JGBoSk5/sedekah.je",
 			icon: "BarChart",
+			external: true,
 		},
 	],
 	navSecondary: [
@@ -157,7 +159,13 @@ export async function AppSidebar({ user, ...props }: AppSidebarProps) {
 							className="data-[slot=sidebar-menu-button]:!p-1.5"
 						>
 							<a href="/admin/dashboard">
-								<TrendingUpIcon className="h-4 w-4" />
+								<Image
+									src="/masjid.svg"
+									alt="Masjid Icon"
+									width={16}
+									height={16}
+									className="h-4 w-4"
+								/>
 								<span className="text-base font-semibold">
 									sedekah.je Admin
 								</span>

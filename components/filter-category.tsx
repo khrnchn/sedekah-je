@@ -7,14 +7,18 @@ type Props = {
 	onCategoryChange: (categories: string[]) => void;
 	selectedState: string;
 	institutions: Institution[];
+	initialCategories?: string[];
 };
 
 const FilterCategory = ({
 	onCategoryChange,
 	selectedState,
 	institutions,
+	initialCategories,
 }: Props) => {
-	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+	const [selectedCategories, setSelectedCategories] = useState<string[]>(
+		initialCategories || [],
+	);
 
 	const mappedCategories = Object.keys(categories).map((category) => ({
 		label: categories[category as keyof typeof categories].label,

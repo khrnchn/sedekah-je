@@ -1,7 +1,14 @@
 import { createAuthClient } from "better-auth/react";
 
 export const authClient = createAuthClient({
-	baseURL: process.env.NEXT_PUBLIC_URL || "http://localhost:3000",
+	baseURL:
+		typeof window !== "undefined"
+			? window.location.hostname === "sedekah.je"
+				? "https://sedekah.je"
+				: window.location.origin
+			: process.env.NODE_ENV === "production"
+				? "https://sedekah.je"
+				: "http://localhost:3000",
 });
 
 export const signInWithGoogle = async () => {
@@ -18,4 +25,15 @@ export const signInWithGoogle = async () => {
 	}
 };
 
-export const { useSession, signOut } = authClient;
+export const { useSession } = authClient;
+
+export const signOut = async () => {
+	await authClient.signOut({
+		fetchOptions: {
+			onSuccess: () => {
+				// Force a full page reload to ensure clean state
+				window.location.href = "/";
+			},
+		},
+	});
+};

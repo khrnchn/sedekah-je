@@ -1,6 +1,6 @@
 // page.tsx – server component with streaming
 
-import { AdminDashboardLayout } from "@/components/admin-dashboard-layout";
+import { AdminLayout } from "@/components/admin-layout";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Suspense } from "react";
@@ -12,18 +12,19 @@ export default function ApprovedInstitutionsPage() {
 		<SidebarProvider>
 			<AppSidebar variant="inset" />
 			<SidebarInset>
-				<AdminDashboardLayout
+				<AdminLayout
+					title="Approved Institutions"
+					description="View and manage approved institutions"
 					breadcrumbs={[
+						{ label: "Dashboard", href: "/admin/dashboard" },
 						{ label: "Institutions", href: "/admin/institutions" },
 						{ label: "Approved" },
 					]}
-					title="Approved Institutions"
-					description="View and manage approved institutions"
 				>
 					<Suspense fallback={<ApprovedTableLoading />}>
 						<AsyncApprovedData />
 					</Suspense>
-				</AdminDashboardLayout>
+				</AdminLayout>
 			</SidebarInset>
 		</SidebarProvider>
 	);

@@ -1,4 +1,4 @@
-import { AdminDashboardLayout } from "@/components/admin-dashboard-layout";
+import { AdminLayout } from "@/components/admin-layout";
 import { AppSidebar } from "@/components/app-sidebar";
 import {
 	AsyncDashboardStats,
@@ -67,13 +67,13 @@ export default function StreamingDemoPage() {
 		<SidebarProvider>
 			<AppSidebar variant="inset" />
 			<SidebarInset>
-				<AdminDashboardLayout
-					breadcrumbs={[
-						{ label: "Admin", href: "/admin" },
-						{ label: "Streaming Demo" },
-					]}
+				<AdminLayout
 					title="Next.js Loading Patterns Demo"
 					description="Demonstration of loading.tsx, Suspense boundaries, and streaming patterns"
+					breadcrumbs={[
+						{ label: "Dashboard", href: "/admin/dashboard" },
+						{ label: "Streaming Demo" },
+					]}
 				>
 					<div className="space-y-8">
 						{/* Section 0: Next.js 14 Improvements */}
@@ -231,7 +231,7 @@ export default function StreamingDemoPage() {
 							</div>
 						</div>
 					</div>
-				</AdminDashboardLayout>
+				</AdminLayout>
 			</SidebarInset>
 		</SidebarProvider>
 	);

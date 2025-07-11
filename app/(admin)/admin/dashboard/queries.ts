@@ -1,41 +1,53 @@
 "use server";
 
-import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions, users } from "@/db/schema";
 import { states } from "@/lib/institution-constants";
 import { and, count, eq, gte, sql } from "drizzle-orm";
-import { headers } from "next/headers";
 
-// Helper to ensure the current request is being made by an authenticated admin.
-async function requireAdminSession() {
-	const hdrs = headers();
-	const session = await auth.api.getSession({ headers: hdrs });
+/**
+ * Get all dashboard data in a single optimized query to reduce connection usage
+ */
+export async function getDashboardData() {
+	const [
+		dashboardStats,
+		categoryData,
+		stateData,
+		recentSubmissions,
+		topContributors,
+		latestActivities,
+		institutionsWithCoords,
+		monthlyGrowth,
+	] = await Promise.all([
+		getDashboardStats(),
+		getInstitutionsByCategory(),
+		getInstitutionsByState(),
+		getRecentSubmissions(),
+		getTopContributors(),
+		getLatestActivities(),
+		getInstitutionsWithCoords(),
+		getMonthlyGrowth(),
+	]);
 
-	if (!session) {
-		throw new Error("Unauthorized: Admin access required");
-	}
+	// Get state distribution for the map
+	const completeStateData = await getStateDistribution();
 
-	// Verify role via database to avoid relying on session payload
-	const [user] = await db
-		.select({ role: users.role })
-		.from(users)
-		.where(eq(users.id, session.user.id))
-		.limit(1);
-
-	if (!user || user.role !== "admin") {
-		throw new Error("Unauthorized: Admin access required");
-	}
-
-	return session;
+	return {
+		stats: dashboardStats,
+		categoryData,
+		stateData: completeStateData, // Use complete state distribution for consistency
+		recentSubmissions,
+		topContributors,
+		latestActivities,
+		institutionsWithCoords,
+		monthlyGrowth,
+	};
 }
 
 /**
  * Get dashboard statistics with counts for each institution status
  */
 export async function getDashboardStats() {
-	await requireAdminSession();
-
 	const [totalInstitutions, pendingCount, approvedCount, rejectedCount] =
 		await Promise.all([
 			db.select({ count: count() }).from(institutions),
@@ -65,8 +77,6 @@ export async function getDashboardStats() {
  * Get institution statistics by category
  */
 export async function getInstitutionsByCategory() {
-	await requireAdminSession();
-
 	const result = await db
 		.select({
 			category: institutions.category,
@@ -83,8 +93,6 @@ export async function getInstitutionsByCategory() {
  * Get institution statistics by state
  */
 export async function getInstitutionsByState() {
-	await requireAdminSession();
-
 	const result = await db
 		.select({
 			state: institutions.state,
@@ -102,8 +110,6 @@ export async function getInstitutionsByState() {
  * Get recent institution submissions (last 30 days)
  */
 export async function getRecentSubmissions() {
-	await requireAdminSession();
-
 	const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
 	const result = await db
@@ -123,8 +129,6 @@ export async function getRecentSubmissions() {
  * Get top contributors by number of submissions
  */
 export async function getTopContributors() {
-	await requireAdminSession();
-
 	const result = await db
 		.select({
 			contributorName: users.name,
@@ -145,8 +149,6 @@ export async function getTopContributors() {
  * Get latest institution activities for the feed
  */
 export async function getLatestActivities() {
-	await requireAdminSession();
-
 	const result = await db
 		.select({
 			id: institutions.id,
@@ -171,8 +173,6 @@ export async function getLatestActivities() {
  * Get state distribution data for the map visualization
  */
 export async function getStateDistribution() {
-	await requireAdminSession();
-
 	const result = await db
 		.select({
 			state: institutions.state,
@@ -198,8 +198,6 @@ export async function getStateDistribution() {
  * Get monthly growth data for charts
  */
 export async function getMonthlyGrowth() {
-	await requireAdminSession();
-
 	const result = await db
 		.select({
 			month: sql<string>`TO_CHAR(${institutions.createdAt}, 'YYYY-MM')`,
@@ -219,8 +217,6 @@ export async function getMonthlyGrowth() {
  * Get institutions with their coordinates for map display
  */
 export async function getInstitutionsWithCoords() {
-	await requireAdminSession();
-
 	const result = await db
 		.select({
 			id: institutions.id,

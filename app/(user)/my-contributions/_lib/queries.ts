@@ -14,7 +14,7 @@ export interface MyContributionsStats {
 }
 
 export interface ContributionItem {
-	id: number;
+	id: string;
 	name: string;
 	status: "pending" | "approved" | "rejected";
 	date: string; // ISO string
@@ -52,7 +52,7 @@ export async function getMyContributions(): Promise<MyContributionsResponse | nu
 	};
 
 	const contributions: ContributionItem[] = results.map((inst) => ({
-		id: inst.id,
+		id: inst.id.toString(),
 		name: inst.name,
 		status: inst.status as ContributionItem["status"],
 		date: inst.createdAt?.toISOString() ?? "",

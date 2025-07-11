@@ -13,6 +13,12 @@ const nextConfig = {
 				pathname: "**",
 				port: "",
 			},
+			{
+				protocol: "https",
+				hostname: "pub-713906db9ee448e4af59aa8fb2e44c84.r2.dev",
+				pathname: "**",
+				port: "",
+			},
 		],
 	},
 
@@ -37,6 +43,15 @@ const nextConfig = {
 					{
 						key: "Cross-Origin-Opener-Policy",
 						value: "same-origin",
+					},
+				],
+			},
+			{
+				source: "/manifest.json",
+				headers: [
+					{
+						key: "Cache-Control",
+						value: "public, max-age=86400",
 					},
 				],
 			},

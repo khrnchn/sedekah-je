@@ -2,11 +2,22 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDistanceToNow } from "date-fns";
 import { Activity, Building2, CheckCircle, Clock, XCircle } from "lucide-react";
-import { getLatestActivities } from "../queries";
 
-export async function ActivityFeed() {
-	const activities = await getLatestActivities();
+interface ActivityFeedProps {
+	data: Array<{
+		id: number;
+		name: string;
+		status: string;
+		category: string;
+		state: string;
+		city: string;
+		contributorName: string | null;
+		createdAt: Date;
+		reviewedAt: Date | null;
+	}>;
+}
 
+export function ActivityFeed({ data: activities }: ActivityFeedProps) {
 	const getStatusIcon = (status: string) => {
 		switch (status) {
 			case "pending":

@@ -1,6 +1,6 @@
 // page.tsx – server component for viewing a single approved institution
 
-import { AdminDashboardLayout } from "@/components/admin-dashboard-layout";
+import { AdminLayout } from "@/components/admin-layout";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { notFound } from "next/navigation";
@@ -23,22 +23,22 @@ export default async function ApprovedInstitutionDetailPage({ params }: Props) {
 	if (!institution) {
 		notFound();
 	}
-
 	return (
 		<SidebarProvider>
 			<AppSidebar variant="inset" />
 			<SidebarInset>
-				<AdminDashboardLayout
+				<AdminLayout
+					title={institution.name}
+					description="View and edit approved institution"
 					breadcrumbs={[
+						{ label: "Dashboard", href: "/admin/dashboard" },
 						{ label: "Institutions", href: "/admin/institutions" },
 						{ label: "Approved", href: "/admin/institutions/approved" },
 						{ label: `#${institution.id}` },
 					]}
-					title={institution.name}
-					description="View and edit approved institution"
 				>
 					<ClientSection institution={institution} />
-				</AdminDashboardLayout>
+				</AdminLayout>
 			</SidebarInset>
 		</SidebarProvider>
 	);

@@ -1,6 +1,6 @@
 // page.tsx – server component for reviewing a single pending institution
 
-import { AdminDashboardLayout } from "@/components/admin-dashboard-layout";
+import { AdminLayout } from "@/components/admin-layout";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { notFound } from "next/navigation";
@@ -28,17 +28,18 @@ export default async function PendingInstitutionReviewPage({ params }: Props) {
 		<SidebarProvider>
 			<AppSidebar variant="inset" />
 			<SidebarInset>
-				<AdminDashboardLayout
+				<AdminLayout
+					title={institution.name}
+					description="Review pending institution"
 					breadcrumbs={[
+						{ label: "Dashboard", href: "/admin/dashboard" },
 						{ label: "Institutions", href: "/admin/institutions" },
 						{ label: "Pending", href: "/admin/institutions/pending" },
 						{ label: `#${institution.id}` },
 					]}
-					title={institution.name}
-					description="Review pending institution"
 				>
 					<ClientSection institution={institution} />
-				</AdminDashboardLayout>
+				</AdminLayout>
 			</SidebarInset>
 		</SidebarProvider>
 	);

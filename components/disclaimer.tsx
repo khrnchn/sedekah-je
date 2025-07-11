@@ -16,63 +16,44 @@ export function DisclaimerModal() {
 	const [isOpen, setIsOpen] = useState(false);
 
 	useEffect(() => {
-		const hasSeenDisclaimer = localStorage.getItem("hasSeenDisclaimer");
-		if (!hasSeenDisclaimer) {
+		const hasSeenSignInAnnouncement = localStorage.getItem(
+			"hasSeenSignInAnnouncement",
+		);
+		if (!hasSeenSignInAnnouncement) {
 			setIsOpen(true);
 		}
 	}, []);
 
 	const handleClose = () => {
 		setIsOpen(false);
-		localStorage.setItem("hasSeenDisclaimer", "true");
+		localStorage.setItem("hasSeenSignInAnnouncement", "true");
 	};
 
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
 			<DialogContent>
 				<DialogHeader>
-					<DialogTitle>Peringatan</DialogTitle>
+					<DialogTitle>Berita Gembira!</DialogTitle>
 					<DialogDescription>
-						Selamat datang ke SedekahJe. Sila baca pesanan di bawah sebelum
-						meneruskan derma.
+						Selamat datang ke SedekahJe. Kini anda boleh menyumbang QR kod!
 					</DialogDescription>
 				</DialogHeader>
 				<div className="py-4">
 					<p>
-						Berikutan isu Duitnow QR yang dibangkitkan di X pada 27 September,
-						kami ingin menasihati anda supaya berhati-hati sebelum menderma.
+						Kami dengan sukacitanya mengumumkan bahawa anda kini boleh log masuk
+						untuk menyumbang QR kod ke dalam direktori SedekahJe.
 					</p>
 					<p className="mt-2">
-						Pihak SedekahJe sedang dalam proses untuk mengesahkan semula kesemua
-						QR yang pernah dimuatnaik.
+						Dengan menyumbang, anda membantu masyarakat Malaysia untuk mencari
+						dan menggunakan QR kod derma dengan lebih mudah.
 					</p>
 					<p className="mt-4">
-						Untuk maklumat lanjut mengenai isu ini, sila{" "}
-						<Link
-							href="https://x.com/mkhairulazri/status/1839563380186882380?t=l16MVgY5ajClN-dmB7D_Kg&s=08"
-							target="_blank"
-							rel="noopener noreferrer"
-							className="text-blue-500 hover:underline"
-						>
-							klik di sini
-						</Link>
-						.
-					</p>
-					<p className="mt-4">
-						Baca bagaimana SedekahJe mengesahkan QR sebelum ini:{" "}
-						<Link
-							href="https://www.khairin.my/blog/sedekah-je-first-challenge"
-							target="_blank"
-							rel="noopener noreferrer"
-							className="text-blue-500 hover:underline"
-						>
-							klik untuk baca
-						</Link>
-						.
+						Mulakan sumbangan anda hari ini dan bantu kami mengembangkan
+						direktori QR kod yang lebih komprehensif untuk semua!
 					</p>
 				</div>
 				<DialogFooter>
-					<Button onClick={handleClose}>Saya Faham</Button>
+					<Button onClick={handleClose}>Faham, Terima Kasih!</Button>
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>

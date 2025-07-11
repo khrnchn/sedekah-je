@@ -1,14 +1,23 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building2, CheckCircle, MapPin, Users } from "lucide-react";
-import { getInstitutionsWithCoords, getStateDistribution } from "../queries";
 
-export async function DashboardMap() {
-	const [institutions, stateData] = await Promise.all([
-		getInstitutionsWithCoords(),
-		getStateDistribution(),
-	]);
+interface DashboardMapProps {
+	institutions: Array<{
+		id: number;
+		name: string;
+		category: string;
+		state: string;
+		city: string;
+		coords: [number, number] | null;
+	}>;
+	stateData: Array<{
+		state: string;
+		count: number;
+	}>;
+}
 
+export function DashboardMap({ institutions, stateData }: DashboardMapProps) {
 	// Get top 5 states by count
 	const topStates = stateData
 		.filter((item) => item.count > 0)

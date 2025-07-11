@@ -2,11 +2,16 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trophy, User } from "lucide-react";
-import { getTopContributors } from "../queries";
 
-export async function TopContributors() {
-	const contributors = await getTopContributors();
+interface TopContributorsProps {
+	data: Array<{
+		contributorName: string | null;
+		contributorEmail: string | null;
+		submissionCount: number;
+	}>;
+}
 
+export function TopContributors({ data: contributors }: TopContributorsProps) {
 	return (
 		<Card>
 			<CardHeader>
