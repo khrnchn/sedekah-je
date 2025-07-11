@@ -395,13 +395,13 @@ const InstitutionCard = forwardRef<
                 <div className="flex gap-2 mt-auto">
                   {/* Claim Button */}
                   <ClaimButton
-                    institutionId={id.toString()}
+                    institutionId={id}
                     institutionName={name}
                     hasContributor={!!contributorId}
                     contributorEmail={contributor?.email}
                     className="text-xs"
                   />
-                  
+
                   {/* Download Button */}
                   <Tooltip>
                     <TooltipTrigger asChild>

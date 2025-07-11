@@ -1,13 +1,23 @@
 import { relations } from "drizzle-orm";
-import { pgTable, serial, text, timestamp, varchar } from "drizzle-orm/pg-core";
+import {
+	integer,
+	pgTable,
+	serial,
+	text,
+	timestamp,
+	varchar,
+} from "drizzle-orm/pg-core";
 import { timestamps } from "./helpers";
+import { institutions } from "./institutions";
 import { users } from "./users";
 
 export const claimStatuses = ["pending", "approved", "rejected"] as const;
 
 export const institutionClaims = pgTable("institution_claims", {
 	id: serial("id").primaryKey(),
-	institutionId: text("institution_id").notNull(),
+	institutionId: integer("institution_id")
+		.notNull()
+		.references(() => institutions.id, { onDelete: "cascade" }),
 	claimantId: text("claimant_id")
 		.notNull()
 		.references(() => users.id, { onDelete: "cascade" }),

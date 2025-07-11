@@ -61,7 +61,7 @@ CREATE TABLE "verifications" (
 -- Step 1: Add new columns with text type, but allow NULL initially
 ALTER TABLE "institutions" ADD COLUMN IF NOT EXISTS "contributor_id_new" text;
 ALTER TABLE "institutions" ADD COLUMN IF NOT EXISTS "reviewed_by_new" text;
-ALTER TABLE "qr_images" ADD COLUMN IF NOT EXISTS "uploaded_by_new" text;
+-- ALTER TABLE "qr_images" ADD COLUMN IF NOT EXISTS "uploaded_by_new" text;
 
 -- Step 2: Convert existing integer values to text format
 -- Note: These will be NULL for now since we don't have users yet
@@ -70,12 +70,12 @@ ALTER TABLE "qr_images" ADD COLUMN IF NOT EXISTS "uploaded_by_new" text;
 -- Step 3: Drop the old integer columns
 ALTER TABLE "institutions" DROP COLUMN IF EXISTS "contributor_id";
 ALTER TABLE "institutions" DROP COLUMN IF EXISTS "reviewed_by";
-ALTER TABLE "qr_images" DROP COLUMN IF EXISTS "uploaded_by";
+-- ALTER TABLE "qr_images" DROP COLUMN IF EXISTS "uploaded_by";
 
 -- Step 4: Rename the new columns to the original names
 ALTER TABLE "institutions" RENAME COLUMN "contributor_id_new" TO "contributor_id";
 ALTER TABLE "institutions" RENAME COLUMN "reviewed_by_new" TO "reviewed_by";
-ALTER TABLE "qr_images" RENAME COLUMN "uploaded_by_new" TO "uploaded_by";
+-- ALTER TABLE "qr_images" RENAME COLUMN "uploaded_by_new" TO "uploaded_by";
 
 -- Step 5: Add foreign key constraints to the new Better Auth tables
 ALTER TABLE "accounts" ADD CONSTRAINT "accounts_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;

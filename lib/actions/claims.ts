@@ -25,7 +25,7 @@ export type ClaimStatusResult = {
  * Submit a claim for an institution
  */
 export async function submitClaim(
-	institutionId: string,
+	institutionId: number,
 	claimReason?: string,
 ): Promise<ClaimResult> {
 	try {
@@ -46,7 +46,7 @@ export async function submitClaim(
 			})
 			.from(institutions)
 			.leftJoin(users, eq(institutions.contributorId, users.id))
-			.where(eq(institutions.id, Number.parseInt(institutionId)))
+			.where(eq(institutions.id, institutionId))
 			.limit(1);
 
 		if (!institution.length) {
@@ -87,7 +87,7 @@ export async function submitClaim(
 		const newClaim = await db
 			.insert(institutionClaims)
 			.values({
-				institutionId,
+				institutionId: institutionId,
 				claimantId: user.id,
 				claimReason: claimReason || null,
 				status: "pending",
@@ -112,7 +112,7 @@ export async function submitClaim(
  * Check if user has pending claim for an institution
  */
 export async function checkClaimStatus(
-	institutionId: string,
+	institutionId: number,
 ): Promise<ClaimStatusResult> {
 	try {
 		const { user } = await getAuthenticatedUser();
@@ -261,7 +261,7 @@ export async function processClaim(
 					.set({
 						contributorId: claim[0].claimantId,
 					})
-					.where(eq(institutions.id, Number.parseInt(claim[0].institutionId)));
+					.where(eq(institutions.id, claim[0].institutionId));
 			}
 		});
 

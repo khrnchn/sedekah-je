@@ -22,7 +22,7 @@ import { toast } from "sonner";
 
 interface Claim {
 	id: number;
-	institutionId: string;
+	institutionId: number;
 	claimantId: string;
 	claimReason: string | null;
 	status: "pending" | "approved" | "rejected";

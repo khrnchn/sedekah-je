@@ -15,6 +15,27 @@
 			"when": 1752201478979,
 			"tag": "0001_watery_eddie_brock",
 			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "7",
+			"when": 1752204782056,
+			"tag": "0002_public_hawkeye",
+			"breakpoints": true
+		},
+		{
+			"idx": 3,
+			"version": "7",
+			"when": 1752204906602,
+			"tag": "0003_nostalgic_hemingway",
+			"breakpoints": true
+		},
+		{
+			"idx": 4,
+			"version": "7",
+			"when": 1752205046660,
+			"tag": "0004_chubby_rocket_racer",
+			"breakpoints": true
 		}
 	]
 }

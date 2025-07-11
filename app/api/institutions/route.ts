@@ -1,3 +1,5 @@
+// TODO: secure this route
+
 import { db } from "@/db";
 import { institutions, users } from "@/db/schema";
 import type {

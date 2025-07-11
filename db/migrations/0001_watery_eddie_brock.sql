@@ -1,4 +1,4 @@
-CREATE TABLE "institution_claims" (
+CREATE TABLE IF NOT EXISTS "institution_claims" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"institution_id" text NOT NULL,
 	"claimant_id" text NOT NULL,
@@ -11,8 +11,8 @@ CREATE TABLE "institution_claims" (
 	"updated_at" timestamp
 );
 --> statement-breakpoint
-ALTER TABLE "qr_images" DISABLE ROW LEVEL SECURITY;--> statement-breakpoint
-DROP TABLE "qr_images" CASCADE;--> statement-breakpoint
+-- ALTER TABLE "qr_images" DISABLE ROW LEVEL SECURITY;--> statement-breakpoint
+-- DROP TABLE "qr_images" CASCADE;--> statement-breakpoint
 ALTER TABLE "accounts" ALTER COLUMN "created_at" SET DEFAULT now();--> statement-breakpoint
 ALTER TABLE "accounts" ALTER COLUMN "updated_at" DROP NOT NULL;--> statement-breakpoint
 ALTER TABLE "sessions" ALTER COLUMN "created_at" SET DEFAULT now();--> statement-breakpoint

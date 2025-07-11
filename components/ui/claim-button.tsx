@@ -18,7 +18,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 interface ClaimButtonProps {
-	institutionId: string;
+	institutionId: number;
 	institutionName: string;
 	hasContributor: boolean;
 	contributorEmail?: string | null;
@@ -45,7 +45,7 @@ export default function ClaimButton({
 
 			try {
 				const result = await checkClaimStatus(institutionId);
-				
+
 				if (result.success && result.hasPendingClaim) {
 					setHasPendingClaim(true);
 				}
