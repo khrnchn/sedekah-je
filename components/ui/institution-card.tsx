@@ -70,6 +70,7 @@ const InstitutionCard = forwardRef<
       isClosest,
       distanceToCurrentUserInMeter,
       contributorId,
+      contributor,
     },
     ref,
   ) => {
@@ -397,6 +398,7 @@ const InstitutionCard = forwardRef<
                     institutionId={id.toString()}
                     institutionName={name}
                     hasContributor={!!contributorId}
+                    contributorEmail={contributor?.email}
                     className="text-xs"
                   />
                   

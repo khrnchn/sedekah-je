@@ -8,6 +8,13 @@
 			"when": 1751737256473,
 			"tag": "0000_preserve_data_migration",
 			"breakpoints": true
+		},
+		{
+			"idx": 1,
+			"version": "7",
+			"when": 1752201478979,
+			"tag": "0001_watery_eddie_brock",
+			"breakpoints": true
 		}
 	]
 }

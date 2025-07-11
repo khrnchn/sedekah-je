@@ -21,6 +21,7 @@ interface ClaimButtonProps {
 	institutionId: string;
 	institutionName: string;
 	hasContributor: boolean;
+	contributorEmail?: string | null;
 	className?: string;
 }
 
@@ -28,6 +29,7 @@ export default function ClaimButton({
 	institutionId,
 	institutionName,
 	hasContributor,
+	contributorEmail,
 	className,
 }: ClaimButtonProps) {
 	const { user, isAuthenticated } = useAuth();
@@ -85,8 +87,9 @@ export default function ClaimButton({
 		}
 	};
 
-	// Don't show button if institution already has a contributor
-	if (hasContributor) {
+	// Don't show button if institution already has a contributor, unless it's the superadmin
+	const isSuperadmin = contributorEmail === "khairin13chan@gmail.com";
+	if (hasContributor && !isSuperadmin) {
 		return null;
 	}
 

@@ -28,6 +28,9 @@ export type Institution = {
 	supportedPayment?: PaymentOption[];
 	coords?: [number, number];
 	contributorId?: string | null;
+	contributor?: {
+		email?: string | null;
+	} | null;
 };
 
 export enum CategoryColor {
