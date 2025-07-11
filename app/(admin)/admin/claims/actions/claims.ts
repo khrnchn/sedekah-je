@@ -214,7 +214,7 @@ export async function getClaims(status = "pending") {
 
 /**
  * Get pending claims (cached for server-side rendering)
- * Note: Authentication check must be done outside this function
+ * Note: Authentication handled by (admin) layout
  */
 const getPendingClaimsInternal = unstable_cache(
 	async () => {
@@ -263,13 +263,12 @@ const getPendingClaimsInternal = unstable_cache(
 );
 
 export async function getPendingClaims() {
-	await verifyAdminAccess(); // Check auth outside cached function
 	return await getPendingClaimsInternal();
 }
 
 /**
  * Get approved claims (cached for server-side rendering)
- * Note: Authentication check must be done outside this function
+ * Note: Authentication handled by (admin) layout
  */
 const getApprovedClaimsInternal = unstable_cache(
 	async () => {
@@ -318,13 +317,12 @@ const getApprovedClaimsInternal = unstable_cache(
 );
 
 export async function getApprovedClaims() {
-	await verifyAdminAccess(); // Check auth outside cached function
 	return await getApprovedClaimsInternal();
 }
 
 /**
  * Get rejected claims (cached for server-side rendering)
- * Note: Authentication check must be done outside this function
+ * Note: Authentication handled by (admin) layout
  */
 const getRejectedClaimsInternal = unstable_cache(
 	async () => {
@@ -373,7 +371,6 @@ const getRejectedClaimsInternal = unstable_cache(
 );
 
 export async function getRejectedClaims() {
-	await verifyAdminAccess(); // Check auth outside cached function
 	return await getRejectedClaimsInternal();
 }
 

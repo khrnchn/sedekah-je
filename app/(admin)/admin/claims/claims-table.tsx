@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useAuth } from "@/hooks/use-auth";
+import { format } from "date-fns";
 import { Check, Crown, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -58,7 +58,6 @@ export default function ClaimsTable({
 	status,
 	showActions,
 }: ClaimsTableProps) {
-	const { user, isAuthenticated } = useAuth();
 	const router = useRouter();
 	const [claims, setClaims] = useState(initialData);
 	const [reviewDialog, setReviewDialog] = useState<{
@@ -111,14 +110,6 @@ export default function ClaimsTable({
 		setReviewDialog({ isOpen: true, claim, action });
 		setAdminNotes("");
 	};
-
-	if (!isAuthenticated || user?.role !== "admin") {
-		return (
-			<div className="flex items-center justify-center min-h-[200px]">
-				<p>Access denied</p>
-			</div>
-		);
-	}
 
 	if (claims.length === 0) {
 		return (
@@ -192,7 +183,7 @@ export default function ClaimsTable({
 										Date:
 									</p>
 									<p className="text-sm text-muted-foreground">
-										{new Date(claim.createdAt).toLocaleDateString("en-US")}
+										{format(claim.createdAt, "MMM d, yyyy")}
 									</p>
 								</div>
 
