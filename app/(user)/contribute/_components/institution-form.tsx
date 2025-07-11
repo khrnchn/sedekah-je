@@ -393,7 +393,7 @@ export default function InstitutionForm() {
 							className="rounded"
 						/>
 						<label htmlFor="fromSocialMedia" className="font-medium">
-							Saya dapat informasi ini dari media sosial
+							Saya dapat maklumat QR ini dari media sosial
 						</label>
 					</div>
 					{fromSocialMedia && (

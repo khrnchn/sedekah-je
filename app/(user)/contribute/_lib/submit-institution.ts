@@ -1,11 +1,9 @@
 "use server";
 
-import { randomUUID } from "node:crypto";
 import { institutionFormServerSchema } from "@/app/(user)/contribute/_lib/validations";
-import type { Category } from "@/app/types/institutions";
 import { db } from "@/db";
 import { institutions } from "@/db/institutions";
-import type { states } from "@/db/institutions";
+import type { categories, states } from "@/lib/institution-constants";
 import { r2Storage } from "@/lib/r2-client";
 import jsQR from "jsqr";
 import { revalidatePath } from "next/cache";
@@ -135,7 +133,7 @@ export async function submitInstitution(
 			.insert(institutions)
 			.values({
 				name: parsed.data.name,
-				category: parsed.data.category as Category,
+				category: parsed.data.category as (typeof categories)[number],
 				state: parsed.data.state as (typeof states)[number],
 				city: parsed.data.city,
 				qrImage: qrImageUrl,
