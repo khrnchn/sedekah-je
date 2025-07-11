@@ -3,8 +3,9 @@ const urlsToCache = [
 	"/",
 	"/offline",
 	"/manifest.json",
-	"/icon-192x192.png",
-	"/icon-512x512.png",
+	"/pwa-64x64.png",
+	"/pwa-192x192.png",
+	"/pwa-512x512.png",
 ];
 
 // Install service worker
