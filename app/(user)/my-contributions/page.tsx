@@ -17,8 +17,8 @@ export default async function MyContributionsPage() {
 
 	return (
 		<UserLayout
-			title="My Contributions"
-			description="Track and manage your contributions to the sedekah.je community"
+			title="Sumbangan Saya"
+			description="Jejak dan urus sumbangan anda kepada komuniti sedekah.je"
 		>
 			<div className="space-y-8">
 				<StatsCards stats={userStats} />

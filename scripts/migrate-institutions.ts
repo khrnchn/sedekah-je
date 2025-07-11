@@ -2,6 +2,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import { institutions } from "../app/data/institutions";
 import { institutions as institutionsTable } from "../db/institutions";
+import type { categories, states } from "../lib/institution-constants";
 
 // Database connection
 const connectionString = process.env.DATABASE_URL;
@@ -42,24 +43,12 @@ async function migrateInstitutions() {
 			const mappedData = batch.map((institution) => ({
 				name: institution.name,
 				description: institution.description,
-				category: institution.category as "mosque" | "surau" | "others",
-				state: institution.state as
-					| "Johor"
-					| "Kedah"
-					| "Kelantan"
-					| "Melaka"
-					| "Negeri Sembilan"
-					| "Pahang"
-					| "Perak"
-					| "Perlis"
-					| "Pulau Pinang"
-					| "Sabah"
-					| "Sarawak"
-					| "Selangor"
-					| "Terengganu"
-					| "W.P. Kuala Lumpur"
-					| "W.P. Labuan"
-					| "W.P. Putrajaya",
+				category: (institution.category === "mosque"
+					? "masjid"
+					: institution.category === "others"
+						? "lain-lain"
+						: "surau") as (typeof categories)[number],
+				state: institution.state as (typeof states)[number],
 				city: institution.city,
 				qrImage: institution.qrImage,
 				qrContent: institution.qrContent,

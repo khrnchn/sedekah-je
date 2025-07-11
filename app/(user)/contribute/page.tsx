@@ -4,8 +4,8 @@ import { UserLayout } from "@/components/user-layout";
 export default function ContributePage() {
 	return (
 		<UserLayout
-			title="Add Institution"
-			description="Contribute to the sedekah.je community by adding new institutions"
+			title="Tambah Institusi"
+			description="Sumbang kepada komuniti sedekah.je dengan menambah institusi baru"
 		>
 			<InstitutionForm />
 		</UserLayout>

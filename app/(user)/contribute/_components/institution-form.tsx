@@ -7,13 +7,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import {
-	categories as CATEGORY_OPTIONS,
-	states as STATE_OPTIONS,
-} from "@/db/institutions";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocationPrefill } from "@/hooks/use-location-prefill";
 import { useQrExtraction } from "@/hooks/use-qr-extraction";
+import {
+	categories as CATEGORY_OPTIONS,
+	states as STATE_OPTIONS,
+} from "@/lib/institution-constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -42,10 +42,10 @@ function SubmitButton({
 			{isSubmitting ? (
 				<>
 					<Spinner size="small" className="mr-2" />
-					{qrExtracting ? "Extracting QR..." : "Submitting..."}
+					{qrExtracting ? "Mengekstrak kandungan QR" : "Menghantar..."}
 				</>
 			) : (
-				"Submit"
+				"Hantar"
 			)}
 		</Button>
 	);
@@ -144,22 +144,22 @@ export default function InstitutionForm() {
 			const result = await submitInstitution(undefined, formData);
 
 			if (result.status === "success") {
-				toast.success("Thank you!", {
-					description: "Your contribution is being reviewed.",
+				toast.success("Jazakallahu khair. Terima kasih!", {
+					description: "Sumbangan anda sedang disemak.",
 				});
 				reset();
 				if (qrImageInput) qrImageInput.value = "";
 				clearQrContent();
 			} else if (result.status === "error") {
-				toast.error("Error", {
+				toast.error("Ralat", {
 					description:
-						"Please check your form. There are errors in the submitted data.",
+						"Sila semak borang anda. Terdapat ralat dalam data yang dihantar.",
 				});
 			}
 		} catch (error) {
 			console.error("Form submission error:", error);
-			toast.error("Error", {
-				description: "Something went wrong. Please try again.",
+			toast.error("Ralat", {
+				description: "Sesuatu yang tidak kena berlaku. Sila cuba lagi.",
 			});
 		} finally {
 			setIsSubmitting(false);
@@ -206,17 +206,17 @@ export default function InstitutionForm() {
 							disabled={loadingLocation}
 						/>
 						<label htmlFor="useCurrentLocation" className="font-medium">
-							I'm currently at this location
+							Saya berada di lokasi ini sekarang
 						</label>
 					</div>
 					{loadingLocation && (
-						<p className="text-sm text-blue-600 pl-6">Detecting location…</p>
+						<p className="text-sm text-blue-600 pl-6">Mengesan lokasi…</p>
 					)}
 				</div>
 
 				<div className="space-y-2">
 					<label htmlFor="qrImage" className="font-medium">
-						QR Code Image <span className="text-red-500">*</span>
+						Gambar Kod QR <span className="text-red-500">*</span>
 					</label>
 					<div className="flex gap-2 mb-2">
 						<Button
@@ -225,7 +225,7 @@ export default function InstitutionForm() {
 							size="sm"
 							onClick={() => setFileUploadMode("gallery")}
 						>
-							Gallery
+							Galeri
 						</Button>
 						<Button
 							type="button"
@@ -233,7 +233,7 @@ export default function InstitutionForm() {
 							size="sm"
 							onClick={() => setFileUploadMode("camera")}
 						>
-							Camera
+							Kamera
 						</Button>
 					</div>
 					<Input
@@ -245,25 +245,27 @@ export default function InstitutionForm() {
 						onChange={handleQrImageChange}
 					/>
 					{qrExtracting && (
-						<p className="text-sm text-blue-600">Extracting QR content...</p>
+						<p className="text-sm text-blue-600">Mengekstrak kandungan QR...</p>
 					)}
 					{qrContent && (
 						<div className="p-3 bg-green-50 border border-green-200 rounded-md">
-							<p className="text-sm font-medium text-green-800">QR Content:</p>
+							<p className="text-sm font-medium text-green-800">
+								Kandungan QR:
+							</p>
 							<p className="text-sm text-green-700 break-all">{qrContent}</p>
 						</div>
 					)}
 					{!qrExtracting && qrExtractionFailed && hasAttemptedExtraction && (
 						<div className="p-3 bg-red-50 border border-red-200 rounded-md">
 							<p className="text-sm font-medium text-red-800">
-								QR code could not be detected
+								Kod QR tidak dapat dikesan
 							</p>
-							<p className="text-sm text-red-700">Try these tips:</p>
+							<p className="text-sm text-red-700">Cuba petua ini:</p>
 							<ul className="text-sm text-red-600 list-disc list-inside mt-1 space-y-1">
-								<li>Crop the image closer to the QR code</li>
-								<li>Ensure the image is clear and not blurry</li>
-								<li>Check that the QR code is not too small</li>
-								<li>Make sure there's good lighting/contrast</li>
+								<li>Krop imej agar fokus kepada kod QR</li>
+								<li>Pastikan imej jelas dan tidak kabur</li>
+								<li>Pastikan kod QR tidak terlalu kecil</li>
+								<li>Pastikan pencahayaan/kontras yang baik</li>
 							</ul>
 						</div>
 					)}
@@ -273,26 +275,25 @@ export default function InstitutionForm() {
 						!qrExtractionFailed && (
 							<div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md">
 								<p className="text-sm font-medium text-yellow-800">
-									Processing QR code...
+									Memproses kod QR...
 								</p>
 							</div>
 						)}
 					{errors.qrExtractionSuccess && (
 						<p className="text-sm text-red-500">
-							Please upload a valid QR code image that can be successfully
-							processed
+							Sila muat naik imej kod QR yang sah.
 						</p>
 					)}
 				</div>
 
 				<div className="space-y-2">
 					<label htmlFor="name" className="font-medium">
-						Institution Name <span className="text-red-500">*</span>
+						Nama Institusi <span className="text-red-500">*</span>
 					</label>
 					<Input
 						id="name"
 						{...register("name")}
-						placeholder="Example: Al-Falah Mosque"
+						placeholder="Contoh: Masjid Al-Falah"
 						className={errors.name ? "border-red-500" : ""}
 					/>
 					{errors.name && (
@@ -302,7 +303,7 @@ export default function InstitutionForm() {
 
 				<div className="space-y-2">
 					<label htmlFor="category" className="font-medium">
-						Category <span className="text-red-500">*</span>
+						Kategori <span className="text-red-500">*</span>
 					</label>
 					<select
 						id="category"
@@ -311,7 +312,7 @@ export default function InstitutionForm() {
 						defaultValue=""
 					>
 						<option value="" disabled>
-							Select category
+							Pilih kategori
 						</option>
 						{CATEGORY_OPTIONS.map((c) => (
 							<option key={c} value={c} className="capitalize">
@@ -327,7 +328,7 @@ export default function InstitutionForm() {
 				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 					<div className="space-y-2">
 						<label htmlFor="state" className="font-medium">
-							State <span className="text-red-500">*</span>
+							Negeri <span className="text-red-500">*</span>
 						</label>
 						<select
 							id="state"
@@ -336,7 +337,7 @@ export default function InstitutionForm() {
 							defaultValue={prefilledState || ""}
 						>
 							<option value="" disabled>
-								Select state
+								Pilih negeri
 							</option>
 							{STATE_OPTIONS.map((s) => (
 								<option key={s} value={s} className="capitalize">
@@ -350,12 +351,12 @@ export default function InstitutionForm() {
 					</div>
 					<div className="space-y-2">
 						<label htmlFor="city" className="font-medium">
-							City <span className="text-red-500">*</span>
+							Bandar <span className="text-red-500">*</span>
 						</label>
 						<Input
 							id="city"
 							{...register("city")}
-							placeholder="Example: Shah Alam"
+							placeholder="Contoh: Shah Alam"
 							className={errors.city ? "border-red-500" : ""}
 							defaultValue={prefilledCity}
 						/>
@@ -367,12 +368,12 @@ export default function InstitutionForm() {
 
 				<div className="space-y-2">
 					<label htmlFor="contributorRemarks" className="font-medium">
-						Additional Notes
+						Info Tambahan
 					</label>
 					<textarea
 						id="contributorRemarks"
 						{...register("contributorRemarks")}
-						placeholder="Any additional notes or information about this institution..."
+						placeholder="Info tambahan berkenaan institusi ini"
 						className={`w-full min-h-[80px] px-3 py-2 border rounded-md bg-background resize-vertical ${errors.contributorRemarks ? "border-red-500" : ""}`}
 					/>
 					{errors.contributorRemarks && (
@@ -391,18 +392,18 @@ export default function InstitutionForm() {
 							className="rounded"
 						/>
 						<label htmlFor="fromSocialMedia" className="font-medium">
-							I got this information online
+							Saya dapat maklumat QR ini dari media sosial
 						</label>
 					</div>
 					{fromSocialMedia && (
 						<div className="space-y-2 pl-6">
 							<label htmlFor="sourceUrl" className="font-medium text-sm">
-								Source URL
+								Alamat Web
 							</label>
 							<Input
 								id="sourceUrl"
 								{...register("sourceUrl")}
-								placeholder="https://facebook.com/post/123 or Instagram URL"
+								placeholder="https://facebook.com/post/123 atau URL Instagram"
 								className={errors.sourceUrl ? "border-red-500" : ""}
 							/>
 							{errors.sourceUrl && (

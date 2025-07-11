@@ -48,14 +48,13 @@ export function useQrExtraction() {
 					if (code) {
 						setQrContent(code.data);
 						setQrExtractionFailed(false);
-						toast("QR code detected successfully!", {
-							description: "QR code content has been extracted.",
+						toast("Kod QR telah dikesan dengan jayanya!", {
+							description: "Kandungan kod QR telah diekstrak.",
 						});
 					} else {
 						setQrExtractionFailed(true);
-						toast.error("QR code could not be detected", {
-							description:
-								"Try cropping the image closer to the QR code, ensure it's clear and not blurry.",
+						toast("Kod QR tidak dapat dikesan", {
+							description: "Admin akan mengekstrak kandungan QR secara manual.",
 						});
 					}
 				}
@@ -64,9 +63,8 @@ export function useQrExtraction() {
 
 			img.onerror = () => {
 				setQrExtractionFailed(true);
-				toast.error("Error processing image", {
-					description:
-						"Unable to process image file. Please try a different image.",
+				toast("Ralat memproses imej", {
+					description: "Tidak dapat memproses fail imej.",
 				});
 				setQrExtracting(false);
 			};
@@ -75,9 +73,8 @@ export function useQrExtraction() {
 		} catch (error) {
 			console.error("QR extraction error:", error);
 			setQrExtractionFailed(true);
-			toast.error("Error extracting QR", {
-				description:
-					"Something went wrong processing the image. Please try again.",
+			toast("Ralat mengekstrak QR", {
+				description: "Admin akan mengekstrak kandungan QR secara manual.",
 			});
 			setQrExtracting(false);
 		}

@@ -1,9 +1,9 @@
 export const categories = [
-	"mosque",
+	"masjid",
 	"surau",
 	"tahfiz",
 	"kebajikan",
-	"others",
+	"lain-lain",
 ] as const;
 
 export const states = [

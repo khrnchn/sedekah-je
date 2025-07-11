@@ -29,22 +29,22 @@ import { UserNavDesktop } from "./user-nav";
 
 const links = [
   {
-    name: "Home",
+    name: "Laman Utama",
     href: "/",
     icon: Home,
   },
   {
-    name: "Contributions",
+    name: "Semua sumbangan",
     href: "/my-contributions",
     icon: LayoutDashboard,
   },
   {
-    name: "Contribute",
+    name: "Sumbang QR",
     href: "/contribute",
     icon: HeartHandshake,
   },
   {
-    name: "Leaderboard",
+    name: "Carta Penyumbang",
     href: "/leaderboard",
     icon: BarChart,
   },
@@ -91,7 +91,7 @@ export const Header = () => {
                 <DrawerHeader>
                   <DrawerTitle className="sr-only">Menu</DrawerTitle>
                   <DrawerDescription className="sr-only">
-                    Navigation links for your account
+                    Pautan navigasi untuk akaun anda
                   </DrawerDescription>
                 </DrawerHeader>
                 <div className="grid grid-cols-2 gap-2 p-4">
@@ -117,7 +117,7 @@ export const Header = () => {
                     onClick={handleSignOut}
                   >
                     <LogOut className="size-5 mr-2" />
-                    <span className="text-sm font-medium">Logout</span>
+                    <span className="text-sm font-medium">Log Keluar</span>
                   </Button>
                 </div>
               </DrawerContent>

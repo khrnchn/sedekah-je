@@ -4,7 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import type { InstitutionFormData } from "@/app/(user)/contribute/_lib/validations";
-import type { states as STATE_OPTIONS } from "@/db/institutions";
+import type { states as STATE_OPTIONS } from "@/lib/institution-constants";
 import type { UseFormSetValue } from "react-hook-form";
 
 /**
@@ -41,10 +41,10 @@ export function useLocationPrefill(
 						) {
 							const suggestedName = data.display_name.split(",")[0].trim();
 
-							toast("Possible institution detected", {
-								description: `Use "${suggestedName}" as the institution name?`,
+							toast("Institusi dikesan", {
+								description: `Gunakan "${suggestedName}" sebagai nama institusi?`,
 								action: {
-									label: "Use name",
+									label: "Guna nama",
 									onClick: () => setValue("name", suggestedName),
 								},
 							});

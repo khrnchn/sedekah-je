@@ -4,8 +4,8 @@ import { LazyLeaderboardContent } from "./_components/lazy-leaderboard-content";
 export default function LeaderboardPage() {
 	return (
 		<UserLayout
-			title="Leaderboard"
-			description="See the top contributors in the sedekah.je community"
+			title="Papan Pendahulu"
+			description="Lihat penyumbang teratas dalam komuniti sedekah.je"
 		>
 			<LazyLeaderboardContent />
 		</UserLayout>

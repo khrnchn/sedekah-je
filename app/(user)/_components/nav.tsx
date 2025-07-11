@@ -23,17 +23,17 @@ import { useState } from "react";
 
 const links = [
 	{
-		name: "Contributions",
+		name: "Semua sumbangan",
 		href: "/my-contributions",
 		icon: LayoutDashboard,
 	},
 	{
-		name: "Contribute",
+		name: "Sumbang QR",
 		href: "/contribute",
 		icon: HeartHandshake,
 	},
 	{
-		name: "Leaderboard",
+		name: "Carta Penyumbang",
 		href: "/leaderboard",
 		icon: BarChart,
 	},
@@ -61,7 +61,7 @@ export function Nav() {
 					<DrawerHeader>
 						<DrawerTitle className="sr-only">Menu</DrawerTitle>
 						<DrawerDescription className="sr-only">
-							Navigation links for your account
+							Pautan navigasi untuk akaun anda
 						</DrawerDescription>
 					</DrawerHeader>
 					<div className="grid grid-cols-3 gap-2 p-4">
@@ -87,7 +87,7 @@ export function Nav() {
 							onClick={handleSignOut}
 						>
 							<LogOut className="size-5 mr-2" />
-							<span className="text-sm font-medium">Logout</span>
+							<span className="text-sm font-medium">Log Keluar</span>
 						</Button>
 					</div>
 				</DrawerContent>
