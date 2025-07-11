@@ -9,13 +9,12 @@ import type { UseFormSetValue } from "react-hook-form";
 
 /**
  * Encapsulates the location-detection logic for InstitutionForm.
- * Returns step management (question → form), loading state, the fetchLocation handler,
+ * Returns loading state, the fetchLocation handler,
  * and any city/state values that were auto-detected.
  */
 export function useLocationPrefill(
 	setValue: UseFormSetValue<InstitutionFormData>,
 ) {
-	const [step, setStep] = useState<"question" | "form">("question");
 	const [loadingLocation, setLoadingLocation] = useState(false);
 	const [prefilledCity, setPrefilledCity] = useState("");
 	const [prefilledState, setPrefilledState] = useState("");
@@ -69,24 +68,25 @@ export function useLocationPrefill(
 						console.error("Reverse geocoding failed", err);
 					} finally {
 						setLoadingLocation(false);
-						setStep("form");
 					}
 				},
 				() => {
 					/* error */
 					setLoadingLocation(false);
-					setStep("form");
+					toast.error("Location access denied", {
+						description: "You can still fill in the location manually.",
+					});
 				},
 			);
 		} catch {
 			setLoadingLocation(false);
-			setStep("form");
+			toast.error("Location not supported", {
+				description: "Please fill in the location manually.",
+			});
 		}
 	}
 
 	return {
-		step,
-		setStep,
 		loadingLocation,
 		fetchLocation,
 		prefilledCity,

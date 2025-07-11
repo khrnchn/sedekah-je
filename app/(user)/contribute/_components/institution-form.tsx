@@ -92,15 +92,11 @@ export default function InstitutionForm() {
 		}
 	}, [user?.id, setValue]);
 
-	/* Step + location management via custom hook */
-	const {
-		step,
-		setStep,
-		loadingLocation,
-		fetchLocation,
-		prefilledCity,
-		prefilledState,
-	} = useLocationPrefill(setValue);
+	/* Location management via custom hook */
+	const { loadingLocation, fetchLocation, prefilledCity, prefilledState } =
+		useLocationPrefill(setValue);
+
+	const [useCurrentLocation, setUseCurrentLocation] = useState(false);
 
 	/* Form submission handler */
 	const onSubmit = async (data: InstitutionFormData) => {
@@ -149,24 +145,16 @@ export default function InstitutionForm() {
 		}
 	};
 
-	if (step === "question") {
-		return (
-			<div className="max-w-lg mx-auto space-y-6 text-center">
-				<h2 className="text-xl font-semibold">
-					Are you currently at the institution location?
-				</h2>
-				<div className="flex justify-center gap-4">
-					<Button onClick={fetchLocation} disabled={loadingLocation}>
-						Yes
-					</Button>
-					<Button variant="secondary" onClick={() => setStep("form")}>
-						No
-					</Button>
-				</div>
-				{loadingLocation && <p>Detecting location…</p>}
-			</div>
-		);
-	}
+	const handleLocationToggle = (checked: boolean) => {
+		setUseCurrentLocation(checked);
+		if (checked) {
+			fetchLocation();
+		} else {
+			// Clear location data when unchecked
+			setValue("lat", "");
+			setValue("lon", "");
+		}
+	};
 
 	return (
 		<form
@@ -183,6 +171,26 @@ export default function InstitutionForm() {
 				/>
 				<input type="hidden" {...register("lat")} />
 				<input type="hidden" {...register("lon")} />
+
+				{/* Location toggle */}
+				<div className="space-y-2">
+					<div className="flex items-center space-x-2">
+						<input
+							type="checkbox"
+							id="useCurrentLocation"
+							checked={useCurrentLocation}
+							onChange={(e) => handleLocationToggle(e.target.checked)}
+							className="rounded"
+							disabled={loadingLocation}
+						/>
+						<label htmlFor="useCurrentLocation" className="font-medium">
+							I'm currently at this location
+						</label>
+					</div>
+					{loadingLocation && (
+						<p className="text-sm text-blue-600 pl-6">Detecting location…</p>
+					)}
+				</div>
 
 				<div className="space-y-2">
 					<label htmlFor="qrImage" className="font-medium">
@@ -331,7 +339,7 @@ export default function InstitutionForm() {
 							className="rounded"
 						/>
 						<label htmlFor="fromSocialMedia" className="font-medium">
-							I got this information from social media
+							I got this information online
 						</label>
 					</div>
 					{fromSocialMedia && (
