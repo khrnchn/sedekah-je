@@ -262,9 +262,9 @@ export default function InstitutionForm() {
 							</p>
 							<p className="text-sm text-red-700">Cuba petua ini:</p>
 							<ul className="text-sm text-red-600 list-disc list-inside mt-1 space-y-1">
-								<li>Pangkas imej lebih dekat kepada kod QR</li>
+								<li>Krop imej agar fokus kepada kod QR</li>
 								<li>Pastikan imej jelas dan tidak kabur</li>
-								<li>Semak kod QR tidak terlalu kecil</li>
+								<li>Pastikan kod QR tidak terlalu kecil</li>
 								<li>Pastikan pencahayaan/kontras yang baik</li>
 							</ul>
 						</div>
@@ -281,8 +281,7 @@ export default function InstitutionForm() {
 						)}
 					{errors.qrExtractionSuccess && (
 						<p className="text-sm text-red-500">
-							Sila muat naik imej kod QR yang sah dan boleh diproses dengan
-							jayanya
+							Sila muat naik imej kod QR yang sah.
 						</p>
 					)}
 				</div>
