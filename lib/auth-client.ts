@@ -11,11 +11,11 @@ export const authClient = createAuthClient({
 				: "http://localhost:3000",
 });
 
-export const signInWithGoogle = async () => {
+export const signInWithGoogle = async (callbackURL = "/contribute") => {
 	try {
 		const data = await authClient.signIn.social({
 			provider: "google",
-			callbackURL: "/contribute",
+			callbackURL,
 		});
 
 		return data;

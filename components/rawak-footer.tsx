@@ -1,25 +1,17 @@
 "use client";
 
-import { useAuth } from "@/hooks/use-auth";
+import { signInWithGoogle, useSession } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import React from "react";
 import { Button } from "./ui/button";
 
 const RawakFooter = () => {
-	const router = useRouter();
-	const { isAuthenticated, isLoading } = useAuth();
+	const { data: session, isPending } = useSession();
 
-	const handleAddQrClick = () => {
-		if (isLoading) {
-			return;
-		}
-		if (isAuthenticated) {
-			router.push("/contribute");
-		} else {
-			router.push("/auth");
-		}
+	const handleLogin = async () => {
+		if (isPending) return;
+		await signInWithGoogle();
 	};
 
 	return (
@@ -34,15 +26,19 @@ const RawakFooter = () => {
 					</p>
 				</Button>
 			</Link>
-			<Button
-				variant="outline"
-				className="bg-gradient-to-br from-blue-500 to-blue-300 border border-blue-400 rounded-full hover:from-blue-700 hover:to-blue-500 transition-colors duration-300"
-				onClick={handleAddQrClick}
-				disabled={isLoading}
-			>
-				{isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-				<p className="text-black font-medium bold dark:text-white">Log Masuk</p>
-			</Button>
+			{!session && (
+				<Button
+					variant="outline"
+					className="bg-gradient-to-br from-blue-500 to-blue-300 border border-blue-400 rounded-full hover:from-blue-700 hover:to-blue-500 transition-colors duration-300"
+					onClick={handleLogin}
+					disabled={isPending}
+				>
+					{isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+					<p className="text-black font-medium bold dark:text-white">
+						Log Masuk
+					</p>
+				</Button>
+			)}
 		</footer>
 	);
 };

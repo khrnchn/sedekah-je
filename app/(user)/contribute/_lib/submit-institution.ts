@@ -94,17 +94,24 @@ export async function submitInstitution(
 			Number.parseFloat(parsed.data.lon),
 		];
 	} else {
-		// Attempt geocoding using Nominatim (as proxy to OSRM) based on name + city + state
+		// Attempt geocoding using Nominatim with timeout
 		try {
 			const query = `${parsed.data.name}, ${parsed.data.city}, ${parsed.data.state}, Malaysia`;
+			const controller = new AbortController();
+			const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
 			const res = await fetch(
 				`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(
 					query,
 				)}`,
 				{
 					headers: { "User-Agent": "sedekahje-bot" },
+					signal: controller.signal,
 				},
 			);
+
+			clearTimeout(timeoutId);
+
 			if (res.ok) {
 				const results = (await res.json()) as Array<{
 					lat: string;
