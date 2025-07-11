@@ -2,11 +2,11 @@
 
 import { db } from "@/db";
 import { institutionClaims, institutions, users } from "@/db/schema";
-import { getAuthenticatedUser, verifyAdminAccess } from "@/lib/auth-utils";
-import { and, eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
-
 import type { InstitutionClaim } from "@/db/schema";
+import { getAuthenticatedUser, verifyAdminAccess } from "@/lib/auth-utils";
+import { unstable_cache } from "@/lib/unstable-cache";
+import { and, eq } from "drizzle-orm";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 export type ClaimResult = {
 	success: boolean;
@@ -97,6 +97,10 @@ export async function submitClaim(
 		// Revalidate relevant paths
 		revalidatePath("/admin/claims");
 		revalidatePath(`/institution/${institutionId}`);
+
+		// Revalidate cached claims data
+		revalidateTag("claims-data");
+		revalidateTag("pending-claims");
 
 		return { success: true, claim: newClaim[0] };
 	} catch (error) {
@@ -209,6 +213,171 @@ export async function getClaims(status = "pending") {
 }
 
 /**
+ * Get pending claims (cached for server-side rendering)
+ * Note: Authentication check must be done outside this function
+ */
+const getPendingClaimsInternal = unstable_cache(
+	async () => {
+		return await db
+			.select({
+				id: institutionClaims.id,
+				institutionId: institutionClaims.institutionId,
+				claimantId: institutionClaims.claimantId,
+				claimReason: institutionClaims.claimReason,
+				status: institutionClaims.status,
+				reviewedBy: institutionClaims.reviewedBy,
+				reviewedAt: institutionClaims.reviewedAt,
+				adminNotes: institutionClaims.adminNotes,
+				createdAt: institutionClaims.createdAt,
+				updatedAt: institutionClaims.updatedAt,
+				institution: {
+					id: institutions.id,
+					name: institutions.name,
+					category: institutions.category,
+					state: institutions.state,
+					city: institutions.city,
+					contributorId: institutions.contributorId,
+				},
+				claimant: {
+					id: users.id,
+					name: users.name,
+					email: users.email,
+					username: users.username,
+					avatarUrl: users.avatarUrl,
+				},
+			})
+			.from(institutionClaims)
+			.leftJoin(
+				institutions,
+				eq(institutionClaims.institutionId, institutions.id),
+			)
+			.leftJoin(users, eq(institutionClaims.claimantId, users.id))
+			.where(eq(institutionClaims.status, "pending"))
+			.orderBy(institutionClaims.createdAt);
+	},
+	["pending-claims-list"],
+	{
+		tags: ["claims-data", "pending-claims"],
+		revalidate: 300, // 5 minutes fallback
+	},
+);
+
+export async function getPendingClaims() {
+	await verifyAdminAccess(); // Check auth outside cached function
+	return await getPendingClaimsInternal();
+}
+
+/**
+ * Get approved claims (cached for server-side rendering)
+ * Note: Authentication check must be done outside this function
+ */
+const getApprovedClaimsInternal = unstable_cache(
+	async () => {
+		return await db
+			.select({
+				id: institutionClaims.id,
+				institutionId: institutionClaims.institutionId,
+				claimantId: institutionClaims.claimantId,
+				claimReason: institutionClaims.claimReason,
+				status: institutionClaims.status,
+				reviewedBy: institutionClaims.reviewedBy,
+				reviewedAt: institutionClaims.reviewedAt,
+				adminNotes: institutionClaims.adminNotes,
+				createdAt: institutionClaims.createdAt,
+				updatedAt: institutionClaims.updatedAt,
+				institution: {
+					id: institutions.id,
+					name: institutions.name,
+					category: institutions.category,
+					state: institutions.state,
+					city: institutions.city,
+					contributorId: institutions.contributorId,
+				},
+				claimant: {
+					id: users.id,
+					name: users.name,
+					email: users.email,
+					username: users.username,
+					avatarUrl: users.avatarUrl,
+				},
+			})
+			.from(institutionClaims)
+			.leftJoin(
+				institutions,
+				eq(institutionClaims.institutionId, institutions.id),
+			)
+			.leftJoin(users, eq(institutionClaims.claimantId, users.id))
+			.where(eq(institutionClaims.status, "approved"))
+			.orderBy(institutionClaims.createdAt);
+	},
+	["approved-claims-list"],
+	{
+		tags: ["claims-data", "approved-claims"],
+		revalidate: 300, // 5 minutes fallback
+	},
+);
+
+export async function getApprovedClaims() {
+	await verifyAdminAccess(); // Check auth outside cached function
+	return await getApprovedClaimsInternal();
+}
+
+/**
+ * Get rejected claims (cached for server-side rendering)
+ * Note: Authentication check must be done outside this function
+ */
+const getRejectedClaimsInternal = unstable_cache(
+	async () => {
+		return await db
+			.select({
+				id: institutionClaims.id,
+				institutionId: institutionClaims.institutionId,
+				claimantId: institutionClaims.claimantId,
+				claimReason: institutionClaims.claimReason,
+				status: institutionClaims.status,
+				reviewedBy: institutionClaims.reviewedBy,
+				reviewedAt: institutionClaims.reviewedAt,
+				adminNotes: institutionClaims.adminNotes,
+				createdAt: institutionClaims.createdAt,
+				updatedAt: institutionClaims.updatedAt,
+				institution: {
+					id: institutions.id,
+					name: institutions.name,
+					category: institutions.category,
+					state: institutions.state,
+					city: institutions.city,
+					contributorId: institutions.contributorId,
+				},
+				claimant: {
+					id: users.id,
+					name: users.name,
+					email: users.email,
+					username: users.username,
+					avatarUrl: users.avatarUrl,
+				},
+			})
+			.from(institutionClaims)
+			.leftJoin(
+				institutions,
+				eq(institutionClaims.institutionId, institutions.id),
+			)
+			.leftJoin(users, eq(institutionClaims.claimantId, users.id))
+			.where(eq(institutionClaims.status, "rejected"))
+			.orderBy(institutionClaims.createdAt);
+	},
+	["rejected-claims-list"],
+	{
+		tags: ["claims-data", "rejected-claims"],
+		revalidate: 300, // 5 minutes fallback
+	},
+);
+
+export async function getRejectedClaims() {
+	await verifyAdminAccess(); // Check auth outside cached function
+	return await getRejectedClaimsInternal();
+}
+
+/**
  * Process a claim (approve/reject) - admin only
  */
 export async function processClaim(
@@ -268,6 +437,12 @@ export async function processClaim(
 		// Revalidate relevant paths
 		revalidatePath("/admin/claims");
 		revalidatePath(`/institution/${claim[0].institutionId}`);
+
+		// Revalidate cached claims data
+		revalidateTag("claims-data");
+		revalidateTag("pending-claims");
+		revalidateTag("approved-claims");
+		revalidateTag("rejected-claims");
 
 		return { success: true };
 	} catch (error) {

@@ -1,5 +1,6 @@
 "use client";
 
+import { checkClaimStatus, submitClaim } from "@/app/(admin)/admin/claims/actions/claims";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -12,7 +13,6 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/use-auth";
-import { checkClaimStatus, submitClaim } from "@/lib/actions/claims";
 import { Crown } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
