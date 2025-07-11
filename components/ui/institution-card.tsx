@@ -69,6 +69,7 @@ const InstitutionCard = forwardRef<
       coords,
       isClosest,
       distanceToCurrentUserInMeter,
+      contributorId,
     },
     ref,
   ) => {
@@ -395,7 +396,7 @@ const InstitutionCard = forwardRef<
                   <ClaimButton
                     institutionId={id.toString()}
                     institutionName={name}
-                    hasContributor={false} // TODO: Update this based on actual contributorId
+                    hasContributor={!!contributorId}
                     className="text-xs"
                   />
                   

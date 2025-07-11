@@ -1,19 +1,24 @@
 import { relations } from "drizzle-orm";
 import { pgTable, serial, text, timestamp, varchar } from "drizzle-orm/pg-core";
 import { timestamps } from "./helpers";
+import { users } from "./users";
 
 export const claimStatuses = ["pending", "approved", "rejected"] as const;
 
 export const institutionClaims = pgTable("institution_claims", {
 	id: serial("id").primaryKey(),
 	institutionId: text("institution_id").notNull(),
-	claimantId: text("claimant_id").notNull(),
+	claimantId: text("claimant_id")
+		.notNull()
+		.references(() => users.id, { onDelete: "cascade" }),
 	claimReason: text("claim_reason"), // Optional reason from user
 	status: varchar("status", { length: 20 })
 		.default("pending")
 		.notNull()
 		.$type<(typeof claimStatuses)[number]>(),
-	reviewedBy: text("reviewed_by"),
+	reviewedBy: text("reviewed_by").references(() => users.id, {
+		onDelete: "set null",
+	}),
 	reviewedAt: timestamp("reviewed_at"),
 	adminNotes: text("admin_notes"),
 	...timestamps,

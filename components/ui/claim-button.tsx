@@ -12,8 +12,9 @@ import {
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/use-auth";
+import { checkClaimStatus, submitClaim } from "@/lib/actions/claims";
 import { Crown } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 interface ClaimButtonProps {
@@ -35,24 +36,24 @@ export default function ClaimButton({
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [hasPendingClaim, setHasPendingClaim] = useState(false);
 
-	// Check if user has a pending claim when dialog opens
-	const checkPendingClaim = async () => {
-		if (!isAuthenticated) return;
+	// Check if user has a pending claim when component mounts
+	useEffect(() => {
+		const checkPendingClaim = async () => {
+			if (!isAuthenticated) return;
 
-		try {
-			const response = await fetch(
-				`/api/claims?institutionId=${institutionId}`,
-			);
-			const data = await response.json();
-
-			if (data.hasPendingClaim) {
-				setHasPendingClaim(true);
-				toast.info("You already have a pending claim for this institution");
+			try {
+				const result = await checkClaimStatus(institutionId);
+				
+				if (result.success && result.hasPendingClaim) {
+					setHasPendingClaim(true);
+				}
+			} catch (error) {
+				console.error("Error checking pending claim:", error);
 			}
-		} catch (error) {
-			console.error("Error checking pending claim:", error);
-		}
-	};
+		};
+
+		checkPendingClaim();
+	}, [institutionId, isAuthenticated]);
 
 	const handleSubmitClaim = async () => {
 		if (!isAuthenticated) {
@@ -63,26 +64,18 @@ export default function ClaimButton({
 		setIsSubmitting(true);
 
 		try {
-			const response = await fetch("/api/claims", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({
-					institutionId,
-					claimReason: claimReason.trim() || null,
-				}),
-			});
+			const result = await submitClaim(
+				institutionId,
+				claimReason.trim() || undefined,
+			);
 
-			const data = await response.json();
-
-			if (response.ok) {
+			if (result.success) {
 				toast.success("Claim submitted successfully! Please wait for admin approval.");
 				setIsDialogOpen(false);
 				setClaimReason("");
 				setHasPendingClaim(true);
 			} else {
-				toast.error(data.error || "Failed to submit claim");
+				toast.error(result.error || "Failed to submit claim");
 			}
 		} catch (error) {
 			console.error("Error submitting claim:", error);
@@ -110,7 +103,6 @@ export default function ClaimButton({
 					variant="outline"
 					className={className}
 					disabled={hasPendingClaim}
-					onClick={checkPendingClaim}
 				>
 					<Crown className="h-4 w-4 mr-2" />
 					{hasPendingClaim ? "Claim Pending" : "Claim Institution"}
@@ -131,7 +123,7 @@ export default function ClaimButton({
 						</Label>
 						<Textarea
 							id="claimReason"
-							placeholder="Example: I am the manager of this institution, I manage the QR code, etc."
+							placeholder="Example: Previously i submitted via whatsapp/twitter/github. The link is https://example.com"
 							value={claimReason}
 							onChange={(e) => setClaimReason(e.target.value)}
 							rows={3}

@@ -11,6 +11,7 @@ import {
 	varchar,
 } from "drizzle-orm/pg-core";
 import { timestamps } from "./helpers";
+import { users } from "./users";
 
 // Re-export for other modules depending on db/institutions exports
 export { categories, states };

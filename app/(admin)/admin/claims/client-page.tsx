@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/use-auth";
+import { getClaims, processClaim } from "@/lib/actions/claims";
 import { Check, Clock, Crown, Eye, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -26,25 +27,25 @@ interface Claim {
 	claimReason: string | null;
 	status: "pending" | "approved" | "rejected";
 	reviewedBy: string | null;
-	reviewedAt: string | null;
+	reviewedAt: Date | string | null;
 	adminNotes: string | null;
-	createdAt: string;
-	updatedAt: string;
+	createdAt: Date | string;
+	updatedAt: Date | string | null;
 	institution: {
-		id: string;
+		id: number;
 		name: string;
 		category: string;
 		state: string;
 		city: string;
 		contributorId: string | null;
-	};
+	} | null;
 	claimant: {
 		id: string;
-		name: string;
+		name: string | null;
 		email: string;
 		username: string | null;
 		avatarUrl: string | null;
-	};
+	} | null;
 }
 
 export default function ClaimsClientPage() {
@@ -55,7 +56,7 @@ export default function ClaimsClientPage() {
 	const [reviewDialog, setReviewDialog] = useState<{
 		isOpen: boolean;
 		claim: Claim | null;
-		action: "approve" | "reject" | null;
+		action: "approved" | "rejected" | null;
 	}>({
 		isOpen: false,
 		claim: null,
@@ -70,13 +71,12 @@ export default function ClaimsClientPage() {
 
 			setLoading(true);
 			try {
-				const response = await fetch(`/api/admin/claims?status=${status}`);
-				const data = await response.json();
+				const result = await getClaims(status);
 
-				if (response.ok) {
-					setClaims(data.claims);
+				if (result.success) {
+					setClaims(result.claims || []);
 				} else {
-					toast.error("Failed to load claims");
+					toast.error(result.error || "Failed to load claims");
 				}
 			} catch (error) {
 				console.error("Error fetching claims:", error);
@@ -93,30 +93,21 @@ export default function ClaimsClientPage() {
 
 		setSubmitting(true);
 		try {
-			const response = await fetch(
-				`/api/admin/claims/${reviewDialog.claim.id}`,
-				{
-					method: "PATCH",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
-						status: reviewDialog.action,
-						adminNotes: adminNotes.trim() || null,
-					}),
-				},
+			const result = await processClaim(
+				reviewDialog.claim.id.toString(),
+				reviewDialog.action,
+				adminNotes.trim() || undefined,
 			);
 
-			if (response.ok) {
+			if (result.success) {
 				toast.success(
-					`Claim ${reviewDialog.action === "approve" ? "approved" : "rejected"} successfully`,
+					`Claim ${reviewDialog.action === "approved" ? "approved" : "rejected"} successfully`,
 				);
 				setReviewDialog({ isOpen: false, claim: null, action: null });
 				setAdminNotes("");
 				fetchClaims(activeTab);
 			} else {
-				const data = await response.json();
-				toast.error(data.error || "Failed to process claim");
+				toast.error(result.error || "Failed to process claim");
 			}
 		} catch (error) {
 			console.error("Error processing claim:", error);
@@ -126,7 +117,7 @@ export default function ClaimsClientPage() {
 		}
 	};
 
-	const openReviewDialog = (claim: Claim, action: "approve" | "reject") => {
+	const openReviewDialog = (claim: Claim, action: "approved" | "rejected") => {
 		setReviewDialog({ isOpen: true, claim, action });
 		setAdminNotes("");
 	};
@@ -202,10 +193,10 @@ export default function ClaimsClientPage() {
 				<DialogContent className="sm:max-w-[500px]">
 					<DialogHeader>
 						<DialogTitle>
-							{reviewDialog.action === "approve" ? "Approve" : "Reject"} Claim
+							{reviewDialog.action === "approved" ? "Approve" : "Reject"} Claim
 						</DialogTitle>
 						<DialogDescription>
-							{reviewDialog.action === "approve"
+							{reviewDialog.action === "approved"
 								? "Approve this claim and set the user as the institution contributor?"
 								: "Reject this claim?"}
 						</DialogDescription>
@@ -241,12 +232,12 @@ export default function ClaimsClientPage() {
 							onClick={handleReview}
 							disabled={submitting}
 							variant={
-								reviewDialog.action === "approve" ? "default" : "destructive"
+								reviewDialog.action === "approved" ? "default" : "destructive"
 							}
 						>
 							{submitting
 								? "Processing..."
-								: reviewDialog.action === "approve"
+								: reviewDialog.action === "approved"
 									? "Approve"
 									: "Reject"}
 						</Button>
@@ -265,7 +256,7 @@ function ClaimsGrid({
 }: {
 	claims: Claim[];
 	loading: boolean;
-	onReview: (claim: Claim, action: "approve" | "reject") => void;
+	onReview: (claim: Claim, action: "approved" | "rejected") => void;
 	showActions: boolean;
 }) {
 	if (loading) {
@@ -306,10 +297,10 @@ function ClaimsGrid({
 						<div className="flex items-start justify-between">
 							<div className="flex-1">
 								<CardTitle className="text-lg line-clamp-2">
-									{claim.institution.name}
+									{claim.institution?.name || "Unknown Institution"}
 								</CardTitle>
 								<p className="text-sm text-gray-500 mt-1">
-									{claim.institution.city}, {claim.institution.state}
+									{claim.institution?.city}, {claim.institution?.state}
 								</p>
 							</div>
 							<Badge
@@ -334,8 +325,12 @@ function ClaimsGrid({
 						<div className="space-y-3">
 							<div>
 								<p className="text-sm font-medium text-gray-700">Claimant:</p>
-								<p className="text-sm text-gray-900">{claim.claimant.name}</p>
-								<p className="text-sm text-gray-500">{claim.claimant.email}</p>
+								<p className="text-sm text-gray-900">
+									{claim.claimant?.name || "Unknown User"}
+								</p>
+								<p className="text-sm text-gray-500">
+									{claim.claimant?.email || "No email"}
+								</p>
 							</div>
 
 							{claim.claimReason && (
@@ -369,7 +364,7 @@ function ClaimsGrid({
 								<div className="flex gap-2 pt-2">
 									<Button
 										size="sm"
-										onClick={() => onReview(claim, "approve")}
+										onClick={() => onReview(claim, "approved")}
 										className="flex-1"
 									>
 										<Check className="h-4 w-4 mr-2" />
@@ -378,7 +373,7 @@ function ClaimsGrid({
 									<Button
 										size="sm"
 										variant="destructive"
-										onClick={() => onReview(claim, "reject")}
+										onClick={() => onReview(claim, "rejected")}
 										className="flex-1"
 									>
 										<X className="h-4 w-4 mr-2" />
