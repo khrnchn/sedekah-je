@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions, users } from "@/db/schema";
-import { and, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq } from "drizzle-orm";
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { headers } from "next/headers";
 
@@ -33,6 +33,7 @@ async function requireAdminSession() {
 /**
  * Fetch all institutions that are currently pending approval.
  * Joins contributor information when available for display purposes.
+ * Uses larger limit for better client-side pagination performance.
  */
 export const getPendingInstitutions = unstable_cache(
 	async () => {
@@ -50,7 +51,8 @@ export const getPendingInstitutions = unstable_cache(
 			.from(institutions)
 			.leftJoin(users, eq(institutions.contributorId, users.id))
 			.where(eq(institutions.status, "pending"))
-			.orderBy(desc(institutions.createdAt));
+			.orderBy(desc(institutions.createdAt))
+			.limit(1000); // Fetch up to 1000 records for client-side pagination
 	},
 	["pending-institutions-list"],
 	{
@@ -62,6 +64,7 @@ export const getPendingInstitutions = unstable_cache(
 /**
  * Fetch all institutions that have been rejected.
  * Joins contributor information when available for display purposes.
+ * Uses larger limit for better client-side pagination performance.
  */
 export const getRejectedInstitutions = unstable_cache(
 	async () => {
@@ -81,7 +84,8 @@ export const getRejectedInstitutions = unstable_cache(
 			.from(institutions)
 			.leftJoin(users, eq(institutions.contributorId, users.id))
 			.where(eq(institutions.status, "rejected"))
-			.orderBy(desc(institutions.createdAt));
+			.orderBy(desc(institutions.createdAt))
+			.limit(1000); // Fetch up to 1000 records for client-side pagination
 	},
 	["rejected-institutions-list"],
 	{
@@ -93,6 +97,7 @@ export const getRejectedInstitutions = unstable_cache(
 /**
  * Fetch all institutions that have been approved.
  * Joins contributor information when available for display purposes.
+ * Uses larger limit for better client-side pagination performance.
  */
 export const getApprovedInstitutions = unstable_cache(
 	async () => {
@@ -112,7 +117,8 @@ export const getApprovedInstitutions = unstable_cache(
 			.from(institutions)
 			.leftJoin(users, eq(institutions.contributorId, users.id))
 			.where(eq(institutions.status, "approved"))
-			.orderBy(desc(institutions.createdAt));
+			.orderBy(desc(institutions.createdAt))
+			.limit(1000); // Fetch up to 1000 records for client-side pagination
 	},
 	["approved-institutions-list"],
 	{
@@ -126,12 +132,12 @@ export const getApprovedInstitutions = unstable_cache(
  */
 export const getPendingInstitutionsCount = unstable_cache(
 	async () => {
-		const result = await db
-			.select({ count: institutions.id })
+		const [result] = await db
+			.select({ count: count() })
 			.from(institutions)
 			.where(eq(institutions.status, "pending"));
 
-		return result.length;
+		return result.count;
 	},
 	["pending-institutions-count"],
 	{
@@ -145,12 +151,12 @@ export const getPendingInstitutionsCount = unstable_cache(
  */
 export const getApprovedInstitutionsCount = unstable_cache(
 	async () => {
-		const result = await db
-			.select({ count: institutions.id })
+		const [result] = await db
+			.select({ count: count() })
 			.from(institutions)
 			.where(eq(institutions.status, "approved"));
 
-		return result.length;
+		return result.count;
 	},
 	["approved-institutions-count"],
 	{
@@ -164,12 +170,12 @@ export const getApprovedInstitutionsCount = unstable_cache(
  */
 export const getRejectedInstitutionsCount = unstable_cache(
 	async () => {
-		const result = await db
-			.select({ count: institutions.id })
+		const [result] = await db
+			.select({ count: count() })
 			.from(institutions)
 			.where(eq(institutions.status, "rejected"));
 
-		return result.length;
+		return result.count;
 	},
 	["rejected-institutions-count"],
 	{

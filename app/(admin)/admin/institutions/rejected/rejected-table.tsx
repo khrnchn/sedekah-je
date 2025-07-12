@@ -84,21 +84,19 @@ export default function RejectedInstitutionsTable({
 					))}
 				</SelectContent>
 			</Select>
-
-			<div className="flex items-center text-sm text-muted-foreground">
-				Showing {filteredData.length} of {institutions.length} institutions
-			</div>
 		</>
 	);
 
 	return (
-		<ReusableDataTable
-			columns={columns}
-			data={filteredData}
-			searchKey="name"
-			searchPlaceholder="Search institutions..."
-			emptyStateMessage="No rejected institutions found."
-			leftToolbarContent={filterControls}
-		/>
+		<>
+			<ReusableDataTable
+				columns={columns}
+				data={filteredData}
+				searchKey="name"
+				searchPlaceholder="Search institutions..."
+				emptyStateMessage="No rejected institutions found."
+				leftToolbarContent={filterControls}
+			/>
+		</>
 	);
 }
