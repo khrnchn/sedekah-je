@@ -1,7 +1,7 @@
 "use client";
 
 import { useLocationPrefillLazy } from "@/hooks/use-location-prefill-lazy";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import type { UseFormSetValue } from "react-hook-form";
 import type { InstitutionFormData } from "../_lib/validations";
 
@@ -21,14 +21,19 @@ export function LocationProcessor({
 	const { loadingLocation, fetchLocation, prefilledCity, prefilledState } =
 		useLocationPrefillLazy(setValue);
 
+	const isInitialized = useRef(false);
+
 	// Update parent with loading state
 	useEffect(() => {
 		onLoadingState(loadingLocation);
 	}, [loadingLocation, onLoadingState]);
 
-	// Provide fetch function to parent
+	// Provide fetch function to parent only once
 	useEffect(() => {
-		onFetchLocation(fetchLocation);
+		if (fetchLocation && !isInitialized.current) {
+			onFetchLocation(fetchLocation);
+			isInitialized.current = true;
+		}
 	}, [fetchLocation, onFetchLocation]);
 
 	return null; // This component only handles logic, no UI

@@ -1,7 +1,7 @@
 "use client";
 
 import { useQrExtractionLazy } from "@/hooks/use-qr-extraction-lazy";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 interface QRProcessorProps {
 	onQrContentChange: (content: string | null) => void;
@@ -31,18 +31,40 @@ export function QRProcessor({
 		clearQrContent,
 	} = useQrExtractionLazy();
 
-	// Update parent with QR content changes
+	const isInitialized = useRef(false);
+	const lastQrContent = useRef(qrContent);
+	const lastStatus = useRef({
+		qrExtracting,
+		qrExtractionFailed,
+		hasAttemptedExtraction,
+	});
+
+	// Update parent with QR content changes only when content actually changes
 	useEffect(() => {
-		onQrContentChange(qrContent);
+		if (lastQrContent.current !== qrContent) {
+			onQrContentChange(qrContent);
+			lastQrContent.current = qrContent;
+		}
 	}, [qrContent, onQrContentChange]);
 
-	// Update parent with status changes
+	// Update parent with status changes only when status actually changes
 	useEffect(() => {
-		onStatusChange({
+		const currentStatus = {
 			qrExtracting,
 			qrExtractionFailed,
 			hasAttemptedExtraction,
-		});
+		};
+
+		if (
+			lastStatus.current.qrExtracting !== currentStatus.qrExtracting ||
+			lastStatus.current.qrExtractionFailed !==
+				currentStatus.qrExtractionFailed ||
+			lastStatus.current.hasAttemptedExtraction !==
+				currentStatus.hasAttemptedExtraction
+		) {
+			onStatusChange(currentStatus);
+			lastStatus.current = currentStatus;
+		}
 	}, [
 		qrExtracting,
 		qrExtractionFailed,
@@ -50,15 +72,19 @@ export function QRProcessor({
 		onStatusChange,
 	]);
 
-	// Provide file change handler to parent
+	// Provide handlers to parent only once
 	useEffect(() => {
-		onHandleFileChange(handleQrImageChange);
-	}, [handleQrImageChange, onHandleFileChange]);
-
-	// Provide clear function to parent
-	useEffect(() => {
-		onClearQrContent(clearQrContent);
-	}, [clearQrContent, onClearQrContent]);
+		if (!isInitialized.current) {
+			onHandleFileChange(handleQrImageChange);
+			onClearQrContent(clearQrContent);
+			isInitialized.current = true;
+		}
+	}, [
+		handleQrImageChange,
+		onHandleFileChange,
+		clearQrContent,
+		onClearQrContent,
+	]);
 
 	return null; // This component only handles logic, no UI
 }

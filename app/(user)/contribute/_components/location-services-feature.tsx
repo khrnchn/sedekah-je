@@ -1,7 +1,7 @@
 "use client";
 
 import { Spinner } from "@/components/ui/spinner";
-import { Suspense, lazy, useEffect, useState } from "react";
+import { Suspense, lazy, useCallback, useState } from "react";
 import type { UseFormSetValue } from "react-hook-form";
 import type { InstitutionFormData } from "../_lib/validations";
 
@@ -62,13 +62,13 @@ export default function LocationServicesFeature({
 		}
 	};
 
-	const handleFetchLocationCallback = (fetchFn: () => void) => {
+	const handleFetchLocationCallback = useCallback((fetchFn: () => void) => {
 		setFetchLocation(() => fetchFn);
-	};
+	}, []);
 
-	const handleLoadingStateCallback = (loading: boolean) => {
+	const handleLoadingStateCallback = useCallback((loading: boolean) => {
 		setLoadingLocation(loading);
-	};
+	}, []);
 
 	return (
 		<div className="space-y-2">

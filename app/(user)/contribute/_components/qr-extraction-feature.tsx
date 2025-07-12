@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Suspense, lazy, useEffect, useState } from "react";
+import { Suspense, lazy, useCallback, useState } from "react";
 import type { InstitutionFormData } from "../_lib/validations";
 
 // Lazy load the QR extraction functionality
@@ -67,29 +67,39 @@ export default function QRExtractionFeature({
 		((event: React.ChangeEvent<HTMLInputElement>) => void) | null
 	>(null);
 
-	const handleQrContentChange = (content: string | null) => {
-		setQrContent(content);
-		onQrContentChange(content);
-	};
+	const handleQrContentChange = useCallback(
+		(content: string | null) => {
+			setQrContent(content);
+			onQrContentChange(content);
+		},
+		[onQrContentChange],
+	);
 
-	const handleStatusChange = (status: {
-		qrExtracting: boolean;
-		qrExtractionFailed: boolean;
-		hasAttemptedExtraction: boolean;
-	}) => {
-		setQrStatus(status);
-		onStatusChange(status);
-	};
+	const handleStatusChange = useCallback(
+		(status: {
+			qrExtracting: boolean;
+			qrExtractionFailed: boolean;
+			hasAttemptedExtraction: boolean;
+		}) => {
+			setQrStatus(status);
+			onStatusChange(status);
+		},
+		[onStatusChange],
+	);
 
-	const handleFileChangeCallback = (
-		handler: (event: React.ChangeEvent<HTMLInputElement>) => void,
-	) => {
-		setHandleFileChange(() => handler);
-	};
+	const handleFileChangeCallback = useCallback(
+		(handler: (event: React.ChangeEvent<HTMLInputElement>) => void) => {
+			setHandleFileChange(() => handler);
+		},
+		[],
+	);
 
-	const handleClearQrContentCallback = (clearFn: () => void) => {
-		onClearQrContent(clearFn);
-	};
+	const handleClearQrContentCallback = useCallback(
+		(clearFn: () => void) => {
+			onClearQrContent(clearFn);
+		},
+		[onClearQrContent],
+	);
 
 	return (
 		<div className="space-y-2">

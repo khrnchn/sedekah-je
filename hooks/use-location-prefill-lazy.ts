@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
 import type { InstitutionFormData } from "@/app/(user)/contribute/_lib/validations";
@@ -19,7 +19,7 @@ export function useLocationPrefillLazy(
 	const [prefilledState, setPrefilledState] = useState("");
 
 	/** Geolocation + reverse-geocode with lazy loading */
-	async function fetchLocation() {
+	const fetchLocation = useCallback(async () => {
 		setLoadingLocation(true);
 
 		try {
@@ -100,7 +100,7 @@ export function useLocationPrefillLazy(
 				description: "Sila isi lokasi secara manual.",
 			});
 		}
-	}
+	}, [setValue]);
 
 	return {
 		loadingLocation,
