@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
+import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
 
 export interface MyContributionsStats {
@@ -34,30 +35,40 @@ export async function getMyContributions(): Promise<MyContributionsResponse | nu
 		return null;
 	}
 
-	const userId = session.user.id;
+	const { id: userId } = session.user;
 
-	const results = await db
-		.select()
-		.from(institutions)
-		.where(eq(institutions.contributorId, userId))
-		.orderBy(desc(institutions.createdAt));
+	return unstable_cache(
+		async () => {
+			const results = await db
+				.select()
+				.from(institutions)
+				.where(eq(institutions.contributorId, userId))
+				.orderBy(desc(institutions.createdAt));
 
-	const stats: MyContributionsStats = {
-		totalContributions: results.length,
-		approvedContributions: results.filter((i) => i.status === "approved")
-			.length,
-		pendingContributions: results.filter((i) => i.status === "pending").length,
-		rejectedContributions: results.filter((i) => i.status === "rejected")
-			.length,
-	};
+			const stats: MyContributionsStats = {
+				totalContributions: results.length,
+				approvedContributions: results.filter((i) => i.status === "approved")
+					.length,
+				pendingContributions: results.filter((i) => i.status === "pending")
+					.length,
+				rejectedContributions: results.filter((i) => i.status === "rejected")
+					.length,
+			};
 
-	const contributions: ContributionItem[] = results.map((inst) => ({
-		id: inst.id.toString(),
-		name: inst.name,
-		status: inst.status as ContributionItem["status"],
-		date: inst.createdAt?.toISOString() ?? "",
-		type: inst.category,
-	}));
+			const contributions: ContributionItem[] = results.map((inst) => ({
+				id: inst.id.toString(),
+				name: inst.name,
+				status: inst.status as ContributionItem["status"],
+				date: inst.createdAt?.toISOString() ?? "",
+				type: inst.category,
+			}));
 
-	return { stats, contributions };
+			return { stats, contributions };
+		},
+		[`my-contributions:${userId}`],
+		{
+			revalidate: 300,
+			tags: ["user-contributions", `user-contributions:${userId}`],
+		},
+	)();
 }
