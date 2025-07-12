@@ -3,6 +3,7 @@
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { count } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 
 /**
@@ -24,3 +25,28 @@ export const getTotalUsersCount = unstable_cache(
 		revalidate: 300, // 5 minutes fallback
 	},
 );
+
+/**
+ * Get a user by their ID, cached for performance.
+ * Specifically for admin role verification.
+ * @param userId - The ID of the user to fetch.
+ */
+export const getAdminUser = (userId: string) =>
+	unstable_cache(
+		async () => {
+			try {
+				const user = await db.query.users.findFirst({
+					where: eq(users.id, userId),
+				});
+				return user || null;
+			} catch (error) {
+				console.error("Error fetching admin user:", error);
+				return null;
+			}
+		},
+		[`admin-user-${userId}`],
+		{
+			tags: [`user-role-${userId}`],
+			revalidate: 300,
+		},
+	)();

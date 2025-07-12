@@ -4,146 +4,139 @@ import { db } from "@/db";
 import { institutions, users } from "@/db/schema";
 import { states } from "@/lib/institution-constants";
 import { and, count, eq, gte, sql } from "drizzle-orm";
-
-/**
- * Get all dashboard data in a single optimized query to reduce connection usage
- */
-export async function getDashboardData() {
-	const [
-		dashboardStats,
-		categoryData,
-		stateData,
-		recentSubmissions,
-		topContributors,
-		latestActivities,
-		institutionsWithCoords,
-		monthlyGrowth,
-	] = await Promise.all([
-		getDashboardStats(),
-		getInstitutionsByCategory(),
-		getInstitutionsByState(),
-		getRecentSubmissions(),
-		getTopContributors(),
-		getLatestActivities(),
-		getInstitutionsWithCoords(),
-		getMonthlyGrowth(),
-	]);
-
-	// Get state distribution for the map
-	const completeStateData = await getStateDistribution();
-
-	return {
-		stats: dashboardStats,
-		categoryData,
-		stateData: completeStateData, // Use complete state distribution for consistency
-		recentSubmissions,
-		topContributors,
-		latestActivities,
-		institutionsWithCoords,
-		monthlyGrowth,
-	};
-}
+import { unstable_cache } from "next/cache";
 
 /**
  * Get dashboard statistics with counts for each institution status
  */
-export async function getDashboardStats() {
-	const [totalInstitutions, pendingCount, approvedCount, rejectedCount] =
-		await Promise.all([
-			db.select({ count: count() }).from(institutions),
-			db
-				.select({ count: count() })
-				.from(institutions)
-				.where(eq(institutions.status, "pending")),
-			db
-				.select({ count: count() })
-				.from(institutions)
-				.where(eq(institutions.status, "approved")),
-			db
-				.select({ count: count() })
-				.from(institutions)
-				.where(eq(institutions.status, "rejected")),
-		]);
+export const getDashboardStats = unstable_cache(
+	async () => {
+		const [stats] = await db
+			.select({
+				total: count(),
+				pending:
+					sql<number>`COUNT(CASE WHEN ${institutions.status} = 'pending' THEN 1 END)`.mapWith(
+						Number,
+					),
+				approved:
+					sql<number>`COUNT(CASE WHEN ${institutions.status} = 'approved' THEN 1 END)`.mapWith(
+						Number,
+					),
+				rejected:
+					sql<number>`COUNT(CASE WHEN ${institutions.status} = 'rejected' THEN 1 END)`.mapWith(
+						Number,
+					),
+			})
+			.from(institutions);
 
-	return {
-		total: totalInstitutions[0].count,
-		pending: pendingCount[0].count,
-		approved: approvedCount[0].count,
-		rejected: rejectedCount[0].count,
-	};
-}
+		return stats;
+	},
+	["dashboard-stats"],
+	{
+		revalidate: 900,
+		tags: ["dashboard-data"],
+	},
+);
 
 /**
  * Get institution statistics by category
  */
-export async function getInstitutionsByCategory() {
-	const result = await db
-		.select({
-			category: institutions.category,
-			count: count(),
-		})
-		.from(institutions)
-		.where(eq(institutions.status, "approved"))
-		.groupBy(institutions.category);
+export const getInstitutionsByCategory = unstable_cache(
+	async () => {
+		const result = await db
+			.select({
+				category: institutions.category,
+				count: count(),
+			})
+			.from(institutions)
+			.where(eq(institutions.status, "approved"))
+			.groupBy(institutions.category);
 
-	return result;
-}
+		return result;
+	},
+	["institutions-by-category"],
+	{
+		revalidate: 900,
+		tags: ["dashboard-data"],
+	},
+);
 
 /**
  * Get institution statistics by state
  */
-export async function getInstitutionsByState() {
-	const result = await db
-		.select({
-			state: institutions.state,
-			count: count(),
-		})
-		.from(institutions)
-		.where(eq(institutions.status, "approved"))
-		.groupBy(institutions.state)
-		.orderBy(sql`count DESC`);
+export const getInstitutionsByState = unstable_cache(
+	async () => {
+		const result = await db
+			.select({
+				state: institutions.state,
+				count: count(),
+			})
+			.from(institutions)
+			.where(eq(institutions.status, "approved"))
+			.groupBy(institutions.state)
+			.orderBy(sql`count DESC`);
 
-	return result;
-}
+		return result;
+	},
+	["institutions-by-state"],
+	{
+		revalidate: 900,
+		tags: ["dashboard-data"],
+	},
+);
 
 /**
  * Get recent institution submissions (last 30 days)
  */
-export async function getRecentSubmissions() {
-	const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+export const getRecentSubmissions = unstable_cache(
+	async () => {
+		const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-	const result = await db
-		.select({
-			date: sql<string>`DATE(${institutions.createdAt})`,
-			count: count(),
-		})
-		.from(institutions)
-		.where(gte(institutions.createdAt, thirtyDaysAgo))
-		.groupBy(sql`DATE(${institutions.createdAt})`)
-		.orderBy(sql`DATE(${institutions.createdAt})`);
+		const result = await db
+			.select({
+				date: sql<string>`DATE(${institutions.createdAt})`,
+				count: count(),
+			})
+			.from(institutions)
+			.where(gte(institutions.createdAt, thirtyDaysAgo))
+			.groupBy(sql`DATE(${institutions.createdAt})`)
+			.orderBy(sql`DATE(${institutions.createdAt})`);
 
-	return result;
-}
+		return result;
+	},
+	["recent-submissions"],
+	{
+		revalidate: 300,
+		tags: ["dashboard-data"],
+	},
+);
 
 /**
  * Get top contributors by number of submissions
  */
-export async function getTopContributors() {
-	const result = await db
-		.select({
-			contributorName: users.name,
-			contributorEmail: users.email,
-			submissionCount: count(),
-		})
-		.from(institutions)
-		.leftJoin(users, eq(institutions.contributorId, users.id))
-		.where(eq(institutions.status, "approved"))
-		.groupBy(users.name, users.email)
-		.orderBy(sql`count DESC`)
-		.limit(5);
+export const getTopContributors = unstable_cache(
+	async () => {
+		const result = await db
+			.select({
+				contributorName: users.name,
+				contributorEmail: users.email,
+				submissionCount: count(),
+			})
+			.from(institutions)
+			.leftJoin(users, eq(institutions.contributorId, users.id))
+			.where(eq(institutions.status, "approved"))
+			.groupBy(users.name, users.email)
+			.orderBy(sql`count DESC`)
+			.limit(5);
 
-	return result;
-}
+		return result;
+	},
+	["top-contributors"],
+	{
+		revalidate: 900,
+		tags: ["dashboard-data"],
+	},
+);
 
 /**
  * Get latest institution activities for the feed

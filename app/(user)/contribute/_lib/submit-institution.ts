@@ -6,7 +6,7 @@ import { institutions } from "@/db/institutions";
 import type { categories, states } from "@/lib/institution-constants";
 import { r2Storage } from "@/lib/r2-client";
 import jsQR from "jsqr";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import sharp from "sharp";
 
 export type SubmitInstitutionFormState =
@@ -172,6 +172,9 @@ export async function submitInstitution(
 		// --- Revalidate paths that show institution list
 		revalidatePath("/");
 		revalidatePath("/my-contributions");
+
+		// --- Revalidate admin dashboard data
+		revalidateTag("pending-institutions");
 
 		console.log("Institution successfully created with ID:", _newId);
 		return { status: "success" };

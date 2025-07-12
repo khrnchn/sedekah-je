@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions, users } from "@/db/schema";
-import { and, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq, inArray } from "drizzle-orm";
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { headers } from "next/headers";
 
@@ -33,6 +33,7 @@ async function requireAdminSession() {
 /**
  * Fetch all institutions that are currently pending approval.
  * Joins contributor information when available for display purposes.
+ * Uses larger limit for better client-side pagination performance.
  */
 export const getPendingInstitutions = unstable_cache(
 	async () => {
@@ -50,7 +51,8 @@ export const getPendingInstitutions = unstable_cache(
 			.from(institutions)
 			.leftJoin(users, eq(institutions.contributorId, users.id))
 			.where(eq(institutions.status, "pending"))
-			.orderBy(desc(institutions.createdAt));
+			.orderBy(desc(institutions.createdAt))
+			.limit(1000); // Fetch up to 1000 records for client-side pagination
 	},
 	["pending-institutions-list"],
 	{
@@ -62,6 +64,7 @@ export const getPendingInstitutions = unstable_cache(
 /**
  * Fetch all institutions that have been rejected.
  * Joins contributor information when available for display purposes.
+ * Uses larger limit for better client-side pagination performance.
  */
 export const getRejectedInstitutions = unstable_cache(
 	async () => {
@@ -81,18 +84,20 @@ export const getRejectedInstitutions = unstable_cache(
 			.from(institutions)
 			.leftJoin(users, eq(institutions.contributorId, users.id))
 			.where(eq(institutions.status, "rejected"))
-			.orderBy(desc(institutions.createdAt));
+			.orderBy(desc(institutions.createdAt))
+			.limit(1000); // Fetch up to 1000 records for client-side pagination
 	},
 	["rejected-institutions-list"],
 	{
 		tags: ["institutions-data", "rejected-institutions"],
-		revalidate: 300, // 5 minutes fallback
+		revalidate: 900, // 15 minutes fallback
 	},
 );
 
 /**
  * Fetch all institutions that have been approved.
  * Joins contributor information when available for display purposes.
+ * Uses larger limit for better client-side pagination performance.
  */
 export const getApprovedInstitutions = unstable_cache(
 	async () => {
@@ -112,12 +117,13 @@ export const getApprovedInstitutions = unstable_cache(
 			.from(institutions)
 			.leftJoin(users, eq(institutions.contributorId, users.id))
 			.where(eq(institutions.status, "approved"))
-			.orderBy(desc(institutions.createdAt));
+			.orderBy(desc(institutions.createdAt))
+			.limit(1000); // Fetch up to 1000 records for client-side pagination
 	},
 	["approved-institutions-list"],
 	{
 		tags: ["institutions-data", "approved-institutions"],
-		revalidate: 300, // 5 minutes fallback
+		revalidate: 900, // 15 minutes fallback
 	},
 );
 
@@ -126,12 +132,12 @@ export const getApprovedInstitutions = unstable_cache(
  */
 export const getPendingInstitutionsCount = unstable_cache(
 	async () => {
-		const result = await db
-			.select({ count: institutions.id })
+		const [result] = await db
+			.select({ count: count() })
 			.from(institutions)
 			.where(eq(institutions.status, "pending"));
 
-		return result.length;
+		return result.count;
 	},
 	["pending-institutions-count"],
 	{
@@ -145,17 +151,17 @@ export const getPendingInstitutionsCount = unstable_cache(
  */
 export const getApprovedInstitutionsCount = unstable_cache(
 	async () => {
-		const result = await db
-			.select({ count: institutions.id })
+		const [result] = await db
+			.select({ count: count() })
 			.from(institutions)
 			.where(eq(institutions.status, "approved"));
 
-		return result.length;
+		return result.count;
 	},
 	["approved-institutions-count"],
 	{
 		tags: ["institutions-count", "approved-institutions"],
-		revalidate: 300, // 5 minutes fallback
+		revalidate: 900, // 15 minutes fallback
 	},
 );
 
@@ -164,17 +170,17 @@ export const getApprovedInstitutionsCount = unstable_cache(
  */
 export const getRejectedInstitutionsCount = unstable_cache(
 	async () => {
-		const result = await db
-			.select({ count: institutions.id })
+		const [result] = await db
+			.select({ count: count() })
 			.from(institutions)
 			.where(eq(institutions.status, "rejected"));
 
-		return result.length;
+		return result.count;
 	},
 	["rejected-institutions-count"],
 	{
 		tags: ["institutions-count", "rejected-institutions"],
-		revalidate: 300, // 5 minutes fallback
+		revalidate: 900, // 15 minutes fallback
 	},
 );
 
@@ -204,13 +210,9 @@ export async function approveInstitution(
 	revalidatePath("/admin/institutions/approved");
 	revalidatePath("/admin/dashboard");
 
-	// Revalidate cached counts for sidebar badges
-	revalidateTag("institutions-count");
+	// Revalidate cached data and counts
 	revalidateTag("pending-institutions");
 	revalidateTag("approved-institutions");
-
-	// Revalidate cached data tables
-	revalidateTag("institutions-data");
 
 	return result;
 }
@@ -241,13 +243,9 @@ export async function rejectInstitution(
 	revalidatePath("/admin/institutions/rejected");
 	revalidatePath("/admin/dashboard");
 
-	// Revalidate cached counts for sidebar badges
-	revalidateTag("institutions-count");
+	// Revalidate cached data and counts
 	revalidateTag("pending-institutions");
 	revalidateTag("rejected-institutions");
-
-	// Revalidate cached data tables
-	revalidateTag("institutions-data");
 
 	return result;
 }
@@ -419,4 +417,140 @@ export async function assignContributorToInstitution(
 	revalidateTag("institutions-data");
 
 	return result;
+}
+
+/**
+ * Batch approve multiple pending institutions
+ */
+export async function batchApproveInstitutions(
+	ids: number[],
+	adminNotes?: string,
+) {
+	if (ids.length === 0) {
+		throw new Error("No institutions provided for batch approval");
+	}
+
+	if (ids.length > 100) {
+		throw new Error(
+			"Batch size too large. Maximum 100 institutions per batch.",
+		);
+	}
+
+	const session = await requireAdminSession();
+	const reviewerId = session.user.id;
+
+	// First, verify all institutions exist and are pending
+	const existingInstitutions = await db
+		.select({ id: institutions.id, status: institutions.status })
+		.from(institutions)
+		.where(inArray(institutions.id, ids));
+
+	const foundIds = existingInstitutions.map((inst) => inst.id);
+	const missingIds = ids.filter((id) => !foundIds.includes(id));
+	const nonPendingInstitutions = existingInstitutions.filter(
+		(inst) => inst.status !== "pending",
+	);
+
+	if (missingIds.length > 0) {
+		throw new Error(`Institutions not found: ${missingIds.join(", ")}`);
+	}
+
+	if (nonPendingInstitutions.length > 0) {
+		throw new Error(
+			`Some institutions are not pending: ${nonPendingInstitutions.map((inst) => inst.id).join(", ")}`,
+		);
+	}
+
+	const result = await db
+		.update(institutions)
+		.set({
+			status: "approved",
+			reviewedBy: reviewerId,
+			reviewedAt: new Date(),
+			adminNotes,
+		})
+		.where(inArray(institutions.id, ids))
+		.returning();
+
+	// Revalidate relevant pages to update the UI
+	revalidatePath("/admin/institutions/pending");
+	revalidatePath("/admin/institutions/approved");
+	revalidatePath("/admin/dashboard");
+
+	// Revalidate cached counts for sidebar badges
+	revalidateTag("institutions-count");
+	revalidateTag("pending-institutions");
+	revalidateTag("approved-institutions");
+
+	// Revalidate cached data tables
+	revalidateTag("institutions-data");
+
+	return result;
+}
+
+/**
+ * Batch reject multiple pending institutions
+ */
+export async function batchRejectInstitutions(
+	ids: number[],
+	adminNotes?: string,
+) {
+	if (ids.length === 0) {
+		throw new Error("No institutions provided for batch rejection");
+	}
+
+	if (ids.length > 100) {
+		throw new Error(
+			"Batch size too large. Maximum 100 institutions per batch.",
+		);
+	}
+
+	const session = await requireAdminSession();
+	const reviewerId = session.user.id;
+
+	// First, verify all institutions exist and are pending
+	const existingInstitutions = await db
+		.select({ id: institutions.id, status: institutions.status })
+		.from(institutions)
+		.where(inArray(institutions.id, ids));
+
+	const foundIds = existingInstitutions.map((inst) => inst.id);
+	const missingIds = ids.filter((id) => !foundIds.includes(id));
+	const nonPendingInstitutions = existingInstitutions.filter(
+		(inst) => inst.status !== "pending",
+	);
+
+	if (missingIds.length > 0) {
+		throw new Error(`Institutions not found: ${missingIds.join(", ")}`);
+	}
+
+	if (nonPendingInstitutions.length > 0) {
+		throw new Error(
+			`Some institutions are not pending: ${nonPendingInstitutions.map((inst) => inst.id).join(", ")}`,
+		);
+	}
+
+	const result = await db
+		.update(institutions)
+		.set({
+			status: "rejected",
+			reviewedBy: reviewerId,
+			reviewedAt: new Date(),
+			adminNotes,
+		})
+		.where(inArray(institutions.id, ids))
+		.returning();
+
+	// Revalidate relevant pages to update the UI
+	revalidatePath("/admin/institutions/pending");
+	revalidatePath("/admin/institutions/rejected");
+
+	// Revalidate caches
+	revalidateTag("pending-institutions");
+	revalidateTag("rejected-institutions");
+
+	return {
+		success: true,
+		message: "Institutions rejected successfully",
+	};
 }
