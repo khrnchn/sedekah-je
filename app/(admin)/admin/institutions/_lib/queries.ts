@@ -90,7 +90,7 @@ export const getRejectedInstitutions = unstable_cache(
 	["rejected-institutions-list"],
 	{
 		tags: ["institutions-data", "rejected-institutions"],
-		revalidate: 300, // 5 minutes fallback
+		revalidate: 900, // 15 minutes fallback
 	},
 );
 
@@ -123,7 +123,7 @@ export const getApprovedInstitutions = unstable_cache(
 	["approved-institutions-list"],
 	{
 		tags: ["institutions-data", "approved-institutions"],
-		revalidate: 300, // 5 minutes fallback
+		revalidate: 900, // 15 minutes fallback
 	},
 );
 
@@ -161,7 +161,7 @@ export const getApprovedInstitutionsCount = unstable_cache(
 	["approved-institutions-count"],
 	{
 		tags: ["institutions-count", "approved-institutions"],
-		revalidate: 300, // 5 minutes fallback
+		revalidate: 900, // 15 minutes fallback
 	},
 );
 
@@ -180,7 +180,7 @@ export const getRejectedInstitutionsCount = unstable_cache(
 	["rejected-institutions-count"],
 	{
 		tags: ["institutions-count", "rejected-institutions"],
-		revalidate: 300, // 5 minutes fallback
+		revalidate: 900, // 15 minutes fallback
 	},
 );
 
@@ -210,13 +210,9 @@ export async function approveInstitution(
 	revalidatePath("/admin/institutions/approved");
 	revalidatePath("/admin/dashboard");
 
-	// Revalidate cached counts for sidebar badges
-	revalidateTag("institutions-count");
+	// Revalidate cached data and counts
 	revalidateTag("pending-institutions");
 	revalidateTag("approved-institutions");
-
-	// Revalidate cached data tables
-	revalidateTag("institutions-data");
 
 	return result;
 }
@@ -247,13 +243,9 @@ export async function rejectInstitution(
 	revalidatePath("/admin/institutions/rejected");
 	revalidatePath("/admin/dashboard");
 
-	// Revalidate cached counts for sidebar badges
-	revalidateTag("institutions-count");
+	// Revalidate cached data and counts
 	revalidateTag("pending-institutions");
 	revalidateTag("rejected-institutions");
-
-	// Revalidate cached data tables
-	revalidateTag("institutions-data");
 
 	return result;
 }
@@ -552,15 +544,13 @@ export async function batchRejectInstitutions(
 	// Revalidate relevant pages to update the UI
 	revalidatePath("/admin/institutions/pending");
 	revalidatePath("/admin/institutions/rejected");
-	revalidatePath("/admin/dashboard");
 
-	// Revalidate cached counts for sidebar badges
-	revalidateTag("institutions-count");
+	// Revalidate caches
 	revalidateTag("pending-institutions");
 	revalidateTag("rejected-institutions");
 
-	// Revalidate cached data tables
-	revalidateTag("institutions-data");
-
-	return result;
+	return {
+		success: true,
+		message: "Institutions rejected successfully",
+	};
 }
