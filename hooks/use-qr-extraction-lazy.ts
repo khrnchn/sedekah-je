@@ -1,16 +1,13 @@
 "use client";
 
-import jsQR from "jsqr";
 import { useState } from "react";
 import { toast } from "sonner";
 
 /**
- * Provides QR-code image upload & extraction utilities for InstitutionForm.
- * Returns the current QR content (if detected), extraction loading state,
- * a change handler to attach to the <input type="file"> element, and a helper
- * to clear the detected data (used after successful form submission).
+ * Provides QR-code image upload & extraction utilities for InstitutionForm with lazy loading.
+ * Uses dynamic imports to reduce initial bundle size.
  */
-export function useQrExtraction() {
+export function useQrExtractionLazy() {
 	const [qrContent, setQrContent] = useState<string | null>(null);
 	const [qrExtracting, setQrExtracting] = useState(false);
 	const [qrExtractionFailed, setQrExtractionFailed] = useState(false);
@@ -33,6 +30,9 @@ export function useQrExtraction() {
 		setHasAttemptedExtraction(true);
 
 		try {
+			// Dynamically import jsQR only when needed
+			const jsQR = await import("jsqr").then((mod) => mod.default);
+
 			const canvas = document.createElement("canvas");
 			const ctx = canvas.getContext("2d");
 			const img = new Image();

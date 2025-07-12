@@ -79,30 +79,30 @@
 **Estimated Time:** 4 hours
 
 **Tasks:**
-- [ ] Create `AsyncMyContributionsStats` component
-- [ ] Create `AsyncContributionList` component  
-- [ ] Create `AsyncLeaderboardStats` component
-- [ ] Create `AsyncTopContributors` component
-- [ ] Wrap each async component in `<Suspense>` boundaries
-- [ ] Design mobile-optimized loading skeletons for each section
-- [ ] Test streaming behavior on slow 3G connections
-- [ ] Ensure graceful error boundaries for failed data loads
+- [x] Create `AsyncMyContributionsStats` component
+- [x] Create `AsyncContributionList` component  
+- [x] Create `AsyncLeaderboardStats` component
+- [x] Create `AsyncTopContributors` component
+- [x] Wrap each async component in `<Suspense>` boundaries
+- [x] Design mobile-optimized loading skeletons for each section
+- [x] Test streaming behavior on slow 3G connections
+- [x] Ensure graceful error boundaries for failed data loads
 
-### [ ] 6. Optimize Contribution Form for Mobile
+### [x] 6. Optimize Contribution Form for Mobile
 **File:** `app/(user)/contribute/_components/institution-form.tsx`  
 **Issue:** Heavy form bundle with QR extraction and location services loaded upfront  
 **Impact:** 3x faster mobile form loading, reduced JavaScript bundle  
 **Estimated Time:** 5 hours
 
 **Tasks:**
-- [ ] Create lazy-loaded `QRExtractionFeature` component
-- [ ] Create lazy-loaded `LocationServicesFeature` component
-- [ ] Implement dynamic imports for heavy dependencies (sharp, jsQR)
-- [ ] Add progressive enhancement for form features
-- [ ] Create mobile-optimized form field layout
-- [ ] Implement touch-friendly file upload for QR images
-- [ ] Test form performance on low-end mobile devices
-- [ ] Add loading states for lazy-loaded features
+- [x] Create lazy-loaded `QRExtractionFeature` component
+- [x] Create lazy-loaded `LocationServicesFeature` component
+- [x] Implement dynamic imports for heavy dependencies (sharp, jsQR)
+- [x] Add progressive enhancement for form features
+- [x] Create mobile-optimized form field layout
+- [x] Implement touch-friendly file upload for QR images
+- [x] Test form performance on low-end mobile devices
+- [x] Add loading states for lazy-loaded features
 
 ### [ ] 7. Implement My Contributions Pagination
 **File:** `app/(user)/my-contributions/_lib/queries.ts`  

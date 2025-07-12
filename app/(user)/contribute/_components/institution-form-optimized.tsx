@@ -8,18 +8,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/hooks/use-auth";
-import { useLocationPrefill } from "@/hooks/use-location-prefill";
-import { useQrExtraction } from "@/hooks/use-qr-extraction";
 import {
 	categories as CATEGORY_OPTIONS,
 	states as STATE_OPTIONS,
 } from "@/lib/institution-constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Suspense, lazy, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { submitInstitution } from "../_lib/submit-institution";
+
+// Lazy load heavy features for better mobile performance
+const QRExtractionFeature = lazy(() => import("./qr-extraction-feature"));
+const LocationServicesFeature = lazy(
+	() => import("./location-services-feature"),
+);
 
 function SubmitButton({
 	isSubmitting,
@@ -38,7 +42,11 @@ function SubmitButton({
 		isSubmitting || qrExtracting || (hasAttemptedExtraction && !qrContent);
 
 	return (
-		<Button type="submit" className="w-full" disabled={isDisabled}>
+		<Button
+			type="submit"
+			className="w-full h-12 text-base" // Larger touch target for mobile
+			disabled={isDisabled}
+		>
 			{isSubmitting ? (
 				<>
 					<Spinner size="small" className="mr-2" />
@@ -51,23 +59,54 @@ function SubmitButton({
 	);
 }
 
-export default function InstitutionForm() {
+// Basic fallback components for progressive enhancement
+function BasicQRUpload() {
+	return (
+		<div className="space-y-2">
+			<label htmlFor="qrImage" className="font-medium">
+				Gambar Kod QR <span className="text-red-500">*</span>
+			</label>
+			<Input
+				id="qrImage"
+				type="file"
+				name="qrImage"
+				accept="image/*"
+				className="h-12" // Larger for mobile
+			/>
+			<p className="text-sm text-blue-600">
+				QR akan diproses selepas penghantaran
+			</p>
+		</div>
+	);
+}
+
+function BasicLocationInput() {
+	return (
+		<div className="space-y-2">
+			<p className="text-sm text-gray-600">
+				Sila isi koordinat secara manual jika diperlukan
+			</p>
+		</div>
+	);
+}
+
+export default function InstitutionFormOptimized() {
 	const { user } = useAuth();
 
-	/* QR extraction and social media */
-	const {
-		qrContent,
-		qrExtracting,
-		qrExtractionFailed,
-		hasAttemptedExtraction,
-		handleQrImageChange,
-		clearQrContent,
-	} = useQrExtraction();
-	const [socialMediaExpanded, setSocialMediaExpanded] = useState(false);
-	const [fileUploadMode, setFileUploadMode] = useState<"camera" | "gallery">(
-		"gallery",
+	/* QR and location state */
+	const [qrContent, setQrContent] = useState<string | null>(null);
+	const [qrStatus, setQrStatus] = useState({
+		qrExtracting: false,
+		qrExtractionFailed: false,
+		hasAttemptedExtraction: false,
+	});
+	const [clearQrContent, setClearQrContent] = useState<(() => void) | null>(
+		null,
 	);
+
+	const [socialMediaExpanded, setSocialMediaExpanded] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [enableAdvancedFeatures, setEnableAdvancedFeatures] = useState(false);
 
 	/* React Hook Form */
 	const form = useForm<InstitutionFormData>({
@@ -101,6 +140,14 @@ export default function InstitutionForm() {
 
 	const fromSocialMedia = watch("fromSocialMedia");
 
+	/* Progressive Enhancement: Enable advanced features after initial load */
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setEnableAdvancedFeatures(true);
+		}, 100);
+		return () => clearTimeout(timer);
+	}, []);
+
 	/* Update contributorId when user changes */
 	useEffect(() => {
 		if (user?.id) {
@@ -112,12 +159,6 @@ export default function InstitutionForm() {
 	useEffect(() => {
 		setValue("qrExtractionSuccess", !!qrContent);
 	}, [qrContent, setValue]);
-
-	/* Location management via custom hook */
-	const { loadingLocation, fetchLocation, prefilledCity, prefilledState } =
-		useLocationPrefill(setValue);
-
-	const [useCurrentLocation, setUseCurrentLocation] = useState(false);
 
 	/* Form submission handler */
 	const onSubmit = async (data: InstitutionFormData) => {
@@ -149,7 +190,7 @@ export default function InstitutionForm() {
 				});
 				reset();
 				if (qrImageInput) qrImageInput.value = "";
-				clearQrContent();
+				if (clearQrContent) clearQrContent();
 			} else if (result.status === "error") {
 				toast.error("Ralat", {
 					description:
@@ -166,25 +207,17 @@ export default function InstitutionForm() {
 		}
 	};
 
-	const handleLocationToggle = (checked: boolean) => {
-		setUseCurrentLocation(checked);
-		if (checked) {
-			fetchLocation();
-		} else {
-			// Clear location data when unchecked
-			setValue("lat", "");
-			setValue("lon", "");
-		}
-	};
-
 	return (
 		<form
 			onSubmit={handleSubmit(onSubmit)}
 			encType="multipart/form-data"
-			className="space-y-6 max-w-lg mx-auto pb-20 md:pb-6"
+			className="space-y-6 max-w-lg mx-auto pb-20 md:pb-6 px-4 md:px-0"
 		>
-			<fieldset disabled={isSubmitting || qrExtracting} className="space-y-6">
-				{/* Hidden contributorId */}
+			<fieldset
+				disabled={isSubmitting || qrStatus.qrExtracting}
+				className="space-y-6"
+			>
+				{/* Hidden fields */}
 				<input
 					type="hidden"
 					{...register("contributorId")}
@@ -194,121 +227,56 @@ export default function InstitutionForm() {
 				<input type="hidden" {...register("lon")} />
 				<input type="hidden" {...register("qrExtractionSuccess")} />
 
-				{/* Location toggle */}
-				<div className="space-y-2">
-					<div className="flex items-center space-x-2">
-						<input
-							type="checkbox"
-							id="useCurrentLocation"
-							checked={useCurrentLocation}
-							onChange={(e) => handleLocationToggle(e.target.checked)}
-							className="rounded"
-							disabled={loadingLocation}
+				{/* Progressive location services */}
+				{enableAdvancedFeatures ? (
+					<Suspense fallback={<BasicLocationInput />}>
+						<LocationServicesFeature setValue={setValue} />
+					</Suspense>
+				) : (
+					<BasicLocationInput />
+				)}
+
+				{/* Progressive QR extraction */}
+				{enableAdvancedFeatures ? (
+					<Suspense fallback={<BasicQRUpload />}>
+						<QRExtractionFeature
+							errors={errors}
+							isSubmitting={isSubmitting}
+							onQrContentChange={setQrContent}
+							onStatusChange={setQrStatus}
+							onClearQrContent={setClearQrContent}
 						/>
-						<label htmlFor="useCurrentLocation" className="font-medium">
-							Saya berada di lokasi ini sekarang
-						</label>
-					</div>
-					{loadingLocation && (
-						<p className="text-sm text-blue-600 pl-6">Mengesan lokasi…</p>
-					)}
-				</div>
+					</Suspense>
+				) : (
+					<BasicQRUpload />
+				)}
 
+				{/* Institution name - mobile optimized */}
 				<div className="space-y-2">
-					<label htmlFor="qrImage" className="font-medium">
-						Gambar Kod QR <span className="text-red-500">*</span>
-					</label>
-					<div className="flex gap-2 mb-2">
-						<Button
-							type="button"
-							variant={fileUploadMode === "gallery" ? "default" : "outline"}
-							size="sm"
-							onClick={() => setFileUploadMode("gallery")}
-						>
-							Galeri
-						</Button>
-						<Button
-							type="button"
-							variant={fileUploadMode === "camera" ? "default" : "outline"}
-							size="sm"
-							onClick={() => setFileUploadMode("camera")}
-						>
-							Kamera
-						</Button>
-					</div>
-					<Input
-						id="qrImage"
-						type="file"
-						name="qrImage"
-						accept="image/*"
-						capture={fileUploadMode === "camera" ? "environment" : undefined}
-						onChange={handleQrImageChange}
-					/>
-					{qrExtracting && (
-						<p className="text-sm text-blue-600">Mengekstrak kandungan QR...</p>
-					)}
-					{qrContent && (
-						<div className="p-3 bg-green-50 border border-green-200 rounded-md">
-							<p className="text-sm font-medium text-green-800">
-								Kandungan QR:
-							</p>
-							<p className="text-sm text-green-700 break-all">{qrContent}</p>
-						</div>
-					)}
-					{!qrExtracting && qrExtractionFailed && hasAttemptedExtraction && (
-						<div className="p-3 bg-red-50 border border-red-200 rounded-md">
-							<p className="text-sm font-medium text-red-800">
-								Kod QR tidak dapat dikesan
-							</p>
-							<p className="text-sm text-red-700">Cuba petua ini:</p>
-							<ul className="text-sm text-red-600 list-disc list-inside mt-1 space-y-1">
-								<li>Krop imej agar fokus kepada kod QR</li>
-								<li>Pastikan imej jelas dan tidak kabur</li>
-								<li>Pastikan kod QR tidak terlalu kecil</li>
-								<li>Pastikan pencahayaan/kontras yang baik</li>
-							</ul>
-						</div>
-					)}
-					{!qrExtracting &&
-						hasAttemptedExtraction &&
-						!qrContent &&
-						!qrExtractionFailed && (
-							<div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-								<p className="text-sm font-medium text-yellow-800">
-									Memproses kod QR...
-								</p>
-							</div>
-						)}
-					{errors.qrExtractionSuccess && (
-						<p className="text-sm text-red-500">
-							Sila muat naik imej kod QR yang sah.
-						</p>
-					)}
-				</div>
-
-				<div className="space-y-2">
-					<label htmlFor="name" className="font-medium">
+					<label htmlFor="name" className="font-medium text-base">
 						Nama Institusi <span className="text-red-500">*</span>
 					</label>
 					<Input
 						id="name"
 						{...register("name")}
 						placeholder="Contoh: Masjid Al-Falah"
-						className={errors.name ? "border-red-500" : ""}
+						className={`h-12 text-base ${errors.name ? "border-red-500" : ""}`}
+						autoComplete="organization"
 					/>
 					{errors.name && (
 						<p className="text-sm text-red-500">{errors.name.message}</p>
 					)}
 				</div>
 
+				{/* Category - mobile optimized */}
 				<div className="space-y-2">
-					<label htmlFor="category" className="font-medium">
+					<label htmlFor="category" className="font-medium text-base">
 						Kategori <span className="text-red-500">*</span>
 					</label>
 					<select
 						id="category"
 						{...register("category")}
-						className={`w-full h-10 px-3 border rounded-md bg-background ${errors.category ? "border-red-500" : ""}`}
+						className={`w-full h-12 px-3 text-base border rounded-md bg-background ${errors.category ? "border-red-500" : ""}`}
 						defaultValue=""
 					>
 						<option value="" disabled>
@@ -325,16 +293,17 @@ export default function InstitutionForm() {
 					)}
 				</div>
 
-				<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+				{/* Location - mobile optimized grid */}
+				<div className="grid grid-cols-1 gap-4">
 					<div className="space-y-2">
-						<label htmlFor="state" className="font-medium">
+						<label htmlFor="state" className="font-medium text-base">
 							Negeri <span className="text-red-500">*</span>
 						</label>
 						<select
 							id="state"
 							{...register("state")}
-							className={`w-full h-10 px-3 border rounded-md bg-background ${errors.state ? "border-red-500" : ""}`}
-							defaultValue={prefilledState || ""}
+							className={`w-full h-12 px-3 text-base border rounded-md bg-background ${errors.state ? "border-red-500" : ""}`}
+							defaultValue=""
 						>
 							<option value="" disabled>
 								Pilih negeri
@@ -350,15 +319,15 @@ export default function InstitutionForm() {
 						)}
 					</div>
 					<div className="space-y-2">
-						<label htmlFor="city" className="font-medium">
+						<label htmlFor="city" className="font-medium text-base">
 							Bandar <span className="text-red-500">*</span>
 						</label>
 						<Input
 							id="city"
 							{...register("city")}
 							placeholder="Contoh: Shah Alam"
-							className={errors.city ? "border-red-500" : ""}
-							defaultValue={prefilledCity}
+							className={`h-12 text-base ${errors.city ? "border-red-500" : ""}`}
+							autoComplete="address-level2"
 						/>
 						{errors.city && (
 							<p className="text-sm text-red-500">{errors.city.message}</p>
@@ -366,15 +335,16 @@ export default function InstitutionForm() {
 					</div>
 				</div>
 
+				{/* Additional info */}
 				<div className="space-y-2">
-					<label htmlFor="contributorRemarks" className="font-medium">
+					<label htmlFor="contributorRemarks" className="font-medium text-base">
 						Info Tambahan
 					</label>
 					<textarea
 						id="contributorRemarks"
 						{...register("contributorRemarks")}
 						placeholder="Info tambahan berkenaan institusi ini"
-						className={`w-full min-h-[80px] px-3 py-2 border rounded-md bg-background resize-vertical ${errors.contributorRemarks ? "border-red-500" : ""}`}
+						className={`w-full min-h-[100px] px-3 py-2 text-base border rounded-md bg-background resize-vertical ${errors.contributorRemarks ? "border-red-500" : ""}`}
 					/>
 					{errors.contributorRemarks && (
 						<p className="text-sm text-red-500">
@@ -383,15 +353,16 @@ export default function InstitutionForm() {
 					)}
 				</div>
 
+				{/* Social media source */}
 				<div className="space-y-2">
-					<div className="flex items-center space-x-2">
+					<div className="flex items-center space-x-3">
 						<input
 							type="checkbox"
 							id="fromSocialMedia"
 							{...register("fromSocialMedia")}
-							className="rounded"
+							className="rounded w-4 h-4"
 						/>
-						<label htmlFor="fromSocialMedia" className="font-medium">
+						<label htmlFor="fromSocialMedia" className="font-medium text-base">
 							Saya dapat maklumat QR ini dari media sosial
 						</label>
 					</div>
@@ -404,7 +375,8 @@ export default function InstitutionForm() {
 								id="sourceUrl"
 								{...register("sourceUrl")}
 								placeholder="https://facebook.com/post/123 atau URL Instagram"
-								className={errors.sourceUrl ? "border-red-500" : ""}
+								className={`h-12 text-base ${errors.sourceUrl ? "border-red-500" : ""}`}
+								type="url"
 							/>
 							{errors.sourceUrl && (
 								<p className="text-sm text-red-500">
@@ -415,14 +387,15 @@ export default function InstitutionForm() {
 					)}
 				</div>
 
+				{/* Collapsible social media section */}
 				<div className="space-y-2">
 					<Button
 						type="button"
 						variant="ghost"
 						onClick={() => setSocialMediaExpanded(!socialMediaExpanded)}
-						className="flex items-center space-x-2 font-medium p-0 h-auto hover:bg-transparent"
+						className="flex items-center space-x-2 font-medium p-0 h-auto hover:bg-transparent text-base"
 					>
-						<span>Social Media</span>
+						<span>Social Media (Pilihan)</span>
 						{socialMediaExpanded ? (
 							<ChevronUp className="w-4 h-4" />
 						) : (
@@ -430,12 +403,13 @@ export default function InstitutionForm() {
 						)}
 					</Button>
 					{socialMediaExpanded && (
-						<div className="space-y-2 pl-4 border-l-2 border-gray-200">
+						<div className="space-y-3 pl-4 border-l-2 border-gray-200">
 							<Input
 								id="facebook"
 								{...register("facebook")}
 								placeholder="Facebook URL"
-								className={errors.facebook ? "border-red-500" : ""}
+								className={`h-12 text-base ${errors.facebook ? "border-red-500" : ""}`}
+								type="url"
 							/>
 							{errors.facebook && (
 								<p className="text-sm text-red-500">
@@ -446,7 +420,8 @@ export default function InstitutionForm() {
 								id="instagram"
 								{...register("instagram")}
 								placeholder="Instagram URL"
-								className={errors.instagram ? "border-red-500" : ""}
+								className={`h-12 text-base ${errors.instagram ? "border-red-500" : ""}`}
+								type="url"
 							/>
 							{errors.instagram && (
 								<p className="text-sm text-red-500">
@@ -457,7 +432,8 @@ export default function InstitutionForm() {
 								id="website"
 								{...register("website")}
 								placeholder="Website URL"
-								className={errors.website ? "border-red-500" : ""}
+								className={`h-12 text-base ${errors.website ? "border-red-500" : ""}`}
+								type="url"
 							/>
 							{errors.website && (
 								<p className="text-sm text-red-500">{errors.website.message}</p>
@@ -465,11 +441,12 @@ export default function InstitutionForm() {
 						</div>
 					)}
 				</div>
+
 				<SubmitButton
 					isSubmitting={isSubmitting}
-					qrExtracting={qrExtracting}
-					qrExtractionFailed={qrExtractionFailed}
-					hasAttemptedExtraction={hasAttemptedExtraction}
+					qrExtracting={qrStatus.qrExtracting}
+					qrExtractionFailed={qrStatus.qrExtractionFailed}
+					hasAttemptedExtraction={qrStatus.hasAttemptedExtraction}
 					qrContent={qrContent}
 				/>
 			</fieldset>
