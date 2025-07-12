@@ -6,6 +6,7 @@ import {
 } from "@/app/(user)/contribute/_lib/validations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/hooks/use-auth";
 import {
@@ -14,7 +15,14 @@ import {
 } from "@/lib/institution-constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import { Suspense, lazy, useEffect, useState } from "react";
+import {
+	Suspense,
+	lazy,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { submitInstitution } from "../_lib/submit-institution";
@@ -60,22 +68,11 @@ function SubmitButton({
 }
 
 // Basic fallback components for progressive enhancement
-function BasicQRUpload() {
+function QRUploadSkeleton() {
 	return (
 		<div className="space-y-2">
-			<label htmlFor="qrImage" className="font-medium">
-				Gambar Kod QR <span className="text-red-500">*</span>
-			</label>
-			<Input
-				id="qrImage"
-				type="file"
-				name="qrImage"
-				accept="image/*"
-				className="h-12" // Larger for mobile
-			/>
-			<p className="text-sm text-blue-600">
-				QR akan diproses selepas penghantaran
-			</p>
+			<Skeleton className="h-6 w-1/2" />
+			<Skeleton className="h-12 w-full" />
 		</div>
 	);
 }
@@ -100,9 +97,10 @@ export default function InstitutionFormOptimized() {
 		qrExtractionFailed: false,
 		hasAttemptedExtraction: false,
 	});
-	const [clearQrContent, setClearQrContent] = useState<(() => void) | null>(
-		null,
-	);
+	const clearQrContentRef = useRef<(() => void) | null>(null);
+	const setClearQrContent = useCallback((fn: (() => void) | null) => {
+		clearQrContentRef.current = fn;
+	}, []);
 
 	const [socialMediaExpanded, setSocialMediaExpanded] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -189,8 +187,9 @@ export default function InstitutionFormOptimized() {
 					description: "Sumbangan anda sedang disemak.",
 				});
 				reset();
-				if (qrImageInput) qrImageInput.value = "";
-				if (clearQrContent) clearQrContent();
+				if (clearQrContentRef.current) {
+					clearQrContentRef.current();
+				}
 			} else if (result.status === "error") {
 				toast.error("Ralat", {
 					description:
@@ -238,7 +237,7 @@ export default function InstitutionFormOptimized() {
 
 				{/* Progressive QR extraction */}
 				{enableAdvancedFeatures ? (
-					<Suspense fallback={<BasicQRUpload />}>
+					<Suspense fallback={<QRUploadSkeleton />}>
 						<QRExtractionFeature
 							errors={errors}
 							isSubmitting={isSubmitting}
@@ -248,7 +247,7 @@ export default function InstitutionFormOptimized() {
 						/>
 					</Suspense>
 				) : (
-					<BasicQRUpload />
+					<QRUploadSkeleton />
 				)}
 
 				{/* Institution name - mobile optimized */}

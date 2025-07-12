@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Suspense, lazy, useCallback, useState } from "react";
+import { Suspense, lazy, useCallback, useEffect, useState } from "react";
 import type { InstitutionFormData } from "../_lib/validations";
 
 // Lazy load the QR extraction functionality
@@ -19,7 +19,7 @@ interface QRExtractionFeatureProps {
 		qrExtractionFailed: boolean;
 		hasAttemptedExtraction: boolean;
 	}) => void;
-	onClearQrContent: (clearFn: () => void) => void;
+	onClearQrContent: (clearFn: (() => void) | null) => void;
 }
 
 function QRUploadFallback() {
@@ -66,6 +66,9 @@ export default function QRExtractionFeature({
 	const [handleFileChange, setHandleFileChange] = useState<
 		((event: React.ChangeEvent<HTMLInputElement>) => void) | null
 	>(null);
+	const [clearQrContentFromHook, setClearQrContentFromHook] = useState<
+		(() => void) | null
+	>(null);
 
 	const handleQrContentChange = useCallback(
 		(content: string | null) => {
@@ -87,8 +90,27 @@ export default function QRExtractionFeature({
 		[onStatusChange],
 	);
 
-	const [clearQrContent, setClearQrContent] = useState<(() => void) | null>(
-		null,
+	const masterClear = useCallback(
+		(clearHook: (() => void) | null) => {
+			if (clearHook) {
+				clearHook();
+			}
+			setSelectedFile(null);
+			setQrContent(null);
+			onQrContentChange(null);
+			const initialStatus = {
+				qrExtracting: false,
+				qrExtractionFailed: false,
+				hasAttemptedExtraction: false,
+			};
+			setQrStatus(initialStatus);
+			onStatusChange(initialStatus);
+			const input = document.getElementById("qrImage") as HTMLInputElement;
+			if (input) {
+				input.value = "";
+			}
+		},
+		[onQrContentChange, onStatusChange],
 	);
 
 	const handleFileChangeCallback = useCallback(
@@ -98,13 +120,20 @@ export default function QRExtractionFeature({
 		[],
 	);
 
-	const handleClearQrContentCallback = useCallback(
-		(clearFn: () => void) => {
-			onClearQrContent(clearFn);
-			setClearQrContent(() => clearFn);
-		},
-		[onClearQrContent],
-	);
+	const handleClearQrContentCallback = useCallback((clearFn: () => void) => {
+		setClearQrContentFromHook(() => clearFn);
+	}, []);
+
+	useEffect(() => {
+		if (onClearQrContent) {
+			onClearQrContent(() => masterClear(clearQrContentFromHook));
+		}
+		return () => {
+			if (onClearQrContent) {
+				onClearQrContent(null);
+			}
+		};
+	}, [clearQrContentFromHook, masterClear, onClearQrContent]);
 
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
 	const handleFileChangeWrapper = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -119,15 +148,7 @@ export default function QRExtractionFeature({
 	};
 
 	const clearFile = () => {
-		if (clearQrContent) {
-			clearQrContent();
-		}
-		setSelectedFile(null);
-		// Reset file input
-		const input = document.getElementById("qrImage") as HTMLInputElement;
-		if (input) {
-			input.value = "";
-		}
+		masterClear(clearQrContentFromHook);
 	};
 
 	return (
