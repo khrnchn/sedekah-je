@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { institutions, users } from "@/db/schema";
-import { and, count, desc, eq } from "drizzle-orm";
+import { and, count, countDistinct, desc, eq, sql } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 
 export interface LeaderboardStats {
@@ -27,31 +27,20 @@ export interface LeaderboardData {
 export async function getLeaderboardData(): Promise<LeaderboardData> {
 	return unstable_cache(
 		async () => {
-			// Get total number of unique contributors
-			const contributorsResult = await db
+			const statsPromise = db
 				.select({
-					contributorCount: count(institutions.contributorId).as(
-						"contributorCount",
+					totalContributions: count(institutions.id),
+					totalContributors: countDistinct(institutions.contributorId),
+					verifiedCount: count(
+						sql`case when ${institutions.isVerified} = true then 1 end`.mapWith(
+							Number,
+						),
 					),
-				})
-				.from(institutions)
-				.where(eq(institutions.isActive, true))
-				.groupBy(institutions.contributorId);
-
-			const totalContributors = contributorsResult.length;
-
-			// Get total number of active contributions
-			const contributionsResult = await db
-				.select({
-					totalCount: count().as("totalCount"),
 				})
 				.from(institutions)
 				.where(eq(institutions.isActive, true));
 
-			const totalContributions = contributionsResult[0]?.totalCount ?? 0;
-
-			// Get most active contributor's contribution count
-			const mostActiveResult = await db
+			const mostActivePromise = db
 				.select({
 					contributionCount: count().as("contributionCount"),
 				})
@@ -61,32 +50,8 @@ export async function getLeaderboardData(): Promise<LeaderboardData> {
 				.orderBy(desc(count()))
 				.limit(1);
 
-			const mostActiveContributions =
-				mostActiveResult[0]?.contributionCount ?? 0;
-
-			// Get verification rate
-			const verifiedResult = await db
-				.select({
-					verifiedCount: count().as("verifiedCount"),
-				})
-				.from(institutions)
-				.where(
-					and(
-						eq(institutions.isActive, true),
-						eq(institutions.isVerified, true),
-					),
-				);
-
-			const verificationRate =
-				totalContributions > 0
-					? Math.round(
-							((verifiedResult[0]?.verifiedCount ?? 0) / totalContributions) *
-								100,
-						)
-					: 0;
-
 			// Get top contributors with user details in single JOIN query
-			const topContributorsResult = await db
+			const topContributorsPromise = db
 				.select({
 					contributorId: institutions.contributorId,
 					contributionCount: count().as("contributionCount"),
@@ -99,6 +64,24 @@ export async function getLeaderboardData(): Promise<LeaderboardData> {
 				.groupBy(institutions.contributorId, users.name, users.avatarUrl)
 				.orderBy(desc(count()))
 				.limit(5);
+
+			const [statsResult, mostActiveResult, topContributorsResult] =
+				await Promise.all([
+					statsPromise,
+					mostActivePromise,
+					topContributorsPromise,
+				]);
+
+			const { totalContributions, totalContributors, verifiedCount } =
+				statsResult[0];
+
+			const mostActiveContributions =
+				mostActiveResult[0]?.contributionCount ?? 0;
+
+			const verificationRate =
+				totalContributions > 0
+					? Math.round((verifiedCount / totalContributions) * 100)
+					: 0;
 
 			// Map results with rank
 			const topContributors = topContributorsResult.map((result, index) => ({

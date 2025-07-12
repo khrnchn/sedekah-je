@@ -39,19 +39,19 @@
 - [x] Update `LeaderboardContent` component to handle new data structure
 - [x] Add database indexes if needed for JOIN performance
 
-### [ ] 3. Optimize Leaderboard Stats Calculation
+### [x] 3. Optimize Leaderboard Stats Calculation
 **File:** `app/(user)/leaderboard/_lib/queries.ts:26-78`  
 **Issue:** 4 separate count queries creating unnecessary database round trips  
 **Impact:** Single optimized query reduces database load by 75%  
 **Estimated Time:** 2 hours
 
 **Tasks:**
-- [ ] Combine all stats queries into single aggregated query
-- [ ] Use conditional counting with `CASE WHEN` for different metrics
-- [ ] Update return type for combined `LeaderboardStats`
-- [ ] Test query performance vs individual queries
-- [ ] Update stats display components for new data structure
-- [ ] Ensure parallel execution with contributor query using `Promise.all`
+- [x] Combine all stats queries into single aggregated query
+- [x] Use conditional counting with `CASE WHEN` for different metrics
+- [x] Update return type for combined `LeaderboardStats`
+- [x] Test query performance vs individual queries
+- [x] Update stats display components for new data structure
+- [x] Ensure parallel execution with contributor query using `Promise.all`
 
 ### [ ] 4. Implement My Contributions Database Aggregation
 **File:** `app/(user)/my-contributions/_lib/queries.ts:45-52`  
