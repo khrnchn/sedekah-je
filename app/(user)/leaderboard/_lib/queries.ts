@@ -85,47 +85,28 @@ export async function getLeaderboardData(): Promise<LeaderboardData> {
 						)
 					: 0;
 
-			// Get top contributors
+			// Get top contributors with user details in single JOIN query
 			const topContributorsResult = await db
 				.select({
 					contributorId: institutions.contributorId,
 					contributionCount: count().as("contributionCount"),
+					userName: users.name,
+					userAvatar: users.avatarUrl,
 				})
 				.from(institutions)
+				.leftJoin(users, eq(institutions.contributorId, users.id))
 				.where(eq(institutions.isActive, true))
-				.groupBy(institutions.contributorId)
+				.groupBy(institutions.contributorId, users.name, users.avatarUrl)
 				.orderBy(desc(count()))
 				.limit(5);
 
-			// Get user details for each contributor
-			const topContributors = await Promise.all(
-				topContributorsResult.map(async (result, index) => {
-					if (!result.contributorId) {
-						return {
-							rank: index + 1,
-							name: "Anonymous",
-							contributions: Number(result.contributionCount),
-							avatar: null,
-						};
-					}
-
-					const user = await db
-						.select({
-							name: users.name,
-							avatar: users.avatarUrl,
-						})
-						.from(users)
-						.where(eq(users.id, result.contributorId))
-						.limit(1);
-
-					return {
-						rank: index + 1,
-						name: user[0]?.name ?? "Anonymous",
-						contributions: Number(result.contributionCount),
-						avatar: user[0]?.avatar ?? null,
-					};
-				}),
-			);
+			// Map results with rank
+			const topContributors = topContributorsResult.map((result, index) => ({
+				rank: index + 1,
+				name: result.userName ?? "Anonymous",
+				contributions: Number(result.contributionCount),
+				avatar: result.userAvatar ?? null,
+			}));
 
 			return {
 				stats: {
