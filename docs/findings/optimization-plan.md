@@ -104,16 +104,16 @@
 - [x] Create specific loading skeletons for each section
 - [x] Test streaming behavior and loading states
 
-### [ ] 7. Fix Sequential Database Calls
+### [x] 7. Fix Sequential Database Calls
 **File:** `app/(admin)/admin/dashboard/queries.ts:32-33`  
 **Issue:** `getStateDistribution()` called after `Promise.all` instead of included  
 **Impact:** Remove unnecessary waterfall, faster dashboard loads  
 **Estimated Time:** 30 minutes
 
 **Tasks:**
-- [ ] Include `getStateDistribution()` in main `Promise.all`
-- [ ] Test parallel execution
-- [ ] Verify no dependencies between queries
+- [x] Include `getStateDistribution()` in main `Promise.all`
+- [x] Test parallel execution
+- [x] Verify no dependencies between queries
 
 ## Phase 3: Fine-tuning & Long-term Health 🔧
 
@@ -160,35 +160,6 @@
 - [ ] Increase TTL for stable admin data (900 seconds)
 - [ ] Document cache invalidation patterns
 - [ ] Test cache behavior with real usage patterns
-
-### [ ] 11. Add Performance Monitoring
-**Files:** New monitoring implementation  
-**Issue:** No visibility into query performance  
-**Impact:** Prevent future performance regressions  
-**Estimated Time:** 4 hours
-
-**Tasks:**
-- [ ] Add database query logging
-- [ ] Implement performance metrics collection
-- [ ] Set up alerts for slow queries (>200ms)
-- [ ] Create performance dashboard
-- [ ] Document monitoring setup
-
-## Testing & Validation 🧪
-
-### [ ] Performance Testing
-- [ ] Benchmark current admin page load times
-- [ ] Test with large datasets (1000+ institutions, 100+ users)
-- [ ] Verify cache hit rates and invalidation
-- [ ] Load test bulk operations
-- [ ] Test concurrent admin user scenarios
-
-### [ ] Regression Testing
-- [ ] Verify all admin functionality still works
-- [ ] Test approval/rejection workflows
-- [ ] Verify user management features
-- [ ] Test dashboard charts and stats accuracy
-- [ ] Ensure proper error handling
 
 ## Success Metrics 📊
 

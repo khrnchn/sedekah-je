@@ -7,45 +7,6 @@ import { and, count, eq, gte, sql } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 
 /**
- * Get all dashboard data in a single optimized query to reduce connection usage
- */
-export async function getDashboardData() {
-	const [
-		dashboardStats,
-		categoryData,
-		stateData,
-		recentSubmissions,
-		topContributors,
-		latestActivities,
-		institutionsWithCoords,
-		monthlyGrowth,
-	] = await Promise.all([
-		getDashboardStats(),
-		getInstitutionsByCategory(),
-		getInstitutionsByState(),
-		getRecentSubmissions(),
-		getTopContributors(),
-		getLatestActivities(),
-		getInstitutionsWithCoords(),
-		getMonthlyGrowth(),
-	]);
-
-	// Get state distribution for the map
-	const completeStateData = await getStateDistribution();
-
-	return {
-		stats: dashboardStats,
-		categoryData,
-		stateData: completeStateData, // Use complete state distribution for consistency
-		recentSubmissions,
-		topContributors,
-		latestActivities,
-		institutionsWithCoords,
-		monthlyGrowth,
-	};
-}
-
-/**
  * Get dashboard statistics with counts for each institution status
  */
 export const getDashboardStats = unstable_cache(
