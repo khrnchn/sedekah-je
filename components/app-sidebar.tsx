@@ -24,7 +24,7 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { getAdminUsersCount, getTotalUsersCount } from "@/lib/queries/users";
+import { getTotalUsersCount } from "@/lib/queries/users";
 
 const data = {
 	navMain: [
@@ -97,7 +97,6 @@ export async function AppSidebar({
 	let approvedCount = 0;
 	let rejectedCount = 0;
 	let totalUsersCount = 0;
-	let adminUsersCount = 0;
 	let currentUser = {
 		name: "Admin",
 		email: "admin@sedekah.je",
@@ -105,19 +104,13 @@ export async function AppSidebar({
 	};
 
 	try {
-		[
-			pendingCount,
-			approvedCount,
-			rejectedCount,
-			totalUsersCount,
-			adminUsersCount,
-		] = await Promise.all([
-			getPendingInstitutionsCount(),
-			getApprovedInstitutionsCount(),
-			getRejectedInstitutionsCount(),
-			getTotalUsersCount(),
-			getAdminUsersCount(),
-		]);
+		[pendingCount, approvedCount, rejectedCount, totalUsersCount] =
+			await Promise.all([
+				getPendingInstitutionsCount(),
+				getApprovedInstitutionsCount(),
+				getRejectedInstitutionsCount(),
+				getTotalUsersCount(),
+			]);
 
 		// Get current user session
 		const session = await auth.api.getSession({
@@ -169,16 +162,6 @@ export async function AppSidebar({
 				...item,
 				badge: totalUsersCount,
 				badgeVariant: "default" as const,
-				items: item.items?.map((subItem) => {
-					if (subItem.title === "Admins") {
-						return {
-							...subItem,
-							badge: adminUsersCount,
-							badgeVariant: "success" as const,
-						};
-					}
-					return subItem;
-				}),
 			};
 		}
 		return item;
