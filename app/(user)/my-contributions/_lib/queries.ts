@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions } from "@/db/schema";
-import { desc, eq } from "drizzle-orm";
+import { count, desc, eq, sql } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
 
@@ -39,21 +39,42 @@ export async function getMyContributions(): Promise<MyContributionsResponse | nu
 
 	return unstable_cache(
 		async () => {
+			// Get aggregated stats using SQL conditional counting
+			const [statsResult] = await db
+				.select({
+					totalContributions: count(),
+					approvedContributions: count(
+						sql`CASE WHEN ${institutions.status} = 'approved' THEN 1 END`,
+					),
+					pendingContributions: count(
+						sql`CASE WHEN ${institutions.status} = 'pending' THEN 1 END`,
+					),
+					rejectedContributions: count(
+						sql`CASE WHEN ${institutions.status} = 'rejected' THEN 1 END`,
+					),
+				})
+				.from(institutions)
+				.where(eq(institutions.contributorId, userId));
+
+			const stats: MyContributionsStats = {
+				totalContributions: statsResult.totalContributions,
+				approvedContributions: statsResult.approvedContributions,
+				pendingContributions: statsResult.pendingContributions,
+				rejectedContributions: statsResult.rejectedContributions,
+			};
+
+			// Get the detailed contributions list
 			const results = await db
-				.select()
+				.select({
+					id: institutions.id,
+					name: institutions.name,
+					status: institutions.status,
+					createdAt: institutions.createdAt,
+					category: institutions.category,
+				})
 				.from(institutions)
 				.where(eq(institutions.contributorId, userId))
 				.orderBy(desc(institutions.createdAt));
-
-			const stats: MyContributionsStats = {
-				totalContributions: results.length,
-				approvedContributions: results.filter((i) => i.status === "approved")
-					.length,
-				pendingContributions: results.filter((i) => i.status === "pending")
-					.length,
-				rejectedContributions: results.filter((i) => i.status === "rejected")
-					.length,
-			};
 
 			const contributions: ContributionItem[] = results.map((inst) => ({
 				id: inst.id.toString(),
