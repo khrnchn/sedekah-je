@@ -87,6 +87,10 @@ export default function QRExtractionFeature({
 		[onStatusChange],
 	);
 
+	const [clearQrContent, setClearQrContent] = useState<(() => void) | null>(
+		null,
+	);
+
 	const handleFileChangeCallback = useCallback(
 		(handler: (event: React.ChangeEvent<HTMLInputElement>) => void) => {
 			setHandleFileChange(() => handler);
@@ -97,9 +101,34 @@ export default function QRExtractionFeature({
 	const handleClearQrContentCallback = useCallback(
 		(clearFn: () => void) => {
 			onClearQrContent(clearFn);
+			setClearQrContent(() => clearFn);
 		},
 		[onClearQrContent],
 	);
+
+	const [selectedFile, setSelectedFile] = useState<File | null>(null);
+	const handleFileChangeWrapper = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (handleFileChange) {
+			handleFileChange(e);
+		}
+		if (e.target.files?.[0]) {
+			setSelectedFile(e.target.files[0]);
+		} else {
+			setSelectedFile(null);
+		}
+	};
+
+	const clearFile = () => {
+		if (clearQrContent) {
+			clearQrContent();
+		}
+		setSelectedFile(null);
+		// Reset file input
+		const input = document.getElementById("qrImage") as HTMLInputElement;
+		if (input) {
+			input.value = "";
+		}
+	};
 
 	return (
 		<div className="space-y-2">
@@ -138,23 +167,62 @@ export default function QRExtractionFeature({
 					onClearQrContent={handleClearQrContentCallback}
 				/>
 				{/* Enhanced file input with better mobile UX */}
-				<div className="relative">
+				<div className="relative flex items-center gap-2">
 					<Input
 						id="qrImage"
 						type="file"
 						name="qrImage"
 						accept="image/*"
 						capture={fileUploadMode === "camera" ? "environment" : undefined}
-						onChange={handleFileChange || undefined}
+						onChange={handleFileChangeWrapper}
 						disabled={isSubmitting || qrStatus.qrExtracting}
-						className="h-12 text-base file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90"
+						className="hidden"
 					/>
-					{fileUploadMode === "camera" && (
-						<p className="text-xs text-gray-500 mt-1">
-							📱 Kamera akan dibuka secara langsung
-						</p>
+					<label
+						htmlFor="qrImage"
+						className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 cursor-pointer"
+					>
+						{qrStatus.qrExtracting
+							? "Memproses..."
+							: selectedFile
+								? "Tukar Fail"
+								: "Pilih Fail"}
+					</label>
+					{selectedFile && (
+						<div className="flex items-center gap-2 text-sm">
+							<span className="truncate max-w-xs">{selectedFile.name}</span>
+							<Button
+								type="button"
+								variant="ghost"
+								size="icon"
+								onClick={clearFile}
+								className="h-6 w-6"
+							>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="24"
+									height="24"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									strokeWidth="2"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									className="h-4 w-4"
+								>
+									<path d="M18 6 6 18" />
+									<path d="m6 6 12 12" />
+								</svg>
+							</Button>
+						</div>
 					)}
 				</div>
+
+				{fileUploadMode === "camera" && (
+					<p className="text-xs text-gray-500 mt-1">
+						📱 Kamera akan dibuka secara langsung
+					</p>
+				)}
 			</Suspense>
 
 			{qrStatus.qrExtracting && (
