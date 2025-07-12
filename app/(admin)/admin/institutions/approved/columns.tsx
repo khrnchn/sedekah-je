@@ -7,6 +7,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { ArrowUpDownIcon, EyeIcon } from "lucide-react";
 import Link from "next/link";
+import { AssignContributorDialog } from "./assign-contributor-dialog";
 
 type ApprovedInstitution = {
 	id: number;
@@ -21,7 +22,16 @@ type ApprovedInstitution = {
 	reviewedBy: string | null;
 };
 
-export const columns: ColumnDef<ApprovedInstitution>[] = [
+type User = {
+	id: string;
+	name: string | null;
+	email: string;
+	username: string | null;
+};
+
+export const createColumns = (
+	users: User[],
+): ColumnDef<ApprovedInstitution>[] => [
 	{
 		accessorKey: "id",
 		header: "ID",
@@ -112,11 +122,20 @@ export const columns: ColumnDef<ApprovedInstitution>[] = [
 		id: "actions",
 		cell: ({ row }) => {
 			return (
-				<Button variant="ghost" size="sm" asChild>
-					<Link href={`/admin/institutions/approved/${row.original.id}`}>
-						<EyeIcon className="h-4 w-4" />
-					</Link>
-				</Button>
+				<div className="flex items-center gap-2">
+					<AssignContributorDialog
+						institutionId={row.original.id}
+						institutionName={row.original.name}
+						currentContributorId={row.original.contributorId}
+						currentContributorName={row.original.contributorName}
+						users={users}
+					/>
+					<Button variant="ghost" size="sm" asChild>
+						<Link href={`/admin/institutions/approved/${row.original.id}`}>
+							<EyeIcon className="h-4 w-4" />
+						</Link>
+					</Button>
+				</div>
 			);
 		},
 	},

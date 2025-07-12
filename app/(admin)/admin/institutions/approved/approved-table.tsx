@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import { categories, states } from "@/lib/institution-constants";
 import { useEffect, useState } from "react";
-import { columns } from "./columns";
+import { createColumns } from "./columns";
 
 export type ApprovedInstitution = {
 	id: number;
@@ -30,10 +30,19 @@ const ALL = "all" as const;
 type CategoryFilter = (typeof categories)[number] | typeof ALL;
 type StateFilter = (typeof states)[number] | typeof ALL;
 
+type User = {
+	id: string;
+	name: string | null;
+	email: string;
+	username: string | null;
+};
+
 export default function ApprovedInstitutionsTable({
 	initialData,
+	users,
 }: {
 	initialData: ApprovedInstitution[];
+	users: User[];
 }) {
 	const [institutions, setInstitutions] = useState(initialData);
 	const [category, setCategory] = useState<CategoryFilter>(ALL);
@@ -42,6 +51,8 @@ export default function ApprovedInstitutionsTable({
 	useEffect(() => {
 		setInstitutions(initialData);
 	}, [initialData]);
+
+	const columns = createColumns(users);
 
 	const filteredData = institutions.filter((inst) => {
 		if (category !== ALL && inst.category !== category) return false;
