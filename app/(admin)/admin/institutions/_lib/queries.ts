@@ -355,3 +355,68 @@ export async function updateInstitutionByAdmin(
 		.where(eq(institutions.id, id))
 		.returning();
 }
+
+/**
+ * Get all users for contributor assignment dropdown
+ */
+export async function getAllUsers() {
+	return await db
+		.select({
+			id: users.id,
+			name: users.name,
+			email: users.email,
+			username: users.username,
+		})
+		.from(users)
+		.where(eq(users.isActive, true))
+		.orderBy(users.name);
+}
+
+/**
+ * Assign or reassign contributor to an approved institution
+ */
+export async function assignContributorToInstitution(
+	institutionId: number,
+	contributorId: string | null,
+) {
+	// Verify the institution exists and is approved
+	const [institution] = await db
+		.select({ id: institutions.id, status: institutions.status })
+		.from(institutions)
+		.where(eq(institutions.id, institutionId))
+		.limit(1);
+
+	if (!institution) {
+		throw new Error("Institution not found");
+	}
+
+	if (institution.status !== "approved") {
+		throw new Error("Can only assign contributors to approved institutions");
+	}
+
+	// If contributorId is provided, verify the user exists
+	if (contributorId) {
+		const [user] = await db
+			.select({ id: users.id })
+			.from(users)
+			.where(eq(users.id, contributorId))
+			.limit(1);
+
+		if (!user) {
+			throw new Error("Contributor not found");
+		}
+	}
+
+	const result = await db
+		.update(institutions)
+		.set({ contributorId })
+		.where(eq(institutions.id, institutionId))
+		.returning();
+
+	// Revalidate approved institutions data
+	revalidatePath("/admin/institutions/approved");
+	revalidateTag("approved-institutions");
+	revalidateTag("institutions-data");
+
+	return result;
+}

@@ -24,6 +24,7 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { getTotalUsersCount } from "@/lib/queries/users";
 
 const data = {
 	navMain: [
@@ -95,6 +96,7 @@ export async function AppSidebar({
 	let pendingCount = 0;
 	let approvedCount = 0;
 	let rejectedCount = 0;
+	let totalUsersCount = 0;
 	let currentUser = {
 		name: "Admin",
 		email: "admin@sedekah.je",
@@ -102,11 +104,13 @@ export async function AppSidebar({
 	};
 
 	try {
-		[pendingCount, approvedCount, rejectedCount] = await Promise.all([
-			getPendingInstitutionsCount(),
-			getApprovedInstitutionsCount(),
-			getRejectedInstitutionsCount(),
-		]);
+		[pendingCount, approvedCount, rejectedCount, totalUsersCount] =
+			await Promise.all([
+				getPendingInstitutionsCount(),
+				getApprovedInstitutionsCount(),
+				getRejectedInstitutionsCount(),
+				getTotalUsersCount(),
+			]);
 
 		// Get current user session
 		const session = await auth.api.getSession({
@@ -152,6 +156,17 @@ export async function AppSidebar({
 		};
 	});
 
+	const navMainWithBadges = data.navMain.map((item) => {
+		if (item.title === "Users") {
+			return {
+				...item,
+				badge: totalUsersCount,
+				badgeVariant: "default" as const,
+			};
+		}
+		return item;
+	});
+
 	return (
 		<Sidebar collapsible="offcanvas" {...props}>
 			<SidebarHeader>
@@ -178,7 +193,7 @@ export async function AppSidebar({
 				</SidebarMenu>
 			</SidebarHeader>
 			<SidebarContent>
-				<NavMain items={data.navMain} />
+				<NavMain items={navMainWithBadges} />
 				<NavInstitutions items={institutionsWithBadge} />
 				<SidebarGroup className="mt-auto">
 					<SidebarGroupContent>

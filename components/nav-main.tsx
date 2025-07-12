@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
 	SidebarGroup,
@@ -38,6 +39,24 @@ export function NavMain({
 		url: string;
 		icon?: string;
 		external?: boolean;
+		items?: {
+			title: string;
+			url: string;
+			badge?: number;
+			badgeVariant?:
+				| "default"
+				| "secondary"
+				| "destructive"
+				| "outline"
+				| "success";
+		}[];
+		badge?: number;
+		badgeVariant?:
+			| "default"
+			| "secondary"
+			| "destructive"
+			| "outline"
+			| "success";
 	}[];
 }) {
 	return (
@@ -86,11 +105,43 @@ export function NavMain({
 										>
 											{IconComponent && <IconComponent />}
 											<span>{item.title}</span>
+											{item.badge && item.badge > 0 && (
+												<Badge
+													variant={
+														item.badgeVariant === "success"
+															? "default"
+															: item.badgeVariant || "destructive"
+													}
+													className={
+														item.badgeVariant === "success"
+															? "bg-primary text-primary-foreground hover:bg-primary/90 duration-200 ease-linear"
+															: ""
+													}
+												>
+													{item.badge}
+												</Badge>
+											)}
 										</a>
 									) : (
 										<Link href={item.url}>
 											{IconComponent && <IconComponent />}
 											<span>{item.title}</span>
+											{item.badge && item.badge > 0 && (
+												<Badge
+													variant={
+														item.badgeVariant === "success"
+															? "default"
+															: item.badgeVariant || "destructive"
+													}
+													className={
+														item.badgeVariant === "success"
+															? "bg-primary text-primary-foreground hover:bg-primary/90 duration-200 ease-linear"
+															: ""
+													}
+												>
+													{item.badge}
+												</Badge>
+											)}
 										</Link>
 									)}
 								</SidebarMenuButton>
