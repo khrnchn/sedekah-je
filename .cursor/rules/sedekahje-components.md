@@ -119,10 +119,10 @@ const [isLoading, setIsLoading] = useState(false);
 ```
 
 ### Optimization
-- Use `useMemo` for expensive calculations
-- Use `useCallback` for event handlers
-- Implement debouncing for search inputs
-- Use React.lazy for code splitting
+- Use **UI Streaming with Suspense** for loading complex server components. See performance rules for details.
+- Use `useMemo` for expensive client-side calculations.
+- Use `useCallback` for event handlers passed to memoized components.
+- Implement debouncing for search inputs to avoid excessive requests.
 
 ## Error Handling
 
