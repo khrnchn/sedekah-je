@@ -18,14 +18,11 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-	Popover,
-	PopoverTrigger,
-} from "@/components/ui/popover";
-import * as PopoverPrimitive from "@radix-ui/react-popover";
+import { Popover, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import * as PopoverPrimitive from "@radix-ui/react-popover";
 import { Check, ChevronsUpDown, UserPlusIcon, X } from "lucide-react";
-import { useState, useTransition, useRef } from "react";
+import { useRef, useState, useTransition } from "react";
 import { assignContributorToInstitution } from "../_lib/queries";
 
 type User = {
@@ -115,7 +112,6 @@ export function AssignContributorDialog({
 								<PopoverTrigger asChild>
 									<Button
 										variant="outline"
-										role="combobox"
 										aria-expanded={comboboxOpen}
 										className="w-full justify-between"
 									>
