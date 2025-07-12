@@ -2,6 +2,7 @@
 
 import { db } from "@/db";
 import { institutions } from "@/db/schema";
+import { slugify } from "@/lib/utils";
 import { eq } from "drizzle-orm";
 
 export async function getInstitutions() {
@@ -21,16 +22,8 @@ export async function getInstitutionBySlug(slug: string) {
 		.where(eq(institutions.status, "approved"))
 		.orderBy(institutions.name);
 
-	// Find by slug match (name converted to slug)
-	const institution = results.find((inst) => {
-		const instSlug = inst.name
-			.toLowerCase()
-			.replace(/[^a-z0-9\s-]/g, "")
-			.replace(/\s+/g, "-")
-			.replace(/-+/g, "-")
-			.trim();
-		return instSlug === slug;
-	});
+	// Find by slug match using the same slugify function
+	const institution = results.find((inst) => slugify(inst.name) === slug);
 
 	return institution || null;
 }

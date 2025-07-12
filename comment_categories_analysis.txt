@@ -1,0 +1,909 @@
+Detailed Analysis of Comments by Category
+==================================================
+
+Facebook URLs (173 items):
+---------------------------------
+  Masjid Negara
+    Comment: https://www.facebook.com/masjidnegaramalaysia/
+
+  Masjid Al-Ghufran
+    Comment: https://www.facebook.com/masjidalghufran/
+
+  Masjid Al-Muhtadin Damansara Damai
+    Comment: https://www.facebook.com/MasjidAlMuhtadinDamansaraDamai/
+
+  Masjid Ar-Rahman
+    Comment: https://www.facebook.com/masjidarrahman.jawi/
+
+  Masjid Lama Kampung Sura
+    Comment: https://www.facebook.com/masjidlamasurafan/
+
+  Surau As-Salam Seksyen 4
+    Comment: https://www.facebook.com/AsSalamKD/
+
+  Masjid Sri Sendayan
+    Comment: https://www.facebook.com/masjidsrisendayanofficial/
+
+  Masjid Lestari Putra
+    Comment: https://www.facebook.com/masjidlestariputraofficial/
+
+  Masjid Jamek Al Manar
+    Comment: https://www.facebook.com/p/Masjid-Al-Manar-Kg-Parit-Sakai-Darat-100086783897014/
+
+  Masjid Tengku Ampuan Afzan, Bandar Satelit (MTAABSMS)
+    Comment: https://www.facebook.com/MTAABSMS/
+
+  Masjid Al Mustaqim
+    Comment: https://www.facebook.com/MAMTNA/
+
+  Madrasah Cheras Perdana
+    Comment: https://www.facebook.com/mardasah.cherasperdanamcp/
+
+  Surau Al-Hijrah PPR Pekan Batu
+    Comment: https://www.facebook.com/p/Surau-Al-Hijrah-PPR-Pekan-Batu-100090311133470/
+
+  Maahad Tahfiz Al-Madrasathul Faridiyah
+    Comment: https://www.facebook.com/faridiyah
+
+  Musolla Sri Baiduri Ukay Perdana
+    Comment: https://www.facebook.com/musollabaiduriukayperdana/
+
+  Surau Al-Ittihadiyyah Seksyen 9
+    Comment: https://www.facebook.com/suraualittihadiyyahs9/
+
+  Masjid Al-Ikhlas Seksyen 13
+    Comment: https://www.facebook.com/mai13.official/
+
+  Masjid Kota Damansara
+    Comment: https://www.facebook.com/masjid.kotadamansara/
+
+  Surau At-Taqwa Bukit Bandaraya
+    Comment: https://www.facebook.com/attaqwabbsa/
+
+  Surau Al Azhar Sam Sml
+    Comment: https://www.facebook.com/suraualazharsamsml/
+
+  Masjid Jumhuriah
+    Comment: https://www.facebook.com/masjidjumhuriahtamandatoharun/
+
+  Masjid Sultan Ahmad Paloh 02
+    Comment: https://www.facebook.com/p/Masjid-Sultan-Ahmad-Paloh-2-100090488524753/
+
+  Masjid Al-Abrar Ayer Lanas
+    Comment: https://www.facebook.com/masjidalabrarayerlanas/
+
+  Masjid Al-Munir Mukim Pantai Senok
+    Comment: https://www.facebook.com/p/Masjid-Mukim-Pantai-Senak-100083119489258/
+
+  Pusat Islam Kampus Kesihatan USM
+    Comment: https://www.facebook.com/PIslamKampusKesihatan/
+
+  Masjid Al-Hidayah Taman Melawati
+    Comment: https://www.facebook.com/masjidhidayahtm/
+
+  Tabung Naiktaraf Masjid Ibrahimi Pasir Puteh
+    Comment: https://www.facebook.com/MasjidIbrahimi/
+
+  Masjid Ar-Raudhah Lundang
+    Comment: https://www.facebook.com/p/Masjid-Ar-Raudhah-Lundang-100068747751504/
+
+  Masjid Mukim Pangkal Meleret
+    Comment: https://www.facebook.com/p/Masjid-Mukim-Pangkal-Meleret-100064302567170/
+
+  Sekolah Rendah Ugama Arab Darul Ulum Diniah
+    Comment: https://www.facebook.com/pages/SRU%20(A)%20DARUL%20ULUM%20DINIAH/553383568011720/
+
+  Masjid Mukim Lalang Pepuyu
+    Comment: https://www.facebook.com/Masjidmukimlalangpepuyu/
+
+  Infaq Masjid Ismail Petra
+    Comment: https://www.facebook.com/masjidismailpetratanahmerah/
+
+  Masjid As-Syakirin Mukim Kelewek
+    Comment: https://www.facebook.com/p/Masjid-AsSyakirin-Mukim-Kelewek-Tanah-Merah-100070071895715/
+
+  Masjid Sultan Haji Ahmad Shah
+    Comment: https://www.facebook.com/masjid.shas.iiumk/
+
+  Masjid Taman Bukit Bendera
+    Comment: https://www.facebook.com/p/Masjid-Taman-Bukit-Bendera-Mentakab-100077104761581/
+
+  Masjid Tengku Mahkota Tengku Hassanal Ibrahim Alam Shah
+    Comment: https://www.facebook.com/MasjidTJ/
+
+  Surau Al-Ikhlas Kampung Seri Medang
+    Comment: https://www.facebook.com/suraualikhlaskgserimedang/
+
+  Masjid Al Ehsan Kampung Sungai Labu
+    Comment: https://www.facebook.com/alehsansglabu/
+
+  Masjid Sultan Muhammad V
+    Comment: https://www.facebook.com/MSMV.Labuan/
+
+  Masjid Al Muhajirin Inderasabah
+    Comment: https://www.facebook.com/masjidalmuhajirininderasabah/
+
+  Masjid An-Naim Lutong
+    Comment: https://www.facebook.com/MasjidAnnaimLutongMiri/
+
+  Masjid Kampong Berjaya
+    Comment: https://www.facebook.com/jalanputra58/
+
+  Masjid Al Hussain
+    Comment: https://www.facebook.com/p/Masjid-Al-Hussain-100064413532530/
+
+  Masjid Umar Ibnu Al-Khattab
+    Comment: https://www.facebook.com/profile.php?id=100083138536696
+
+  Qaryah Masjid Jamek Hashim Yahaya
+    Comment: https://www.facebook.com/p/Masjid-Hashim-Yahaya-Jalan-Perak-Pulau-Pinang-100070137350620/
+
+  Madrasah Darul Muhajirin
+    Comment: https://www.facebook.com/darulmuhajarinpenang/
+
+  Qaryah Masjid Jamek Padang Ibu
+    Comment: https://www.facebook.com/masjidpadangibu/
+
+  Masjid Al-Hikmah Felda Air Tawar 5
+    Comment: https://www.facebook.com/masjidalhikmahfeldaairtawar5/
+
+  Masjid Felda Semenchu
+    Comment: https://www.facebook.com/badanmasjidfsemenchu/
+
+  Masjid As'syakirin Aping Barat
+    Comment: https://www.facebook.com/p/Masjid-Assyakirin-Aping-Barat-100072113354988/
+
+  Surau Al-Rayyan, Taman Puteri Jaya
+    Comment: https://www.facebook.com/surau.alrayyan.tpj/
+
+  Masjid Jamek Pekan Parit Sulong
+    Comment: https://www.facebook.com/masjidparitsulong/?locale=ms_MY
+
+  Masjid An-Nur @ Larkin Sentral
+    Comment: https://www.facebook.com/masjid.terminal.larkin.jb/
+
+  TP Masjid Taman Seri Saujana
+    Comment: https://www.facebook.com/mtsSAUJANA/
+
+  Masjid Al-Mubarak Bandar Putra
+    Comment: https://www.facebook.com/masjidjamekalmubarak/
+
+  PASTI Kawasan Johor Bahru
+    Comment: https://www.facebook.com/profile.php?id=100057221119534
+
+  Masjid Al-Jawaher Kampung Felda Ayer Tawar 4
+    Comment: https://www.facebook.com/p/Masjid-Al-Jawaher-Felda-Air-Tawar-4-100069622128798/?locale=ms_MY
+
+  Surau Al-Taqwa Pulai Bistari
+    Comment: https://www.facebook.com/suraualtaqwa/
+
+  Masjid Jamek Tun Hussein Onn
+    Comment: https://www.facebook.com/p/Masjid-Bandar-Tun-Hussein-Onn-100064325539673/
+
+  Surau Al Jauhar Taman Sentosa
+    Comment: https://www.facebook.com/SurauAlJauhar/
+
+  Masjid Taman Dato Onn Larkin
+    Comment: https://www.facebook.com/masjid.tamandatoonnlarkin/
+
+  Masjid Jamek Chaah
+    Comment: https://www.facebook.com/masjidchaah/
+
+  Surau At-Taqwa Kulai
+    Comment: https://www.facebook.com/masjid.at.taqwa.kulai/
+
+  Surau Alpinia Bandar Putra
+    Comment: https://www.facebook.com/SurauAlpinia.BP
+
+  Pengajian Anwarul Mahabbah
+    Comment: https://www.facebook.com/ANWARULMAHABBAHKLUANG/
+
+  Masjid Sungai Abong
+    Comment: https://www.facebook.com/MSAMuarJohor/
+
+  Masjid Tunku Laksamana Abdul Jalil
+    Comment: https://www.facebook.com/p/Masjid-Tunku-Laksamana-Abdul-Jalil-100064825270284/
+
+  Masjid Jamek Sultan Ismail
+    Comment: https://www.facebook.com/MSIBP/
+
+  J.K Masjid Bandar Kota Tinggi
+    Comment: https://www.facebook.com/jkmbktOfficial/
+
+  Surau Taman Pasak Indah
+    Comment: https://www.facebook.com/p/Surau-Taman-Pasak-Indah-kota-Tinggi-100066368724844/
+
+  Surau Umar Abdul Aziz, Bandar Putra
+    Comment: https://www.facebook.com/SUAAKULAI/ (Unactive, latest post 2020)
+
+  Masjid Saidatina Khadijah, Taman Seremban Jaya
+    Comment: https://www.facebook.com/msktsj/?locale=ms_MY
+
+  Masjid Hussain
+    Comment: https://www.facebook.com/masjidhussainofficial/
+
+  Masjid Assyakirin Gemencheh
+    Comment: https://www.facebook.com/p/Masjid-Assyakirin-Gemencheh-100067832415297/
+
+  Masjid At-Taqwa Kampung Paroi
+    Comment: https://www.facebook.com/masjidattaqwaparoi/
+
+  Surau Batu Sheikh Muhammad Paiz Al-Linggi
+    Comment: https://www.facebook.com/sbsmpal/
+
+  Masjid Setia Alam Seksyen U13
+    Comment: https://www.facebook.com/profile.php?id=100089861776392
+
+  Surau Baitul Rahman, Taman Aman Perdana
+    Comment: https://www.facebook.com/baitulrahmanamanperdana/
+
+  Masjid Al-Firdaus
+    Comment: https://www.facebook.com/masjidalfirdaussegambut/
+
+  Masjid Ahmadi Rantau Panjang
+    Comment: https://www.facebook.com/masjidahmadirp/
+
+  Masjid An-Nur Temasya Glenmarie
+    Comment: https://www.facebook.com/masjidannurglenmarie/
+
+  Masjid Ar-Rahah
+    Comment: https://www.facebook.com/MasjidArRahahKualaLumpur/
+
+  Masjid Al-Ehsan, Bandar Kinrara
+    Comment: https://www.facebook.com/maebk5/
+
+  Masjid Al-Husna, Bandar Sunway
+    Comment: https://www.facebook.com/masjidhusna/
+
+  Masjid Bandar Bukit Raja
+    Comment: https://www.facebook.com/masjidbbr/
+
+  Masjid Abu Ubaidah Al Jarrah
+    Comment: https://www.facebook.com/masjid.abu.ubaidah/
+
+  Masjid Wilayah Persekutuan
+    Comment: https://www.facebook.com/masjidwilayahpersekutuan/
+
+  Masjid Seksyen 7 Shah Alam
+    Comment: https://www.facebook.com/masjidseven/
+
+  Masjid Sultan Salahuddin Abdul Aziz Shah
+    Comment: https://www.facebook.com/masjidnegeriselangor/
+
+  Masjid Tengku Ampuan Jemaah Bukit Jelutong
+    Comment: https://www.facebook.com/MTAJBJ/
+
+  Masjid Kota Kemuning
+    Comment: https://www.facebook.com/masjidkotakemuning/
+
+  Masjid Darul Ehsan SS15 Subang Jaya
+    Comment: https://www.facebook.com/MasjidDarulEhsanSubangJaya/
+
+  Masjid Raja Haji Fi Sabilillah Cyberjaya
+    Comment: https://www.facebook.com/masjidrajahajifisabilillah/
+
+  Masjid Al-Falah USJ 9
+    Comment: https://www.facebook.com/masjidalfalahusj9/
+
+  Masjid Sultan Azlan Shah
+    Comment: https://www.facebook.com/msasperak/
+
+  Masjid Damansara Perdana
+    Comment: https://www.facebook.com/masjiddamansaraperdana/
+
+  Masjid Tuanku Mizan Zainal Abidin
+    Comment: https://www.facebook.com/masjidtuankumizanzainalabidin/
+
+  Masjid Lapangan Terbang Sultan Abdul Aziz Shah Subang
+    Comment: https://www.facebook.com/masjidhijausubangairport/
+
+  Surau Al-Manar
+    Comment: https://www.facebook.com/SurauAlManarKomunitiPresint14Putrajaya/
+
+  Surau Nur Baiduri, Bandar Bukit Puchong
+    Comment: https://www.facebook.com/p/Surau-Nur-baiduri-100064363312323/
+
+  Masjid Al Faizin
+    Comment: https://www.facebook.com/masjidalfaizin28/
+
+  Masjid Tengku Ampuan Afzan, Indera Mahkota (MASTAAF)
+    Comment: https://www.facebook.com/mastaaf.im/
+
+  Masjid Al-Taqwa Kariah Kisap
+    Comment: https://www.facebook.com/p/Masjid-Al-Taqwa-Kariah-Kisap-100064860304444/
+
+  Masjid As-Sopiah, Keda Wang Tok Rendong
+    Comment: https://www.facebook.com/masjidassopiah/
+
+  Surau Nurul Iman Taman Minang
+    Comment: https://www.facebook.com/suraunurulimantamanminangcheras/
+
+  Masjid Nurrusaadah
+    Comment: https://www.facebook.com/masjidsaadah/
+
+  Masjid Al-Mukhlisin
+    Comment: https://www.facebook.com/masjidalmukhlisinalamdamai/
+
+  Masjid Zahid Bin Thabit
+    Comment: https://www.facebook.com/masjidzaidbinthabit/
+
+  Masjid Al-Ridhuan Hulu Kelang
+    Comment: https://www.facebook.com/masjidalridhuanhulukelang/
+
+  Darul Quran PITAS
+    Comment: https://www.facebook.com/darulquranpitas/
+
+  Masjid UNITEN
+    Comment: Tempat Farhan Helmy membesar url: "https://www.facebook.com/unitenmosque/"
+
+  Madrasah Al-Badriah Pondok Jal Besar
+    Comment: https://www.facebook.com/pondokbadriah/
+
+  Masjid Al-Muqarrabin Kariah Taman Angsana
+    Comment: https://www.facebook.com/MasjidAlMuqarrabinTamanAngsanaKulim/
+
+  Masjid Jamek Sungai Gelugor
+    Comment: https://www.facebook.com/MasjidJamekSungaiGelugor/?locale=ms_MY
+
+  Masjid Al Muhajirin Bandar Seberang Jaya
+    Comment: https://www.facebook.com/masjidalmuhajirinbandarseberangjaya/
+
+  Masjid Al-Muttaqin Taman Kota Jaya
+    Comment: https://www.facebook.com/p/Masjid-Al-Muttaqin-Taman-Kota-Jaya-100076271775236/
+
+  Masjid Sultan Ibrahim, UTHM
+    Comment: https://www.facebook.com/p/Masjid-Sultan-Ibrahim-UTHM-100064622412210/
+
+  Masjid Jamek Tan Sri Ainuddin Wahid (MJTSAW)
+    Comment: https://www.facebook.com/groups/mjtsaw/?locale=ms_MY
+
+  Masjid Abidin, Taman Sri Skudai
+    Comment: https://www.facebook.com/MASJIDABIDINSRISKUDAI/
+
+  Masjid At-Taqwa Taman Pulai Utama
+    Comment: https://www.facebook.com/MasjidAtTaqwaTamanPulaiUtama/
+
+  Masjid Jamek Dato' Bandar Hj. Ahmad
+    Comment: https://www.facebook.com/MasjidRasah/
+
+  Masjid Al Abrar Semabok
+    Comment: https://www.facebook.com/MasjidAlAbrarSemabok/
+
+  Wakaf Pembangunan Surau Al-Hikmah
+    Comment: https://www.facebook.com/p/Surau-Al-Hikmah-Melaka-100083763211724/
+
+  Masjid Taman Impian Emas
+    Comment: https://www.facebook.com/p/Masjid-Taman-Impian-Emas-Skudai-100057640749577/
+
+  Masjid Al-Muktafi Billah Shah
+    Comment: https://www.facebook.com/photo/?fbid=1226069169521484&set=pb.100063552368137.-2207520000&locale=ms_MY
+
+  Masjid Al-Hana
+    Comment: https://www.facebook.com/MasjidAlHanaLangkawi/
+
+  Masjid Tok Lebai Hashim
+    Comment: https://www.facebook.com/masjid.toklebaihashim/
+
+  Masjid Sungai Abong
+    Comment: https://www.facebook.com/MSAMuarJohor/
+
+  Surau An-Nur Presint 11 Putrajaya
+    Comment: https://www.facebook.com/annurpresint11/
+
+  Musolla Ar Raudhah Southvillecity
+    Comment: https://www.facebook.com/musollaarraudhahsouthvillecity/
+
+  Masjid Nurul Islam Sungai Itau
+    Comment: https://www.facebook.com/masjid.sungai.itau/
+
+  Masjid Saidina Umar Al-Khattab, Bukit Damansara
+    Comment: https://www.facebook.com/masjidsaidinaumaralkhattab/
+
+  Masjid Al Ittihad Kg Kumpulan
+    Comment: https://www.facebook.com/MasjidAlIttihadKgKumpulanLangkawi/
+
+  Masjid Nurul Khair
+    Comment: khairin, facebook - https://www.facebook.com/MasjidNurulKhair/posts/duitnow-qr-codealternatif-baru-yang-lebih-memudahkan-untuk-dermawan-serta-simpat/809772409815834/
+
+  Masjid Baiturrahman Alam Sari
+    Comment: khairin, website - https://baiturrahman.my/ & https://www.facebook.com/photo.php?fbid=792445273082490&set=p.792445273082490&type=3
+
+  Masjid Al Huda Kampung Punggai
+    Comment: khairin, facebook - https://www.facebook.com/photo.php?fbid=618271545529488&id=290481364975176&set=a.290810261608953&locale=ms_MY
+
+  Masjid Asy Syuja'ah
+    Comment: khairin, facebook - https://www.facebook.com/asysyujaah02/posts/pfbid04LeKDM4RgiAyhgxxVC7kLiFntfXQUMLum27Mfx255efsFCyqhgnK2G6VUZTRaSDJl?locale=ms_MY
+
+  Masjid Al Qurtubi
+    Comment: khairin, facebook - https://www.facebook.com/maqtsskl/posts/infaq-lebih-mudah-dengan-aplikasi-qr-code-di-smartphone-andahanya-dengan-scan/559290838265541/
+
+  Surau Darussa'adah
+    Comment: Fareez #183 - FB https://www.facebook.com/iera.aqila.3/posts/pfbid02kuuKrSq2both4vHJZg5SCZBp3oWp7cvhQSc9KmgAbit6KjXWu7nGMWfkBXWbqzHBl
+
+  Surau Darussa'adah
+    Comment: Fareez #183 - FB https://www.facebook.com/iera.aqila.3/posts/pfbid02kuuKrSq2both4vHJZg5SCZBp3oWp7cvhQSc9KmgAbit6KjXWu7nGMWfkBXWbqzHBl
+
+  Masjid Bandar Seri Putra
+    Comment: Fareez #183 - FB https://www.facebook.com/iera.aqila.3/posts/pfbid02kuuKrSq2both4vHJZg5SCZBp3oWp7cvhQSc9KmgAbit6KjXWu7nGMWfkBXWbqzHBl
+
+  Musolla Pangsapuri Aranda
+    Comment: Fareez #183 - FB https://www.facebook.com/iera.aqila.3/posts/pfbid02kuuKrSq2both4vHJZg5SCZBp3oWp7cvhQSc9KmgAbit6KjXWu7nGMWfkBXWbqzHBl
+
+  Masjid Jamik Sabak Bernam
+    Comment: Fareez #183 - FB https://www.facebook.com/iera.aqila.3/posts/pfbid02kuuKrSq2both4vHJZg5SCZBp3oWp7cvhQSc9KmgAbit6KjXWu7nGMWfkBXWbqzHBl
+
+  Surau Ar Rahmah Chempakapuri
+    Comment: Fareez #183 - FB https://www.facebook.com/iera.aqila.3/posts/pfbid02kuuKrSq2both4vHJZg5SCZBp3oWp7cvhQSc9KmgAbit6KjXWu7nGMWfkBXWbqzHBl
+
+  Masjid Sharifah Fatimah
+    Comment: khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/1601882700586417/
+
+  Surau Taman Seri Alam
+    Comment: khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/1601885200586167/
+
+  Masjid Jamek Kamunting Taiping
+    Comment: khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/1394277821346907/
+
+  Masjid Daerah Barat Daya
+    Comment: khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/695100714597958/
+
+  Surau Al-Jannah
+    Comment: khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/695085587932804/
+
+  Surau Baiturrahman Seksyen 9
+    Comment: khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/694978877943475/
+
+  Surau Sri Embun Sutera Damansara
+    Comment: khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/694967647944598/
+
+  Masjid Sultan Iskandar
+    Comment: khairin, facebook - https://www.facebook.com/groups/694901861284510/permalink/694910011283695/
+
+  Masjid Jamek Shaik Eusoff
+    Comment: khairin, google - https://www.facebook.com/MasjidJamekShaikEusoffDhobyGhaut/posts/pfbid0w23G4D4pfWvr8824bzi2atSsbhZFgMgTR9RVEoP3VBh8hPY6Tv7s27k2xSRYN1EJl
+
+  Surau Riyadhul Jannah
+    Comment: khairin, facebook - https://www.facebook.com/photo.php?fbid=2049969782028767&set=p.2049969782028767&type=3
+
+  Pusat Pengajian Islam Mohd Nor Al Bakri Masjid Lama Lebak
+    Comment: khairin, facebook - https://www.facebook.com/photo.php?fbid=10225513212878800&set=p.10225513212878800&type=3
+
+  Musolla An-Nur Space U8
+    Comment: khairin, facebook - https://www.facebook.com/photo.php?fbid=10228973039684008&set=p.10228973039684008&type=3
+
+  Masjid Darul Amilin
+    Comment: khairin, facebook - https://www.facebook.com/photo.php?fbid=7667341323284756&set=p.7667341323284756&type=3
+
+  Masjid An-Nur Kolej Matrikulasi Johor
+    Comment: khairin, facebook - https://www.facebook.com/photo.php?fbid=940218854377395&set=p.940218854377395&type=3
+
+  Maahad Tahfiz Al Muqri
+    Comment: khairin, facebook - https://www.facebook.com/photo.php?fbid=7415483425173294&set=p.7415483425173294&type=3
+
+  Masjid Kampung Benting Lintang
+    Comment: khairin, facebook - https://www.facebook.com/masjidbetinglintangbesutterengganu/posts/pfbid02s2x8sr4rKd8yF3Pu5xtS6e3zyzfFneVfbpFnafKh1eUP6qsJfKUR7CPp4oPu2RGcl
+
+  Masjid Al Islahiah Kuang
+    Comment: khairin, facebook - https://www.facebook.com/photo?fbid=1600343667398482&set=pcb.1600318917400957
+
+  Masjid Ali Imran Kampung Ulu Pauh
+    Comment: khairin, facebook - https://www.facebook.com/photo/?fbid=1600343810731801&set=pcb.1600318917400957
+
+  Masjid An-Nur
+    Comment: kuasawan #2 - FB https://www.facebook.com/photo/?fbid=10231252106341929&set=pcb.10231238536122682
+
+  Surau Baitul Majid
+    Comment: kuasawan #4 - FB https://www.facebook.com/SurauBM/?locale=ms_MY
+
+  Masjid Sabilal Muhtadin Parit Betong
+    Comment: kuasawan #5 - FB https://www.facebook.com/p/Masjid-Sabilal-Muhtadin-Parit-Betong-Mukim-7-Tg-Sembrong-100067321512717/
+
+  Masjid Dato Haji Kamaruddin
+    Comment: khairin, facebook - https://www.facebook.com/MDHK51a/?locale=ms_MY
+
+  Masjid Al-Firdaus Taman Tunku Miri
+    Comment: nur adam maxx, facebook - https://www.facebook.com/NurAdamMaxx/posts/pfbid02KmhC6fskVDesiRmnkQRE5N5AoNtnxHeW9yRtTE9CDXeMQSNsUfN9WgLRJ4BXf9fHl?comment_id=1938591719879950&reply_comment_id=957432703220541&notif_id=1741367772790072&notif_t=comment_mention&ref=notif
+
+  Masjid Tok Jembal
+    Comment: @apih99, facebook - https://www.facebook.com/p/Masjid-Baru-Tok-Jembal-MTJ-100079731971010/
+
+  Masjid Diraja Sultan Suleiman
+    Comment: khairin, facebook - https://www.facebook.com/photo.php?fbid=1181545753980294&set=pb.100063746405386.-2207520000&type=3&locale=ms_MY
+
+  Surau Abu Bakar As-Siddiq Taman Patani Jaya
+    Comment: khairin, facebook - https://www.facebook.com/photo/?fbid=781614480663446&set=pcb.781614750663419&locale=ms_MY
+
+  Masjid Sultan Haji Ahmad Shah IIUM Gombak
+    Comment: khairin, facebook - https://www.facebook.com/photo.php?fbid=936841948537821&set=pb.100066360740916.-2207520000&type=3&locale=ms_MY
+
+  Masjid As-Solihin Kampung Kepala Gajah
+    Comment: https://www.facebook.com/pages/Masjid-Kepala-Gajah/222228684470144
+
+  Surau Ar-Raudhah
+    Comment: facebook - https://www.facebook.com/SurauArRaudhah.EcoMajestic
+
+
+Twitter/X References (54 items):
+----------------------------------------
+  Surau An Nur
+    Comment: @rusmanarief, twitter
+
+  Tabung Surau & Kebajikan Am Surau Jumaat Haji Mohamad
+    Comment: amirul abu, twitter - https://x.com/AmirulAbu/status/1842065332351205553
+
+  Sumbangan Dana Pembinaan Masjid Kariah Taman Dahlia
+    Comment: awis alkarni, twitter - https://x.com/awis/status/1846000481388450034
+
+  Masjid Taman Puncak Jalil
+    Comment: khairin, twitter - https://x.com/zzdnrj/status/1271294833944977408
+
+  Surau Al Iman Taman Arked
+    Comment: khairin, twitter - https://twitter.com/saranidollah/status/1246258615830233088
+
+  Masjid Ar-Rahmah Seksyen 17A
+    Comment: afiq che man, twitter
+
+  Masjid At-Taqwa TTDI
+    Comment: afiq che man, twitter
+
+  Masjid An-Nur UTP
+    Comment: {luqman}, {nadiahlotfi-twitter}
+
+  Surau Tengah Kampung Batu 30
+    Comment: hnish, twitter - https://x.com/Hnish_t/status/1861001444113191003
+
+  Wakaf Pembinaan Masjid Saujana KLIA
+    Comment: @puteriarchy, twitter - https://x.com/puteriarchy/status/1882709240198128022
+
+  Masjid Al-Hijrah Desa Pinggiran Putra
+    Comment: @zainul1772823, twitter dm
+
+  Wakaf Pembinaan Masjid Jamek Al-Ikram
+    Comment: @zainul1772823, twitter dm
+
+  Pondok Pengajian Ba'alawi Batu Pahat
+    Comment: @zainul1772823, twitter dm
+
+  Mental Illness Awareness and Support Association MIASA
+    Comment: hnish, twitter - https://x.com/Hnish_t/status/1892772581222101468
+
+  National Cancer Society Malaysia
+    Comment: hnish, twitter - https://x.com/Hnish_t/status/1892772581222101468
+
+  Tahfiz Rendah Assofa Seremban
+    Comment: @dilaaazzz, twitter dm
+
+  Musolla Idaman Residensi Selangorku Cyberjaya
+    Comment: @mfahm1y, twitter - https://x.com/mfahm1y/status/1895734217067352529
+
+  Masjid Al-Ehsan Seksyen 24
+    Comment: @krnpcyknsiti, twitter dm
+
+  Surau Asy-Syarawi, Taman Mount Austin
+    Comment: @NajimmyF40448, twitter dm
+
+  Masjid Taman Sri Pulai
+    Comment: @NajimmyF40448, twitter dm
+
+  Surau Jauharul Muttaqin, Taman Mount Austin
+    Comment: @NajimmyF40448, twitter dm
+
+  Masjid Jamek Gelang Patah
+    Comment: @NajimmyF40448, twitter dm
+
+  Surau Kampung Kundangan
+    Comment: @hnnfqh, twitter dm
+
+  Surau Al-Ikhwan
+    Comment: @thatguyridd, twitter dm
+
+  Masjid Talhah Bin Ubaidillah
+    Comment: @its_iskandar, twitter dm
+
+  Surau Bangi Perdana
+    Comment: @Rin4237, twitter dm
+
+  Masjid Tok Ku Ismail
+    Comment: @LordMundu, twitter dm
+
+  Masjid Jamek Batu 12 Puchong
+    Comment: nrlfazlianaa_, twitter dm
+
+  Masjid An Nur Taman Maju
+    Comment: frwzhjmldn, twitter dm
+
+  Madrasah Al Huda
+    Comment: MSCDee_47, twitter dm
+
+  Masjid Ubudiyah Kampung Paya Luas
+    Comment: lilyy1611, twitter dm
+
+  Surau Saidina Abu Bakar As-Siddiq Taman Lestari Putra LEP 4
+    Comment: eidaud83, twitter dm
+
+  Surau Darul Husna
+    Comment: azriafnd, twitter dm
+
+  Masjid Saujana Puchong
+    Comment: kawan aerry, twitter dm
+
+  Masjid Al Munir Kampung Selamat
+    Comment: wzulaikha_, twitter dm
+
+  Masjid Al Muhajirin Indera Mahkota 5
+    Comment: panijaz, twitter dm
+
+  Surau Residensi PandanMas
+    Comment: Rimau786, twitter dm
+
+  Surau Al-Mustaqim Bandar Cassia Batu Kawan
+    Comment: RempahRz, twitter dm
+
+  MASJID KARIAH TAMAN MARIDA SENAWANG
+    Comment: nqs587, twitter dm
+
+  Masjid Bukit Kukuran Kemasik
+    Comment: pinkb0ngwater, twitter dm
+
+  Masjid Nurul Huda Salor
+    Comment: eidaud83, twitter dm
+
+  Masjid Al Muhaimin Kota Samarahan Sarawak
+    Comment: Rimau786, twitter dm
+
+  Surau Assahabah Seksyen 7 Kota Damansara
+    Comment: chairmanglc, twitter - https://x.com/chairmanGLC/status/1920714720488599647
+
+  Pusat Perubatan Universiti Malaya PPUM
+    Comment: ZackAvaricious, twitter - https://x.com/ZackAvaricious/status/1920751849826590762
+
+  Masjid Ara Damansara
+    Comment: NajibAzir, twitter dm
+
+  Masjid Tengku Kelana Jaya Petra
+    Comment: eidaud83, twitter dm
+
+  City Cat Empire
+    Comment: lilghurabaa, twitter - https://x.com/lilghurabaa/status/1928709044694561017
+
+  Masjid Jiran Ria Heights
+    Comment: phynroses, twitter dm
+
+  Madrasah Bustanul Ulum Taman Tugu
+    Comment: NajibAzir, twitter dm
+
+  Maahad Tahfiz Al Quran Assanaa
+    Comment: arepond, twitter dm
+
+  Masjid Al-I'tisam Taman TTDI Jaya
+    Comment: izzatsuhaimii, twitter dm
+
+  Pembinaan Masjid Baru An Nur Batu 4
+    Comment: alauddinyusof, twitter dm
+
+  Masjid Tabung Haji Kelana Jaya
+    Comment: NajibAzir, twitter dm
+
+  Surau Darul Aman Kampung Kanchong Darat
+    Comment: doonosh, twitter dm
+
+
+Other Websites (16 items):
+----------------------------------
+  Yayasan Pendidikan Hidayah
+    Comment: https://yayasanhidayah.my/
+
+  Masjid Jamek Kampung Melayu Batu 9
+    Comment: https://masjid.islam.gov.my/maklumatMasjidSurau?carian=&jenis=&negeri=&daerah=&masjidSurau=&page=477
+
+  Masjid Jamek Kampong Melayu
+    Comment: https://masjid.islam.gov.my/maklumatDetailMS/1/0103058
+
+  Masjid Al Bukhary Alor Malai
+    Comment: khairin, website - https://www.masjidalbukhary.com.my/home/einfaq.php
+
+  Maahad Tahfiz Al Ayubi
+    Comment: khairin, google/toyyibpay - https://toyyibpay.com/INFAQ-MASJID-TAHFIZ-AL-AYUBI
+
+  Surau Al-Muhajirin Kajang Utama
+    Comment: khairin, facebook - https://almuhajirinkjgutama.com/b1form.php
+
+  Masjid Al-Quddus Taman Sri Wangi
+    Comment: khairin, google - https://www.maqtsw.net/infaq/infaq-dengan-qr-code-1
+
+  Pusat Pengajian Darul Hadis
+    Comment: khairin, google - https://ppdhadis.edu.my/page/pagedetail.php?schid=1581&schname=SUMBANGAN%20KE%20DARUL%20HADIS%20LEBIH%20MUDAH%20MELALUI%20DUITNOW%20QR%20KOD
+
+  Yayasan Murtadha Berhad
+    Comment: khairin, google - https://yayasanmurtadha.onpay.my/order/form/mdd-mdd-infaq1
+
+  Pertubuhan Raudhah Autisme Islam Selangor
+    Comment: khairin, google - https://www.raudhahautisme.org/jom-infaq-derma/
+
+  Masjid Baitul Mahabbah
+    Comment: khairin, google - https://toyyibpay.com/INFAQ-HARI-JUMAAT
+
+  Musolla An-Nur
+    Comment: https://maps.app.goo.gl/N3JKvLjjotisbHYv8
+
+  Surau Raudhatul Salam
+    Comment: https://surauraudhatulsalam.com/
+
+  Masjid Al Ummah Telok Chengai
+    Comment: khairin, onpay - https://infaqmasjidalummah.onpay.my/order/form/tanahkubur
+
+  Masjid Kota Warisan
+    Comment: khairin, website - https://masjidkotawarisan.com/
+
+  JAWATANKUASA SURAU AL-A’RAF
+    Comment: khairin, website - https://banksahamakhirat.com/
+
+
+Other Comments (13 items):
+----------------------------------
+  Surau Kampung Kurnia
+    Comment: Doubt this surau still exists
+
+  Surau Darus Salam
+    Comment: },
+
+  Surau Al-Mukhlisin Pangsapuri Semarak
+    Comment: },
+
+  Surau Al Muslihin
+    Comment: syafiq haikal, instagram
+
+  Masjid Jamek Ar Rahimah
+    Comment: catqeel, instagram
+
+  Masjid Al-Sultan Abdullah
+    Comment: ammar azman
+
+  Masjid Peket 100
+    Comment: Fareez
+
+  Masjid Selat Melaka
+    Comment: belle, instagram
+
+  Masjid Ubudiah Kuala Kangsar
+    Comment: kyziq khairul haziq, taken from masjid
+
+  Masjid Kampong Batu 4, Klang
+    Comment: Luqies, self-snap - Masjid Bt 4 Kiyai Haji Omar
+
+  Masjid Kampung Tebakang
+    Comment: aiman pokgak, taken at masjid
+
+  Masjid Al-Ubudiah
+    Comment: Shaikh Danial, Taken from masjid
+
+  Masjid Jamek Al Ihsaniah
+    Comment: kyziq, faris (cousin) - taken from masjid
+
+
+Personal Contributions (11 items):
+------------------------------------------
+  Masjid At Taqwa Desa Subang Permai
+    Comment: izzat rizal, masjid area office dia
+
+  Surau Jumaat Menara TM
+    Comment: khairin, solat jumaat @ menara tm
+
+  Masjid Kolej Islam Malaya
+    Comment: khairin
+
+  Masjid Bukit Aman
+    Comment: khairin
+
+  Masjid TNB HQ
+    Comment: khairin, solat jumaat @ tnb hq (merchant name is surau tenaga nasional)
+
+  Surau Elmina Gardens
+    Comment: aniq, instagram
+
+  Masjid Al-Raudah
+    Comment: fareez - masjid
+
+  Masjid Ar-Raudhah Sitiawan
+    Comment: luqman, self from masjid
+
+  Masjid As-Salam
+    Comment: fareez, self from masjid
+
+  Masjid Tun Abdul Aziz
+    Comment: khairin, taken from masjid
+
+  Masjid Al-Mujahideen Damansara Utama
+    Comment: khairin, taken from masjid during terawih
+
+
+WhatsApp References (9 items):
+---------------------------------------
+  Masjid Nurul Hidayah
+    Comment: adha sahar, whatsapp
+
+  Masjid UMPSA (Yayasan UMPSA)
+    Comment: hakimi hamdan, whatsapp
+
+  Surau Al Barakah, Menara Kembar Bank Rakyat
+    Comment: afrie irham, whatsapp
+
+  Surau Ar-Raudhah (Surau Jumaat) Saujana Impian
+    Comment: adha sahar, whatsapp
+
+  Masjid Saidatina Aisyah
+    Comment: afiq ktm, whatsapp
+
+  Masjid Jamek Kampung Payamas
+    Comment: hazqeel, whatsapp
+
+  Masjid Jamek Ar Raudhah
+    Comment: hazqeel, whatsapp
+
+  Surau Al Bayan
+    Comment: fyruz, whatsapp
+
+  Masjid Qiyammuddin Kampung Gelong
+    Comment: afrie, whatsapp
+
+
+Instagram URLs (8 items):
+----------------------------------
+  Masjid Warisan Telok Kemang
+    Comment: https://www.instagram.com/masjid_warisan_tk/
+
+  Masjid Cyberjaya 10
+    Comment: https://www.instagram.com/masjidcyberjaya10/
+
+  Masjid Al-Ikhlas Seksyen 13 Shah Alam
+    Comment: https://www.instagram.com/mai13.official/
+
+  Masjid UITM Shah Alam
+    Comment: khairin, instagram - https://www.instagram.com/masjiduitmshahalam/p/Chi3LVpP0gw/
+
+  Perbadanan Wakaf Selangor
+    Comment: khairin, instagram - https://www.instagram.com/sickchild72/p/C4zEFO6v1mT/?img_index=2
+
+  Masjid Daerah Kerian
+    Comment: khairin, instagram - https://www.instagram.com/sickchild72/p/C4zEFO6v1mT/?img_index=2
+
+  Maahad Tahfiz Integrasi Nadi Huffaz
+    Comment: khairin, facebook - https://www.instagram.com/mtinh.official/p/C0DFGvSvXut/
+
+  Masjid Al-Muttaqin Wangsa Melawati
+    Comment: khairin, google - https://www.instagram.com/masjidalmuttaqin/p/C-ZDkACS3nN/
+
+
+GitHub References (7 items):
+-------------------------------------
+  Masjid Daerah Seberang Perai Utara
+    Comment: izzat zainol, github pr - https://github.com/khrnchn/sedekah-je/pull/179
+
+  Madrasah As-Salam
+    Comment: sitisarahaqilah, github pr - https://github.com/khrnchn/sedekah-je/pull/225
+
+  Pusat Islam UiTM Tapah
+    Comment: sykrwasd, github pr - https://github.com/khrnchn/sedekah-je/pull/284
+
+  Masjid Simpang Enam
+    Comment: fathikhalid, github - https://github.com/khrnchn/sedekah-je/issues/286. taken from masjid
+
+  Masjid Al Mukarramah Bandar Sri Damansara
+    Comment: aniq, github issues - https://github.com/khrnchn/sedekah-je/issues/310
+
+  Masjid Universiti Pertahanan Nasional Malaysia
+    Comment: hafiz, github issues - https://github.com/khrnchn/sedekah-je/issues/321
+
+  Masjid Kota Raja Klang
+    Comment: afrie, github pr - https://github.com/khrnchn/sedekah-je/pull/423
+
+
+TODOs (2 items):
+-------------------------
+  Khairat Kematian Islam
+    Comment: TODO: find coords
+
+  Masjid Jamek Kampung Parit
+    Comment: TODO: coords
+
+

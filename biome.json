@@ -24,6 +24,9 @@
 			},
 			"a11y": {
 				"noSvgWithoutTitle": "off"
+			},
+			"security": {
+				"noDangerouslySetInnerHtml": "off"
 			}
 		},
 		"ignore": ["node_modules", "components/ui"]

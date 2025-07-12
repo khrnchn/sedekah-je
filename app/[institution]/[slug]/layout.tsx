@@ -1,5 +1,4 @@
-import { institutions } from "@/app/data/institutions";
-import { slugify } from "@/lib/utils";
+import { getInstitutionBySlug } from "@/lib/queries/institutions";
 import type { Metadata, ResolvingMetadata } from "next";
 import Script from "next/script";
 
@@ -16,9 +15,7 @@ export async function generateMetadata(
 ): Promise<Metadata> {
 	const slug = params.slug;
 
-	const institution = institutions.find(
-		(institution) => slugify(institution.name) === slug,
-	);
+	const institution = await getInstitutionBySlug(slug);
 
 	if (!institution) {
 		return {
@@ -58,16 +55,14 @@ export async function generateMetadata(
 	};
 }
 
-export default function InstitutionLayout({
+export default async function InstitutionLayout({
 	children,
 	params,
 }: {
 	children: React.ReactNode;
 	params: { slug: string };
 }) {
-	const institution = institutions.find(
-		(institution) => slugify(institution.name) === params.slug,
-	);
+	const institution = await getInstitutionBySlug(params.slug);
 
 	return (
 		<>
@@ -75,6 +70,7 @@ export default function InstitutionLayout({
 				<Script
 					id="institution-jsonld"
 					type="application/ld+json"
+					// biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD structured data is safe
 					dangerouslySetInnerHTML={{
 						__html: JSON.stringify({
 							"@context": "https://schema.org",
