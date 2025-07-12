@@ -1,9 +1,7 @@
 import { auth } from "@/auth";
 import { GlobalCommand } from "@/components/global-command";
 import { Toaster } from "@/components/ui/sonner";
-import { db } from "@/db";
-import { users } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { getAdminUser } from "@/lib/queries/users";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -16,15 +14,13 @@ export default async function AdminLayout({
 		headers: await headers(),
 	});
 
-	// The middleware is now responsible for redirecting unauthenticated users.
-	// We will proceed assuming a session exists. If not, the DB query will fail gracefully.
-	const user = await db
-		.select()
-		.from(users)
-		.where(eq(users.id, session?.user.id ?? ""))
-		.limit(1);
+	if (!session) {
+		redirect("/");
+	}
 
-	if (!user[0] || user[0].role !== "admin") {
+	const user = await getAdminUser(session.user.id);
+
+	if (!user || user.role !== "admin") {
 		redirect("/");
 	}
 
