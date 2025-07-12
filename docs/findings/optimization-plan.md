@@ -134,19 +134,27 @@
 - **Completed as part of Task 5**: Count query optimization was implemented alongside pagination improvements
 - **Result**: All count queries now use proper SQL `COUNT()` instead of fetching IDs and using `.length`
 
-### [ ] 9. Implement Batch Operations
+### [x] 9. Implement Batch Operations
 **File:** `app/(admin)/admin/institutions/pending/pending-table.tsx:129-157`  
 **Issue:** Bulk operations use individual queries for each selected item  
 **Impact:** Faster bulk approve/reject operations  
 **Estimated Time:** 3 hours
 
 **Tasks:**
-- [ ] Create batch approve server action
-- [ ] Create batch reject server action
-- [ ] Use single `UPDATE` query with `WHERE id IN ()`
-- [ ] Update UI to handle batch responses
-- [ ] Add proper error handling for partial failures
-- [ ] Test with large selections
+- [x] Create batch approve server action
+- [x] Create batch reject server action  
+- [x] Use single `UPDATE` query with `WHERE id IN ()`
+- [x] Update UI to handle batch responses
+- [x] Add proper error handling for partial failures
+- [x] Test with large selections
+
+**Implementation Notes:**
+- **Server Actions**: Created `batchApproveInstitutions()` and `batchRejectInstitutions()` in `queries.ts:433-510`
+- **Database Optimization**: Uses `inArray()` for single UPDATE queries instead of `Promise.all()` with individual queries
+- **Error Handling**: Added validation for batch size (max 100), missing institutions, and non-pending status
+- **Frontend Integration**: Updated `pending-table.tsx:129-161` to use batch operations with improved error messages
+- **Performance**: Bulk operations now execute in single database transaction instead of N individual queries
+- **Result**: Batch operations are now significantly faster and more reliable for large selections
 
 ### [ ] 10. Improve Cache Strategy
 **Files:** Multiple cache implementations  

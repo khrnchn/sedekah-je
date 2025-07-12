@@ -23,7 +23,10 @@ import { useAuth } from "@/hooks/use-auth";
 import { categories, states } from "@/lib/institution-constants";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { approveInstitution, rejectInstitution } from "../_lib/queries";
+import {
+	batchApproveInstitutions,
+	batchRejectInstitutions,
+} from "../_lib/queries";
 import { columns } from "./columns";
 
 export type PendingInstitution = {
@@ -128,16 +131,20 @@ export default function PendingInstitutionsTable({
 
 	const doBulk = async (action: "approve" | "reject", notes: string) => {
 		try {
+			if (selectedIds.length > 100) {
+				toast({
+					title: "Selection too large",
+					description:
+						"Please select fewer than 100 institutions for batch operations",
+					variant: "destructive",
+				});
+				return;
+			}
+
 			if (action === "approve") {
-				await Promise.all(
-					selectedIds.map((id) =>
-						approveInstitution(id, user?.id || "", notes),
-					),
-				);
+				await batchApproveInstitutions(selectedIds, notes);
 			} else {
-				await Promise.all(
-					selectedIds.map((id) => rejectInstitution(id, user?.id || "", notes)),
-				);
+				await batchRejectInstitutions(selectedIds, notes);
 			}
 			toast({
 				title: `Institutions ${action === "approve" ? "approved" : "rejected"}`,
@@ -145,10 +152,14 @@ export default function PendingInstitutionsTable({
 			});
 			router.refresh();
 		} catch (error) {
-			console.error(error);
+			console.error("Batch operation error:", error);
+			const errorMessage =
+				error instanceof Error
+					? error.message
+					: `Failed to ${action} institutions`;
 			toast({
-				title: "Error",
-				description: `Failed to ${action} institutions`,
+				title: "Batch operation failed",
+				description: errorMessage,
 				variant: "destructive",
 			});
 		}
