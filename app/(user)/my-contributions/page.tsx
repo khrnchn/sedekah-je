@@ -1,28 +1,25 @@
-import { getMyContributions } from "@/app/(user)/my-contributions/_lib/queries";
 import { UserLayout } from "@/components/user-layout";
-import { LazyContributionList } from "./_components/lazy-contribution-list";
-import { StatsCards } from "./_components/stats-cards";
+import { Suspense } from "react";
+import { AsyncContributionList } from "./_components/async-contribution-list";
+import { AsyncStatsCards } from "./_components/async-stats-cards";
+import {
+	ContributionListSkeleton,
+	StatsCardsSkeleton,
+} from "./_components/loading-skeletons";
 
-export default async function MyContributionsPage() {
-	const data = await getMyContributions();
-
-	const userStats = data?.stats ?? {
-		totalContributions: 0,
-		approvedContributions: 0,
-		pendingContributions: 0,
-		rejectedContributions: 0,
-	};
-
-	const contributions = data?.contributions ?? [];
-
+export default function MyContributionsPage() {
 	return (
 		<UserLayout
 			title="Sumbangan Saya"
 			description="Jejak dan urus sumbangan anda kepada komuniti sedekah.je"
 		>
 			<div className="space-y-8">
-				<StatsCards stats={userStats} />
-				<LazyContributionList contributions={contributions} />
+				<Suspense fallback={<StatsCardsSkeleton />}>
+					<AsyncStatsCards />
+				</Suspense>
+				<Suspense fallback={<ContributionListSkeleton />}>
+					<AsyncContributionList />
+				</Suspense>
 			</div>
 		</UserLayout>
 	);

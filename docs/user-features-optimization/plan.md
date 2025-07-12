@@ -69,7 +69,7 @@
 
 ## Phase 2: Mobile UX Enhancement (User Experience) =
 
-### [ ] 5. Add Progressive Loading to User Pages
+### [x] 5. Add Progressive Loading to User Pages
 **Files:**
 - `app/(user)/my-contributions/page.tsx`
 - `app/(user)/leaderboard/page.tsx`
