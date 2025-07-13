@@ -1,5 +1,6 @@
 "use client";
 
+import { formatFileSize, validateAndCompressImage } from "@/lib/image-utils";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
@@ -36,12 +37,40 @@ export function useQrExtractionLazy() {
 			setHasAttemptedExtraction(true);
 
 			try {
+				// Validate and compress the image
+				const validation = await validateAndCompressImage(file, {
+					maxWidth: 1920,
+					maxHeight: 1920,
+					quality: 0.8,
+					maxFileSizeMB: 5,
+				});
+
+				if (!validation.isValid) {
+					setQrExtractionFailed(true);
+					toast("Ralat dengan fail imej", {
+						description: validation.error,
+					});
+					setQrExtracting(false);
+					return;
+				}
+
+				const processedFile = validation.compressedFile || file;
+
+				// Show compression info if file was compressed
+				if (validation.compressedFile && validation.originalSize) {
+					const originalSize = formatFileSize(validation.originalSize);
+					const compressedSize = formatFileSize(validation.compressedFile.size);
+					toast("Imej telah dimampatkan", {
+						description: `Saiz asal: ${originalSize} → Saiz baru: ${compressedSize}`,
+					});
+				}
+
 				// Dynamically import @zxing/browser only when needed
 				const { BrowserQRCodeReader } = await import("@zxing/browser");
 
 				const reader = new BrowserQRCodeReader();
 
-				// Create an image element from the file
+				// Create an image element from the processed file
 				const img = new Image();
 
 				img.onload = async () => {
@@ -90,7 +119,14 @@ export function useQrExtractionLazy() {
 					URL.revokeObjectURL(img.src);
 				};
 
-				img.src = URL.createObjectURL(file);
+				img.src = URL.createObjectURL(processedFile);
+
+				// Update the file input with the compressed file
+				if (validation.compressedFile) {
+					const dataTransfer = new DataTransfer();
+					dataTransfer.items.add(validation.compressedFile);
+					event.target.files = dataTransfer.files;
+				}
 			} catch (error) {
 				console.error("QR extraction error:", error);
 				setQrExtractionFailed(true);

@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { formatFileSize } from "@/lib/image-utils";
 import { Suspense, lazy, useCallback, useEffect, useState } from "react";
 import type { InstitutionFormData } from "../_lib/validations";
 
@@ -154,6 +155,9 @@ export default function QRExtractionFeature({
 			<label htmlFor="qrImage" className="font-medium">
 				Gambar Kod QR <span className="text-red-500">*</span>
 			</label>
+			<p className="text-xs text-gray-600">
+				Saiz maksimum: 5MB • Format yang disokong: JPG, PNG, WebP
+			</p>
 			{/* Touch-friendly upload mode selector */}
 			<div className="flex gap-2 mb-3">
 				<Button
@@ -212,13 +216,18 @@ export default function QRExtractionFeature({
 					</Button>
 					{selectedFile && (
 						<div className="flex items-center gap-2 text-sm">
-							<span className="truncate max-w-xs">{selectedFile.name}</span>
+							<div className="flex flex-col min-w-0">
+								<span className="truncate max-w-xs">{selectedFile.name}</span>
+								<span className="text-xs text-gray-500">
+									{formatFileSize(selectedFile.size)}
+								</span>
+							</div>
 							<Button
 								type="button"
 								variant="ghost"
 								size="icon"
 								onClick={clearFile}
-								className="h-6 w-6"
+								className="h-6 w-6 flex-shrink-0"
 							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"

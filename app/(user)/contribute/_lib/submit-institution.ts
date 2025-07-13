@@ -156,6 +156,27 @@ export async function submitInstitution(
 	let qrContent: string | undefined;
 	try {
 		if (qrImageFile && qrImageFile.size > 0) {
+			// Validate file size (5MB limit)
+			const maxSizeBytes = 5 * 1024 * 1024; // 5MB
+			if (qrImageFile.size > maxSizeBytes) {
+				return {
+					status: "error",
+					errors: {
+						qrImage: ["Saiz fail imej terlalu besar. Had maksimum adalah 5MB."],
+					},
+				};
+			}
+
+			// Validate file type
+			if (!qrImageFile.type.startsWith("image/")) {
+				return {
+					status: "error",
+					errors: {
+						qrImage: ["Fail yang dimuat naik mestilah imej."],
+					},
+				};
+			}
+
 			const arrayBuffer = await qrImageFile.arrayBuffer();
 			const buffer = Buffer.from(arrayBuffer);
 
