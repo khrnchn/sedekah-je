@@ -3,6 +3,7 @@
 import { db } from "@/db";
 import { institutions } from "@/db/institutions";
 import type { categories, states } from "@/lib/institution-constants";
+import { getUserById } from "@/lib/queries/users";
 import { r2Storage } from "@/lib/r2-client";
 import {
 	BinaryBitmap,
@@ -91,28 +92,32 @@ export async function submitInstitution(
 	// --- Rate limit check (3 submissions per day)
 	const contributorId = formData.get("contributorId") as string | null;
 	if (contributorId) {
-		const oneDayAgo = new Date();
-		oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+		const user = await getUserById(contributorId);
 
-		const [{ value }] = await db
-			.select({ value: count() })
-			.from(institutions)
-			.where(
-				and(
-					eq(institutions.contributorId, contributorId),
-					gte(institutions.createdAt, oneDayAgo),
-				),
-			);
+		if (user?.role !== "admin") {
+			const oneDayAgo = new Date();
+			oneDayAgo.setDate(oneDayAgo.getDate() - 1);
 
-		if (value >= 3) {
-			return {
-				status: "error",
-				errors: {
-					general: [
-						"Anda telah mencapai had 3 sumbangan sehari. Sila cuba lagi esok. Terima kasih!",
-					],
-				},
-			};
+			const [{ value }] = await db
+				.select({ value: count() })
+				.from(institutions)
+				.where(
+					and(
+						eq(institutions.contributorId, contributorId),
+						gte(institutions.createdAt, oneDayAgo),
+					),
+				);
+
+			if (value >= 3) {
+				return {
+					status: "error",
+					errors: {
+						general: [
+							"Anda telah mencapai had 3 sumbangan sehari. Sila cuba lagi esok. Terima kasih!",
+						],
+					},
+				};
+			}
 		}
 	}
 

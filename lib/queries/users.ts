@@ -50,3 +50,27 @@ export const getAdminUser = (userId: string) =>
 			revalidate: 300,
 		},
 	)();
+
+/**
+ * Get a user by their ID, cached for performance.
+ * @param userId - The ID of the user to fetch.
+ */
+export const getUserById = (userId: string) =>
+	unstable_cache(
+		async () => {
+			try {
+				const user = await db.query.users.findFirst({
+					where: eq(users.id, userId),
+				});
+				return user || null;
+			} catch (error) {
+				console.error("Error fetching user:", error);
+				return null;
+			}
+		},
+		[`user-${userId}`],
+		{
+			tags: [`user-${userId}`],
+			revalidate: 300, // 5 minutes
+		},
+	)();
