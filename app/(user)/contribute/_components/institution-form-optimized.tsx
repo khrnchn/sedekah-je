@@ -38,12 +38,15 @@ function SubmitButton({
 	isSubmitting,
 	qrExtracting,
 	turnstileToken,
+	qrExtractionFailed,
 }: {
 	isSubmitting: boolean;
 	qrExtracting: boolean;
 	turnstileToken: string;
+	qrExtractionFailed: boolean;
 }) {
-	const isDisabled = isSubmitting || !turnstileToken;
+	const isDisabled =
+		isSubmitting || !turnstileToken || qrExtracting || qrExtractionFailed;
 
 	return (
 		<Button
@@ -527,6 +530,7 @@ export default function InstitutionFormOptimized() {
 					isSubmitting={isSubmitting}
 					qrExtracting={qrStatus.qrExtracting}
 					turnstileToken={turnstileToken}
+					qrExtractionFailed={qrStatus.qrExtractionFailed}
 				/>
 			</fieldset>
 

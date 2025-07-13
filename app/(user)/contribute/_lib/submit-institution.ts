@@ -186,9 +186,19 @@ export async function submitInstitution(
 			const buffer = Buffer.from(arrayBuffer);
 
 			// Upload to R2
-			qrImageUrl = await r2Storage.uploadFile(buffer, qrImageFile.name);
+			try {
+				qrImageUrl = await r2Storage.uploadFile(buffer, qrImageFile.name);
+			} catch (uploadError) {
+				console.error("Failed to upload QR image to R2:", uploadError);
+				return {
+					status: "error",
+					errors: {
+						qrImage: ["Gagal memuat naik imej QR. Sila cuba lagi."],
+					},
+				};
+			}
 
-			// Attempt QR decode
+			// Attempt QR decode, but don't block submission if it fails
 			try {
 				const { data, info } = await sharp(buffer)
 					.ensureAlpha()
@@ -219,11 +229,22 @@ export async function submitInstitution(
 					qrContent = result.getText();
 				}
 			} catch (err) {
-				console.error("QR decode failed:", err);
+				console.error(
+					"QR decode failed, but proceeding with submission as image is uploaded:",
+					err,
+				);
+				// Non-blocking: we have the image URL, admin can review it.
 			}
 		}
 	} catch (err) {
 		console.error("Error processing QR image:", err);
+		// This will now only catch errors from arrayBuffer() or Buffer.from()
+		return {
+			status: "error",
+			errors: {
+				qrImage: ["Berlaku ralat semasa memproses imej. Sila cuba lagi."],
+			},
+		};
 	}
 
 	// The logic for geocoding if coords are not present can remain,

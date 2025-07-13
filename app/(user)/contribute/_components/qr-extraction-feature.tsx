@@ -97,19 +97,29 @@ export default function QRExtractionFeature({
 			setSelectedFile(null);
 			setQrContent(null);
 			onQrContentChange(null);
-			const initialStatus = {
+
+			// --- Do not reset extraction failure status
+			// If an extraction has failed, keep the form in a failed state
+			// until a successful extraction occurs.
+			const newStatus = {
 				qrExtracting: false,
-				qrExtractionFailed: false,
-				hasAttemptedExtraction: false,
+				qrExtractionFailed: qrStatus.qrExtractionFailed,
+				hasAttemptedExtraction: qrStatus.hasAttemptedExtraction,
 			};
-			setQrStatus(initialStatus);
-			onStatusChange(initialStatus);
+			setQrStatus(newStatus);
+			onStatusChange(newStatus);
+
 			const input = document.getElementById("qrImage") as HTMLInputElement;
 			if (input) {
 				input.value = "";
 			}
 		},
-		[onQrContentChange, onStatusChange],
+		[
+			onQrContentChange,
+			onStatusChange,
+			qrStatus.qrExtractionFailed,
+			qrStatus.hasAttemptedExtraction,
+		],
 	);
 
 	const handleFileChangeCallback = useCallback(
