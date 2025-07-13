@@ -19,6 +19,9 @@ export const env = createEnv({
 		R2_SECRET_ACCESS_KEY: z.string(),
 		R2_BUCKET_NAME: z.string(),
 		R2_PUBLIC_URL: z.string().url(),
+
+		// Cloudflare Turnstile
+		CLOUDFLARE_TURNSTILE_SECRET_KEY: z.string().min(1),
 	},
 
 	/**
@@ -31,6 +34,9 @@ export const env = createEnv({
 		// Supabase public configuration
 		NEXT_PUBLIC_SUPABASE_URL: z.string().url().optional(),
 		NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().optional(),
+
+		// Cloudflare Turnstile
+		NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY: z.string().min(1),
 	},
 
 	/**
