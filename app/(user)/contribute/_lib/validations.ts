@@ -14,12 +14,14 @@ export const extendedInstitutionFormClientSchema = z.object({
 	// Database fields from institutions table
 	name: z.string().min(1, "Nama institusi diperlukan"),
 	category: z.enum(categories, {
-		required_error: "Kategori diperlukan",
-		invalid_type_error: "Kategori tidak sah",
+		required_error: "Sila pilih kategori",
+		invalid_type_error: "Sila pilih kategori",
+		errorMap: () => ({ message: "Sila pilih kategori" }),
 	}),
 	state: z.enum(states, {
-		required_error: "Negeri diperlukan",
-		invalid_type_error: "Negeri tidak sah",
+		required_error: "Sila pilih negeri",
+		invalid_type_error: "Sila pilih negeri",
+		errorMap: () => ({ message: "Sila pilih negeri" }),
 	}),
 	city: z.string().min(1, "Bandar diperlukan"),
 	address: z.string().optional(),

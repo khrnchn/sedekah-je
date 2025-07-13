@@ -48,16 +48,13 @@ export async function submitInstitution(
 		}
 
 		try {
-			const verifyResponse = await fetch(
-				`${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/verify-turnstile`,
-				{
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({ token: turnstileToken }),
+			const verifyResponse = await fetch("/api/verify-turnstile", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
 				},
-			);
+				body: JSON.stringify({ token: turnstileToken }),
+			});
 
 			const verifyResult = await verifyResponse.json();
 			if (!verifyResult.success) {
