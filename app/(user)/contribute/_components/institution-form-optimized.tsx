@@ -464,7 +464,7 @@ export default function InstitutionFormOptimized() {
 						<p className="font-medium text-base">
 							Pengesahan Keselamatan <span className="text-red-500">*</span>
 						</p>
-						<div className="flex justify-center overflow-x-auto">
+						<div className="flex justify-center">
 							{(() => {
 								console.log(
 									"Turnstile siteKey:",
@@ -481,7 +481,7 @@ export default function InstitutionFormOptimized() {
 								onExpire={() => setTurnstileToken("")}
 								options={{
 									theme: "auto",
-									size: "compact",
+									size: "normal",
 									language: "ms",
 									refreshExpired: "auto",
 								}}
