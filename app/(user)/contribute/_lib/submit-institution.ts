@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { institutions } from "@/db/institutions";
 import type { categories, states } from "@/lib/institution-constants";
 import { r2Storage } from "@/lib/r2-client";
+import { and, count, eq, gte } from "drizzle-orm";
 import jsQR from "jsqr";
 import { revalidatePath, revalidateTag } from "next/cache";
 import sharp from "sharp";
@@ -77,6 +78,34 @@ export async function submitInstitution(
 				status: "error",
 				errors: {
 					turnstileToken: ["Ralat pengesahan keselamatan. Sila cuba lagi."],
+				},
+			};
+		}
+	}
+
+	// --- Rate limit check (3 submissions per day)
+	const contributorId = formData.get("contributorId") as string | null;
+	if (contributorId) {
+		const oneDayAgo = new Date();
+		oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+
+		const [{ value }] = await db
+			.select({ value: count() })
+			.from(institutions)
+			.where(
+				and(
+					eq(institutions.contributorId, contributorId),
+					gte(institutions.createdAt, oneDayAgo),
+				),
+			);
+
+		if (value >= 3) {
+			return {
+				status: "error",
+				errors: {
+					general: [
+						"Anda telah mencapai had 3 sumbangan sehari. Sila cuba lagi esok. Terima kasih!",
+					],
 				},
 			};
 		}

@@ -37,23 +37,13 @@ const LocationServicesFeature = lazy(
 function SubmitButton({
 	isSubmitting,
 	qrExtracting,
-	qrExtractionFailed,
-	hasAttemptedExtraction,
-	qrContent,
 	turnstileToken,
 }: {
 	isSubmitting: boolean;
 	qrExtracting: boolean;
-	qrExtractionFailed: boolean;
-	hasAttemptedExtraction: boolean;
-	qrContent: string | null;
 	turnstileToken: string;
 }) {
-	const isDisabled =
-		isSubmitting ||
-		qrExtracting ||
-		(hasAttemptedExtraction && !qrContent) ||
-		!turnstileToken;
+	const isDisabled = isSubmitting || !turnstileToken;
 
 	return (
 		<Button
@@ -64,7 +54,7 @@ function SubmitButton({
 			{isSubmitting ? (
 				<>
 					<Spinner size="small" className="mr-2" />
-					{qrExtracting ? "Mengekstrak kandungan QR" : "Menghantar..."}
+					Menghantar...
 				</>
 			) : (
 				"Hantar"
@@ -132,7 +122,6 @@ export default function InstitutionFormOptimized() {
 			contributorId: user?.id ?? "",
 			lat: "",
 			lon: "",
-			qrExtractionSuccess: false,
 			turnstileToken:
 				process.env.NODE_ENV === "development" ? "dev-bypass-token" : "",
 		},
@@ -185,11 +174,6 @@ export default function InstitutionFormOptimized() {
 		}
 	}, [user?.id, setValue]);
 
-	/* Update QR extraction success status */
-	useEffect(() => {
-		setValue("qrExtractionSuccess", !!qrContent);
-	}, [qrContent, setValue]);
-
 	/* Update Turnstile token */
 	useEffect(() => {
 		setValue("turnstileToken", turnstileToken);
@@ -198,6 +182,8 @@ export default function InstitutionFormOptimized() {
 	/* Form submission handler */
 	const onSubmit = async (data: InstitutionFormData) => {
 		setIsSubmitting(true);
+		// Clear previous general errors
+		form.clearErrors("root.general");
 
 		try {
 			const formData = new FormData();
@@ -228,10 +214,30 @@ export default function InstitutionFormOptimized() {
 					clearQrContentRef.current();
 				}
 			} else if (result.status === "error") {
-				toast.error("Ralat", {
-					description:
-						"Sila semak borang anda. Terdapat ralat dalam data yang dihantar.",
-				});
+				// Handle specific field errors
+				if (result.errors) {
+					for (const [key, messages] of Object.entries(result.errors)) {
+						if (key !== "general") {
+							form.setError(key as keyof InstitutionFormData, {
+								type: "manual",
+								message: messages.join(", "),
+							});
+						}
+					}
+				}
+				// Handle general, non-field-specific errors
+				const generalError = result.errors?.general?.[0];
+				if (generalError) {
+					form.setError("root.general", {
+						type: "manual",
+						message: generalError,
+					});
+				} else {
+					toast.error("Ralat", {
+						description:
+							"Sila semak borang anda. Terdapat ralat dalam data yang dihantar.",
+					});
+				}
 			}
 		} catch (error) {
 			console.error("Form submission error:", error);
@@ -261,7 +267,6 @@ export default function InstitutionFormOptimized() {
 				/>
 				<input type="hidden" {...register("lat")} />
 				<input type="hidden" {...register("lon")} />
-				<input type="hidden" {...register("qrExtractionSuccess")} />
 				<input type="hidden" {...register("turnstileToken")} />
 
 				{/* Progressive location services */}
@@ -274,19 +279,16 @@ export default function InstitutionFormOptimized() {
 				)}
 
 				{/* Progressive QR extraction */}
-				{enableAdvancedFeatures ? (
+				<div className="space-y-4">
 					<Suspense fallback={<QRUploadSkeleton />}>
 						<QRExtractionFeature
-							errors={errors}
 							isSubmitting={isSubmitting}
 							onQrContentChange={setQrContent}
 							onStatusChange={setQrStatus}
 							onClearQrContent={setClearQrContent}
 						/>
 					</Suspense>
-				) : (
-					<QRUploadSkeleton />
-				)}
+				</div>
 
 				{/* Institution name - mobile optimized */}
 				<div className="space-y-2">
@@ -524,12 +526,17 @@ export default function InstitutionFormOptimized() {
 				<SubmitButton
 					isSubmitting={isSubmitting}
 					qrExtracting={qrStatus.qrExtracting}
-					qrExtractionFailed={qrStatus.qrExtractionFailed}
-					hasAttemptedExtraction={qrStatus.hasAttemptedExtraction}
-					qrContent={qrContent}
 					turnstileToken={turnstileToken}
 				/>
 			</fieldset>
+
+			{errors.root?.general && (
+				<div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md text-center">
+					<p className="text-sm font-medium text-red-800">
+						{errors.root.general.message}
+					</p>
+				</div>
+			)}
 		</form>
 	);
 }
