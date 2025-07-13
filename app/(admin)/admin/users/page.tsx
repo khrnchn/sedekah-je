@@ -1,11 +1,10 @@
 import { AdminLayout } from "@/components/admin-layout";
 import { AppSidebar } from "@/components/app-sidebar";
-import { ReusableDataTable } from "@/components/reusable-data-table";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { TableSkeleton } from "@/components/ui/table-skeleton";
 import { Suspense } from "react";
 import { getUsers } from "./_lib/queries";
-import { type User, columns } from "./columns";
+import { UsersTable } from "./users-table";
 
 export default async function Page({
 	searchParams,
@@ -27,12 +26,7 @@ export default async function Page({
 					]}
 				>
 					<Suspense fallback={<TableSkeleton columns={4} rows={10} />}>
-						<ReusableDataTable
-							columns={columns}
-							data={usersData.users as User[]}
-							searchKey="email"
-							searchPlaceholder="Search by email..."
-						/>
+						<UsersTable data={usersData} />
 					</Suspense>
 				</AdminLayout>
 			</SidebarInset>
