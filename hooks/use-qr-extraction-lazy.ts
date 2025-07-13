@@ -1,5 +1,6 @@
 "use client";
 
+import { formatFileSize, validateAndCompressImage } from "@/lib/image-utils";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
@@ -36,32 +37,56 @@ export function useQrExtractionLazy() {
 			setHasAttemptedExtraction(true);
 
 			try {
-				// Dynamically import jsQR only when needed
-				const jsQR = await import("jsqr").then((mod) => mod.default);
+				// Validate and compress the image
+				const validation = await validateAndCompressImage(file, {
+					maxWidth: 1920,
+					maxHeight: 1920,
+					quality: 0.8,
+					maxFileSizeMB: 5,
+				});
 
-				const canvas = document.createElement("canvas");
-				const ctx = canvas.getContext("2d");
+				if (!validation.isValid) {
+					setQrExtractionFailed(true);
+					toast("Ralat dengan fail imej", {
+						description: validation.error,
+					});
+					setQrExtracting(false);
+					return;
+				}
+
+				const processedFile = validation.compressedFile || file;
+
+				// Show compression info if file was compressed
+				if (validation.compressedFile && validation.originalSize) {
+					const originalSize = formatFileSize(validation.originalSize);
+					const compressedSize = formatFileSize(validation.compressedFile.size);
+					toast("Imej telah dimampatkan", {
+						description: `Saiz asal: ${originalSize} → Saiz baru: ${compressedSize}`,
+					});
+				}
+
+				// Dynamically import @zxing/browser only when needed
+				const { BrowserQRCodeReader } = await import("@zxing/browser");
+
+				const reader = new BrowserQRCodeReader();
+
+				// Create an image element from the processed file
 				const img = new Image();
 
-				img.onload = () => {
-					canvas.width = img.width;
-					canvas.height = img.height;
-					ctx?.drawImage(img, 0, 0);
+				img.onload = async () => {
+					try {
+						// Create canvas and draw image
+						const canvas = document.createElement("canvas");
+						const ctx = canvas.getContext("2d");
+						canvas.width = img.width;
+						canvas.height = img.height;
+						ctx?.drawImage(img, 0, 0);
 
-					const imageData = ctx?.getImageData(
-						0,
-						0,
-						canvas.width,
-						canvas.height,
-					);
-					if (imageData) {
-						const code = jsQR(
-							imageData.data,
-							imageData.width,
-							imageData.height,
-						);
-						if (code) {
-							setQrContent(code.data);
+						// Use BrowserQRCodeReader to decode from canvas
+						const result = await reader.decodeFromCanvas(canvas);
+
+						if (result) {
+							setQrContent(result.getText());
 							setQrExtractionFailed(false);
 							toast("Kod QR telah dikesan dengan jayanya!", {
 								description: "Kandungan kod QR telah diekstrak.",
@@ -73,9 +98,16 @@ export function useQrExtractionLazy() {
 									"Admin akan mengekstrak kandungan QR secara manual.",
 							});
 						}
+					} catch (decodeError) {
+						console.warn("QR decode failed:", decodeError);
+						setQrExtractionFailed(true);
+						toast("Kod QR tidak dapat dikesan", {
+							description: "Admin akan mengekstrak kandungan QR secara manual.",
+						});
+					} finally {
+						setQrExtracting(false);
+						URL.revokeObjectURL(img.src);
 					}
-					setQrExtracting(false);
-					URL.revokeObjectURL(img.src);
 				};
 
 				img.onerror = () => {
@@ -87,7 +119,14 @@ export function useQrExtractionLazy() {
 					URL.revokeObjectURL(img.src);
 				};
 
-				img.src = URL.createObjectURL(file);
+				img.src = URL.createObjectURL(processedFile);
+
+				// Update the file input with the compressed file
+				if (validation.compressedFile) {
+					const dataTransfer = new DataTransfer();
+					dataTransfer.items.add(validation.compressedFile);
+					event.target.files = dataTransfer.files;
+				}
 			} catch (error) {
 				console.error("QR extraction error:", error);
 				setQrExtractionFailed(true);

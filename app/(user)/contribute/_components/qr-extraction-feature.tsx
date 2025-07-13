@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { formatFileSize } from "@/lib/image-utils";
 import { Suspense, lazy, useCallback, useEffect, useState } from "react";
 import type { InstitutionFormData } from "../_lib/validations";
 
@@ -11,7 +12,6 @@ const LazyQRProcessor = lazy(() =>
 );
 
 interface QRExtractionFeatureProps {
-	errors: { qrExtractionSuccess?: { message?: string } };
 	isSubmitting: boolean;
 	onQrContentChange: (content: string | null) => void;
 	onStatusChange: (status: {
@@ -48,7 +48,6 @@ function QRUploadFallback() {
 }
 
 export default function QRExtractionFeature({
-	errors,
 	isSubmitting,
 	onQrContentChange,
 	onStatusChange,
@@ -156,6 +155,9 @@ export default function QRExtractionFeature({
 			<label htmlFor="qrImage" className="font-medium">
 				Gambar Kod QR <span className="text-red-500">*</span>
 			</label>
+			<p className="text-xs text-gray-600">
+				Saiz maksimum: 5MB • Format yang disokong: JPG, PNG, WebP
+			</p>
 			{/* Touch-friendly upload mode selector */}
 			<div className="flex gap-2 mb-3">
 				<Button
@@ -214,13 +216,18 @@ export default function QRExtractionFeature({
 					</Button>
 					{selectedFile && (
 						<div className="flex items-center gap-2 text-sm">
-							<span className="truncate max-w-xs">{selectedFile.name}</span>
+							<div className="flex flex-col min-w-0">
+								<span className="truncate max-w-xs">{selectedFile.name}</span>
+								<span className="text-xs text-gray-500">
+									{formatFileSize(selectedFile.size)}
+								</span>
+							</div>
 							<Button
 								type="button"
 								variant="ghost"
 								size="icon"
 								onClick={clearFile}
-								className="h-6 w-6"
+								className="h-6 w-6 flex-shrink-0"
 							>
 								<svg
 									xmlns="http://www.w3.org/2000/svg"
@@ -254,24 +261,21 @@ export default function QRExtractionFeature({
 			)}
 			{qrContent && (
 				<div className="p-3 bg-green-50 border border-green-200 rounded-md">
-					<p className="text-sm font-medium text-green-800">Kandungan QR:</p>
+					<p className="text-sm font-medium text-green-800">
+						Success! We read the QR code. This will help our team approve your
+						submission faster.
+					</p>
 					<p className="text-sm text-green-700 break-all">{qrContent}</p>
 				</div>
 			)}
 			{!qrStatus.qrExtracting &&
 				qrStatus.qrExtractionFailed &&
 				qrStatus.hasAttemptedExtraction && (
-					<div className="p-3 bg-red-50 border border-red-200 rounded-md">
-						<p className="text-sm font-medium text-red-800">
-							Kod QR tidak dapat dikesan
+					<div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+						<p className="text-sm font-medium text-yellow-800">
+							Couldn't read the QR code automatically. No problem—please
+							continue. Our team will review the image manually.
 						</p>
-						<p className="text-sm text-red-700">Cuba petua ini:</p>
-						<ul className="text-sm text-red-600 list-disc list-inside mt-1 space-y-1">
-							<li>Krop imej agar fokus kepada kod QR</li>
-							<li>Pastikan imej jelas dan tidak kabur</li>
-							<li>Pastikan kod QR tidak terlalu kecil</li>
-							<li>Pastikan pencahayaan/kontras yang baik</li>
-						</ul>
 					</div>
 				)}
 			{!qrStatus.qrExtracting &&
@@ -284,11 +288,6 @@ export default function QRExtractionFeature({
 						</p>
 					</div>
 				)}
-			{errors.qrExtractionSuccess && (
-				<p className="text-sm text-red-500">
-					Sila muat naik imej kod QR yang sah.
-				</p>
-			)}
 		</div>
 	);
 }

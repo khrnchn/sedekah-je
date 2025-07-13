@@ -3,8 +3,15 @@
 import { db } from "@/db";
 import { institutions } from "@/db/institutions";
 import type { categories, states } from "@/lib/institution-constants";
+import { getUserById } from "@/lib/queries/users";
 import { r2Storage } from "@/lib/r2-client";
-import jsQR from "jsqr";
+import {
+	BinaryBitmap,
+	HybridBinarizer,
+	QRCodeReader,
+	RGBLuminanceSource,
+} from "@zxing/library";
+import { and, count, eq, gte } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
 import sharp from "sharp";
 import { institutionFormServerSchema } from "./validations";
@@ -82,6 +89,38 @@ export async function submitInstitution(
 		}
 	}
 
+	// --- Rate limit check (3 submissions per day)
+	const contributorId = formData.get("contributorId") as string | null;
+	if (contributorId) {
+		const user = await getUserById(contributorId);
+
+		if (user?.role !== "admin") {
+			const oneDayAgo = new Date();
+			oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+
+			const [{ value }] = await db
+				.select({ value: count() })
+				.from(institutions)
+				.where(
+					and(
+						eq(institutions.contributorId, contributorId),
+						gte(institutions.createdAt, oneDayAgo),
+					),
+				);
+
+			if (value >= 3) {
+				return {
+					status: "error",
+					errors: {
+						general: [
+							"Anda telah mencapai had 3 sumbangan sehari. Sila cuba lagi esok. Terima kasih!",
+						],
+					},
+				};
+			}
+		}
+	}
+
 	const socialMedia = {
 		facebook: formData.get("facebook") || undefined,
 		instagram: formData.get("instagram") || undefined,
@@ -122,6 +161,27 @@ export async function submitInstitution(
 	let qrContent: string | undefined;
 	try {
 		if (qrImageFile && qrImageFile.size > 0) {
+			// Validate file size (5MB limit)
+			const maxSizeBytes = 5 * 1024 * 1024; // 5MB
+			if (qrImageFile.size > maxSizeBytes) {
+				return {
+					status: "error",
+					errors: {
+						qrImage: ["Saiz fail imej terlalu besar. Had maksimum adalah 5MB."],
+					},
+				};
+			}
+
+			// Validate file type
+			if (!qrImageFile.type.startsWith("image/")) {
+				return {
+					status: "error",
+					errors: {
+						qrImage: ["Fail yang dimuat naik mestilah imej."],
+					},
+				};
+			}
+
 			const arrayBuffer = await qrImageFile.arrayBuffer();
 			const buffer = Buffer.from(arrayBuffer);
 
@@ -135,9 +195,28 @@ export async function submitInstitution(
 					.raw()
 					.toBuffer({ resolveWithObject: true });
 
-				const code = jsQR(new Uint8ClampedArray(data), info.width, info.height);
-				if (code) {
-					qrContent = code.data;
+				// Convert RGBA to RGB for @zxing/library
+				const rgbData = new Uint8ClampedArray(info.width * info.height * 3);
+				for (let i = 0, j = 0; i < data.length; i += 4, j += 3) {
+					rgbData[j] = data[i]; // R
+					rgbData[j + 1] = data[i + 1]; // G
+					rgbData[j + 2] = data[i + 2]; // B
+					// Skip alpha channel
+				}
+
+				const luminanceSource = new RGBLuminanceSource(
+					rgbData,
+					info.width,
+					info.height,
+				);
+				const binaryBitmap = new BinaryBitmap(
+					new HybridBinarizer(luminanceSource),
+				);
+				const reader = new QRCodeReader();
+
+				const result = reader.decode(binaryBitmap);
+				if (result) {
+					qrContent = result.getText();
 				}
 			} catch (err) {
 				console.error("QR decode failed:", err);

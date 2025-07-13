@@ -35,11 +35,6 @@ export const extendedInstitutionFormClientSchema = z.object({
 	lat: z.string().optional(),
 	lon: z.string().optional(),
 
-	// QR validation field
-	qrExtractionSuccess: z.boolean().refine((val) => val === true, {
-		message: "QR code mesti berjaya diekstrak sebelum dihantar",
-	}),
-
 	// Turnstile security token
 	turnstileToken: z.string().min(1, {
 		message: "Pengesahan keselamatan diperlukan",

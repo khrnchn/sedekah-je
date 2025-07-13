@@ -3,8 +3,13 @@
 import { db } from "@/db";
 import { institutions } from "@/db/institutions";
 import { r2Storage } from "@/lib/r2-client";
+import {
+	BinaryBitmap,
+	HybridBinarizer,
+	QRCodeReader,
+	RGBLuminanceSource,
+} from "@zxing/library";
 import { eq } from "drizzle-orm";
-import jsQR from "jsqr";
 import { revalidatePath } from "next/cache";
 import sharp from "sharp";
 
@@ -47,9 +52,28 @@ export async function uploadQrReplacement(
 				.raw()
 				.toBuffer({ resolveWithObject: true });
 
-			const code = jsQR(new Uint8ClampedArray(data), info.width, info.height);
-			if (code) {
-				qrContent = code.data;
+			// Convert RGBA to RGB for @zxing/library
+			const rgbData = new Uint8ClampedArray(info.width * info.height * 3);
+			for (let i = 0, j = 0; i < data.length; i += 4, j += 3) {
+				rgbData[j] = data[i]; // R
+				rgbData[j + 1] = data[i + 1]; // G
+				rgbData[j + 2] = data[i + 2]; // B
+				// Skip alpha channel
+			}
+
+			const luminanceSource = new RGBLuminanceSource(
+				rgbData,
+				info.width,
+				info.height,
+			);
+			const binaryBitmap = new BinaryBitmap(
+				new HybridBinarizer(luminanceSource),
+			);
+			const reader = new QRCodeReader();
+
+			const result = reader.decode(binaryBitmap);
+			if (result) {
+				qrContent = result.getText();
 			}
 		} catch (err) {
 			console.error("QR decode failed:", err);

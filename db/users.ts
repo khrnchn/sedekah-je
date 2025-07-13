@@ -1,5 +1,6 @@
-import { relations } from "drizzle-orm";
+import { eq, relations } from "drizzle-orm";
 import { boolean, pgTable, text, varchar } from "drizzle-orm/pg-core";
+import { db } from ".";
 import { timestamps } from "./helpers";
 import { institutions } from "./institutions";
 
