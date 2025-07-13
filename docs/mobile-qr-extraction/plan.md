@@ -1,7 +1,7 @@
 # Mobile QR Contribution Flow Overhaul
 
-**Status:** Not Started  
-**Target Completion:** To be determined
+**Status:** Phase 1 Complete  
+**Target Completion:** Phase 1 completed on 2025-07-13
 
 ## Phase 1: Immediate UX Improvements (Unblocking Users)
 
@@ -12,9 +12,9 @@
 **Estimated Time:** 1 hour
 
 **Tasks:**
-- [ ] Locate the primary form component and the submit button.
-- [ ] Remove any logic that disables the submit button based on the QR extraction status.
-- [ ] Ensure the form's `isSubmitting` state is the only factor controlling the submit button's active state.
+- [x] Locate the primary form component and the submit button.
+- [x] Remove any logic that disables the submit button based on the QR extraction status.
+- [x] Ensure the form's `isSubmitting` state is the only factor controlling the submit button's active state.
 
 ### 2. Remove Strict QR Validation Rule
 **File:** `app/(user)/contribute/_lib/validations.ts`  
@@ -23,9 +23,9 @@
 **Estimated Time:** 30 minutes
 
 **Tasks:**
-- [ ] Find the `institutionFormServerSchema`.
-- [ ] Remove the `qrExtractionSuccess` field and any associated `.refine()` or `.superRefine()` logic that makes QR success mandatory.
-- [ ] Verify that no other part of the code relies on this validation rule.
+- [x] Find the `institutionFormServerSchema`.
+- [x] Remove the `qrExtractionSuccess` field and any associated `.refine()` or `.superRefine()` logic that makes QR success mandatory.
+- [x] Verify that no other part of the code relies on this validation rule.
 
 ### 3. Implement Daily Submission Limit
 **File:** `app/(user)/contribute/_lib/submit-institution.ts`  
@@ -34,10 +34,10 @@
 **Estimated Time:** 2 hours
 
 **Tasks:**
-- [ ] In the `submitInstitution` server action, get the current user's ID.
-- [ ] Before processing the submission, query the `institutions` table to count how many submissions the user has made in the last 24 hours.
-- [ ] If the count is 3 or more, return a specific error message.
-- [ ] Update the form component to gracefully handle and display this "rate limit exceeded" error to the user.
+- [x] In the `submitInstitution` server action, get the current user's ID.
+- [x] Before processing the submission, query the `institutions` table to count how many submissions the user has made in the last 24 hours.
+- [x] If the count is 3 or more, return a specific error message.
+- [x] Update the form component to gracefully handle and display this "rate limit exceeded" error to the user.
 
 ## Phase 2: Technical Upgrade and Refined Feedback
 
@@ -48,11 +48,11 @@
 **Estimated Time:** 2 hours
 
 **Tasks:**
-- [ ] Add the `@zxing/browser` dependency to `package.json`.
-- [ ] Remove the `jsqr` dependency if it is no longer used elsewhere.
-- [ ] Refactor the `handleQrImageChange` function in the hook to use `BrowserQRCodeReader` from the new library.
-- [ ] Ensure the new implementation correctly handles image loading and decoding errors.
-- [ ] Test with various challenging QR code images to confirm improved performance.
+- [x] Add the `@zxing/browser` dependency to `package.json`.
+- [x] Remove the `jsqr` dependency if it is no longer used elsewhere.
+- [x] Refactor the `handleQrImageChange` function in the hook to use `BrowserQRCodeReader` from the new library.
+- [x] Ensure the new implementation correctly handles image loading and decoding errors.
+- [x] Test with various challenging QR code images to confirm improved performance.
 
 ### 5. Update UI with Non-Blocking Feedback
 **File:** `app/(user)/contribute/_components/qr-extraction-feature.tsx`  
@@ -61,11 +61,11 @@
 **Estimated Time:** 1.5 hours
 
 **Tasks:**
-- [ ] When extraction succeeds, display the message: *"Success! We read the QR code. This will help our team approve your submission faster."*
-- [ ] When extraction fails, display the message: *"Couldn't read the QR code automatically. No problem—please continue. Our team will review the image manually."*
-- [ ] Ensure the component's UI correctly reflects the loading, success, and failure states from the newly refactored hook.
+- [x] When extraction succeeds, display the message: *"Success! We read the QR code. This will help our team approve your submission faster."*
+- [x] When extraction fails, display the message: *"Couldn't read the QR code automatically. No problem—please continue. Our team will review the image manually."*
+- [x] Ensure the component's UI correctly reflects the loading, success, and failure states from the newly refactored hook.
 
-remember to bring all changes to kc/kc-44-review-qr-extraction-on-mobile branch and commit later.
+✅ **COMPLETED:** All changes committed to kc/kc-44-review-qr-extraction-on-mobile branch (commit 755f299)
 
 ## Success Metrics
 

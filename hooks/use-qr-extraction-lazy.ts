@@ -36,32 +36,28 @@ export function useQrExtractionLazy() {
 			setHasAttemptedExtraction(true);
 
 			try {
-				// Dynamically import jsQR only when needed
-				const jsQR = await import("jsqr").then((mod) => mod.default);
+				// Dynamically import @zxing/browser only when needed
+				const { BrowserQRCodeReader } = await import("@zxing/browser");
 
-				const canvas = document.createElement("canvas");
-				const ctx = canvas.getContext("2d");
+				const reader = new BrowserQRCodeReader();
+
+				// Create an image element from the file
 				const img = new Image();
 
-				img.onload = () => {
-					canvas.width = img.width;
-					canvas.height = img.height;
-					ctx?.drawImage(img, 0, 0);
+				img.onload = async () => {
+					try {
+						// Create canvas and draw image
+						const canvas = document.createElement("canvas");
+						const ctx = canvas.getContext("2d");
+						canvas.width = img.width;
+						canvas.height = img.height;
+						ctx?.drawImage(img, 0, 0);
 
-					const imageData = ctx?.getImageData(
-						0,
-						0,
-						canvas.width,
-						canvas.height,
-					);
-					if (imageData) {
-						const code = jsQR(
-							imageData.data,
-							imageData.width,
-							imageData.height,
-						);
-						if (code) {
-							setQrContent(code.data);
+						// Use BrowserQRCodeReader to decode from canvas
+						const result = await reader.decodeFromCanvas(canvas);
+
+						if (result) {
+							setQrContent(result.getText());
 							setQrExtractionFailed(false);
 							toast("Kod QR telah dikesan dengan jayanya!", {
 								description: "Kandungan kod QR telah diekstrak.",
@@ -73,9 +69,16 @@ export function useQrExtractionLazy() {
 									"Admin akan mengekstrak kandungan QR secara manual.",
 							});
 						}
+					} catch (decodeError) {
+						console.warn("QR decode failed:", decodeError);
+						setQrExtractionFailed(true);
+						toast("Kod QR tidak dapat dikesan", {
+							description: "Admin akan mengekstrak kandungan QR secara manual.",
+						});
+					} finally {
+						setQrExtracting(false);
+						URL.revokeObjectURL(img.src);
 					}
-					setQrExtracting(false);
-					URL.revokeObjectURL(img.src);
 				};
 
 				img.onerror = () => {
