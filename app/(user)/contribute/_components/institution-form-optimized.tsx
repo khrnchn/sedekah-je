@@ -14,6 +14,7 @@ import {
 	states as STATE_OPTIONS,
 } from "@/lib/institution-constants";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Turnstile } from "@marsidev/react-turnstile";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import {
 	Suspense,
@@ -39,15 +40,20 @@ function SubmitButton({
 	qrExtractionFailed,
 	hasAttemptedExtraction,
 	qrContent,
+	turnstileToken,
 }: {
 	isSubmitting: boolean;
 	qrExtracting: boolean;
 	qrExtractionFailed: boolean;
 	hasAttemptedExtraction: boolean;
 	qrContent: string | null;
+	turnstileToken: string;
 }) {
 	const isDisabled =
-		isSubmitting || qrExtracting || (hasAttemptedExtraction && !qrContent);
+		isSubmitting ||
+		qrExtracting ||
+		(hasAttemptedExtraction && !qrContent) ||
+		!turnstileToken;
 
 	return (
 		<Button
@@ -105,6 +111,9 @@ export default function InstitutionFormOptimized() {
 	const [socialMediaExpanded, setSocialMediaExpanded] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [enableAdvancedFeatures, setEnableAdvancedFeatures] = useState(false);
+	const [turnstileToken, setTurnstileToken] = useState<string>(
+		process.env.NODE_ENV === "development" ? "dev-bypass-token" : "",
+	);
 
 	/* React Hook Form */
 	const form = useForm<InstitutionFormData>({
@@ -124,6 +133,8 @@ export default function InstitutionFormOptimized() {
 			lat: "",
 			lon: "",
 			qrExtractionSuccess: false,
+			turnstileToken:
+				process.env.NODE_ENV === "development" ? "dev-bypass-token" : "",
 		},
 	});
 
@@ -157,6 +168,11 @@ export default function InstitutionFormOptimized() {
 	useEffect(() => {
 		setValue("qrExtractionSuccess", !!qrContent);
 	}, [qrContent, setValue]);
+
+	/* Update Turnstile token */
+	useEffect(() => {
+		setValue("turnstileToken", turnstileToken);
+	}, [turnstileToken, setValue]);
 
 	/* Form submission handler */
 	const onSubmit = async (data: InstitutionFormData) => {
@@ -225,6 +241,7 @@ export default function InstitutionFormOptimized() {
 				<input type="hidden" {...register("lat")} />
 				<input type="hidden" {...register("lon")} />
 				<input type="hidden" {...register("qrExtractionSuccess")} />
+				<input type="hidden" {...register("turnstileToken")} />
 
 				{/* Progressive location services */}
 				{enableAdvancedFeatures ? (
@@ -441,12 +458,54 @@ export default function InstitutionFormOptimized() {
 					)}
 				</div>
 
+				{/* Turnstile Security Verification - Only in Production */}
+				{process.env.NODE_ENV !== "development" && (
+					<div className="space-y-2">
+						<p className="font-medium text-base">
+							Pengesahan Keselamatan <span className="text-red-500">*</span>
+						</p>
+						<div className="flex justify-center">
+							<Turnstile
+								siteKey={
+									process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY || ""
+								}
+								onSuccess={setTurnstileToken}
+								onError={() => setTurnstileToken("")}
+								onExpire={() => setTurnstileToken("")}
+								options={{
+									theme: "auto",
+									size: "normal",
+									language: "ms",
+								}}
+							/>
+						</div>
+						{errors.turnstileToken && (
+							<p className="text-sm text-red-500 text-center">
+								{errors.turnstileToken.message}
+							</p>
+						)}
+					</div>
+				)}
+
+				{/* Development Mode Notice */}
+				{process.env.NODE_ENV === "development" && (
+					<div className="space-y-2">
+						<div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
+							<p className="text-sm text-yellow-800">
+								🚧 <strong>Development Mode:</strong> Turnstile verification
+								bypassed
+							</p>
+						</div>
+					</div>
+				)}
+
 				<SubmitButton
 					isSubmitting={isSubmitting}
 					qrExtracting={qrStatus.qrExtracting}
 					qrExtractionFailed={qrStatus.qrExtractionFailed}
 					hasAttemptedExtraction={qrStatus.hasAttemptedExtraction}
 					qrContent={qrContent}
+					turnstileToken={turnstileToken}
 				/>
 			</fieldset>
 		</form>

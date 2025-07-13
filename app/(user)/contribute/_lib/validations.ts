@@ -14,12 +14,10 @@ export const extendedInstitutionFormClientSchema = z.object({
 	// Database fields from institutions table
 	name: z.string().min(1, "Nama institusi diperlukan"),
 	category: z.enum(categories, {
-		required_error: "Kategori diperlukan",
-		invalid_type_error: "Kategori tidak sah",
+		errorMap: () => ({ message: "Sila pilih kategori" }),
 	}),
 	state: z.enum(states, {
-		required_error: "Negeri diperlukan",
-		invalid_type_error: "Negeri tidak sah",
+		errorMap: () => ({ message: "Sila pilih negeri" }),
 	}),
 	city: z.string().min(1, "Bandar diperlukan"),
 	address: z.string().optional(),
@@ -40,6 +38,11 @@ export const extendedInstitutionFormClientSchema = z.object({
 	// QR validation field
 	qrExtractionSuccess: z.boolean().refine((val) => val === true, {
 		message: "QR code mesti berjaya diekstrak sebelum dihantar",
+	}),
+
+	// Turnstile security token
+	turnstileToken: z.string().min(1, {
+		message: "Pengesahan keselamatan diperlukan",
 	}),
 });
 
