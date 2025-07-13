@@ -151,10 +151,31 @@ export default function InstitutionFormOptimized() {
 
 	/* Progressive Enhancement: Enable advanced features after initial load */
 	useEffect(() => {
-		const handle = requestIdleCallback(() => {
+		// Some mobile browsers (e.g., Safari iOS) don’t implement requestIdleCallback.
+		// Fallback to setTimeout to avoid a ReferenceError and keep the enhancement logic working.
+		const idleCb =
+			typeof window !== "undefined" && "requestIdleCallback" in window
+				? (
+						window as Window & {
+							requestIdleCallback: (cb: IdleRequestCallback) => number;
+						}
+					).requestIdleCallback
+				: (cb: () => void) => window.setTimeout(cb, 0);
+
+		const idleCancel =
+			typeof window !== "undefined" && "cancelIdleCallback" in window
+				? (
+						window as Window & {
+							cancelIdleCallback: (handle: number) => void;
+						}
+					).cancelIdleCallback
+				: (id: number) => window.clearTimeout(id);
+
+		const handle = idleCb(() => {
 			setEnableAdvancedFeatures(true);
 		});
-		return () => cancelIdleCallback(handle);
+
+		return () => idleCancel(handle);
 	}, []);
 
 	/* Update contributorId when user changes */
