@@ -48,7 +48,13 @@ export async function submitInstitution(
 		}
 
 		try {
-			const verifyResponse = await fetch("/api/verify-turnstile", {
+			const baseUrl = process.env.VERCEL_URL
+				? `https://${process.env.VERCEL_URL}`
+				: process.env.NODE_ENV === "development"
+					? "http://localhost:3000"
+					: "https://sedekah.je";
+
+			const verifyResponse = await fetch(`${baseUrl}/api/verify-turnstile`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
