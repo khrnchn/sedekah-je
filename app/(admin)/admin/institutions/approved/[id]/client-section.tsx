@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import QrCodeDisplay from "@/components/ui/qrCodeDisplay";
-import type { supportedPayments } from "@/db/institutions";
+import type { supportedPayments } from "@/lib/institution-constants";
 import { PencilIcon, XIcon } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";

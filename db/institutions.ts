@@ -14,7 +14,6 @@ import {
 	timestamp,
 	varchar,
 } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
 import { timestamps } from "./helpers";
 import { users } from "./users";
 
@@ -74,8 +73,6 @@ export const institutionsRelations = relations(
 		}),
 	}),
 );
-
-export const insertInstitutionSchema = createInsertSchema(institutions);
 
 export type Institution = typeof institutions.$inferSelect;
 export type NewInstitution = typeof institutions.$inferInsert;

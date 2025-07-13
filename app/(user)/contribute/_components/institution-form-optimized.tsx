@@ -2,7 +2,7 @@
 
 import {
 	type InstitutionFormData,
-	institutionFormSchema,
+	extendedInstitutionFormClientSchema,
 } from "@/app/(user)/contribute/_lib/validations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -108,7 +108,7 @@ export default function InstitutionFormOptimized() {
 
 	/* React Hook Form */
 	const form = useForm<InstitutionFormData>({
-		resolver: zodResolver(institutionFormSchema),
+		resolver: zodResolver(extendedInstitutionFormClientSchema),
 		defaultValues: {
 			name: "",
 			category: "",

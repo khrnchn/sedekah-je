@@ -1,60 +1,44 @@
-import { categories, states } from "@/lib/institution-constants";
+import { institutions } from "@/db/institutions";
+import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 const socialUrl = z
 	.string()
+	.url({ message: "URL tidak sah" })
 	.optional()
-	.nullable()
-	.refine(
-		(val) => {
-			if (!val || val === "") return true; // Empty is valid
-			try {
-				new URL(val);
-				return true;
-			} catch {
-				return false;
-			}
-		},
-		{
-			message: "URL tidak sah",
-		},
-	);
+	.or(z.literal(""));
 
-export const institutionFormSchema = z.object({
+// Client-side form schema with extended fields for form handling
+export const extendedInstitutionFormClientSchema = z.object({
+	// Database fields from institutions table
 	name: z.string().min(1, "Nama institusi diperlukan"),
-	category: z
-		.string()
-		.min(1, "Sila pilih kategori")
-		.refine((val) => categories.includes(val as (typeof categories)[number]), {
-			message: "Sila pilih kategori yang sah",
-		}),
-	state: z
-		.string()
-		.min(1, "Sila pilih negeri")
-		.refine((val) => states.includes(val as (typeof states)[number]), {
-			message: "Sila pilih negeri yang sah",
-		}),
+	category: z.string().min(1, "Kategori diperlukan"),
+	state: z.string().min(1, "Negeri diperlukan"),
 	city: z.string().min(1, "Bandar diperlukan"),
+	address: z.string().optional(),
+	contributorId: z.string().optional(),
+	contributorRemarks: z.string().optional(),
+	sourceUrl: z.string().optional(),
+
+	// Social media fields for form
 	facebook: socialUrl,
 	instagram: socialUrl,
 	website: socialUrl,
-	contributorRemarks: z.string().optional(),
 	fromSocialMedia: z.boolean().optional(),
-	sourceUrl: socialUrl,
-	contributorId: z.string().min(1),
+
+	// Location fields for form
 	lat: z.string().optional(),
 	lon: z.string().optional(),
+
+	// QR validation field
 	qrExtractionSuccess: z.boolean().refine((val) => val === true, {
-		message: "QR code must be successfully extracted before submission",
+		message: "QR code mesti berjaya diekstrak sebelum dihantar",
 	}),
 });
 
-// Server-side schema (without client-only validation fields)
-export const institutionFormServerSchema = institutionFormSchema.omit({
-	qrExtractionSuccess: true,
-});
+// Server-side schema should be based on the pure db schema
+export const institutionFormServerSchema = createInsertSchema(institutions);
 
-// Client-side schema (includes QR validation)
-export const institutionFormClientSchema = institutionFormSchema;
-
-export type InstitutionFormData = z.infer<typeof institutionFormSchema>;
+export type InstitutionFormData = z.infer<
+	typeof extendedInstitutionFormClientSchema
+>;
