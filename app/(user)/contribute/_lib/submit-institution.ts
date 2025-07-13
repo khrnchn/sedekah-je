@@ -5,15 +5,8 @@ import { institutions } from "@/db/institutions";
 import type { categories, states } from "@/lib/institution-constants";
 import { getUserById } from "@/lib/queries/users";
 import { r2Storage } from "@/lib/r2-client";
-import {
-	BinaryBitmap,
-	HybridBinarizer,
-	QRCodeReader,
-	RGBLuminanceSource,
-} from "@zxing/library";
 import { and, count, eq, gte } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
-import sharp from "sharp";
 import { institutionFormServerSchema } from "./validations";
 
 export type SubmitInstitutionFormState =
@@ -40,6 +33,7 @@ export async function submitInstitution(
 		contributorRemarks: formData.get("contributorRemarks"),
 		sourceUrl: formData.get("sourceUrl"),
 		contributorId: formData.get("contributorId"),
+		qrContent: formData.get("qrContent"),
 	};
 
 	// --- Verify Turnstile token (skip in development)
@@ -158,7 +152,10 @@ export async function submitInstitution(
 	// --- Handle QR image (optional)
 	const qrImageFile = formData.get("qrImage") as File | null;
 	let qrImageUrl: string | undefined;
-	let qrContent: string | undefined;
+	// We get qrContent from the form data now, no more backend processing
+	const qrContent = formData.get("qrContent") as string | null;
+
+	console.log("🔍 QR content from frontend:", qrContent);
 	try {
 		if (qrImageFile && qrImageFile.size > 0) {
 			// Validate file size (5MB limit)
@@ -197,52 +194,13 @@ export async function submitInstitution(
 					},
 				};
 			}
-
-			// Attempt QR decode, but don't block submission if it fails
-			try {
-				const { data, info } = await sharp(buffer)
-					.ensureAlpha()
-					.raw()
-					.toBuffer({ resolveWithObject: true });
-
-				// Convert RGBA to RGB for @zxing/library
-				const rgbData = new Uint8ClampedArray(info.width * info.height * 3);
-				for (let i = 0, j = 0; i < data.length; i += 4, j += 3) {
-					rgbData[j] = data[i]; // R
-					rgbData[j + 1] = data[i + 1]; // G
-					rgbData[j + 2] = data[i + 2]; // B
-					// Skip alpha channel
-				}
-
-				const luminanceSource = new RGBLuminanceSource(
-					rgbData,
-					info.width,
-					info.height,
-				);
-				const binaryBitmap = new BinaryBitmap(
-					new HybridBinarizer(luminanceSource),
-				);
-				const reader = new QRCodeReader();
-
-				const result = reader.decode(binaryBitmap);
-				if (result) {
-					qrContent = result.getText();
-				}
-			} catch (err) {
-				console.error(
-					"QR decode failed, but proceeding with submission as image is uploaded:",
-					err,
-				);
-				// Non-blocking: we have the image URL, admin can review it.
-			}
 		}
-	} catch (err) {
-		console.error("Error processing QR image:", err);
-		// This will now only catch errors from arrayBuffer() or Buffer.from()
+	} catch (error) {
+		console.error("Error handling QR image upload:", error);
 		return {
 			status: "error",
 			errors: {
-				qrImage: ["Berlaku ralat semasa memproses imej. Sila cuba lagi."],
+				qrImage: ["Berlaku ralat semasa memproses imej QR. Sila cuba lagi."],
 			},
 		};
 	}
@@ -286,41 +244,43 @@ export async function submitInstitution(
 	}
 
 	// --- Insert Institution (status defaults to "pending")
+	console.log(
+		"🔍 About to insert institution with qrContent:",
+		parsed.data.qrContent,
+	);
+	console.log("🔍 About to insert institution with qrImageUrl:", qrImageUrl);
 	try {
 		const [{ id: _newId }] = await db
 			.insert(institutions)
 			.values({
-				name: parsed.data.name,
+				...parsed.data,
+				// We can safely cast here because client-side validation ensures
+				// these are valid enum values. The server-side schema is intentionally
+				// loose as per project rules (no pgEnum).
 				category: parsed.data.category as (typeof categories)[number],
 				state: parsed.data.state as (typeof states)[number],
-				city: parsed.data.city,
-				address: parsed.data.address,
+				coords: coords, // Coords may be updated by geocoding
 				qrImage: qrImageUrl,
-				qrContent: qrContent,
-				coords: coords,
-				socialMedia: parsed.data.socialMedia,
-				contributorId: parsed.data.contributorId,
-				contributorRemarks: parsed.data.contributorRemarks,
-				sourceUrl: parsed.data.sourceUrl,
-				supportedPayment: ["duitnow", "tng"],
+				status: "pending", // Always pending for new submissions
 			})
 			.returning({ id: institutions.id });
 
-		// --- Revalidate paths that show institution list
-		revalidatePath("/");
-		revalidatePath("/my-contributions");
+		// Revalidate paths to show the new submission
+		revalidatePath("/(user)/my-contributions", "page");
+		revalidatePath("/(admin)/admin/institutions/pending", "page");
+		revalidateTag("institution_count");
+		revalidateTag("pending_institution_count");
+		revalidateTag(`user_contributions_count:${contributorId}`);
 
-		// --- Revalidate admin dashboard data
-		revalidateTag("pending-institutions");
-
-		console.log("Institution successfully created with ID:", _newId);
 		return { status: "success" };
 	} catch (error) {
-		console.error("Database insertion failed:", error);
+		console.error("Failed to insert institution:", error);
 		return {
 			status: "error",
 			errors: {
-				general: ["Ralat menyimpan data. Sila cuba lagi."],
+				general: [
+					"Gagal menyimpan sumbangan anda. Sila cuba lagi atau hubungi kami.",
+				],
 			},
 		};
 	}
