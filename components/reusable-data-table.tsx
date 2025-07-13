@@ -27,7 +27,9 @@ import {
 import {
 	type ColumnDef,
 	type ColumnFiltersState,
+	type PaginationState,
 	type SortingState,
+	type Updater,
 	type VisibilityState,
 	flexRender,
 	getCoreRowModel,
@@ -63,6 +65,9 @@ interface DataTableProps<TData, TValue> {
 	rightToolbarContent?: React.ReactNode;
 	isLoading?: boolean;
 	loadingRowCount?: number;
+	pageCount?: number;
+	pagination?: PaginationState;
+	onPaginationChange?: (updater: Updater<PaginationState>) => void;
 }
 
 export function ReusableDataTable<TData, TValue>({
@@ -80,11 +85,25 @@ export function ReusableDataTable<TData, TValue>({
 	rightToolbarContent,
 	isLoading = false,
 	loadingRowCount = 5,
+	pageCount,
+	pagination: controlledPagination,
+	onPaginationChange,
 }: DataTableProps<TData, TValue>) {
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 	const [rowSelection, setRowSelection] = useState({});
+
+	const isServerPaginated = pageCount !== undefined;
+
+	const [clientPagination, setClientPagination] = useState<PaginationState>({
+		pageIndex: 0,
+		pageSize: pageSize,
+	});
+
+	const pagination = isServerPaginated
+		? controlledPagination
+		: clientPagination;
 
 	const table = useReactTable({
 		data,
@@ -100,16 +119,17 @@ export function ReusableDataTable<TData, TValue>({
 		getFacetedUniqueValues: getFacetedUniqueValues(),
 		enableRowSelection,
 		onRowSelectionChange: setRowSelection,
+		manualPagination: isServerPaginated,
+		pageCount,
+		onPaginationChange: isServerPaginated
+			? onPaginationChange
+			: setClientPagination,
 		state: {
 			sorting,
 			columnFilters,
 			columnVisibility,
 			rowSelection,
-		},
-		initialState: {
-			pagination: {
-				pageSize,
-			},
+			pagination,
 		},
 	});
 

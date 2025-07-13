@@ -1,19 +1,15 @@
 import { AdminLayout } from "@/components/admin-layout";
 import { AppSidebar } from "@/components/app-sidebar";
-import { ReusableDataTable } from "@/components/reusable-data-table";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { TableSkeleton } from "@/components/ui/table-skeleton";
 import { Suspense } from "react";
-import { getUsers } from "./_lib/queries";
-import { type User, columns } from "./columns";
+import AsyncUsersData from "./async-users-data";
 
-export default async function Page({
+export default function Page({
 	searchParams,
 }: {
 	searchParams: { [key: string]: string | string[] | undefined };
 }) {
-	const usersData = await getUsers(searchParams);
-
 	return (
 		<SidebarProvider>
 			<AppSidebar variant="inset" />
@@ -27,12 +23,7 @@ export default async function Page({
 					]}
 				>
 					<Suspense fallback={<TableSkeleton columns={4} rows={10} />}>
-						<ReusableDataTable
-							columns={columns}
-							data={usersData.users as User[]}
-							searchKey="email"
-							searchPlaceholder="Search by email..."
-						/>
+						<AsyncUsersData searchParams={searchParams} />
 					</Suspense>
 				</AdminLayout>
 			</SidebarInset>
