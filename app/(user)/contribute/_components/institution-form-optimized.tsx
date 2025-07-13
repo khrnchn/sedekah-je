@@ -201,6 +201,11 @@ export default function InstitutionFormOptimized() {
 				}
 			}
 
+			// Manually append QR content from state
+			if (qrContent) {
+				formData.append("qrContent", qrContent);
+			}
+
 			// Add QR image file
 			const qrImageInput = document.getElementById(
 				"qrImage",

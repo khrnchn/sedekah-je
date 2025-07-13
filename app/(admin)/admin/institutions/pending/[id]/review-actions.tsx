@@ -63,7 +63,7 @@ export default function ReviewActions({
 				loading: "Submitting...",
 				success: () => {
 					router.push("/admin/institutions/pending");
-					return `${institutionName} has been ${action}d.`;
+					return `${institutionName} has been ${action === "approve" ? "approved" : "rejected"}.`;
 				},
 				error: (err) => `Action failed: ${err.message}`,
 			});
