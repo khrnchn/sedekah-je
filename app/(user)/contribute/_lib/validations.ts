@@ -1,4 +1,5 @@
 import { institutions } from "@/db/institutions";
+import { categories, states } from "@/lib/institution-constants";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -12,8 +13,14 @@ const socialUrl = z
 export const extendedInstitutionFormClientSchema = z.object({
 	// Database fields from institutions table
 	name: z.string().min(1, "Nama institusi diperlukan"),
-	category: z.string().min(1, "Kategori diperlukan"),
-	state: z.string().min(1, "Negeri diperlukan"),
+	category: z.enum(categories, {
+		required_error: "Kategori diperlukan",
+		invalid_type_error: "Kategori tidak sah",
+	}),
+	state: z.enum(states, {
+		required_error: "Negeri diperlukan",
+		invalid_type_error: "Negeri tidak sah",
+	}),
 	city: z.string().min(1, "Bandar diperlukan"),
 	address: z.string().optional(),
 	contributorId: z.string().optional(),

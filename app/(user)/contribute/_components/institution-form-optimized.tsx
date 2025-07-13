@@ -111,8 +111,8 @@ export default function InstitutionFormOptimized() {
 		resolver: zodResolver(extendedInstitutionFormClientSchema),
 		defaultValues: {
 			name: "",
-			category: "",
-			state: "",
+			category: undefined,
+			state: undefined,
 			city: "",
 			facebook: "",
 			instagram: "",
