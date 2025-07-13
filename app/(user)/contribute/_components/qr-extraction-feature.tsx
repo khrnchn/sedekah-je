@@ -236,6 +236,7 @@ export default function QRExtractionFeature({
 
 			<Suspense fallback={<QRUploadFallback />}>
 				<LazyQRProcessor
+					hasFile={qrStatus.hasFile}
 					onQrContentChange={handleQrContentChange}
 					onStatusChange={handleStatusChange}
 					onHandleFileChange={handleFileChangeCallback}

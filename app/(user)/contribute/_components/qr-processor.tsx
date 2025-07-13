@@ -15,6 +15,7 @@ interface QRProcessorProps {
 		handler: (event: React.ChangeEvent<HTMLInputElement>) => void,
 	) => void;
 	onClearQrContent: (clearFn: () => void) => void;
+	hasFile: boolean;
 }
 
 export function QRProcessor({
@@ -22,6 +23,7 @@ export function QRProcessor({
 	onStatusChange,
 	onHandleFileChange,
 	onClearQrContent,
+	hasFile,
 }: QRProcessorProps) {
 	const {
 		qrContent,
@@ -37,7 +39,7 @@ export function QRProcessor({
 		qrExtracting,
 		qrExtractionFailed,
 		hasAttemptedExtraction,
-		hasFile: false,
+		hasFile,
 	});
 
 	// Update parent with QR content changes only when content actually changes
@@ -54,7 +56,7 @@ export function QRProcessor({
 			qrExtracting,
 			qrExtractionFailed,
 			hasAttemptedExtraction,
-			hasFile: lastStatus.current.hasFile, // Preserve hasFile from parent
+			hasFile: hasFile, // Preserve hasFile from parent
 		};
 
 		if (
@@ -62,7 +64,8 @@ export function QRProcessor({
 			lastStatus.current.qrExtractionFailed !==
 				currentStatus.qrExtractionFailed ||
 			lastStatus.current.hasAttemptedExtraction !==
-				currentStatus.hasAttemptedExtraction
+				currentStatus.hasAttemptedExtraction ||
+			lastStatus.current.hasFile !== currentStatus.hasFile
 		) {
 			onStatusChange(currentStatus);
 			lastStatus.current = currentStatus;
@@ -71,6 +74,7 @@ export function QRProcessor({
 		qrExtracting,
 		qrExtractionFailed,
 		hasAttemptedExtraction,
+		hasFile,
 		onStatusChange,
 	]);
 
