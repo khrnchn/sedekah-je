@@ -465,13 +465,6 @@ export default function InstitutionFormOptimized() {
 							Pengesahan Keselamatan <span className="text-red-500">*</span>
 						</p>
 						<div className="flex justify-center">
-							{(() => {
-								console.log(
-									"Turnstile siteKey:",
-									process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY,
-								);
-								return null;
-							})()}
 							<Turnstile
 								siteKey={
 									process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY || ""
