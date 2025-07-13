@@ -1,4 +1,4 @@
-import { getApprovedInstitutions, getAllUsers } from "../_lib/queries";
+import { getAllUsers, getApprovedInstitutions } from "../_lib/queries";
 import ApprovedInstitutionsTable from "./approved-table";
 
 // Async component that fetches data and streams it in

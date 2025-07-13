@@ -41,6 +41,11 @@ export const extendedInstitutionFormClientSchema = z.object({
 	qrExtractionSuccess: z.boolean().refine((val) => val === true, {
 		message: "QR code mesti berjaya diekstrak sebelum dihantar",
 	}),
+
+	// Turnstile security token
+	turnstileToken: z.string().min(1, {
+		message: "Pengesahan keselamatan diperlukan",
+	}),
 });
 
 // Server-side schema should be based on the pure db schema

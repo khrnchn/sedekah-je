@@ -35,6 +35,52 @@ export async function submitInstitution(
 		contributorId: formData.get("contributorId"),
 	};
 
+	// --- Verify Turnstile token (skip in development)
+	if (process.env.NODE_ENV !== "development") {
+		const turnstileToken = formData.get("turnstileToken") as string;
+		if (!turnstileToken) {
+			return {
+				status: "error",
+				errors: {
+					turnstileToken: ["Pengesahan keselamatan diperlukan"],
+				},
+			};
+		}
+
+		try {
+			const verifyResponse = await fetch(
+				`${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/api/verify-turnstile`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({ token: turnstileToken }),
+				},
+			);
+
+			const verifyResult = await verifyResponse.json();
+			if (!verifyResult.success) {
+				return {
+					status: "error",
+					errors: {
+						turnstileToken: [
+							verifyResult.error || "Pengesahan keselamatan gagal",
+						],
+					},
+				};
+			}
+		} catch (error) {
+			console.error("Turnstile verification failed:", error);
+			return {
+				status: "error",
+				errors: {
+					turnstileToken: ["Ralat pengesahan keselamatan. Sila cuba lagi."],
+				},
+			};
+		}
+	}
+
 	const socialMedia = {
 		facebook: formData.get("facebook") || undefined,
 		instagram: formData.get("instagram") || undefined,
