@@ -40,15 +40,21 @@ function SubmitButton({
 	turnstileToken,
 	qrExtractionFailed,
 	hasFile,
+	isAuthenticated,
 }: {
 	isSubmitting: boolean;
 	qrExtracting: boolean;
 	turnstileToken: string;
 	qrExtractionFailed: boolean;
 	hasFile: boolean;
+	isAuthenticated: boolean;
 }) {
 	const isDisabled =
-		isSubmitting || !turnstileToken || qrExtracting || !hasFile;
+		isSubmitting ||
+		!turnstileToken ||
+		qrExtracting ||
+		!hasFile ||
+		!isAuthenticated;
 
 	return (
 		<Button
@@ -61,6 +67,8 @@ function SubmitButton({
 					<Spinner size="small" className="mr-2" />
 					Menghantar...
 				</>
+			) : !isAuthenticated ? (
+				"Log masuk untuk hantar"
 			) : (
 				"Hantar"
 			)}
@@ -187,6 +195,15 @@ export default function InstitutionFormOptimized() {
 
 	/* Form submission handler */
 	const onSubmit = async (data: InstitutionFormData) => {
+		// Authentication check
+		if (!user?.id) {
+			toast.error("Ralat", {
+				description:
+					"Anda mesti log masuk untuk menyumbang. Sila log masuk dan cuba lagi.",
+			});
+			return;
+		}
+
 		setIsSubmitting(true);
 		// Clear previous general errors
 		form.clearErrors("root.general");
@@ -540,6 +557,7 @@ export default function InstitutionFormOptimized() {
 					turnstileToken={turnstileToken}
 					qrExtractionFailed={qrStatus.qrExtractionFailed}
 					hasFile={qrStatus.hasFile}
+					isAuthenticated={!!user?.id}
 				/>
 			</fieldset>
 
