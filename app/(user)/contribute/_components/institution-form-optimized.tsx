@@ -39,14 +39,16 @@ function SubmitButton({
 	qrExtracting,
 	turnstileToken,
 	qrExtractionFailed,
+	hasFile,
 }: {
 	isSubmitting: boolean;
 	qrExtracting: boolean;
 	turnstileToken: string;
 	qrExtractionFailed: boolean;
+	hasFile: boolean;
 }) {
 	const isDisabled =
-		isSubmitting || !turnstileToken || qrExtracting || qrExtractionFailed;
+		isSubmitting || !turnstileToken || qrExtracting || !hasFile;
 
 	return (
 		<Button
@@ -95,6 +97,7 @@ export default function InstitutionFormOptimized() {
 		qrExtracting: false,
 		qrExtractionFailed: false,
 		hasAttemptedExtraction: false,
+		hasFile: false,
 	});
 	const clearQrContentRef = useRef<(() => void) | null>(null);
 	const setClearQrContent = useCallback((fn: (() => void) | null) => {
@@ -531,6 +534,7 @@ export default function InstitutionFormOptimized() {
 					qrExtracting={qrStatus.qrExtracting}
 					turnstileToken={turnstileToken}
 					qrExtractionFailed={qrStatus.qrExtractionFailed}
+					hasFile={qrStatus.hasFile}
 				/>
 			</fieldset>
 

@@ -9,6 +9,7 @@ interface QRProcessorProps {
 		qrExtracting: boolean;
 		qrExtractionFailed: boolean;
 		hasAttemptedExtraction: boolean;
+		hasFile: boolean;
 	}) => void;
 	onHandleFileChange: (
 		handler: (event: React.ChangeEvent<HTMLInputElement>) => void,
@@ -36,6 +37,7 @@ export function QRProcessor({
 		qrExtracting,
 		qrExtractionFailed,
 		hasAttemptedExtraction,
+		hasFile: false,
 	});
 
 	// Update parent with QR content changes only when content actually changes
@@ -52,6 +54,7 @@ export function QRProcessor({
 			qrExtracting,
 			qrExtractionFailed,
 			hasAttemptedExtraction,
+			hasFile: lastStatus.current.hasFile, // Preserve hasFile from parent
 		};
 
 		if (
