@@ -83,35 +83,54 @@ export async function submitInstitution(
 		}
 	}
 
-	// --- Rate limit check (3 submissions per day)
+	// --- Authentication check
 	const contributorId = formData.get("contributorId") as string | null;
-	if (contributorId) {
-		const user = await getUserById(contributorId);
+	if (!contributorId || contributorId.trim() === "") {
+		return {
+			status: "error",
+			errors: {
+				general: [
+					"Anda mesti log masuk untuk menyumbang. Sila log masuk dan cuba lagi.",
+				],
+			},
+		};
+	}
 
-		if (user?.role !== "admin") {
-			const oneDayAgo = new Date();
-			oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+	// --- Validate contributorId is a valid user
+	const user = await getUserById(contributorId);
+	if (!user) {
+		return {
+			status: "error",
+			errors: {
+				general: ["Pengguna tidak sah. Sila log masuk semula dan cuba lagi."],
+			},
+		};
+	}
 
-			const [{ value }] = await db
-				.select({ value: count() })
-				.from(institutions)
-				.where(
-					and(
-						eq(institutions.contributorId, contributorId),
-						gte(institutions.createdAt, oneDayAgo),
-					),
-				);
+	// --- Rate limit check (3 submissions per day)
+	if (user.role !== "admin") {
+		const oneDayAgo = new Date();
+		oneDayAgo.setDate(oneDayAgo.getDate() - 1);
 
-			if (value >= 3) {
-				return {
-					status: "error",
-					errors: {
-						general: [
-							"Anda telah mencapai had 3 sumbangan sehari. Sila cuba lagi esok. Terima kasih!",
-						],
-					},
-				};
-			}
+		const [{ value }] = await db
+			.select({ value: count() })
+			.from(institutions)
+			.where(
+				and(
+					eq(institutions.contributorId, contributorId),
+					gte(institutions.createdAt, oneDayAgo),
+				),
+			);
+
+		if (value >= 3) {
+			return {
+				status: "error",
+				errors: {
+					general: [
+						"Anda telah mencapai had 3 sumbangan sehari. Sila cuba lagi esok. Terima kasih!",
+					],
+				},
+			};
 		}
 	}
 
@@ -155,7 +174,6 @@ export async function submitInstitution(
 	// We get qrContent from the form data now, no more backend processing
 	const qrContent = formData.get("qrContent") as string | null;
 
-	console.log("🔍 QR content from frontend:", qrContent);
 	try {
 		if (qrImageFile && qrImageFile.size > 0) {
 			// Validate file size (5MB limit)
@@ -243,12 +261,6 @@ export async function submitInstitution(
 		}
 	}
 
-	// --- Insert Institution (status defaults to "pending")
-	console.log(
-		"🔍 About to insert institution with qrContent:",
-		parsed.data.qrContent,
-	);
-	console.log("🔍 About to insert institution with qrImageUrl:", qrImageUrl);
 	try {
 		const [{ id: _newId }] = await db
 			.insert(institutions)
