@@ -1,4 +1,9 @@
-import type { categories, states } from "@/lib/institution-constants";
+import type {
+	categories,
+	institutionStatuses,
+	states,
+	supportedPayments,
+} from "@/lib/institution-constants";
 import { relations } from "drizzle-orm";
 import {
 	boolean,
@@ -9,12 +14,9 @@ import {
 	timestamp,
 	varchar,
 } from "drizzle-orm/pg-core";
+import { createInsertSchema } from "drizzle-zod";
 import { timestamps } from "./helpers";
 import { users } from "./users";
-
-export const supportedPayments = ["duitnow", "tng", "boost"] as const;
-
-export const institutionStatuses = ["pending", "approved", "rejected"] as const;
 
 export const institutions = pgTable("institutions", {
 	id: serial("id").primaryKey(),
@@ -72,6 +74,8 @@ export const institutionsRelations = relations(
 		}),
 	}),
 );
+
+export const insertInstitutionSchema = createInsertSchema(institutions);
 
 export type Institution = typeof institutions.$inferSelect;
 export type NewInstitution = typeof institutions.$inferInsert;

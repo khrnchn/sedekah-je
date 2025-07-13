@@ -75,6 +75,7 @@ export function useQrExtractionLazy() {
 						}
 					}
 					setQrExtracting(false);
+					URL.revokeObjectURL(img.src);
 				};
 
 				img.onerror = () => {
@@ -83,6 +84,7 @@ export function useQrExtractionLazy() {
 						description: "Tidak dapat memproses fail imej.",
 					});
 					setQrExtracting(false);
+					URL.revokeObjectURL(img.src);
 				};
 
 				img.src = URL.createObjectURL(file);

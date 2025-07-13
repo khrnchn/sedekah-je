@@ -140,10 +140,10 @@ export default function InstitutionFormOptimized() {
 
 	/* Progressive Enhancement: Enable advanced features after initial load */
 	useEffect(() => {
-		const timer = setTimeout(() => {
+		const handle = requestIdleCallback(() => {
 			setEnableAdvancedFeatures(true);
-		}, 100);
-		return () => clearTimeout(timer);
+		});
+		return () => cancelIdleCallback(handle);
 	}, []);
 
 	/* Update contributorId when user changes */

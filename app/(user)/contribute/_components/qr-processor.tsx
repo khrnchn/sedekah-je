@@ -31,7 +31,6 @@ export function QRProcessor({
 		clearQrContent,
 	} = useQrExtractionLazy();
 
-	const isInitialized = useRef(false);
 	const lastQrContent = useRef(qrContent);
 	const lastStatus = useRef({
 		qrExtracting,
@@ -72,13 +71,10 @@ export function QRProcessor({
 		onStatusChange,
 	]);
 
-	// Provide handlers to parent only once
+	// Provide handlers to parent
 	useEffect(() => {
-		if (!isInitialized.current) {
-			onHandleFileChange(handleQrImageChange);
-			onClearQrContent(clearQrContent);
-			isInitialized.current = true;
-		}
+		onHandleFileChange(handleQrImageChange);
+		onClearQrContent(clearQrContent);
 	}, [
 		handleQrImageChange,
 		onHandleFileChange,

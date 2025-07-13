@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { institutions, users } from "@/db/schema";
-import { institutionStatuses } from "@/db/schema";
+import { INSTITUTION_STATUSES } from "@/lib/institution-constants";
 import { and, count, countDistinct, desc, eq, not, sql } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 
@@ -42,7 +42,7 @@ export async function getLeaderboardStats(): Promise<LeaderboardStats> {
 				.where(
 					and(
 						eq(institutions.isActive, true),
-						eq(institutions.status, institutionStatuses[1]),
+						eq(institutions.status, INSTITUTION_STATUSES.APPROVED),
 					),
 				);
 
@@ -54,7 +54,7 @@ export async function getLeaderboardStats(): Promise<LeaderboardStats> {
 				.where(
 					and(
 						eq(institutions.isActive, true),
-						eq(institutions.status, institutionStatuses[1]),
+						eq(institutions.status, INSTITUTION_STATUSES.APPROVED),
 					),
 				)
 				.groupBy(institutions.contributorId)
@@ -104,7 +104,7 @@ export async function getTopContributors(): Promise<TopContributor[]> {
 				.where(
 					and(
 						eq(institutions.isActive, true),
-						eq(institutions.status, institutionStatuses[1]),
+						eq(institutions.status, INSTITUTION_STATUSES.APPROVED),
 						not(eq(users.role, "admin")),
 					),
 				)

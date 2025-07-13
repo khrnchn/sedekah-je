@@ -24,3 +24,13 @@ export const states = [
 	"W.P. Labuan",
 	"W.P. Putrajaya",
 ] as const;
+
+export const supportedPayments = ["duitnow", "tng", "boost"] as const;
+
+export const institutionStatuses = ["pending", "approved", "rejected"] as const;
+
+export const INSTITUTION_STATUSES = {
+	PENDING: "pending",
+	APPROVED: "approved",
+	REJECTED: "rejected",
+} as const;
