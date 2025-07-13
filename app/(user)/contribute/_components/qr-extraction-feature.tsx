@@ -18,6 +18,7 @@ interface QRExtractionFeatureProps {
 		qrExtracting: boolean;
 		qrExtractionFailed: boolean;
 		hasAttemptedExtraction: boolean;
+		hasFile: boolean;
 	}) => void;
 	onClearQrContent: (clearFn: (() => void) | null) => void;
 }
@@ -61,6 +62,7 @@ export default function QRExtractionFeature({
 		qrExtracting: false,
 		qrExtractionFailed: false,
 		hasAttemptedExtraction: false,
+		hasFile: false,
 	});
 	const [handleFileChange, setHandleFileChange] = useState<
 		((event: React.ChangeEvent<HTMLInputElement>) => void) | null
@@ -82,6 +84,7 @@ export default function QRExtractionFeature({
 			qrExtracting: boolean;
 			qrExtractionFailed: boolean;
 			hasAttemptedExtraction: boolean;
+			hasFile: boolean;
 		}) => {
 			setQrStatus(status);
 			onStatusChange(status);
@@ -97,20 +100,55 @@ export default function QRExtractionFeature({
 			setSelectedFile(null);
 			setQrContent(null);
 			onQrContentChange(null);
-			const initialStatus = {
+
+			// --- Do not reset extraction failure status
+			// If an extraction has failed, keep the form in a failed state
+			// until a successful extraction occurs.
+			const newStatus = {
 				qrExtracting: false,
-				qrExtractionFailed: false,
-				hasAttemptedExtraction: false,
+				qrExtractionFailed: qrStatus.qrExtractionFailed,
+				hasAttemptedExtraction: qrStatus.hasAttemptedExtraction,
+				hasFile: false, // File is being removed
 			};
-			setQrStatus(initialStatus);
-			onStatusChange(initialStatus);
+			setQrStatus(newStatus);
+			onStatusChange(newStatus);
+
 			const input = document.getElementById("qrImage") as HTMLInputElement;
 			if (input) {
 				input.value = "";
 			}
 		},
-		[onQrContentChange, onStatusChange],
+		[
+			onQrContentChange,
+			onStatusChange,
+			qrStatus.qrExtractionFailed,
+			qrStatus.hasAttemptedExtraction,
+		],
 	);
+
+	const resetQrState = useCallback(() => {
+		if (clearQrContentFromHook) {
+			clearQrContentFromHook();
+		}
+		setSelectedFile(null);
+		setQrContent(null);
+		onQrContentChange(null);
+
+		// Reset all QR extraction states
+		const resetStatus = {
+			qrExtracting: false,
+			qrExtractionFailed: false,
+			hasAttemptedExtraction: false,
+			hasFile: false,
+		};
+		setQrStatus(resetStatus);
+		onStatusChange(resetStatus);
+
+		const input = document.getElementById("qrImage") as HTMLInputElement;
+		if (input) {
+			input.value = "";
+		}
+	}, [clearQrContentFromHook, onQrContentChange, onStatusChange]);
 
 	const handleFileChangeCallback = useCallback(
 		(handler: (event: React.ChangeEvent<HTMLInputElement>) => void) => {
@@ -141,8 +179,22 @@ export default function QRExtractionFeature({
 		}
 		if (e.target.files?.[0]) {
 			setSelectedFile(e.target.files[0]);
+			// Update hasFile status when a file is selected
+			const newStatus = {
+				...qrStatus,
+				hasFile: true,
+			};
+			setQrStatus(newStatus);
+			onStatusChange(newStatus);
 		} else {
 			setSelectedFile(null);
+			// Update hasFile status when no file is selected
+			const newStatus = {
+				...qrStatus,
+				hasFile: false,
+			};
+			setQrStatus(newStatus);
+			onStatusChange(newStatus);
 		}
 	};
 
@@ -184,6 +236,7 @@ export default function QRExtractionFeature({
 
 			<Suspense fallback={<QRUploadFallback />}>
 				<LazyQRProcessor
+					hasFile={qrStatus.hasFile}
 					onQrContentChange={handleQrContentChange}
 					onStatusChange={handleStatusChange}
 					onHandleFileChange={handleFileChangeCallback}
@@ -272,10 +325,24 @@ export default function QRExtractionFeature({
 				qrStatus.qrExtractionFailed &&
 				qrStatus.hasAttemptedExtraction && (
 					<div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-						<p className="text-sm font-medium text-yellow-800">
-							Couldn't read the QR code automatically. No problem—please
-							continue. Our team will review the image manually.
-						</p>
+						<div className="flex items-start justify-between gap-3">
+							<div className="flex-1">
+								<p className="text-sm font-medium text-yellow-800">
+									Couldn't read the QR code automatically. No problem—please
+									continue. Our team will review the image manually.
+								</p>
+							</div>
+							<Button
+								type="button"
+								variant="outline"
+								size="sm"
+								onClick={resetQrState}
+								className="flex-shrink-0 text-xs"
+								disabled={isSubmitting}
+							>
+								Reset
+							</Button>
+						</div>
 					</div>
 				)}
 			{!qrStatus.qrExtracting &&
