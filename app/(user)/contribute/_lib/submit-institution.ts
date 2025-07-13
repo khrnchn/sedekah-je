@@ -1,6 +1,5 @@
 "use server";
 
-import { institutionFormServerSchema } from "@/app/(user)/contribute/_lib/validations";
 import { db } from "@/db";
 import { institutions } from "@/db/institutions";
 import type { categories, states } from "@/lib/institution-constants";
@@ -8,6 +7,7 @@ import { r2Storage } from "@/lib/r2-client";
 import jsQR from "jsqr";
 import { revalidatePath, revalidateTag } from "next/cache";
 import sharp from "sharp";
+import { institutionFormServerSchema } from "./validations";
 
 export type SubmitInstitutionFormState =
 	| { status: "idle" }
@@ -24,25 +24,41 @@ export async function submitInstitution(
 	);
 
 	// --- Extract raw values
-	const raw = {
+	const rawFromForm = {
 		name: formData.get("name"),
 		category: formData.get("category"),
 		state: formData.get("state"),
 		city: formData.get("city"),
-		facebook: formData.get("facebook"),
-		instagram: formData.get("instagram"),
-		website: formData.get("website"),
+		address: formData.get("address"),
 		contributorRemarks: formData.get("contributorRemarks"),
-		fromSocialMedia: formData.has("fromSocialMedia"),
 		sourceUrl: formData.get("sourceUrl"),
 		contributorId: formData.get("contributorId"),
-		lat: formData.get("lat"),
-		lon: formData.get("lon"),
-	} as Record<string, unknown>;
+	};
 
-	console.log("Raw form data:", raw);
+	const socialMedia = {
+		facebook: formData.get("facebook") || undefined,
+		instagram: formData.get("instagram") || undefined,
+		website: formData.get("website") || undefined,
+	};
 
-	const parsed = institutionFormServerSchema.safeParse(raw);
+	let coords: [number, number] | undefined;
+	const lat = formData.get("lat");
+	const lon = formData.get("lon");
+	if (lat && lon) {
+		coords = [
+			Number.parseFloat(lat as string),
+			Number.parseFloat(lon as string),
+		];
+	}
+
+	const dataToValidate = {
+		...rawFromForm,
+		socialMedia,
+		coords,
+	};
+
+	const parsed = institutionFormServerSchema.safeParse(dataToValidate);
+
 	if (!parsed.success) {
 		console.log("Validation failed:", parsed.error.flatten().fieldErrors);
 		return {
@@ -84,14 +100,9 @@ export async function submitInstitution(
 		console.error("Error processing QR image:", err);
 	}
 
-	// Determine coords
-	let coords: [number, number] | undefined;
-	if (parsed.data.lat && parsed.data.lon) {
-		coords = [
-			Number.parseFloat(parsed.data.lat),
-			Number.parseFloat(parsed.data.lon),
-		];
-	} else {
+	// The logic for geocoding if coords are not present can remain,
+	// but it happens after our primary validation. We can re-assign coords.
+	if (!coords) {
 		// Attempt geocoding using Nominatim with timeout
 		try {
 			const query = `${parsed.data.name}, ${parsed.data.city}, ${parsed.data.state}, Malaysia`;
@@ -136,35 +147,14 @@ export async function submitInstitution(
 				category: parsed.data.category as (typeof categories)[number],
 				state: parsed.data.state as (typeof states)[number],
 				city: parsed.data.city,
+				address: parsed.data.address,
 				qrImage: qrImageUrl,
-				qrContent,
-				coords,
-				socialMedia: {
-					facebook:
-						parsed.data.facebook && parsed.data.facebook !== ""
-							? parsed.data.facebook
-							: undefined,
-					instagram:
-						parsed.data.instagram && parsed.data.instagram !== ""
-							? parsed.data.instagram
-							: undefined,
-					website:
-						parsed.data.website && parsed.data.website !== ""
-							? parsed.data.website
-							: undefined,
-				},
+				qrContent: qrContent,
+				coords: coords,
+				socialMedia: parsed.data.socialMedia,
 				contributorId: parsed.data.contributorId,
-				contributorRemarks:
-					parsed.data.contributorRemarks &&
-					parsed.data.contributorRemarks !== ""
-						? parsed.data.contributorRemarks
-						: undefined,
-				sourceUrl:
-					parsed.data.fromSocialMedia &&
-					parsed.data.sourceUrl &&
-					parsed.data.sourceUrl !== ""
-						? parsed.data.sourceUrl
-						: undefined,
+				contributorRemarks: parsed.data.contributorRemarks,
+				sourceUrl: parsed.data.sourceUrl,
 				supportedPayment: ["duitnow", "tng"],
 			})
 			.returning({ id: institutions.id });

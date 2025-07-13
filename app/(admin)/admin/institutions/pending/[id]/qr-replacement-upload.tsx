@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useQrExtraction } from "@/hooks/use-qr-extraction";
+import { useQrExtractionLazy } from "@/hooks/use-qr-extraction-lazy";
 import { Check, Loader2, Upload, X } from "lucide-react";
 import Image from "next/image";
 import { useRef, useState, useTransition } from "react";
@@ -37,7 +37,7 @@ export default function QrReplacementUpload({
 		qrContent: extractedData,
 		qrExtracting: isExtracting,
 		handleQrImageChange,
-	} = useQrExtraction();
+	} = useQrExtractionLazy();
 
 	const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0];

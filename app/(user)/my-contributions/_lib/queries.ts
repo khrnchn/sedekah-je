@@ -3,7 +3,8 @@
 import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions } from "@/db/schema";
-import { desc, eq } from "drizzle-orm";
+import { count, desc, eq, sql } from "drizzle-orm";
+import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
 
 export interface MyContributionsStats {
@@ -26,7 +27,11 @@ export interface MyContributionsResponse {
 	contributions: ContributionItem[];
 }
 
-export async function getMyContributions(): Promise<MyContributionsResponse | null> {
+type FetchType = "all" | "stats" | "contributions";
+
+export async function getMyContributions(
+	fetchType: FetchType = "all",
+): Promise<Partial<MyContributionsResponse> | null> {
 	const hdrs = headers();
 	const session = await auth.api.getSession({ headers: hdrs });
 
@@ -34,30 +39,80 @@ export async function getMyContributions(): Promise<MyContributionsResponse | nu
 		return null;
 	}
 
-	const userId = session.user.id;
+	const { id: userId } = session.user;
 
-	const results = await db
-		.select()
-		.from(institutions)
-		.where(eq(institutions.contributorId, userId))
-		.orderBy(desc(institutions.createdAt));
+	return unstable_cache(
+		async () => {
+			let stats: MyContributionsStats | undefined;
+			let contributions: ContributionItem[] | undefined;
 
-	const stats: MyContributionsStats = {
-		totalContributions: results.length,
-		approvedContributions: results.filter((i) => i.status === "approved")
-			.length,
-		pendingContributions: results.filter((i) => i.status === "pending").length,
-		rejectedContributions: results.filter((i) => i.status === "rejected")
-			.length,
-	};
+			if (fetchType === "all" || fetchType === "stats") {
+				const [statsResult] = await db
+					.select({
+						totalContributions: count(),
+						approvedContributions: count(
+							sql`CASE WHEN ${institutions.status} = 'approved' THEN 1 END`,
+						),
+						pendingContributions: count(
+							sql`CASE WHEN ${institutions.status} = 'pending' THEN 1 END`,
+						),
+						rejectedContributions: count(
+							sql`CASE WHEN ${institutions.status} = 'rejected' THEN 1 END`,
+						),
+					})
+					.from(institutions)
+					.where(eq(institutions.contributorId, userId));
 
-	const contributions: ContributionItem[] = results.map((inst) => ({
-		id: inst.id.toString(),
-		name: inst.name,
-		status: inst.status as ContributionItem["status"],
-		date: inst.createdAt?.toISOString() ?? "",
-		type: inst.category,
-	}));
+				stats = {
+					totalContributions: statsResult.totalContributions,
+					approvedContributions: statsResult.approvedContributions,
+					pendingContributions: statsResult.pendingContributions,
+					rejectedContributions: statsResult.rejectedContributions,
+				};
+			}
 
-	return { stats, contributions };
+			if (fetchType === "all" || fetchType === "contributions") {
+				const results = await db
+					.select({
+						id: institutions.id,
+						name: institutions.name,
+						status: institutions.status,
+						createdAt: institutions.createdAt,
+						category: institutions.category,
+					})
+					.from(institutions)
+					.where(eq(institutions.contributorId, userId))
+					.orderBy(desc(institutions.createdAt));
+
+				contributions = results.map((inst) => ({
+					id: inst.id.toString(),
+					name: inst.name,
+					status: inst.status as ContributionItem["status"],
+					date: inst.createdAt?.toISOString() ?? "",
+					type: inst.category,
+				}));
+			}
+
+			return { stats, contributions };
+		},
+		[`my-contributions:${userId}:${fetchType}`],
+		{
+			revalidate: 300,
+			tags: [
+				"user-contributions",
+				`user-contributions:${userId}`,
+				`user-contributions:${userId}:${fetchType}`,
+			],
+		},
+	)();
+}
+
+export async function getContributionStats() {
+	const data = await getMyContributions("stats");
+	return data?.stats ?? null;
+}
+
+export async function getContributionList() {
+	const data = await getMyContributions("contributions");
+	return data?.contributions ?? [];
 }

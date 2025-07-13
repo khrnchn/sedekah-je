@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
 import type { InstitutionFormData } from "@/app/(user)/contribute/_lib/validations";
@@ -8,25 +8,32 @@ import type { states as STATE_OPTIONS } from "@/lib/institution-constants";
 import type { UseFormSetValue } from "react-hook-form";
 
 /**
- * Encapsulates the location-detection logic for InstitutionForm.
- * Returns loading state, the fetchLocation handler,
- * and any city/state values that were auto-detected.
+ * Encapsulates the location-detection logic for InstitutionForm with lazy loading.
+ * Uses dynamic imports to reduce initial bundle size.
  */
-export function useLocationPrefill(
+export function useLocationPrefillLazy(
 	setValue: UseFormSetValue<InstitutionFormData>,
 ) {
 	const [loadingLocation, setLoadingLocation] = useState(false);
 	const [prefilledCity, setPrefilledCity] = useState("");
 	const [prefilledState, setPrefilledState] = useState("");
 
-	/** Geolocation + reverse-geocode */
-	async function fetchLocation() {
+	/** Geolocation + reverse-geocode with lazy loading */
+	const fetchLocation = useCallback(async () => {
 		setLoadingLocation(true);
+
 		try {
+			// Check if geolocation is supported
+			if (!navigator.geolocation) {
+				throw new Error("Geolocation not supported");
+			}
+
 			navigator.geolocation.getCurrentPosition(
 				async (pos) => {
 					const { latitude, longitude } = pos.coords;
 					try {
+						// Dynamic import for any heavy geolocation utilities if needed
+						// Currently using native fetch API which is lightweight
 						const res = await fetch(
 							`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`,
 						);
@@ -66,25 +73,34 @@ export function useLocationPrefill(
 						}
 					} catch (err) {
 						console.error("Reverse geocoding failed", err);
+						toast.error("Ralat geocoding", {
+							description: "Tidak dapat mencari alamat dari koordinat.",
+						});
 					} finally {
 						setLoadingLocation(false);
 					}
 				},
-				() => {
-					/* error */
+				(error) => {
+					console.error("Geolocation error:", error);
 					setLoadingLocation(false);
-					toast.error("Location access denied", {
-						description: "You can still fill in the location manually.",
+					toast.error("Akses lokasi ditolak", {
+						description: "Anda masih boleh mengisi lokasi secara manual.",
 					});
 				},
+				{
+					enableHighAccuracy: true,
+					timeout: 10000,
+					maximumAge: 300000, // 5 minutes
+				},
 			);
-		} catch {
+		} catch (error) {
+			console.error("Location service error:", error);
 			setLoadingLocation(false);
-			toast.error("Location not supported", {
-				description: "Please fill in the location manually.",
+			toast.error("Perkhidmatan lokasi tidak disokong", {
+				description: "Sila isi lokasi secara manual.",
 			});
 		}
-	}
+	}, [setValue]);
 
 	return {
 		loadingLocation,

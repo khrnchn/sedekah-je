@@ -1,4 +1,4 @@
-import InstitutionForm from "@/app/(user)/contribute/_components/institution-form";
+import InstitutionFormOptimized from "@/app/(user)/contribute/_components/institution-form-optimized";
 import { UserLayout } from "@/components/user-layout";
 
 export default function ContributePage() {
@@ -7,7 +7,7 @@ export default function ContributePage() {
 			title="Tambah Institusi"
 			description="Sumbang kepada komuniti sedekah.je dengan menambah institusi baru"
 		>
-			<InstitutionForm />
+			<InstitutionFormOptimized />
 		</UserLayout>
 	);
 }
