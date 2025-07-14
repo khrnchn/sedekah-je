@@ -272,7 +272,7 @@ export async function submitInstitution(
 		if (user) {
 			try {
 				await logNewInstitution({
-					id: newId,
+					id: newId.toString(),
 					name: parsed.data.name,
 					category: parsed.data.category,
 					state: parsed.data.state,
