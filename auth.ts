@@ -43,8 +43,22 @@ export const auth = betterAuth({
 			: process.env.VERCEL_URL
 				? `https://${process.env.VERCEL_URL}`
 				: "http://localhost:3000",
-	// TODO: Implement user logging via alternative method
-	// hooks: {
-	// 	after: ...,
-	// },
+	databaseHooks: {
+		user: {
+			create: {
+				after: async (user) => {
+					try {
+						await logNewUser({
+							id: user.id,
+							name: user.name || "Unknown",
+							email: user.email,
+							role: "user", // Default role for new users
+						});
+					} catch (error) {
+						console.error("Failed to log new user to Telegram:", error);
+					}
+				},
+			},
+		},
+	},
 });

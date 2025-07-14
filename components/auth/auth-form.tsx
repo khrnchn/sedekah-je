@@ -9,7 +9,6 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { GoogleIcon } from "@/components/ui/icons";
-import { checkAndLogNewUser } from "@/lib/actions/telegram-logging";
 import { signInWithGoogle } from "@/lib/auth-client";
 import { useSearchParams } from "next/navigation";
 // import { Input } from "@/components/ui/input";
@@ -72,14 +71,6 @@ export default function AuthForm() {
 	const handleGoogleSignIn = async () => {
 		try {
 			await signInWithGoogle(redirectTo);
-			// Check if this is a new user and log to Telegram
-			setTimeout(async () => {
-				try {
-					await checkAndLogNewUser();
-				} catch (error) {
-					console.error("Failed to check for new user:", error);
-				}
-			}, 1000); // Wait 1 second for the session to be properly established
 		} catch (error) {
 			toast.error("Gagal log masuk dengan Google");
 		}
