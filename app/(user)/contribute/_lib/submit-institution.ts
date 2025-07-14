@@ -274,6 +274,7 @@ export async function submitInstitution(
 				state: parsed.data.state as (typeof states)[number],
 				coords: coords, // Coords may be updated by geocoding
 				qrImage: qrImageUrl,
+				contributorId: contributorId, // Include the contributor ID
 				status: "pending", // Always pending for new submissions
 			})
 			.returning({ id: institutions.id });
