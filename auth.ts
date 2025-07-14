@@ -3,6 +3,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin } from "better-auth/plugins";
 import { db } from "./db";
 import * as schema from "./db/schema";
+import { logNewUser } from "./lib/telegram";
 
 export const auth = betterAuth({
 	database: drizzleAdapter(db, {
@@ -42,4 +43,22 @@ export const auth = betterAuth({
 			: process.env.VERCEL_URL
 				? `https://${process.env.VERCEL_URL}`
 				: "http://localhost:3000",
+	databaseHooks: {
+		user: {
+			create: {
+				after: async (user) => {
+					try {
+						await logNewUser({
+							id: user.id,
+							name: user.name || "Unknown",
+							email: user.email,
+							role: "user", // Default role for new users
+						});
+					} catch (error) {
+						console.error("Failed to log new user to Telegram:", error);
+					}
+				},
+			},
+		},
+	},
 });
