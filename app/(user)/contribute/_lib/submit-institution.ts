@@ -5,6 +5,7 @@ import { institutions } from "@/db/institutions";
 import type { categories, states } from "@/lib/institution-constants";
 import { getUserById } from "@/lib/queries/users";
 import { r2Storage } from "@/lib/r2-client";
+import { logNewInstitution } from "@/lib/telegram";
 import { and, count, eq, gte } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { institutionFormServerSchema } from "./validations";
@@ -85,8 +86,10 @@ export async function submitInstitution(
 
 	// --- Rate limit check (3 submissions per day)
 	const contributorId = formData.get("contributorId") as string | null;
+	let user = null;
+
 	if (contributorId) {
-		const user = await getUserById(contributorId);
+		user = await getUserById(contributorId);
 
 		if (user?.role !== "admin") {
 			const oneDayAgo = new Date();
@@ -250,7 +253,7 @@ export async function submitInstitution(
 	);
 	console.log("🔍 About to insert institution with qrImageUrl:", qrImageUrl);
 	try {
-		const [{ id: _newId }] = await db
+		const [{ id: newId }] = await db
 			.insert(institutions)
 			.values({
 				...parsed.data,
@@ -264,6 +267,26 @@ export async function submitInstitution(
 				status: "pending", // Always pending for new submissions
 			})
 			.returning({ id: institutions.id });
+
+		// Log to Telegram
+		if (user) {
+			try {
+				await logNewInstitution({
+					id: newId,
+					name: parsed.data.name,
+					category: parsed.data.category,
+					state: parsed.data.state,
+					city: parsed.data.city,
+					contributorName: user.name || "Unknown",
+					contributorEmail: user.email,
+				});
+			} catch (telegramError) {
+				console.error(
+					"Failed to log new institution to Telegram:",
+					telegramError,
+				);
+			}
+		}
 
 		// Revalidate paths to show the new submission
 		revalidatePath("/(user)/my-contributions", "page");
