@@ -3,12 +3,14 @@ import { headers } from "next/headers";
 import Image from "next/image";
 import type * as React from "react";
 
+import { getPendingClaimRequestsCount } from "@/app/(admin)/admin/claim-requests/_lib/queries";
 import {
 	getApprovedInstitutionsCount,
 	getPendingInstitutionsCount,
 	getRejectedInstitutionsCount,
 } from "@/app/(admin)/admin/institutions/_lib/queries";
 import { auth } from "@/auth";
+import { NavClaimRequests } from "@/components/nav-claim-requests";
 import { NavInstitutions } from "@/components/nav-institutions";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
@@ -88,6 +90,13 @@ const data = {
 			icon: "XCircle",
 		},
 	],
+	claimRequests: [
+		{
+			name: "Tuntutan Institusi",
+			url: "/admin/claim-requests",
+			icon: "User",
+		},
+	],
 };
 
 export async function AppSidebar({
@@ -97,6 +106,7 @@ export async function AppSidebar({
 	let approvedCount = 0;
 	let rejectedCount = 0;
 	let totalUsersCount = 0;
+	let pendingClaimRequestsCount = 0;
 	let currentUser = {
 		name: "Admin",
 		email: "admin@sedekah.je",
@@ -104,13 +114,19 @@ export async function AppSidebar({
 	};
 
 	try {
-		[pendingCount, approvedCount, rejectedCount, totalUsersCount] =
-			await Promise.all([
-				getPendingInstitutionsCount(),
-				getApprovedInstitutionsCount(),
-				getRejectedInstitutionsCount(),
-				getTotalUsersCount(),
-			]);
+		[
+			pendingCount,
+			approvedCount,
+			rejectedCount,
+			totalUsersCount,
+			pendingClaimRequestsCount,
+		] = await Promise.all([
+			getPendingInstitutionsCount(),
+			getApprovedInstitutionsCount(),
+			getRejectedInstitutionsCount(),
+			getTotalUsersCount(),
+			getPendingClaimRequestsCount(),
+		]);
 
 		// Get current user session
 		const session = await auth.api.getSession({
@@ -146,6 +162,27 @@ export async function AppSidebar({
 			badgeVariant = "success";
 		} else if (item.name === "Rejected" && rejectedCount > 0) {
 			badge = rejectedCount;
+			badgeVariant = "destructive";
+		}
+
+		return {
+			...item,
+			badge,
+			badgeVariant,
+		};
+	});
+
+	const claimRequestsWithBadge = data.claimRequests.map((item) => {
+		let badge: number | undefined;
+		let badgeVariant:
+			| "default"
+			| "secondary"
+			| "destructive"
+			| "outline"
+			| "success" = "default";
+
+		if (item.name === "Tuntutan Institusi" && pendingClaimRequestsCount > 0) {
+			badge = pendingClaimRequestsCount;
 			badgeVariant = "destructive";
 		}
 
@@ -195,6 +232,7 @@ export async function AppSidebar({
 			<SidebarContent>
 				<NavMain items={navMainWithBadges} />
 				<NavInstitutions items={institutionsWithBadge} />
+				<NavClaimRequests items={claimRequestsWithBadge} />
 				<SidebarGroup className="mt-auto">
 					<SidebarGroupContent>
 						<SidebarMenu>
