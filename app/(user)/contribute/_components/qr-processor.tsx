@@ -1,6 +1,6 @@
 "use client";
 
-import { useQrExtractionLazy } from "@/hooks/use-qr-extraction-lazy";
+import { useQrExtractionEnhanced } from "@/hooks/use-qr-extraction-enhanced";
 import { useEffect, useRef } from "react";
 
 interface QRProcessorProps {
@@ -30,9 +30,10 @@ export function QRProcessor({
 		qrExtracting,
 		qrExtractionFailed,
 		hasAttemptedExtraction,
+		detectionMethod,
 		handleQrImageChange,
 		clearQrContent,
-	} = useQrExtractionLazy();
+	} = useQrExtractionEnhanced();
 
 	const lastQrContent = useRef(qrContent);
 	const lastStatus = useRef({
