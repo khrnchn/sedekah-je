@@ -63,7 +63,7 @@ export const metadata: Metadata = {
 		url: "https://sedekah.je",
 		title: "Sedekah Je",
 		description:
-			"Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
+			"Senarai QR code masjid, surau dan institusi di Malaysia yang dikumpul dan disumbang oleh komuniti",
 		siteName: "Sedekah Je",
 		images: [
 			{
@@ -81,7 +81,7 @@ export const metadata: Metadata = {
 		creator: "@asdfghjkhairin",
 		title: "Sedekah Je",
 		description:
-			"Curated and crowdsourced list of mosques/surau/institution QR codes in Malaysia",
+			"Senarai QR code masjid, surau dan institusi di Malaysia yang dikumpul dan disumbang oleh komuniti",
 		images: "https://sedekah.je/sedekahje-twitter.png",
 	},
 	manifest: "/manifest.json",
