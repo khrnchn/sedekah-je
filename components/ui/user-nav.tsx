@@ -22,7 +22,6 @@ const userNavItems = [
 		href: "/contribute",
 		icon: Plus,
 		description: "Tambah institusi baru",
-		badge: "Aktif"
 	},
 	{
 		title: "Carta Penyumbang",
