@@ -156,3 +156,31 @@ export async function logNewInstitution(institution: {
 		},
 	});
 }
+
+export async function logInstitutionClaim(claim: {
+	institutionId: string;
+	institutionName: string;
+	category: string;
+	state: string;
+	city: string;
+	claimerName: string;
+	claimerEmail: string;
+	sourceUrl?: string;
+	description?: string;
+}): Promise<void> {
+	await logToTelegram({
+		level: "warning",
+		title: "Institution Claim Request",
+		description: "User requesting to claim institution ownership... 🔄",
+		emoji: "🏷️",
+		data: {
+			institution: claim.institutionName,
+			category: claim.category,
+			location: `${claim.city}, ${claim.state}`,
+			claimer: claim.claimerName,
+			email: claim.claimerEmail,
+			sourceUrl: claim.sourceUrl || "Not provided",
+			description: claim.description || "Not provided",
+		},
+	});
+}

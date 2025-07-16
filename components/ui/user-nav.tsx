@@ -10,7 +10,15 @@ import { BarChart3, Home, LogOut, Menu, Plus, Settings, Trophy, User } from "luc
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const userNavItems = [
+type NavItem = {
+	title: string;
+	href: string;
+	icon: any;
+	description: string;
+	badge?: string;
+};
+
+const userNavItems: NavItem[] = [
 	{
 		title: "Laman Utama",
 		href: "/",
@@ -21,8 +29,7 @@ const userNavItems = [
 		title: "Tambah Institusi",
 		href: "/contribute",
 		icon: Plus,
-		description: "Tambah institusi baru",
-		badge: "Aktif"
+		description: "Tambah institusi baru"
 	},
 	{
 		title: "Carta Penyumbang",
@@ -38,7 +45,7 @@ const userNavItems = [
 	}
 ];
 
-const secondaryNavItems = [
+const secondaryNavItems: NavItem[] = [
 	{
 		title: "Tetapan",
 		href: "/settings",
@@ -173,7 +180,7 @@ export function UserNav() {
 
 export function UserNavDesktop() {
 	const pathname = usePathname();
-	const { signOut } = useAuth();
+	const { user, signOut } = useAuth();
 
 	const handleSignOut = async () => {
 		await signOut();
@@ -181,6 +188,9 @@ export function UserNavDesktop() {
 
 	return (
 		<div className="hidden md:flex items-center gap-6">
+			<div className="font-semibold text-sm">
+				{user?.name || "User"}
+			</div>
 			{userNavItems.slice(1).map((item) => {
 				const Icon = item.icon;
 				const isActive = pathname === item.href;

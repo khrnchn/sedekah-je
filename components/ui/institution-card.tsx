@@ -17,15 +17,17 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useAuth } from "@/hooks/use-auth";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 import { cn, slugify } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import html2canvas from "html2canvas";
-import { DownloadIcon, Eye, Share2 } from "lucide-react";
+import { DownloadIcon, Eye, Share2, User } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
+import { ClaimModal } from "./claim-modal";
 import QrCodeDisplay from "./qrCodeDisplay";
 
 // power do atif
@@ -68,18 +70,32 @@ const InstitutionCard = forwardRef<
       coords,
       isClosest,
       distanceToCurrentUserInMeter,
+      contributorId,
+      contributorEmail,
     },
     ref,
   ) => {
     const [active, setActive] = useState<boolean | null>(false);
     const [isDownloading, setIsDownloading] = useState(false);
     const [downloadStage, setDownloadStage] = useState<string>("");
+    const [showClaimModal, setShowClaimModal] = useState(false);
     const innerRef = useRef<HTMLDivElement>(null);
     const printRef = useRef<HTMLButtonElement>(null);
+
+    const { user, isAuthenticated } = useAuth();
 
     const capitalizedName = capitalizeWords(name);
     const capitalizedState = capitalizeWords(state);
     const capitalizedCity = capitalizeWords(city);
+
+    // Check if user can claim this institution
+    // 1. User must be logged in
+    // 2. Institution's contributorId must be null, OR
+    // 3. Institution's contributor email must be khairin13chan@gmail.com
+    const canClaim = isAuthenticated && (
+      contributorId === null || 
+      (contributorEmail === "khairin13chan@gmail.com")
+    );
 
     const router = useRouter();
     const navigateToItem = (category: string, slug: string) => {
@@ -390,6 +406,28 @@ const InstitutionCard = forwardRef<
                   )}
                 </motion.div>
                 <div className="flex gap-2 mt-auto">
+                  {/* Claim Button */}
+                  {canClaim && (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          className="hover:bg-primary/10 hover:text-primary transition-colors duration-200 ease-in-out"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowClaimModal(true);
+                          }}
+                        >
+                          <User className="h-5 w-5" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top">
+                        <p>Tuntut sebagai milik anda</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
+
                   {/* Download Button */}
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -586,6 +624,14 @@ const InstitutionCard = forwardRef<
             </Card>
           </motion.div>
         </TooltipProvider>
+
+        {/* Claim Modal */}
+        <ClaimModal
+          open={showClaimModal}
+          onOpenChange={setShowClaimModal}
+          institutionId={id}
+          institutionName={name}
+        />
       </>
     );
   },

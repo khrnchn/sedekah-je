@@ -7,6 +7,7 @@ import {
 	type LucideIcon,
 	MoreHorizontalIcon,
 	ShareIcon,
+	User,
 	XCircle,
 } from "lucide-react";
 
@@ -31,6 +32,7 @@ const iconMap: Record<string, LucideIcon> = {
 	Clock,
 	CheckCircle,
 	XCircle,
+	User,
 };
 
 export function NavInstitutions({

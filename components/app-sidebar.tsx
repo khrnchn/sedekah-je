@@ -1,8 +1,9 @@
-import { HomeIcon, SettingsIcon } from "lucide-react";
+import { SettingsIcon } from "lucide-react";
 import { headers } from "next/headers";
 import Image from "next/image";
 import type * as React from "react";
 
+import { getPendingClaimRequestsCount } from "@/app/(admin)/admin/claim-requests/_lib/queries";
 import {
 	getApprovedInstitutionsCount,
 	getPendingInstitutionsCount,
@@ -87,6 +88,11 @@ const data = {
 			url: "/admin/institutions/rejected",
 			icon: "XCircle",
 		},
+		{
+			name: "Claims",
+			url: "/admin/claim-requests",
+			icon: "User",
+		},
 	],
 };
 
@@ -97,6 +103,7 @@ export async function AppSidebar({
 	let approvedCount = 0;
 	let rejectedCount = 0;
 	let totalUsersCount = 0;
+	let pendingClaimRequestsCount = 0;
 	let currentUser = {
 		name: "Admin",
 		email: "admin@sedekah.je",
@@ -104,13 +111,19 @@ export async function AppSidebar({
 	};
 
 	try {
-		[pendingCount, approvedCount, rejectedCount, totalUsersCount] =
-			await Promise.all([
-				getPendingInstitutionsCount(),
-				getApprovedInstitutionsCount(),
-				getRejectedInstitutionsCount(),
-				getTotalUsersCount(),
-			]);
+		[
+			pendingCount,
+			approvedCount,
+			rejectedCount,
+			totalUsersCount,
+			pendingClaimRequestsCount,
+		] = await Promise.all([
+			getPendingInstitutionsCount(),
+			getApprovedInstitutionsCount(),
+			getRejectedInstitutionsCount(),
+			getTotalUsersCount(),
+			getPendingClaimRequestsCount(),
+		]);
 
 		// Get current user session
 		const session = await auth.api.getSession({
@@ -146,6 +159,9 @@ export async function AppSidebar({
 			badgeVariant = "success";
 		} else if (item.name === "Rejected" && rejectedCount > 0) {
 			badge = rejectedCount;
+			badgeVariant = "destructive";
+		} else if (item.name === "Claims" && pendingClaimRequestsCount > 0) {
+			badge = pendingClaimRequestsCount;
 			badgeVariant = "destructive";
 		}
 
