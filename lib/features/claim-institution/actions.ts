@@ -4,7 +4,7 @@ import { auth } from "@/auth";
 import { db } from "@/db";
 import { claimRequests, institutions, users } from "@/db/schema";
 import { logInstitutionClaim } from "@/lib/telegram";
-import { and, eq } from "drizzle-orm";
+import { and, count, eq, gte } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -26,6 +26,30 @@ export async function submitClaimRequest(formData: FormData) {
 		};
 
 		const validatedData = claimRequestSchema.parse(rawData);
+
+		// Rate limit check (3 claim requests per day for non-admin users)
+		if (session.user.role !== "admin") {
+			const oneDayAgo = new Date();
+			oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+
+			const [{ value }] = await db
+				.select({ value: count() })
+				.from(claimRequests)
+				.where(
+					and(
+						eq(claimRequests.userId, session.user.id),
+						gte(claimRequests.createdAt, oneDayAgo),
+					),
+				);
+
+			if (value >= 3) {
+				return {
+					success: false,
+					error:
+						"Anda telah mencapai had 3 permohonan tuntutan sehari. Sila cuba lagi esok. Terima kasih!",
+				};
+			}
+		}
 
 		// Wrap all database operations in a transaction for atomicity
 		const inst = await db.transaction(async (tx) => {
