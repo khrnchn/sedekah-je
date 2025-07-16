@@ -35,6 +35,8 @@ export async function submitClaimRequest(formData: FormData) {
 					id: institutions.id,
 					name: institutions.name,
 					category: institutions.category,
+					state: institutions.state,
+					city: institutions.city,
 					contributorId: institutions.contributorId,
 					contributorEmail: users.email,
 				})
