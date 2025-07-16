@@ -52,6 +52,8 @@ export async function approveClaimRequest(formData: FormData) {
 			.set({
 				contributorId: claim.userId,
 				updatedAt: new Date(),
+				sourceUrl: claim.sourceUrl,
+				contributorRemarks: claim.description,
 			})
 			.where(eq(institutions.id, claim.institutionId));
 
@@ -69,6 +71,8 @@ export async function approveClaimRequest(formData: FormData) {
 
 		// Revalidate cache
 		revalidateTag("claim-requests");
+		revalidateTag("claim-requests-count");
+		revalidateTag("claim-requests-data");
 		revalidateTag("institutions");
 
 		return {
@@ -137,6 +141,8 @@ export async function rejectClaimRequest(formData: FormData) {
 
 		// Revalidate cache
 		revalidateTag("claim-requests");
+		revalidateTag("claim-requests-count");
+		revalidateTag("claim-requests-data");
 
 		return {
 			success: true,

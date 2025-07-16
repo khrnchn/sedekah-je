@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { db } from "@/db";
 import { claimRequests, institutions } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
+import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { claimRequestSchema } from "./validations";
@@ -74,6 +75,11 @@ export async function submitClaimRequest(formData: FormData) {
 			description: validatedData.description || null,
 			status: "pending",
 		});
+
+		// Revalidate cache to update counts immediately
+		revalidateTag("claim-requests");
+		revalidateTag("claim-requests-count");
+		revalidateTag("claim-requests-data");
 
 		return {
 			success: true,

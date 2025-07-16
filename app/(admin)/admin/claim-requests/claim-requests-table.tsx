@@ -20,6 +20,7 @@ import {
 import { format } from "date-fns";
 import { CheckCircle, ExternalLink, User, XCircle } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -48,6 +49,7 @@ export function ClaimRequestsTable({ data }: ClaimRequestsTableProps) {
 	);
 	const [adminNotes, setAdminNotes] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const router = useRouter();
 
 	const handleAction = async () => {
 		if (!selectedClaim || !actionType) return;
@@ -69,7 +71,7 @@ export function ClaimRequestsTable({ data }: ClaimRequestsTableProps) {
 				setActionType(null);
 				setAdminNotes("");
 				// Refresh the page to show updated data
-				window.location.reload();
+				router.refresh();
 			} else {
 				toast.error(result.error);
 			}

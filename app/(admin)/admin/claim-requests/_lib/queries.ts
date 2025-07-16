@@ -14,8 +14,8 @@ export const getPendingClaimRequestsCount = unstable_cache(
 	},
 	["pending-claim-requests-count"],
 	{
-		revalidate: 300, // 5 minutes
-		tags: ["claim-requests"],
+		revalidate: 60, // 1 minute
+		tags: ["claim-requests", "claim-requests-count"],
 	},
 );
 
@@ -43,8 +43,8 @@ export const getPendingClaimRequests = unstable_cache(
 	},
 	["pending-claim-requests"],
 	{
-		revalidate: 300, // 5 minutes
-		tags: ["claim-requests"],
+		revalidate: 60, // 1 minute
+		tags: ["claim-requests", "claim-requests-data"],
 	},
 );
 
