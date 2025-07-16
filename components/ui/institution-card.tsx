@@ -71,6 +71,7 @@ const InstitutionCard = forwardRef<
       isClosest,
       distanceToCurrentUserInMeter,
       contributorId,
+      contributorEmail,
     },
     ref,
   ) => {
@@ -88,9 +89,12 @@ const InstitutionCard = forwardRef<
     const capitalizedCity = capitalizeWords(city);
 
     // Check if user can claim this institution
+    // 1. User must be logged in
+    // 2. Institution's contributorId must be null, OR
+    // 3. Institution's contributor email must be khairin13chan@gmail.com
     const canClaim = isAuthenticated && (
       contributorId === null || 
-      (contributorId && user?.email === "khairin13chan@gmail.com")
+      (contributorEmail === "khairin13chan@gmail.com")
     );
 
     const router = useRouter();

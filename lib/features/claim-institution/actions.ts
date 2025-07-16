@@ -2,7 +2,7 @@
 
 import { auth } from "@/auth";
 import { db } from "@/db";
-import { claimRequests, institutions } from "@/db/schema";
+import { claimRequests, institutions, users } from "@/db/schema";
 import { logInstitutionClaim } from "@/lib/telegram";
 import { and, eq } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
@@ -27,54 +27,69 @@ export async function submitClaimRequest(formData: FormData) {
 
 		const validatedData = claimRequestSchema.parse(rawData);
 
-		// Check if institution exists and can be claimed
-		const institution = await db
-			.select()
-			.from(institutions)
-			.where(eq(institutions.id, validatedData.institutionId))
-			.limit(1);
+		// Wrap all database operations in a transaction for atomicity
+		const inst = await db.transaction(async (tx) => {
+			// Check if institution exists and get contributor info
+			const institutionWithContributor = await tx
+				.select({
+					id: institutions.id,
+					name: institutions.name,
+					category: institutions.category,
+					contributorId: institutions.contributorId,
+					contributorEmail: users.email,
+				})
+				.from(institutions)
+				.leftJoin(users, eq(institutions.contributorId, users.id))
+				.where(eq(institutions.id, validatedData.institutionId))
+				.limit(1);
 
-		if (!institution.length) {
-			throw new Error("Institusi tidak dijumpai");
-		}
+			if (!institutionWithContributor.length) {
+				throw new Error("Institusi tidak dijumpai");
+			}
 
-		const inst = institution[0];
+			const inst = institutionWithContributor[0];
 
-		// Check if user can claim this institution
-		const canClaim =
-			inst.contributorId === null ||
-			(inst.contributorId && session.user.email === "khairin13chan@gmail.com");
+			// Check if user can claim this institution
+			// 1. User must be logged in (already checked above)
+			// 2. Institution's contributorId must be null, OR
+			// 3. Institution's contributor email must be khairin13chan@gmail.com
+			const canClaim =
+				inst.contributorId === null ||
+				inst.contributorEmail === "khairin13chan@gmail.com";
 
-		if (!canClaim) {
-			throw new Error("Anda tidak boleh menuntut institusi ini");
-		}
+			if (!canClaim) {
+				throw new Error("Anda tidak boleh menuntut institusi ini");
+			}
 
-		// Check if user already has a pending claim for this institution
-		const existingClaim = await db
-			.select()
-			.from(claimRequests)
-			.where(
-				and(
-					eq(claimRequests.institutionId, validatedData.institutionId),
-					eq(claimRequests.userId, session.user.id),
-					eq(claimRequests.status, "pending"),
-				),
-			)
-			.limit(1);
+			// Check if user already has a pending claim for this institution
+			const existingClaim = await tx
+				.select()
+				.from(claimRequests)
+				.where(
+					and(
+						eq(claimRequests.institutionId, validatedData.institutionId),
+						eq(claimRequests.userId, session.user.id),
+						eq(claimRequests.status, "pending"),
+					),
+				)
+				.limit(1);
 
-		if (existingClaim.length > 0) {
-			throw new Error(
-				"Anda sudah mempunyai permohonan tuntutan yang belum selesai untuk institusi ini",
-			);
-		}
+			if (existingClaim.length > 0) {
+				throw new Error(
+					"Anda sudah mempunyai permohonan tuntutan yang belum selesai untuk institusi ini",
+				);
+			}
 
-		// Create claim request
-		await db.insert(claimRequests).values({
-			institutionId: validatedData.institutionId,
-			userId: session.user.id,
-			sourceUrl: validatedData.sourceUrl || null,
-			description: validatedData.description || null,
-			status: "pending",
+			// Create claim request
+			await tx.insert(claimRequests).values({
+				institutionId: validatedData.institutionId,
+				userId: session.user.id,
+				sourceUrl: validatedData.sourceUrl || null,
+				description: validatedData.description || null,
+				status: "pending",
+			});
+
+			return inst;
 		});
 
 		// Log to Telegram
