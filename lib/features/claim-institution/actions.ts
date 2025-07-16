@@ -3,6 +3,7 @@
 import { auth } from "@/auth";
 import { db } from "@/db";
 import { claimRequests, institutions } from "@/db/schema";
+import { logInstitutionClaim } from "@/lib/telegram";
 import { and, eq } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
@@ -75,6 +76,26 @@ export async function submitClaimRequest(formData: FormData) {
 			description: validatedData.description || null,
 			status: "pending",
 		});
+
+		// Log to Telegram
+		try {
+			await logInstitutionClaim({
+				institutionId: inst.id.toString(),
+				institutionName: inst.name,
+				category: inst.category,
+				state: inst.state,
+				city: inst.city,
+				claimerName: session.user.name || "Unknown",
+				claimerEmail: session.user.email,
+				sourceUrl: validatedData.sourceUrl || undefined,
+				description: validatedData.description || undefined,
+			});
+		} catch (telegramError) {
+			console.error(
+				"Failed to log institution claim to Telegram:",
+				telegramError,
+			);
+		}
 
 		// Revalidate cache to update counts immediately
 		revalidateTag("claim-requests");
