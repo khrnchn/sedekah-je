@@ -3,6 +3,7 @@
 import { auth } from "@/auth";
 import { db } from "@/db";
 import { claimRequests, institutions } from "@/db/schema";
+import { getAdminUser } from "@/lib/queries/users";
 import { eq } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
@@ -16,11 +17,13 @@ export async function approveClaimRequest(formData: FormData) {
 			redirect("/auth");
 		}
 
-		// TODO: Add admin role check
-		// const user = await getAdminUser(session.user.id);
-		// if (!user || user.role !== "admin") {
-		//   throw new Error("Unauthorized");
-		// }
+		// Verify admin role
+		const user = await getAdminUser(session.user.id);
+		if (!user || user.role !== "admin") {
+			throw new Error(
+				"Akses ditolak. Hanya admin yang boleh meluluskan tuntutan.",
+			);
+		}
 
 		const claimId = Number(formData.get("claimId"));
 		const adminNotes = formData.get("adminNotes") as string;
@@ -100,6 +103,14 @@ export async function rejectClaimRequest(formData: FormData) {
 		const session = await auth.api.getSession({ headers: headers() });
 		if (!session?.user) {
 			redirect("/auth");
+		}
+
+		// Verify admin role
+		const user = await getAdminUser(session.user.id);
+		if (!user || user.role !== "admin") {
+			throw new Error(
+				"Akses ditolak. Hanya admin yang boleh menolak tuntutan.",
+			);
 		}
 
 		const claimId = Number(formData.get("claimId"));
