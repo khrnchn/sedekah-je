@@ -10,7 +10,15 @@ import { BarChart3, Home, LogOut, Menu, Plus, Settings, Trophy, User } from "luc
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const userNavItems = [
+type NavItem = {
+	title: string;
+	href: string;
+	icon: any;
+	description: string;
+	badge?: string;
+};
+
+const userNavItems: NavItem[] = [
 	{
 		title: "Laman Utama",
 		href: "/",
@@ -21,7 +29,7 @@ const userNavItems = [
 		title: "Tambah Institusi",
 		href: "/contribute",
 		icon: Plus,
-		description: "Tambah institusi baru",
+		description: "Tambah institusi baru"
 	},
 	{
 		title: "Carta Penyumbang",
@@ -37,7 +45,7 @@ const userNavItems = [
 	}
 ];
 
-const secondaryNavItems = [
+const secondaryNavItems: NavItem[] = [
 	{
 		title: "Tetapan",
 		href: "/settings",
