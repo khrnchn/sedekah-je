@@ -46,28 +46,31 @@ export async function approveClaimRequest(formData: FormData) {
 			throw new Error("Tuntutan ini sudah diproses");
 		}
 
-		// Update the institution's contributorId
-		await db
-			.update(institutions)
-			.set({
-				contributorId: claim.userId,
-				updatedAt: new Date(),
-				sourceUrl: claim.sourceUrl,
-				contributorRemarks: claim.description,
-			})
-			.where(eq(institutions.id, claim.institutionId));
+		// Execute both updates in a single transaction to ensure atomicity
+		await db.transaction(async (tx) => {
+			// Update the institution's contributorId
+			await tx
+				.update(institutions)
+				.set({
+					contributorId: claim.userId,
+					updatedAt: new Date(),
+					sourceUrl: claim.sourceUrl,
+					contributorRemarks: claim.description,
+				})
+				.where(eq(institutions.id, claim.institutionId));
 
-		// Update the claim request status
-		await db
-			.update(claimRequests)
-			.set({
-				status: "approved",
-				adminNotes: adminNotes || null,
-				reviewedBy: session.user.id,
-				reviewedAt: new Date(),
-				updatedAt: new Date(),
-			})
-			.where(eq(claimRequests.id, claimId));
+			// Update the claim request status
+			await tx
+				.update(claimRequests)
+				.set({
+					status: "approved",
+					adminNotes: adminNotes || null,
+					reviewedBy: session.user.id,
+					reviewedAt: new Date(),
+					updatedAt: new Date(),
+				})
+				.where(eq(claimRequests.id, claimId));
+		});
 
 		// Revalidate cache
 		revalidateTag("claim-requests");
