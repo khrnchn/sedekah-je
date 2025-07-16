@@ -52,7 +52,7 @@ const links = [
 
 export const Header = () => {
   const isMobile = useIsMobile();
-  const { isAuthenticated, signOut } = useAuth();
+  const { user, isAuthenticated, signOut } = useAuth();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -89,8 +89,8 @@ export const Header = () => {
               </DrawerTrigger>
               <DrawerContent>
                 <DrawerHeader>
-                  <DrawerTitle className="sr-only">Menu</DrawerTitle>
-                  <DrawerDescription className="sr-only">
+                  <DrawerTitle>Hello, {user?.name || "User"}</DrawerTitle>
+                  <DrawerDescription>
                     Pautan navigasi untuk akaun anda
                   </DrawerDescription>
                 </DrawerHeader>
