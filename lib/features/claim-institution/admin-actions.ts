@@ -80,6 +80,9 @@ export async function approveClaimRequest(formData: FormData) {
 		revalidateTag("claim-requests-count");
 		revalidateTag("claim-requests-data");
 		revalidateTag("institutions");
+		revalidateTag("leaderboard");
+		revalidateTag("leaderboard-stats");
+		revalidateTag("leaderboard-top-contributors");
 
 		return {
 			success: true,
