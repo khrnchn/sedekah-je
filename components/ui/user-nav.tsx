@@ -56,7 +56,7 @@ const secondaryNavItems: NavItem[] = [
 
 export function UserNav() {
 	const pathname = usePathname();
-	const { user, isAuthenticated, signOut } = useAuth();
+	const { user, isAuthenticated, isAdmin, signOut } = useAuth();
 
 	const handleSignOut = async () => {
 		await signOut();
@@ -130,6 +130,24 @@ export function UserNav() {
 									</Link>
 								);
 							})}
+							{isAdmin && (
+								<Link href="/admin/dashboard">
+									<div
+										className={cn(
+											"flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground",
+											pathname === "/admin/dashboard" && "bg-accent text-accent-foreground"
+										)}
+									>
+										<Settings className="h-4 w-4" />
+										<div className="flex-1">
+											<div className="font-medium">Admin Panel</div>
+											<div className="text-xs text-muted-foreground">
+												Urus institusi dan pengguna
+											</div>
+										</div>
+									</div>
+								</Link>
+							)}
 						</nav>
 
 						<Separator className="mx-4" />
@@ -180,7 +198,7 @@ export function UserNav() {
 
 export function UserNavDesktop() {
 	const pathname = usePathname();
-	const { user, signOut } = useAuth();
+	const { user, isAdmin, signOut } = useAuth();
 
 	const handleSignOut = async () => {
 		await signOut();
@@ -214,6 +232,20 @@ export function UserNavDesktop() {
 					</Link>
 				);
 			})}
+
+			{isAdmin && (
+				<Link href="/admin/dashboard">
+					<div
+						className={cn(
+							"flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
+							pathname === "/admin/dashboard" && "bg-accent text-accent-foreground"
+						)}
+					>
+						<Settings className="h-4 w-4" />
+						Admin Panel
+					</div>
+				</Link>
+			)}
 
 			<Button
 				variant="ghost"

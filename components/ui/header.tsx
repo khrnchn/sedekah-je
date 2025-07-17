@@ -52,7 +52,7 @@ const links = [
 
 export const Header = () => {
   const isMobile = useIsMobile();
-  const { user, isAuthenticated, signOut } = useAuth();
+  const { user, isAuthenticated, isAdmin, signOut } = useAuth();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -109,6 +109,19 @@ export const Header = () => {
                       <span className="mt-1 text-xs font-medium">{link.name}</span>
                     </Link>
                   ))}
+                  {isAdmin && (
+                    <Link
+                      href="/admin/dashboard"
+                      onClick={() => setOpen(false)}
+                      className={cn(
+                        "flex flex-col items-center justify-center rounded-lg p-3 hover:bg-accent",
+                        pathname === "/admin/dashboard" && "bg-accent text-accent-foreground",
+                      )}
+                    >
+                      <LayoutDashboard className="size-5" />
+                      <span className="mt-1 text-xs font-medium">Admin Panel</span>
+                    </Link>
+                  )}
                 </div>
                 <div className="p-4 border-t">
                   <Button
