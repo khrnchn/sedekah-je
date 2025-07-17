@@ -3,7 +3,16 @@
 import { db } from "@/db";
 import { institutions, users } from "@/db/schema";
 import { INSTITUTION_STATUSES } from "@/lib/institution-constants";
-import { and, count, countDistinct, desc, eq, not, sql } from "drizzle-orm";
+import {
+	and,
+	count,
+	countDistinct,
+	desc,
+	eq,
+	isNotNull,
+	not,
+	sql,
+} from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 
 export interface LeaderboardStats {
@@ -105,7 +114,7 @@ export async function getTopContributors(): Promise<TopContributor[]> {
 					and(
 						eq(institutions.isActive, true),
 						eq(institutions.status, INSTITUTION_STATUSES.APPROVED),
-						not(eq(users.role, "admin")),
+						isNotNull(institutions.contributorId),
 					),
 				)
 				.groupBy(institutions.contributorId, users.name, users.avatarUrl)
