@@ -1,16 +1,22 @@
 "use client";
 
-import { signInWithGoogle, useSession } from "@/lib/auth-client";
+import { useAuth } from "@/hooks/use-auth";
+import { signInWithGoogle } from "@/lib/auth-client";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import React from "react";
+import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 
 const RawakFooter = () => {
-	const { data: session, isPending } = useSession();
+	const { user, isLoading } = useAuth();
+	const [mounted, setMounted] = useState(false);
+
+	useEffect(() => {
+		setMounted(true);
+	}, []);
 
 	const handleLogin = async () => {
-		if (isPending) return;
+		if (isLoading) return;
 		await signInWithGoogle();
 	};
 
@@ -26,14 +32,14 @@ const RawakFooter = () => {
 					</p>
 				</Button>
 			</Link>
-			{!session && (
+			{mounted && !user && (
 				<Button
 					variant="outline"
 					className="bg-gradient-to-br from-blue-500 to-blue-300 border border-blue-400 rounded-full hover:from-blue-700 hover:to-blue-500 transition-colors duration-300"
 					onClick={handleLogin}
-					disabled={isPending}
+					disabled={isLoading}
 				>
-					{isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+					{isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
 					<p className="text-black font-medium bold dark:text-white">
 						Log Masuk
 					</p>
