@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { Institution } from "@/db/institutions";
 import {
 	categories as CATEGORY_OPTIONS,
+	supportedPayments as PAYMENT_OPTIONS,
 	states as STATE_OPTIONS,
 } from "@/lib/institution-constants";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -61,9 +62,11 @@ const formSchema = z.object({
 	facebook: urlOrEmpty,
 	instagram: urlOrEmpty,
 	website: urlOrEmpty,
+	supportedPayment: z
+		.array(z.enum(PAYMENT_OPTIONS))
+		.min(1, "At least one payment method is required"),
 	qrContent: z.string().optional(),
 });
-
 type FormData = z.infer<typeof formSchema>;
 
 export default function ApprovedInstitutionForm({
@@ -106,6 +109,7 @@ export default function ApprovedInstitutionForm({
 			facebook: institution.socialMedia?.facebook ?? "",
 			instagram: institution.socialMedia?.instagram ?? "",
 			website: institution.socialMedia?.website ?? "",
+			supportedPayment: institution.supportedPayment ?? ["duitnow"],
 			qrContent: institution.qrContent ?? "",
 		},
 	});
@@ -276,6 +280,42 @@ export default function ApprovedInstitutionForm({
 						)}
 					</div>
 
+					<div className="space-y-2">
+						<div className="font-medium">Supported Payment Methods</div>
+						{isEditing ? (
+							<>
+								<div className="flex flex-wrap gap-3">
+									{PAYMENT_OPTIONS.map((payment) => (
+										<label
+											key={payment}
+											className="flex items-center space-x-2"
+										>
+											<input
+												type="checkbox"
+												value={payment}
+												{...register("supportedPayment")}
+												className="rounded border-gray-300"
+											/>
+											<span className="capitalize">{payment}</span>
+										</label>
+									))}
+								</div>
+								{errors.supportedPayment && (
+									<p className="text-sm text-red-500">
+										{errors.supportedPayment.message}
+									</p>
+								)}
+							</>
+						) : (
+							<div className="p-3 bg-muted rounded-md border">
+								{institution.supportedPayment?.length
+									? institution.supportedPayment
+											.map((p) => p.toUpperCase())
+											.join(", ")
+									: "No payment methods specified"}
+							</div>
+						)}
+					</div>
 					{/* QR Content field */}
 					<div className="space-y-2">
 						<label htmlFor="qrContent" className="font-medium">

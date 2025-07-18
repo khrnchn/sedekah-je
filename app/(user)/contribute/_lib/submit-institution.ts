@@ -276,6 +276,7 @@ export async function submitInstitution(
 				qrImage: qrImageUrl,
 				contributorId: contributorId, // Include the contributor ID
 				status: "pending", // Always pending for new submissions
+				supportedPayment: ["duitnow"], // Default to DuitNow for new submissions
 			})
 			.returning({ id: institutions.id });
 
