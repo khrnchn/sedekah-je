@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { Institution } from "@/db/institutions";
 import {
 	categories as CATEGORY_OPTIONS,
+	supportedPayments as PAYMENT_OPTIONS,
 	states as STATE_OPTIONS,
 } from "@/lib/institution-constants";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -77,13 +78,15 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 			website: urlOrEmpty,
 			sourceUrl: z.string().optional(),
 			contributorRemarks: z.string().optional(),
+			supportedPayment: z
+				.array(z.enum(PAYMENT_OPTIONS))
+				.min(1, "At least one payment method is required"),
 			qrContent: institution.qrContent
 				? z.string().optional()
 				: z
 						.string()
 						.min(1, "QR content required when automatic extraction fails"),
 		});
-
 		type LocalFormData = z.infer<typeof dynamicSchema>;
 
 		const {
@@ -106,6 +109,7 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 				website: institution.socialMedia?.website ?? "",
 				sourceUrl: institution.sourceUrl ?? "",
 				contributorRemarks: institution.contributorRemarks ?? "",
+				supportedPayment: institution.supportedPayment ?? ["duitnow"],
 				qrContent: institution.qrContent ?? "",
 			},
 		});
@@ -260,6 +264,27 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 							<Textarea id="address" rows={3} {...register("address")} />
 						</div>
 
+						<div className="space-y-2">
+							<div className="font-medium">Supported Payment Methods</div>
+							<div className="flex flex-wrap gap-3">
+								{PAYMENT_OPTIONS.map((payment) => (
+									<label key={payment} className="flex items-center space-x-2">
+										<input
+											type="checkbox"
+											value={payment}
+											{...register("supportedPayment")}
+											className="rounded border-gray-300"
+										/>
+										<span className="capitalize">{payment}</span>
+									</label>
+								))}
+							</div>
+							{errors.supportedPayment && (
+								<p className="text-sm text-red-500">
+									{errors.supportedPayment.message}
+								</p>
+							)}
+						</div>
 						{/* Manual QR Content field (only shown if missing) */}
 						{!institution.qrContent && (
 							<div className="space-y-2">
