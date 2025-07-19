@@ -1,9 +1,10 @@
 import { db } from "@/db";
 import { claimRequests, institutions, users } from "@/db/schema";
+import { requireAdminSession } from "@/lib/auth-helpers";
 import { unstable_cache } from "@/lib/unstable-cache";
 import { count, desc, eq } from "drizzle-orm";
 
-export const getPendingClaimRequestsCount = unstable_cache(
+const getPendingClaimRequestsCountInternal = unstable_cache(
 	async () => {
 		const result = await db
 			.select({ count: count() })
@@ -19,7 +20,12 @@ export const getPendingClaimRequestsCount = unstable_cache(
 	},
 );
 
-export const getPendingClaimRequests = unstable_cache(
+export async function getPendingClaimRequestsCount() {
+	await requireAdminSession();
+	return getPendingClaimRequestsCountInternal();
+}
+
+const getPendingClaimRequestsInternal = unstable_cache(
 	async () => {
 		return await db
 			.select({
@@ -48,7 +54,14 @@ export const getPendingClaimRequests = unstable_cache(
 	},
 );
 
-export const getClaimRequestById = async (id: number) => {
+export async function getPendingClaimRequests() {
+	await requireAdminSession();
+	return getPendingClaimRequestsInternal();
+}
+
+export async function getClaimRequestById(id: number) {
+	await requireAdminSession();
+
 	const result = await db
 		.select({
 			id: claimRequests.id,
@@ -76,4 +89,4 @@ export const getClaimRequestById = async (id: number) => {
 		.limit(1);
 
 	return result[0] || null;
-};
+}

@@ -3,39 +3,17 @@
 import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions, users } from "@/db/schema";
+import { requireAdminSession } from "@/lib/auth-helpers";
 import { and, count, desc, eq, inArray } from "drizzle-orm";
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { headers } from "next/headers";
-
-// Helper to ensure the current request is being made by an authenticated admin.
-async function requireAdminSession() {
-	const hdrs = headers();
-	const session = await auth.api.getSession({ headers: hdrs });
-
-	if (!session) {
-		throw new Error("Unauthorized: Admin access required");
-	}
-
-	// Verify role via database to avoid relying on session payload
-	const [user] = await db
-		.select({ role: users.role })
-		.from(users)
-		.where(eq(users.id, session.user.id))
-		.limit(1);
-
-	if (!user || user.role !== "admin") {
-		throw new Error("Unauthorized: Admin access required");
-	}
-
-	return session;
-}
 
 /**
  * Fetch all institutions that are currently pending approval.
  * Joins contributor information when available for display purposes.
  * Uses larger limit for better client-side pagination performance.
  */
-export const getPendingInstitutions = unstable_cache(
+const getPendingInstitutionsInternal = unstable_cache(
 	async () => {
 		return await db
 			.select({
@@ -61,12 +39,17 @@ export const getPendingInstitutions = unstable_cache(
 	},
 );
 
+export async function getPendingInstitutions() {
+	await requireAdminSession();
+	return getPendingInstitutionsInternal();
+}
+
 /**
  * Fetch all institutions that have been rejected.
  * Joins contributor information when available for display purposes.
  * Uses larger limit for better client-side pagination performance.
  */
-export const getRejectedInstitutions = unstable_cache(
+const getRejectedInstitutionsInternal = unstable_cache(
 	async () => {
 		return await db
 			.select({
@@ -94,12 +77,17 @@ export const getRejectedInstitutions = unstable_cache(
 	},
 );
 
+export async function getRejectedInstitutions() {
+	await requireAdminSession();
+	return getRejectedInstitutionsInternal();
+}
+
 /**
  * Fetch all institutions that have been approved.
  * Joins contributor information when available for display purposes.
  * Uses larger limit for better client-side pagination performance.
  */
-export const getApprovedInstitutions = unstable_cache(
+const getApprovedInstitutionsInternal = unstable_cache(
 	async () => {
 		return await db
 			.select({
@@ -127,10 +115,15 @@ export const getApprovedInstitutions = unstable_cache(
 	},
 );
 
+export async function getApprovedInstitutions() {
+	await requireAdminSession();
+	return getApprovedInstitutionsInternal();
+}
+
 /**
  * Get the count of pending institutions for display in sidebar badges
  */
-export const getPendingInstitutionsCount = unstable_cache(
+const getPendingInstitutionsCountInternal = unstable_cache(
 	async () => {
 		const [result] = await db
 			.select({ count: count() })
@@ -146,10 +139,15 @@ export const getPendingInstitutionsCount = unstable_cache(
 	},
 );
 
+export async function getPendingInstitutionsCount() {
+	await requireAdminSession();
+	return getPendingInstitutionsCountInternal();
+}
+
 /**
  * Get the count of approved institutions for display in sidebar badges
  */
-export const getApprovedInstitutionsCount = unstable_cache(
+const getApprovedInstitutionsCountInternal = unstable_cache(
 	async () => {
 		const [result] = await db
 			.select({ count: count() })
@@ -165,10 +163,15 @@ export const getApprovedInstitutionsCount = unstable_cache(
 	},
 );
 
+export async function getApprovedInstitutionsCount() {
+	await requireAdminSession();
+	return getApprovedInstitutionsCountInternal();
+}
+
 /**
  * Get the count of rejected institutions for display in sidebar badges
  */
-export const getRejectedInstitutionsCount = unstable_cache(
+const getRejectedInstitutionsCountInternal = unstable_cache(
 	async () => {
 		const [result] = await db
 			.select({ count: count() })
@@ -184,6 +187,11 @@ export const getRejectedInstitutionsCount = unstable_cache(
 	},
 );
 
+export async function getRejectedInstitutionsCount() {
+	await requireAdminSession();
+	return getRejectedInstitutionsCountInternal();
+}
+
 /**
  * Approve a pending institution
  */
@@ -192,7 +200,7 @@ export async function approveInstitution(
 	_reviewerId: string, // kept for backward-compatibility – ignored
 	adminNotes?: string,
 ) {
-	const session = await requireAdminSession();
+	const { session } = await requireAdminSession();
 	const reviewerId = session.user.id;
 	const result = await db
 		.update(institutions)
@@ -225,7 +233,7 @@ export async function rejectInstitution(
 	_reviewerId: string, // kept for backward-compatibility – ignored
 	adminNotes?: string,
 ) {
-	const session = await requireAdminSession();
+	const { session } = await requireAdminSession();
 	const reviewerId = session.user.id;
 	const result = await db
 		.update(institutions)
@@ -347,27 +355,42 @@ export async function updateInstitutionByAdmin(
 	>,
 ) {
 	await requireAdminSession();
-	return await db
+	const result = await db
 		.update(institutions)
 		.set({ ...payload })
 		.where(eq(institutions.id, id))
 		.returning();
+
+	// Revalidate relevant pages to update the UI
+	revalidatePath("/admin/institutions/pending");
+	revalidatePath("/admin/institutions/approved");
+	revalidatePath("/admin/dashboard");
+
+	// Revalidate cached data and counts
+	revalidateTag("pending-institutions");
+	revalidateTag("approved-institutions");
+	revalidateTag("institutions-data");
+
+	return result;
 }
 
 /**
  * Get all users for contributor assignment dropdown
  */
+const getAllUsersInternal = unstable_cache(
+	async () => {
+		return db.select().from(users).orderBy(desc(users.createdAt));
+	},
+	["all-users-list"],
+	{
+		tags: ["users-data"],
+		revalidate: 300, // 5 minutes fallback
+	},
+);
+
 export async function getAllUsers() {
-	return await db
-		.select({
-			id: users.id,
-			name: users.name,
-			email: users.email,
-			username: users.username,
-		})
-		.from(users)
-		.where(eq(users.isActive, true))
-		.orderBy(users.name);
+	await requireAdminSession();
+	return getAllUsersInternal();
 }
 
 /**
@@ -377,6 +400,11 @@ export async function assignContributorToInstitution(
 	institutionId: number,
 	contributorId: string | null,
 ) {
+	const { session } = await requireAdminSession();
+	// Ensure the operation is performed by an admin
+	// Note: requireAdminSession already handles this, but we use the session for reviewerId.
+	const reviewerId = session.user.id;
+
 	// Verify the institution exists and is approved
 	const [institution] = await db
 		.select({ id: institutions.id, status: institutions.status })
@@ -426,6 +454,9 @@ export async function batchApproveInstitutions(
 	ids: number[],
 	adminNotes?: string,
 ) {
+	const { session } = await requireAdminSession();
+	const reviewerId = session.user.id;
+
 	if (ids.length === 0) {
 		throw new Error("No institutions provided for batch approval");
 	}
@@ -435,9 +466,6 @@ export async function batchApproveInstitutions(
 			"Batch size too large. Maximum 100 institutions per batch.",
 		);
 	}
-
-	const session = await requireAdminSession();
-	const reviewerId = session.user.id;
 
 	// First, verify all institutions exist and are pending
 	const existingInstitutions = await db
@@ -495,6 +523,9 @@ export async function batchRejectInstitutions(
 	ids: number[],
 	adminNotes?: string,
 ) {
+	const { session } = await requireAdminSession();
+	const reviewerId = session.user.id;
+
 	if (ids.length === 0) {
 		throw new Error("No institutions provided for batch rejection");
 	}
@@ -504,9 +535,6 @@ export async function batchRejectInstitutions(
 			"Batch size too large. Maximum 100 institutions per batch.",
 		);
 	}
-
-	const session = await requireAdminSession();
-	const reviewerId = session.user.id;
 
 	// First, verify all institutions exist and are pending
 	const existingInstitutions = await db

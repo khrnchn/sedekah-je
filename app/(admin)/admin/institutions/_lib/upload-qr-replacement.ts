@@ -2,6 +2,7 @@
 
 import { db } from "@/db";
 import { institutions } from "@/db/institutions";
+import { requireAdminSession } from "@/lib/auth-helpers";
 import { r2Storage } from "@/lib/r2-client";
 import {
 	BinaryBitmap,
@@ -26,7 +27,7 @@ export async function uploadQrReplacement(
 	formData: FormData,
 ): Promise<UploadQrReplacementResult> {
 	try {
-		// Extract QR image file from FormData
+		await requireAdminSession(); // Extract QR image file from FormData
 		const qrImageFile = formData.get("qrImage") as File | null;
 
 		if (!qrImageFile || qrImageFile.size === 0) {
@@ -104,7 +105,7 @@ export async function saveQrReplacement(
 	qrContent?: string,
 ): Promise<{ success: boolean; message: string; error?: string }> {
 	try {
-		// Update institution with new QR data
+		await requireAdminSession(); // Update institution with new QR data
 		await db
 			.update(institutions)
 			.set({
