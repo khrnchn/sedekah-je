@@ -2,6 +2,7 @@
 
 import { db } from "@/db";
 import { institutions, users } from "@/db/schema";
+import { requireAdminSession } from "@/lib/auth-helpers";
 import { states } from "@/lib/institution-constants";
 import { and, count, eq, gte, sql } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
@@ -9,7 +10,7 @@ import { unstable_cache } from "next/cache";
 /**
  * Get dashboard statistics with counts for each institution status
  */
-export const getDashboardStats = unstable_cache(
+const getDashboardStatsInternal = unstable_cache(
 	async () => {
 		const [stats] = await db
 			.select({
@@ -38,10 +39,15 @@ export const getDashboardStats = unstable_cache(
 	},
 );
 
+export async function getDashboardStats() {
+	await requireAdminSession();
+	return getDashboardStatsInternal();
+}
+
 /**
  * Get institution statistics by category
  */
-export const getInstitutionsByCategory = unstable_cache(
+const getInstitutionsByCategoryInternal = unstable_cache(
 	async () => {
 		const result = await db
 			.select({
@@ -61,10 +67,15 @@ export const getInstitutionsByCategory = unstable_cache(
 	},
 );
 
+export async function getInstitutionsByCategory() {
+	await requireAdminSession();
+	return getInstitutionsByCategoryInternal();
+}
+
 /**
  * Get institution statistics by state
  */
-export const getInstitutionsByState = unstable_cache(
+const getInstitutionsByStateInternal = unstable_cache(
 	async () => {
 		const result = await db
 			.select({
@@ -85,10 +96,15 @@ export const getInstitutionsByState = unstable_cache(
 	},
 );
 
+export async function getInstitutionsByState() {
+	await requireAdminSession();
+	return getInstitutionsByStateInternal();
+}
+
 /**
  * Get recent institution submissions (last 30 days)
  */
-export const getRecentSubmissions = unstable_cache(
+const getRecentSubmissionsInternal = unstable_cache(
 	async () => {
 		const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
@@ -111,10 +127,15 @@ export const getRecentSubmissions = unstable_cache(
 	},
 );
 
+export async function getRecentSubmissions() {
+	await requireAdminSession();
+	return getRecentSubmissionsInternal();
+}
+
 /**
  * Get top contributors by number of submissions
  */
-export const getTopContributors = unstable_cache(
+const getTopContributorsInternal = unstable_cache(
 	async () => {
 		const result = await db
 			.select({
@@ -138,10 +159,15 @@ export const getTopContributors = unstable_cache(
 	},
 );
 
+export async function getTopContributors() {
+	await requireAdminSession();
+	return getTopContributorsInternal();
+}
+
 /**
  * Get latest institution activities for the feed - cached for better performance
  */
-export const getLatestActivities = unstable_cache(
+const getLatestActivitiesInternal = unstable_cache(
 	async () => {
 		const result = await db
 			.select({
@@ -168,10 +194,16 @@ export const getLatestActivities = unstable_cache(
 		tags: ["dashboard-data", "recent-activities"],
 	},
 );
+
+export async function getLatestActivities() {
+	await requireAdminSession();
+	return getLatestActivitiesInternal();
+}
+
 /**
  * Get state distribution data for the map visualization - cached
  */
-export const getStateDistribution = unstable_cache(
+const getStateDistributionInternal = unstable_cache(
 	async () => {
 		const result = await db
 			.select({
@@ -199,10 +231,16 @@ export const getStateDistribution = unstable_cache(
 		tags: ["dashboard-data"],
 	},
 );
+
+export async function getStateDistribution() {
+	await requireAdminSession();
+	return getStateDistributionInternal();
+}
+
 /**
  * Get monthly growth data for charts - cached
  */
-export const getMonthlyGrowth = unstable_cache(
+const getMonthlyGrowthInternal = unstable_cache(
 	async () => {
 		const result = await db
 			.select({
@@ -224,10 +262,16 @@ export const getMonthlyGrowth = unstable_cache(
 		tags: ["dashboard-data"],
 	},
 );
+
+export async function getMonthlyGrowth() {
+	await requireAdminSession();
+	return getMonthlyGrowthInternal();
+}
+
 /**
  * Get institutions with their coordinates for map display - cached
  */
-export const getInstitutionsWithCoords = unstable_cache(
+const getInstitutionsWithCoordsInternal = unstable_cache(
 	async () => {
 		const result = await db
 			.select({
@@ -254,3 +298,8 @@ export const getInstitutionsWithCoords = unstable_cache(
 		tags: ["dashboard-data"],
 	},
 );
+
+export async function getInstitutionsWithCoords() {
+	await requireAdminSession();
+	return getInstitutionsWithCoordsInternal();
+}
