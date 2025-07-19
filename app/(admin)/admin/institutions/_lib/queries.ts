@@ -90,7 +90,7 @@ export const getRejectedInstitutions = unstable_cache(
 	["rejected-institutions-list"],
 	{
 		tags: ["institutions-data", "rejected-institutions"],
-		revalidate: 900, // 15 minutes fallback
+		revalidate: 300, // 5 minutes fallback
 	},
 );
 
@@ -123,7 +123,7 @@ export const getApprovedInstitutions = unstable_cache(
 	["approved-institutions-list"],
 	{
 		tags: ["institutions-data", "approved-institutions"],
-		revalidate: 900, // 15 minutes fallback
+		revalidate: 300, // 5 minutes fallback
 	},
 );
 
@@ -161,7 +161,7 @@ export const getApprovedInstitutionsCount = unstable_cache(
 	["approved-institutions-count"],
 	{
 		tags: ["institutions-count", "approved-institutions"],
-		revalidate: 900, // 15 minutes fallback
+		revalidate: 300, // 5 minutes fallback
 	},
 );
 
@@ -180,7 +180,7 @@ export const getRejectedInstitutionsCount = unstable_cache(
 	["rejected-institutions-count"],
 	{
 		tags: ["institutions-count", "rejected-institutions"],
-		revalidate: 900, // 15 minutes fallback
+		revalidate: 300, // 5 minutes fallback
 	},
 );
 

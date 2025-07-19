@@ -49,6 +49,7 @@ export function NavInstitutions({
 			| "destructive"
 			| "outline"
 			| "success";
+		badgeComponent?: React.ReactNode;
 	}[];
 }) {
 	const { isMobile } = useSidebar();
@@ -65,22 +66,23 @@ export function NavInstitutions({
 								<a href={item.url}>
 									{IconComponent && <IconComponent className="h-4 w-4" />}
 									<span>{item.name}</span>
-									{item.badge && item.badge > 0 && (
-										<Badge
-											variant={
-												item.badgeVariant === "success"
-													? "default"
-													: item.badgeVariant || "destructive"
-											}
-											className={
-												item.badgeVariant === "success"
-													? "bg-primary text-primary-foreground hover:bg-primary/90 duration-200 ease-linear"
-													: ""
-											}
-										>
-											{item.badge}
-										</Badge>
-									)}
+									{item.badgeComponent ||
+										(item.badge && item.badge > 0 && (
+											<Badge
+												variant={
+													item.badgeVariant === "success"
+														? "default"
+														: item.badgeVariant || "destructive"
+												}
+												className={
+													item.badgeVariant === "success"
+														? "bg-primary text-primary-foreground hover:bg-primary/90 duration-200 ease-linear"
+														: ""
+												}
+											>
+												{item.badge}
+											</Badge>
+										))}
 								</a>
 							</SidebarMenuButton>
 							<DropdownMenu>

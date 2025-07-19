@@ -1,24 +1,48 @@
+import { getSessionCookie } from "better-auth/cookies";
 import { type NextRequest, NextResponse } from "next/server";
 
-export function middleware(request: NextRequest) {
-	// add pathname to headers
+export async function middleware(request: NextRequest) {
+	const sessionCookie = getSessionCookie(request);
+	const { pathname } = request.nextUrl;
+
+	// Add pathname to headers for layouts
 	const requestHeaders = new Headers(request.headers);
-	requestHeaders.set("x-pathname", request.nextUrl.pathname);
+	requestHeaders.set("x-pathname", pathname);
 
-	// Check if user is trying to access user pages
+	// Admin route protection
+	if (pathname.startsWith("/admin")) {
+		if (!sessionCookie) {
+			return NextResponse.redirect(new URL("/", request.url));
+		}
+		// Mark as admin path for layout role verification
+		requestHeaders.set("x-requires-admin", "true");
+		requestHeaders.set("x-has-session", "true");
+	}
+
+	// User route protection
 	const userProtectedPaths = ["/contribute", "/my-contributions"];
-	const isUserProtectedPath = userProtectedPaths.some((path) =>
-		request.nextUrl.pathname.startsWith(path),
-	);
-
-	// For now, just add the path to headers - actual auth check will be done client-side
-	if (isUserProtectedPath) {
+	if (userProtectedPaths.some((path) => pathname.startsWith(path))) {
+		if (!sessionCookie) {
+			return NextResponse.redirect(new URL("/auth", request.url));
+		}
 		requestHeaders.set("x-requires-auth", "true");
 	}
 
+	// Redirect authenticated users away from auth pages
+	if (sessionCookie && pathname === "/auth") {
+		return NextResponse.redirect(new URL("/", request.url));
+	}
+
 	return NextResponse.next({
-		request: {
-			headers: requestHeaders,
-		},
+		request: { headers: requestHeaders },
 	});
 }
+
+export const config = {
+	matcher: [
+		"/admin/:path*",
+		"/contribute/:path*",
+		"/my-contributions/:path*",
+		"/auth",
+	],
+};
