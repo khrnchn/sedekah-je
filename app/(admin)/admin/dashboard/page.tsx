@@ -26,27 +26,34 @@ export default function DashboardPage() {
 				<SiteHeader />
 				<div className="@container/main flex flex-1 flex-col gap-2">
 					<div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-						{/* Dashboard Statistics */}
+						{/* Critical Data - Load First */}
 						<div className="px-4 lg:px-6">
 							<Suspense fallback={<StatsSkeleton />}>
 								<AsyncDashboardStats />
 							</Suspense>
 						</div>
 
-						{/* Charts Section */}
+						{/* Recent Activity - High Priority */}
 						<div className="px-4 lg:px-6">
-							<Suspense fallback={<ChartSkeleton />}>
-								<AsyncDashboardCharts />
+							<Suspense fallback={<TableSkeleton />}>
+								<AsyncInstitutionTable />
 							</Suspense>
 						</div>
 
-						{/* Map and Contributors Grid */}
+						{/* Secondary Data - Load After Critical */}
 						<div className="grid gap-4 px-4 lg:px-6 lg:grid-cols-3">
-							<div className="lg:col-span-2">
+							<div className="lg:col-span-2 space-y-4">
+								{/* Charts - Lower Priority */}
+								<Suspense fallback={<ChartSkeleton />}>
+									<AsyncDashboardCharts />
+								</Suspense>
+
+								{/* Map - Lowest Priority */}
 								<Suspense fallback={<MapSkeleton />}>
 									<AsyncDashboardMap />
 								</Suspense>
 							</div>
+
 							<div className="space-y-4">
 								<Suspense
 									fallback={
@@ -62,21 +69,10 @@ export default function DashboardPage() {
 								>
 									<AsyncActivityFeed />
 								</Suspense>
+								<Suspense fallback={<StatsSkeleton />}>
+									<AsyncRealTimeMetrics />
+								</Suspense>
 							</div>
-						</div>
-
-						{/* Real-time Metrics */}
-						<div className="px-4 lg:px-6">
-							<Suspense fallback={<StatsSkeleton />}>
-								<AsyncRealTimeMetrics />
-							</Suspense>
-						</div>
-
-						{/* Recent Institutions Table */}
-						<div className="px-4 lg:px-6">
-							<Suspense fallback={<TableSkeleton />}>
-								<AsyncInstitutionTable />
-							</Suspense>
 						</div>
 					</div>
 				</div>

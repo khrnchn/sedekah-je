@@ -3,16 +3,17 @@ import { headers } from "next/headers";
 import Image from "next/image";
 import type * as React from "react";
 
-import { getPendingClaimRequestsCount } from "@/app/(admin)/admin/claim-requests/_lib/queries";
-import {
-	getApprovedInstitutionsCount,
-	getPendingInstitutionsCount,
-	getRejectedInstitutionsCount,
-} from "@/app/(admin)/admin/institutions/_lib/queries";
 import { auth } from "@/auth";
 import { NavInstitutions } from "@/components/nav-institutions";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
+import {
+	AsyncApprovedBadge,
+	AsyncClaimsBadge,
+	AsyncPendingBadge,
+	AsyncRejectedBadge,
+	AsyncUsersBadge,
+} from "@/components/sidebar-badges";
 import { SidebarThemeToggle } from "@/components/sidebar-theme-toggle";
 import {
 	Sidebar,
@@ -25,8 +26,6 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { getTotalUsersCount } from "@/lib/queries/users";
-
 const data = {
 	navMain: [
 		{
@@ -99,90 +98,46 @@ const data = {
 export async function AppSidebar({
 	...props
 }: React.ComponentProps<typeof Sidebar>) {
-	let pendingCount = 0;
-	let approvedCount = 0;
-	let rejectedCount = 0;
-	let totalUsersCount = 0;
-	let pendingClaimRequestsCount = 0;
-	let currentUser = {
-		name: "Admin",
-		email: "admin@sedekah.je",
-		avatar: "/avatars/admin.jpg",
+	// Get current user session (this will be fast due to caching)
+	const headersList = await headers();
+	const session = await auth.api.getSession({
+		headers: headersList,
+	});
+	const currentUser = {
+		name: session?.user?.name || "Admin",
+		email: session?.user?.email || "admin@sedekah.je",
+		avatar: session?.user?.image || "/avatars/admin.jpg",
 	};
-
-	try {
-		[
-			pendingCount,
-			approvedCount,
-			rejectedCount,
-			totalUsersCount,
-			pendingClaimRequestsCount,
-		] = await Promise.all([
-			getPendingInstitutionsCount(),
-			getApprovedInstitutionsCount(),
-			getRejectedInstitutionsCount(),
-			getTotalUsersCount(),
-			getPendingClaimRequestsCount(),
-		]);
-
-		// Get current user session
-		const session = await auth.api.getSession({
-			headers: await headers(),
-		});
-
-		if (session?.user) {
-			currentUser = {
-				name: session.user.name || "Admin",
-				email: session.user.email || "admin@sedekah.je",
-				avatar: session.user.image || "/avatars/admin.jpg",
-			};
-		}
-	} catch (error) {
-		// Silently handle error - will show defaults
-		console.error("Error fetching sidebar data:", error);
-	}
-
+	// Map institutions with async badge components
 	const institutionsWithBadge = data.institutions.map((item) => {
-		let badge: number | undefined;
-		let badgeVariant:
-			| "default"
-			| "secondary"
-			| "destructive"
-			| "outline"
-			| "success" = "default";
+		let badgeComponent: React.ReactNode = null;
 
-		if (item.name === "Pending Review" && pendingCount > 0) {
-			badge = pendingCount;
-			badgeVariant = "destructive";
-		} else if (item.name === "Approved" && approvedCount > 0) {
-			badge = approvedCount;
-			badgeVariant = "success";
-		} else if (item.name === "Rejected" && rejectedCount > 0) {
-			badge = rejectedCount;
-			badgeVariant = "destructive";
-		} else if (item.name === "Claims" && pendingClaimRequestsCount > 0) {
-			badge = pendingClaimRequestsCount;
-			badgeVariant = "destructive";
+		if (item.name === "Pending Review") {
+			badgeComponent = <AsyncPendingBadge />;
+		} else if (item.name === "Approved") {
+			badgeComponent = <AsyncApprovedBadge />;
+		} else if (item.name === "Rejected") {
+			badgeComponent = <AsyncRejectedBadge />;
+		} else if (item.name === "Claims") {
+			badgeComponent = <AsyncClaimsBadge />;
 		}
 
 		return {
 			...item,
-			badge,
-			badgeVariant,
+			badgeComponent,
 		};
 	});
 
+	// Map nav main with async badge components
 	const navMainWithBadges = data.navMain.map((item) => {
 		if (item.title === "Users") {
 			return {
 				...item,
-				badge: totalUsersCount,
-				badgeVariant: "default" as const,
+				badgeComponent: <AsyncUsersBadge />,
 			};
 		}
 		return item;
 	});
-
 	return (
 		<Sidebar collapsible="offcanvas" {...props}>
 			<SidebarHeader>

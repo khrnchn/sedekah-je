@@ -10,8 +10,19 @@ export default async function AdminLayout({
 }: {
 	children: React.ReactNode;
 }) {
+	const headersList = await headers();
+	const requiresAdmin = headersList.get("x-requires-admin");
+	const hasSession = headersList.get("x-has-session");
+
+	// Middleware already checked session existence
+	if (!hasSession || !requiresAdmin) {
+		redirect("/");
+	}
+
+	// Still need to verify admin role from database
+	// This is the only DB call we can't avoid
 	const session = await auth.api.getSession({
-		headers: await headers(),
+		headers: headersList,
 	});
 
 	if (!session) {
@@ -19,7 +30,6 @@ export default async function AdminLayout({
 	}
 
 	const user = await getAdminUser(session.user.id);
-
 	if (!user || user.role !== "admin") {
 		redirect("/");
 	}
