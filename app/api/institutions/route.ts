@@ -5,23 +5,25 @@ import type {
 	states as stateOptions,
 } from "@/lib/institution-constants";
 import { and, count, eq, ilike, inArray, or } from "drizzle-orm";
+import { unstable_cache } from "next/cache";
 import { type NextRequest, NextResponse } from "next/server";
 
 type Category = (typeof categoryOptions)[number];
 type State = (typeof stateOptions)[number];
 
-export async function GET(request: NextRequest) {
-	const { searchParams } = new URL(request.url);
+type SearchParams = {
+	search: string;
+	category: string;
+	state: string;
+	page: number;
+	limit: number;
+};
 
-	const search = searchParams.get("search") || "";
-	const category = searchParams.get("category") || "";
-	const state = searchParams.get("state") || "";
-	const page = Number.parseInt(searchParams.get("page") || "1");
-	const limit = Number.parseInt(searchParams.get("limit") || "15");
+const getInstitutionsWithFiltersInternal = unstable_cache(
+	async (params: SearchParams) => {
+		const { search, category, state, page, limit } = params;
+		const offset = (page - 1) * limit;
 
-	const offset = (page - 1) * limit;
-
-	try {
 		// Build where conditions
 		const conditions = [eq(institutions.status, "approved")];
 
@@ -77,7 +79,7 @@ export async function GET(request: NextRequest) {
 		const total = totalResult[0]?.count ?? 0;
 		const hasMore = offset + limit < total;
 
-		return NextResponse.json({
+		return {
 			institutions: institutionsResult,
 			pagination: {
 				page,
@@ -86,7 +88,34 @@ export async function GET(request: NextRequest) {
 				hasMore,
 				totalPages: Math.ceil(total / limit),
 			},
+		};
+	},
+	["institutions-api"],
+	{
+		revalidate: 300, // 5 minutes for API responses
+		tags: ["institutions"],
+	},
+);
+
+export async function GET(request: NextRequest) {
+	const { searchParams } = new URL(request.url);
+
+	const search = searchParams.get("search") || "";
+	const category = searchParams.get("category") || "";
+	const state = searchParams.get("state") || "";
+	const page = Number.parseInt(searchParams.get("page") || "1");
+	const limit = Number.parseInt(searchParams.get("limit") || "15");
+
+	try {
+		const result = await getInstitutionsWithFiltersInternal({
+			search,
+			category,
+			state,
+			page,
+			limit,
 		});
+
+		return NextResponse.json(result);
 	} catch (error) {
 		console.error("Error fetching institutions:", error);
 		return NextResponse.json(
