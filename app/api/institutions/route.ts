@@ -92,7 +92,7 @@ const getInstitutionsWithFiltersInternal = unstable_cache(
 	},
 	["institutions-api"],
 	{
-		revalidate: 300, // 5 minutes for API responses
+		revalidate: 86400, // 1 day for API responses
 		tags: ["institutions"],
 	},
 );

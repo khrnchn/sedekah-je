@@ -44,7 +44,7 @@ const getInstitutionsInternal = unstable_cache(
 	},
 	["all-institutions"],
 	{
-		revalidate: 900, // 15 minutes for stable homepage data
+		revalidate: 86400, // 1 day for stable homepage data
 		tags: ["institutions"],
 	},
 );
@@ -94,7 +94,7 @@ const getInstitutionBySlugInternal = unstable_cache(
 	},
 	["institution-by-slug"],
 	{
-		revalidate: 900, // 15 minutes for individual institution pages
+		revalidate: 86400, // 1 day for individual institution pages
 		tags: ["institutions"],
 	},
 );

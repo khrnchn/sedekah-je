@@ -221,6 +221,7 @@ export async function approveInstitution(
 	// Revalidate cached data and counts
 	revalidateTag("pending-institutions");
 	revalidateTag("approved-institutions");
+	revalidateTag("institutions"); // Homepage cache
 
 	return result;
 }
@@ -370,6 +371,7 @@ export async function updateInstitutionByAdmin(
 	revalidateTag("pending-institutions");
 	revalidateTag("approved-institutions");
 	revalidateTag("institutions-data");
+	revalidateTag("institutions"); // Homepage cache
 
 	return result;
 }
@@ -443,6 +445,7 @@ export async function assignContributorToInstitution(
 	revalidatePath("/admin/institutions/approved");
 	revalidateTag("approved-institutions");
 	revalidateTag("institutions-data");
+	revalidateTag("institutions"); // Homepage cache
 
 	return result;
 }
@@ -512,6 +515,7 @@ export async function batchApproveInstitutions(
 
 	// Revalidate cached data tables
 	revalidateTag("institutions-data");
+	revalidateTag("institutions"); // Homepage cache
 
 	return result;
 }
