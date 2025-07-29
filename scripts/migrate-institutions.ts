@@ -3,6 +3,7 @@ import { Pool } from "pg";
 import { institutions } from "../app/data/institutions";
 import { institutions as institutionsTable } from "../db/institutions";
 import type { categories, states } from "../lib/institution-constants";
+import { slugify } from "../lib/utils";
 
 // Database connection
 const connectionString = process.env.DATABASE_URL;
@@ -42,6 +43,7 @@ async function migrateInstitutions() {
 			// Map data to match database schema
 			const mappedData = batch.map((institution) => ({
 				name: institution.name,
+				slug: slugify(institution.name), // Generate slug from name
 				description: institution.description,
 				category: (institution.category === "mosque"
 					? "masjid"

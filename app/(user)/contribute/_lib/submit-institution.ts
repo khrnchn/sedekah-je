@@ -6,6 +6,7 @@ import type { categories, states } from "@/lib/institution-constants";
 import { getUserById } from "@/lib/queries/users";
 import { r2Storage } from "@/lib/r2-client";
 import { logNewInstitution } from "@/lib/telegram";
+import { slugify } from "@/lib/utils";
 import { and, count, eq, gte } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { institutionFormServerSchema } from "./validations";
@@ -14,6 +15,30 @@ export type SubmitInstitutionFormState =
 	| { status: "idle" }
 	| { status: "success" }
 	| { status: "error"; errors: Record<string, string[]> };
+
+// Helper function to generate a unique slug
+async function generateUniqueSlug(name: string): Promise<string> {
+	const baseSlug = slugify(name);
+	let slug = baseSlug;
+	let counter = 1;
+
+	// Check if slug already exists
+	while (true) {
+		const [existing] = await db
+			.select({ id: institutions.id })
+			.from(institutions)
+			.where(eq(institutions.slug, slug))
+			.limit(1);
+
+		if (!existing) {
+			return slug;
+		}
+
+		// If slug exists, append counter
+		slug = `${baseSlug}-${counter}`;
+		counter++;
+	}
+}
 
 export async function submitInstitution(
 	_prevState: SubmitInstitutionFormState | undefined,
@@ -263,10 +288,14 @@ export async function submitInstitution(
 	}
 
 	try {
+		// Generate unique slug for the institution
+		const slug = await generateUniqueSlug(parsed.data.name);
+
 		const [{ id: newId }] = await db
 			.insert(institutions)
 			.values({
 				...parsed.data,
+				slug, // Add the generated slug
 				// We can safely cast here because client-side validation ensures
 				// these are valid enum values. The server-side schema is intentionally
 				// loose as per project rules (no pgEnum).

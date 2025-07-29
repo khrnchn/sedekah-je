@@ -3,7 +3,7 @@
 import { db } from "@/db";
 import { institutions, users } from "@/db/schema";
 import { slugify } from "@/lib/utils";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 
 const getInstitutionsInternal = unstable_cache(
@@ -12,6 +12,7 @@ const getInstitutionsInternal = unstable_cache(
 			.select({
 				id: institutions.id,
 				name: institutions.name,
+				slug: institutions.slug,
 				description: institutions.description,
 				category: institutions.category,
 				state: institutions.state,
@@ -55,10 +56,11 @@ export async function getInstitutions() {
 
 const getInstitutionBySlugInternal = unstable_cache(
 	async (slug: string) => {
-		const results = await db
+		const [institution] = await db
 			.select({
 				id: institutions.id,
 				name: institutions.name,
+				slug: institutions.slug,
 				description: institutions.description,
 				category: institutions.category,
 				state: institutions.state,
@@ -84,11 +86,10 @@ const getInstitutionBySlugInternal = unstable_cache(
 			})
 			.from(institutions)
 			.leftJoin(users, eq(institutions.contributorId, users.id))
-			.where(eq(institutions.status, "approved"))
-			.orderBy(institutions.name);
-
-		// Find by slug match using the same slugify function
-		const institution = results.find((inst) => slugify(inst.name) === slug);
+			.where(
+				and(eq(institutions.slug, slug), eq(institutions.status, "approved")),
+			)
+			.limit(1);
 
 		return institution || null;
 	},

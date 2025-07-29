@@ -20,6 +20,7 @@ import { users } from "./users";
 export const institutions = pgTable("institutions", {
 	id: serial("id").primaryKey(),
 	name: varchar("name", { length: 255 }).notNull(),
+	slug: text("slug").unique().notNull(),
 	description: text("description"),
 	category: varchar("category", { length: 50 })
 		.notNull()

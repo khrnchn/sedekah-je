@@ -15,6 +15,13 @@
 			"when": 1752622845987,
 			"tag": "0001_typical_fat_cobra",
 			"breakpoints": true
+		},
+		{
+			"idx": 2,
+			"version": "7",
+			"when": 1753768855010,
+			"tag": "0002_smooth_ares",
+			"breakpoints": true
 		}
 	]
 }

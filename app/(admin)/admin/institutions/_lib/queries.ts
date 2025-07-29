@@ -4,9 +4,41 @@ import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions, users } from "@/db/schema";
 import { requireAdminSession } from "@/lib/auth-helpers";
-import { and, count, desc, eq, inArray } from "drizzle-orm";
+import { slugify } from "@/lib/utils";
+import { and, count, desc, eq, inArray, ne } from "drizzle-orm";
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { headers } from "next/headers";
+
+// Helper function to generate a unique slug
+async function generateUniqueSlug(
+	name: string,
+	excludeId?: number,
+): Promise<string> {
+	const baseSlug = slugify(name);
+	let slug = baseSlug;
+	let counter = 1;
+
+	// Check if slug already exists (excluding the current institution if updating)
+	while (true) {
+		const whereCondition = excludeId
+			? and(eq(institutions.slug, slug), ne(institutions.id, excludeId))
+			: eq(institutions.slug, slug);
+
+		const [existing] = await db
+			.select({ id: institutions.id })
+			.from(institutions)
+			.where(whereCondition)
+			.limit(1);
+
+		if (!existing) {
+			return slug;
+		}
+
+		// If slug exists, append counter
+		slug = `${baseSlug}-${counter}`;
+		counter++;
+	}
+}
 
 /**
  * Fetch all institutions that are currently pending approval.
@@ -352,13 +384,22 @@ export async function updateInstitutionByAdmin(
 			| "socialMedia"
 			| "sourceUrl"
 			| "contributorRemarks"
+			| "slug"
 		>
 	>,
 ) {
 	await requireAdminSession();
+
+	// If name is being updated, regenerate the slug
+	const updatePayload = { ...payload };
+	if (payload.name) {
+		const newSlug = await generateUniqueSlug(payload.name, id);
+		updatePayload.slug = newSlug;
+	}
+
 	const result = await db
 		.update(institutions)
-		.set({ ...payload })
+		.set(updatePayload)
 		.where(eq(institutions.id, id))
 		.returning();
 
