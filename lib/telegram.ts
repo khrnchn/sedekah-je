@@ -184,3 +184,33 @@ export async function logInstitutionClaim(claim: {
 		},
 	});
 }
+
+export async function logInstitutionSubmissionFailure(failure: {
+	error: string;
+	institutionName?: string;
+	category?: string;
+	state?: string;
+	city?: string;
+	contributorName?: string;
+	contributorEmail?: string;
+	errorType: string;
+}): Promise<void> {
+	await logToTelegram({
+		level: "error",
+		title: "Institution Submission Failed",
+		description: `Submission error: ${failure.errorType} 💥`,
+		emoji: "🚨",
+		data: {
+			error: failure.error,
+			institutionName: failure.institutionName || "Not provided",
+			category: failure.category || "Not provided",
+			location:
+				failure.state && failure.city
+					? `${failure.city}, ${failure.state}`
+					: "Not provided",
+			contributor: failure.contributorName || "Not provided",
+			email: failure.contributorEmail || "Not provided",
+			errorType: failure.errorType,
+		},
+	});
+}

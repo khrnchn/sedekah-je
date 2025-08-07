@@ -5,7 +5,10 @@ import { institutions } from "@/db/institutions";
 import type { categories, states } from "@/lib/institution-constants";
 import { getUserById } from "@/lib/queries/users";
 import { r2Storage } from "@/lib/r2-client";
-import { logNewInstitution } from "@/lib/telegram";
+import {
+	logInstitutionSubmissionFailure,
+	logNewInstitution,
+} from "@/lib/telegram";
 import { slugify } from "@/lib/utils";
 import { and, count, eq, gte } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
@@ -231,6 +234,29 @@ export async function submitInstitution(
 				qrImageUrl = await r2Storage.uploadFile(buffer, qrImageFile.name);
 			} catch (uploadError) {
 				console.error("Failed to upload QR image to R2:", uploadError);
+
+				// Log to Telegram with error details
+				try {
+					await logInstitutionSubmissionFailure({
+						error:
+							uploadError instanceof Error
+								? uploadError.message
+								: String(uploadError),
+						institutionName: parsed.data.name,
+						category: parsed.data.category,
+						state: parsed.data.state,
+						city: parsed.data.city,
+						contributorName: user?.name || undefined,
+						contributorEmail: user?.email,
+						errorType: "R2 image upload failure",
+					});
+				} catch (telegramError) {
+					console.error(
+						"Failed to log upload failure to Telegram:",
+						telegramError,
+					);
+				}
+
 				return {
 					status: "error",
 					errors: {
@@ -241,6 +267,26 @@ export async function submitInstitution(
 		}
 	} catch (error) {
 		console.error("Error handling QR image upload:", error);
+
+		// Log to Telegram with error details
+		try {
+			await logInstitutionSubmissionFailure({
+				error: error instanceof Error ? error.message : String(error),
+				institutionName: parsed?.data?.name,
+				category: parsed?.data?.category,
+				state: parsed?.data?.state,
+				city: parsed?.data?.city,
+				contributorName: user?.name || undefined,
+				contributorEmail: user?.email,
+				errorType: "QR image processing failure",
+			});
+		} catch (telegramError) {
+			console.error(
+				"Failed to log QR processing failure to Telegram:",
+				telegramError,
+			);
+		}
+
 		return {
 			status: "error",
 			errors: {
@@ -339,6 +385,26 @@ export async function submitInstitution(
 		return { status: "success" };
 	} catch (error) {
 		console.error("Failed to insert institution:", error);
+
+		// Log to Telegram with error details
+		try {
+			await logInstitutionSubmissionFailure({
+				error: error instanceof Error ? error.message : String(error),
+				institutionName: parsed?.data?.name,
+				category: parsed?.data?.category,
+				state: parsed?.data?.state,
+				city: parsed?.data?.city,
+				contributorName: user?.name || undefined,
+				contributorEmail: user?.email,
+				errorType: "Database insertion failure",
+			});
+		} catch (telegramError) {
+			console.error(
+				"Failed to log submission failure to Telegram:",
+				telegramError,
+			);
+		}
+
 		return {
 			status: "error",
 			errors: {
