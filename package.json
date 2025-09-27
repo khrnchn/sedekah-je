@@ -11,6 +11,7 @@
 		"format": "biome format --write",
 		"check": "biome check .",
 		"type-check": "tsc --noEmit",
+		"test": "bun test",
 		"artisan:plop": "NODE_OPTIONS='--import tsx' plop --plopfile=plopfile.ts",
 		"db:seed": "bun db/main.ts",
 		"db:truncate": "bun db/truncate.ts",

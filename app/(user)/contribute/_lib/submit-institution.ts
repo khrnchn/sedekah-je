@@ -169,8 +169,12 @@ export async function submitInstitution(
 		];
 	}
 
+	// Generate unique slug before validation since it's required by the schema
+	const slug = await generateUniqueSlug(rawFromForm.name as string);
+
 	const dataToValidate = {
 		...rawFromForm,
+		slug,
 		socialMedia,
 		coords,
 	};
@@ -324,14 +328,10 @@ export async function submitInstitution(
 	}
 
 	try {
-		// Generate unique slug for the institution
-		const slug = await generateUniqueSlug(parsed.data.name);
-
 		const [{ id: newId }] = await db
 			.insert(institutions)
 			.values({
 				...parsed.data,
-				slug, // Add the generated slug
 				// We can safely cast here because client-side validation ensures
 				// these are valid enum values. The server-side schema is intentionally
 				// loose as per project rules (no pgEnum).
