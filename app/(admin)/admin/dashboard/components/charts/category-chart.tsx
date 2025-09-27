@@ -16,6 +16,7 @@ const COLORS = {
 interface CategoryData {
 	category: string;
 	count: number;
+	[key: string]: string | number;
 }
 
 interface CategoryChartProps {
