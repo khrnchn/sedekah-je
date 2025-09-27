@@ -9,6 +9,7 @@ import {
 	logInstitutionSubmissionFailure,
 	logNewInstitution,
 } from "@/lib/telegram";
+import { verifyTurnstileToken } from "@/lib/turnstile";
 import { slugify } from "@/lib/utils";
 import { and, count, eq, gte } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
@@ -78,19 +79,8 @@ export async function submitInstitution(
 		}
 
 		try {
-			const baseUrl = process.env.VERCEL_URL
-				? `https://${process.env.VERCEL_URL}`
-				: "https://sedekah.je";
-
-			const verifyResponse = await fetch(`${baseUrl}/api/verify-turnstile`, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ token: turnstileToken }),
-			});
-
-			const verifyResult = await verifyResponse.json();
+			// Verify Turnstile token directly without HTTP calls
+			const verifyResult = await verifyTurnstileToken(turnstileToken);
 			if (!verifyResult.success) {
 				return {
 					status: "error",
