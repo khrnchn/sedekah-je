@@ -1,5 +1,11 @@
 import { eq, relations } from "drizzle-orm";
-import { boolean, pgTable, text, varchar } from "drizzle-orm/pg-core";
+import {
+	boolean,
+	pgTable,
+	text,
+	timestamp,
+	varchar,
+} from "drizzle-orm/pg-core";
 import { db } from ".";
 import { timestamps } from "./helpers";
 import { institutions } from "./institutions";
@@ -19,6 +25,9 @@ export const users = pgTable("users", {
 		.notNull()
 		.$type<(typeof userRoles)[number]>(),
 	isActive: boolean("is_active").default(true).notNull(),
+	banned: boolean("banned").default(false),
+	banReason: text("ban_reason"),
+	banExpires: timestamp("ban_expires"),
 	...timestamps,
 });
 
