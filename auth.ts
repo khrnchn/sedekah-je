@@ -37,12 +37,7 @@ export const auth = betterAuth({
 		}
 		return process.env.BETTER_AUTH_SECRET;
 	})(),
-	baseURL:
-		process.env.VERCEL_ENV === "production"
-			? "https://sedekah.je"
-			: process.env.VERCEL_URL
-				? `https://${process.env.VERCEL_URL}`
-				: "http://localhost:3000",
+	baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
 	databaseHooks: {
 		user: {
 			create: {

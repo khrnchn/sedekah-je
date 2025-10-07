@@ -1,19 +1,17 @@
 import { env } from "@/env";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { Pool } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-serverless";
+import { cache } from "react";
 import * as schema from "./schema";
 
-// Create postgres client with Supabase-compatible settings
-// Disable prefetch as it is not supported for "Transaction" pool mode
-const client = postgres(env.DATABASE_URL, {
-	prepare: false,
-	// Increased connection pool settings for better performance
-	max: 25, // Increased from 10 to handle concurrent dashboard queries
-	idle_timeout: 20, // Close idle connections after 20 seconds
-	max_lifetime: 60 * 30, // Close connections after 30 minutes
-	connection: {
-		application_name: "sedekahje_app", // For monitoring/debugging
-	},
+// Create a new database client per request (Cloudflare Workers compatible)
+// Using React cache() to deduplicate within a single request
+// Using @neondatabase/serverless which is optimized for edge environments
+export const getDb = cache(() => {
+	const pool = new Pool({ connectionString: env.DATABASE_URL });
+	return drizzle(pool, { schema });
 });
 
-export const db = drizzle(client, { schema });
+// For backwards compatibility and convenience
+// This creates a new client per request via getDb()
+export const db = getDb();

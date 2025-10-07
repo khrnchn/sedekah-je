@@ -1,0 +1,17 @@
+{
+	"name": "sedekah-je",
+	"compatibility_date": "2024-12-30",
+	"compatibility_flags": ["nodejs_compat"],
+	"main": ".open-next/worker.js",
+	"keep_names": false,
+	"workers_dev": true,
+	"assets": {
+		"directory": ".open-next/assets",
+		"binding": "ASSETS"
+	},
+	"observability": {
+		"logs": {
+			"enabled": true
+		}
+	}
+}
