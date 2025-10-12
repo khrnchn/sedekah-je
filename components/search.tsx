@@ -44,7 +44,7 @@ const Search = ({ onSearchChange, className, initialValue }: SearchProps) => {
 				startIcon={SearchIcon}
 				type="search"
 				placeholder="Cari masjid/surau/institusi..."
-				className="w-full rounded-lg bg-background text-sm border pr-16"
+				className="w-full rounded-lg bg-background text-sm border pr-16 shadow-md"
 				value={searchValue}
 				onChange={handleSearchChange}
 			/>
