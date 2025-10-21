@@ -25,6 +25,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { ModeToggle } from "./mode-toggle";
+import Subscribe from "./subscribe";
 import { UserNavDesktop } from "./user-nav";
 
 const links = [
@@ -141,6 +142,9 @@ export const Header = () => {
         {/* Theme Toggle - Top Right */}
         <div className="absolute top-5 right-5 flex items-center gap-2">
           <ModeToggle />
+        </div>
+          <div className="absolute top-5 left-5 flex items-center gap-2">
+          <Subscribe/>
         </div>
       </header>
 

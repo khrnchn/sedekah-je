@@ -1,0 +1,7 @@
+{
+	"functions": {
+		"api/send-weekly-email.ts": {
+			"schedule": "0 8 * * 5"
+		}
+	}
+}
