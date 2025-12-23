@@ -249,60 +249,62 @@ export function PageClient({
 	return (
 		<PageSection>
 			{/* <RamadanCountdown /> */}
-			<FilterCategory
-				onCategoryChange={handleCategoryChange}
-				selectedState={selectedState}
-				institutions={adaptedInstitutions}
-				initialCategories={selectedCategories}
-			/>
+			<div className="sticky top-0 z-40 pt-4 pb-4 space-y-4">
+				<FilterCategory
+					onCategoryChange={handleCategoryChange}
+					selectedState={selectedState}
+					institutions={adaptedInstitutions}
+					initialCategories={selectedCategories}
+				/>
 
-			<div className="space-y-4">
-				<div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 w-full">
-					<div className="w-full sm:w-1/5">
-						<FilterState
-							onStateChange={handleStateChange}
-							className="w-full"
-							initialState={selectedState}
-						/>
+				<div className="space-y-4">
+					<div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 w-full">
+						<div className="w-full sm:w-1/5">
+							<FilterState
+								onStateChange={handleStateChange}
+								className="w-full"
+								initialState={selectedState}
+							/>
+						</div>
+						<div className="w-full sm:w-4/5">
+							<Search
+								onSearchChange={handleSearch}
+								className="w-full"
+								initialValue={query}
+							/>
+						</div>
 					</div>
-					<div className="w-full sm:w-4/5">
-						<Search
-							onSearchChange={handleSearch}
-							className="w-full"
-							initialValue={query}
-						/>
-					</div>
+
+					{/* Rendered only when there are filters applied */}
+					{(selectedState !== "" || selectedCategories.length > 0) && (
+						<FilteredCount count={filteredInstitutions.length} />
+					)}
 				</div>
+			</div>
 
-				{/* Rendered only when there are filters applied */}
-				{(selectedState !== "" || selectedCategories.length > 0) && (
-					<FilteredCount count={filteredInstitutions.length} />
-				)}
+			<div className="flex justify-end gap-2 mt-4">
+				<Button
+					onClick={toggleMap}
+					variant="outline"
+					className="bg-gradient-to-br from-orange-500 to-orange-300 border border-orange-400 rounded-full hover:from-orange-600 hover:to-orange-400 transition-colors"
+				>
+					<MapIcon className="mr-2 h-5 w-5" />
+					<span className="hidden sm:inline">
+						{isMapVisible ? "Sembunyikan Peta" : "Tunjukkan Peta"}
+					</span>
+					<span className="sm:hidden">Peta</span>
+				</Button>
 
-				<div className="flex justify-end gap-2">
+				<Link href="/faq" passHref>
 					<Button
-						onClick={toggleMap}
 						variant="outline"
-						className="bg-gradient-to-br from-orange-500 to-orange-300 border border-orange-400 rounded-full hover:from-orange-600 hover:to-orange-400 transition-colors"
+						className="bg-gradient-to-br from-blue-500 to-blue-300 border border-blue-400 rounded-full hover:from-blue-700 hover:to-blue-500 transition-colors"
 					>
-						<MapIcon className="mr-2 h-5 w-5" />
-						<span className="hidden sm:inline">
-							{isMapVisible ? "Sembunyikan Peta" : "Tunjukkan Peta"}
-						</span>
-						<span className="sm:hidden">Peta</span>
+						<HelpCircle className="mr-2 h-5 w-5" />
+						<span className="hidden sm:inline ml-2">Soalan Lazim</span>
+						<span className="sm:hidden">FAQ</span>
 					</Button>
-
-					<Link href="/faq" passHref>
-						<Button
-							variant="outline"
-							className="bg-gradient-to-br from-blue-500 to-blue-300 border border-blue-400 rounded-full hover:from-blue-700 hover:to-blue-500 transition-colors"
-						>
-							<HelpCircle className="mr-2 h-5 w-5" />
-							<span className="hidden sm:inline ml-2">Soalan Lazim</span>
-							<span className="sm:hidden">FAQ</span>
-						</Button>
-					</Link>
-				</div>
+				</Link>
 			</div>
 
 			<CollapsibleCustomMap

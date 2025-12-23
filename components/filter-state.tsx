@@ -70,7 +70,7 @@ const FilterState = ({ onStateChange, className, initialState }: Props) => {
 	return (
 		<div className={cn("w-full", className)}>
 			<Select value={selectedState} onValueChange={handleStateChange}>
-				<SelectTrigger className="rounded-lg border">
+				<SelectTrigger className="rounded-lg border bg-background shadow-md">
 					<SelectValue placeholder="" />
 				</SelectTrigger>
 				<SelectContent>
