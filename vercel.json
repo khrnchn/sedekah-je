@@ -1,0 +1,13 @@
+{
+	"functions": {
+		"api/send-weekly-email.ts": {
+			"runtime": "nodejs18.x"
+		}
+	},
+	"crons": [
+		{
+			"path": "/api/send-weekly-email",
+			"schedule": "0 8 * * 5"
+		}
+	]
+}
