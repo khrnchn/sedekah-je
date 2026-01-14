@@ -81,12 +81,14 @@ export function PageClient({
 			description: inst.description || undefined,
 			supportedPayment: inst.supportedPayment || undefined,
 			coords: inst.coords || undefined,
+			qrImage: inst.qrImage || "",
 		})) as OldInstitution[];
 	}, [institutions]);
 
 	// Filter institutions client-side for now
 	const filteredInstitutions = useMemo(() => {
 		return adaptedInstitutions.filter((institution) => {
+			if (!institution.name) return false;
 			const lowercaseQuery = query.toLowerCase();
 			const matchesQuery = institution.name
 				.toLowerCase()
