@@ -253,6 +253,7 @@ export async function approveInstitution(
 	// Revalidate cached data and counts
 	revalidateTag("pending-institutions");
 	revalidateTag("approved-institutions");
+	revalidateTag("institutions-count");
 	revalidateTag("institutions"); // Homepage cache
 
 	return result;
@@ -287,6 +288,7 @@ export async function rejectInstitution(
 	// Revalidate cached data and counts
 	revalidateTag("pending-institutions");
 	revalidateTag("rejected-institutions");
+	revalidateTag("institutions-count");
 
 	return result;
 }

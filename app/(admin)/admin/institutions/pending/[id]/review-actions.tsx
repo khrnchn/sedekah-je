@@ -53,6 +53,7 @@ export default function ReviewActions({
 			toast.error("User not authenticated");
 			return;
 		}
+		setDialog(null);
 		startTransition(async () => {
 			const promise =
 				action === "approve"
