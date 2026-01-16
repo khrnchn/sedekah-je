@@ -21,7 +21,7 @@ export const useGetDoa = () => {
 	return useQuery<GetDoaResponse>({
 		queryKey: ["get-doa"],
 		queryFn: async () => {
-			const response = await fetch("/api/getdoa", {
+			const response = await fetch("/api/getdoa/random", {
 				cache: "no-cache",
 			});
 
