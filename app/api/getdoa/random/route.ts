@@ -2,7 +2,6 @@ import { type NextRequest, NextResponse } from "next/server";
 
 const GETDOA_API_BASE = "https://getdoa.com/api";
 
-// Transform GetDoa API response (camelCase) to our expected format (snake_case)
 function transformDoaResponse(apiData: {
 	nameMy?: string;
 	nameEn?: string;
@@ -52,8 +51,6 @@ export async function GET(request: NextRequest) {
 
 	const json = await response.json();
 
-	// GetDoa API wraps response in a "data" object with camelCase keys
-	// Transform to our expected flat snake_case format
 	const doaData = json.data;
 	if (!doaData) {
 		console.error("GetDoa API response missing data field", json);
