@@ -8,6 +8,8 @@
 
 ## about
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/khrnchn/sedekah-je)
+
 sedekah.je is a directory of qr codes of mosques, suraus, or other institutions in malaysia. 
 read how this project started [here](https://sedekah.je/blog/sedekah-je-lore).
 
