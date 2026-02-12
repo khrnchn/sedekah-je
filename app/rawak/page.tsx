@@ -23,7 +23,6 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 const Rawak = () => {
-	const cardRef = useRef<HTMLDivElement>(null);
 	const [randomInstitution, setRandomInstitution] =
 		useState<Institution | null>(null);
 	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -57,8 +56,6 @@ const Rawak = () => {
 			const slug = slugify(filteredInstitutions[randomNumber].name);
 
 			setUrl(`https://www.sedekah.je/${category}/${slug}`);
-
-			cardRef.current?.scrollIntoView({ behavior: "smooth" });
 		}
 	}, [filteredInstitutions]);
 
@@ -144,7 +141,7 @@ const Rawak = () => {
 					<FilteredCount count={filteredInstitutions.length} />
 				)}
 
-				<div className="flex flex-col md:flex-row gap-8 pb-4" ref={cardRef}>
+				<div className="flex flex-col md:flex-row gap-8 pb-4">
 					<Card className="w-full">
 						{randomInstitution ? (
 							<div className="flex flex-col items-center p-6">

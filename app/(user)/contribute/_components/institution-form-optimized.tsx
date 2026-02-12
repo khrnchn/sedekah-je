@@ -6,6 +6,13 @@ import {
 } from "@/app/(user)/contribute/_lib/validations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/hooks/use-auth";
@@ -13,6 +20,7 @@ import {
 	categories as CATEGORY_OPTIONS,
 	states as STATE_OPTIONS,
 } from "@/lib/institution-constants";
+import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import {
@@ -23,7 +31,7 @@ import {
 	useRef,
 	useState,
 } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { submitInstitution } from "../_lib/submit-institution";
 
@@ -131,6 +139,7 @@ export default function InstitutionFormOptimized() {
 
 	const {
 		register,
+		control,
 		handleSubmit,
 		formState: { errors },
 		setValue,
@@ -320,21 +329,31 @@ export default function InstitutionFormOptimized() {
 					<label htmlFor="category" className="font-medium text-base">
 						Kategori <span className="text-red-500">*</span>
 					</label>
-					<select
-						id="category"
-						{...register("category")}
-						className={`w-full h-12 px-3 text-base border rounded-md bg-background ${errors.category ? "border-red-500" : ""}`}
-						defaultValue=""
-					>
-						<option value="" disabled>
-							Pilih kategori
-						</option>
-						{CATEGORY_OPTIONS.map((c) => (
-							<option key={c} value={c} className="capitalize">
-								{c}
-							</option>
-						))}
-					</select>
+					<Controller
+						name="category"
+						control={control}
+						render={({ field }) => (
+							<Select value={field.value ?? ""} onValueChange={field.onChange}>
+								<SelectTrigger
+									id="category"
+									className={cn(
+										"w-full h-12 text-base",
+										errors.category && "border-red-500",
+									)}
+									aria-invalid={!!errors.category}
+								>
+									<SelectValue placeholder="Pilih kategori" />
+								</SelectTrigger>
+								<SelectContent>
+									{CATEGORY_OPTIONS.map((c) => (
+										<SelectItem key={c} value={c} className="capitalize">
+											{c}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+						)}
+					/>
 					{errors.category && (
 						<p className="text-sm text-red-500">{errors.category.message}</p>
 					)}
@@ -346,21 +365,34 @@ export default function InstitutionFormOptimized() {
 						<label htmlFor="state" className="font-medium text-base">
 							Negeri <span className="text-red-500">*</span>
 						</label>
-						<select
-							id="state"
-							{...register("state")}
-							className={`w-full h-12 px-3 text-base border rounded-md bg-background ${errors.state ? "border-red-500" : ""}`}
-							defaultValue=""
-						>
-							<option value="" disabled>
-								Pilih negeri
-							</option>
-							{STATE_OPTIONS.map((s) => (
-								<option key={s} value={s} className="capitalize">
-									{s}
-								</option>
-							))}
-						</select>
+						<Controller
+							name="state"
+							control={control}
+							render={({ field }) => (
+								<Select
+									value={field.value ?? ""}
+									onValueChange={field.onChange}
+								>
+									<SelectTrigger
+										id="state"
+										className={cn(
+											"w-full h-12 text-base",
+											errors.state && "border-red-500",
+										)}
+										aria-invalid={!!errors.state}
+									>
+										<SelectValue placeholder="Pilih negeri" />
+									</SelectTrigger>
+									<SelectContent>
+										{STATE_OPTIONS.map((s) => (
+											<SelectItem key={s} value={s} className="capitalize">
+												{s}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+							)}
+						/>
 						{errors.state && (
 							<p className="text-sm text-red-500">{errors.state.message}</p>
 						)}

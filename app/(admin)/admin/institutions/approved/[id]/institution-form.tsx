@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { Institution } from "@/db/institutions";
+import { geocodeInstitution } from "@/lib/geocode";
 import {
 	categories as CATEGORY_OPTIONS,
 	supportedPayments as PAYMENT_OPTIONS,
@@ -12,9 +13,9 @@ import {
 } from "@/lib/institution-constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { ExternalLink, SaveIcon, Search } from "lucide-react";
+import { ExternalLink, Loader2, SaveIcon, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -53,12 +54,33 @@ const urlOrEmpty = z
 		{ message: "Invalid URL" },
 	);
 
+// Coordinate validation (lat -90 to 90, lon -180 to 180, both optional)
+const coordString = z.string().optional().or(z.literal(""));
+const latString = coordString.refine(
+	(val) => {
+		if (!val || val === "") return true;
+		const num = Number.parseFloat(val);
+		return !Number.isNaN(num) && num >= -90 && num <= 90;
+	},
+	{ message: "Latitude must be between -90 and 90" },
+);
+const lonString = coordString.refine(
+	(val) => {
+		if (!val || val === "") return true;
+		const num = Number.parseFloat(val);
+		return !Number.isNaN(num) && num >= -180 && num <= 180;
+	},
+	{ message: "Longitude must be between -180 and 180" },
+);
+
 const formSchema = z.object({
 	name: z.string().min(1, "Name is required"),
 	category: z.enum(CATEGORY_OPTIONS),
 	state: z.enum(STATE_OPTIONS),
 	city: z.string().min(1),
 	address: z.string().optional(),
+	lat: latString,
+	lon: lonString,
 	facebook: urlOrEmpty,
 	instagram: urlOrEmpty,
 	website: urlOrEmpty,
@@ -76,6 +98,7 @@ export default function ApprovedInstitutionForm({
 }: Props) {
 	const router = useRouter();
 	const [isPending, startTransition] = useTransition();
+	const [isRecalibrating, setIsRecalibrating] = useState(false);
 
 	const formattedSubmissionDate = institution.createdAt
 		? format(new Date(institution.createdAt), "d MMMM yyyy")
@@ -96,6 +119,8 @@ export default function ApprovedInstitutionForm({
 	const {
 		register,
 		handleSubmit,
+		getValues,
+		setValue,
 		watch,
 		formState: { errors },
 	} = useForm<FormData>({
@@ -106,6 +131,14 @@ export default function ApprovedInstitutionForm({
 			state: institution.state || STATE_OPTIONS[0],
 			city: institution.city ?? "",
 			address: institution.address ?? "",
+			lat:
+				institution.coords && Array.isArray(institution.coords)
+					? String(institution.coords[0])
+					: "",
+			lon:
+				institution.coords && Array.isArray(institution.coords)
+					? String(institution.coords[1])
+					: "",
 			facebook: institution.socialMedia?.facebook ?? "",
 			instagram: institution.socialMedia?.instagram ?? "",
 			website: institution.socialMedia?.website ?? "",
@@ -127,9 +160,25 @@ export default function ApprovedInstitutionForm({
 	};
 
 	function buildPayload(formData: FormData) {
-		const { facebook, instagram, website, ...rest } = formData;
+		const { facebook, instagram, website, lat, lon, ...rest } = formData;
+		const latStr = lat?.trim() ?? "";
+		const lonStr = lon?.trim() ?? "";
+		const latNum = latStr ? Number.parseFloat(latStr) : Number.NaN;
+		const lonNum = lonStr ? Number.parseFloat(lonStr) : Number.NaN;
+		const coords: [number, number] | null =
+			latStr &&
+			lonStr &&
+			!Number.isNaN(latNum) &&
+			latNum >= -90 &&
+			latNum <= 90 &&
+			!Number.isNaN(lonNum) &&
+			lonNum >= -180 &&
+			lonNum <= 180
+				? [latNum, lonNum]
+				: null;
 		return {
 			...rest,
+			coords,
 			socialMedia: {
 				facebook: facebook || undefined,
 				instagram: instagram || undefined,
@@ -276,6 +325,134 @@ export default function ApprovedInstitutionForm({
 						) : (
 							<div className="p-3 bg-muted rounded-md border min-h-[84px]">
 								{institution.address || "No address provided"}
+							</div>
+						)}
+					</div>
+
+					<div className="space-y-2">
+						<div className="font-medium">Coordinates</div>
+						{isEditing ? (
+							<>
+								<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+									<div className="space-y-1">
+										<label
+											htmlFor="lat"
+											className="text-sm text-muted-foreground"
+										>
+											Latitude
+										</label>
+										<Input
+											id="lat"
+											placeholder="-90 to 90"
+											{...register("lat")}
+										/>
+										{errors.lat && (
+											<p className="text-sm text-red-500">
+												{errors.lat.message}
+											</p>
+										)}
+									</div>
+									<div className="space-y-1">
+										<label
+											htmlFor="lon"
+											className="text-sm text-muted-foreground"
+										>
+											Longitude
+										</label>
+										<Input
+											id="lon"
+											placeholder="-180 to 180"
+											{...register("lon")}
+										/>
+										{errors.lon && (
+											<p className="text-sm text-red-500">
+												{errors.lon.message}
+											</p>
+										)}
+									</div>
+								</div>
+								<Button
+									type="button"
+									variant="outline"
+									size="sm"
+									disabled={isRecalibrating}
+									onClick={async () => {
+										const name = getValues("name");
+										const city = getValues("city");
+										const state = getValues("state");
+										if (!name || !city || !state) {
+											toast.error(
+												"Name, city, and state required for recalibration",
+											);
+											return;
+										}
+										setIsRecalibrating(true);
+										try {
+											const result = await geocodeInstitution(
+												name,
+												city,
+												state,
+											);
+											if (result) {
+												setValue("lat", String(result[0]));
+												setValue("lon", String(result[1]));
+												toast.success("Coordinates updated from address");
+											} else {
+												toast.error("Could not geocode address");
+											}
+										} finally {
+											setIsRecalibrating(false);
+										}
+									}}
+								>
+									{isRecalibrating ? (
+										<>
+											<Loader2 className="h-4 w-4 animate-spin" />
+											Recalibrating...
+										</>
+									) : (
+										"Recalibrate"
+									)}
+								</Button>
+							</>
+						) : (
+							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+								<div className="space-y-1">
+									<label
+										htmlFor="lat"
+										className="text-sm text-muted-foreground"
+									>
+										Latitude
+									</label>
+									<Input
+										id="lat"
+										value={
+											institution.coords && Array.isArray(institution.coords)
+												? String(institution.coords[0])
+												: "—"
+										}
+										disabled
+										className="bg-muted"
+									/>
+								</div>
+								<div className="space-y-1">
+									<label
+										htmlFor="lon"
+										className="text-sm text-muted-foreground"
+									>
+										Longitude
+									</label>
+									<Input
+										id="lon"
+										value={
+											institution.coords && Array.isArray(institution.coords)
+												? String(institution.coords[1])
+												: "—"
+										}
+										disabled
+										className="bg-muted"
+									/>
+								</div>
 							</div>
 						)}
 					</div>
