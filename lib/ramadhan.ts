@@ -78,3 +78,28 @@ export function getCurrentRamadhanDay(startDate: Date): number | null {
 export function isTodayMYT(dateStr: string): boolean {
 	return toDateString(getTodayMYT()) === dateStr;
 }
+
+const BM_MONTHS = [
+	"Januari",
+	"Februari",
+	"Mac",
+	"April",
+	"Mei",
+	"Jun",
+	"Julai",
+	"Ogos",
+	"September",
+	"Oktober",
+	"November",
+	"Disember",
+];
+
+/**
+ * Format a date string (YYYY-MM-DD) for display in Bahasa Malaysia.
+ * Example: "2026-03-19" -> "19 Mac 2026"
+ */
+export function formatDateBM(dateStr: string): string {
+	const [y, m, d] = dateStr.split("-").map(Number);
+	const month = BM_MONTHS[(m ?? 1) - 1] ?? "";
+	return `${d ?? 0} ${month} ${y ?? 0}`;
+}

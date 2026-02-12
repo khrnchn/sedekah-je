@@ -50,36 +50,28 @@ export function RamadhanTodayCard({
 						<p className="text-sm opacity-90">{featured.caption}</p>
 					)}
 					<div className="flex flex-wrap gap-2">
-						<Share
-							data={{
-								category: featured.institutionCategory,
-								name: featured.institutionName,
-								slug: featured.institutionSlug,
-								customMessage,
-							}}
-							platform="X"
-						/>
-						<Share
-							data={{
-								category: featured.institutionCategory,
-								name: featured.institutionName,
-								slug: featured.institutionSlug,
-								customMessage,
-							}}
-							platform="WHATSAPP"
-						/>
 						<Button
 							asChild
 							variant="secondary"
-							size="sm"
-							className="text-white border-white/30"
+							size="default"
+							className="text-emerald-900 bg-white hover:bg-white/90 border-0 font-semibold"
 						>
 							<Link
 								href={`/${featured.institutionCategory}/${featured.institutionSlug}`}
 							>
-								Lihat halaman institusi
+								Lihat institusi & derma
 							</Link>
 						</Button>
+						<Share
+							data={{
+								category: featured.institutionCategory,
+								name: featured.institutionName,
+								slug: featured.institutionSlug,
+								customMessage,
+							}}
+							variant="secondary"
+							className="text-emerald-900 bg-white/90 hover:bg-white border-white/30"
+						/>
 					</div>
 				</div>
 				<div className="flex-shrink-0 flex justify-center">

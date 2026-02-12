@@ -1,14 +1,9 @@
 "use client";
 
-import Share from "@/components/share";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import QrCodeDisplay from "@/components/ui/qrCodeDisplay";
+import { Card } from "@/components/ui/card";
+import { formatDateBM } from "@/lib/ramadhan";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
-import Link from "next/link";
-import { useState } from "react";
-import { getCategoryIconPath } from "../_lib/category-icon";
+import { ChevronRight } from "lucide-react";
 import type { RamadhanCampaignDay } from "../_lib/queries";
 
 type RamadhanDayCardProps = {
@@ -17,8 +12,11 @@ type RamadhanDayCardProps = {
 	featuredDate: string;
 	isToday: boolean;
 	isPast: boolean;
-	baseUrl: string;
+	isSelected: boolean;
+	onSelect: (dayNumber: number) => void;
 };
+
+const DETAIL_PANEL_ID = "ramadhan-day-detail";
 
 export function RamadhanDayCard({
 	day,
@@ -26,117 +24,84 @@ export function RamadhanDayCard({
 	featuredDate,
 	isToday,
 	isPast,
-	baseUrl,
+	isSelected,
+	onSelect,
 }: RamadhanDayCardProps) {
-	const [expanded, setExpanded] = useState(false);
-
 	if (!day) {
 		return (
 			<Card
 				className={cn(
-					"p-3 min-h-[100px] flex flex-col justify-center",
-					"bg-muted/30 opacity-60",
+					"p-3 min-h-[120px] flex flex-col justify-center",
+					"bg-muted/50",
 				)}
+				aria-hidden="true"
 			>
 				<div className="text-center">
 					<p className="font-semibold text-muted-foreground">
 						Hari {dayNumber}
 					</p>
-					<p className="text-xs text-muted-foreground">{featuredDate}</p>
-					<p className="text-xs text-muted-foreground mt-1">—</p>
+					<p className="text-xs text-muted-foreground">
+						{formatDateBM(featuredDate)}
+					</p>
+					<p className="text-sm text-muted-foreground mt-1">Belum diisi</p>
 				</div>
 			</Card>
 		);
 	}
 
-	const customMessage = `QR Hari ke-${dayNumber}/30 Ramadan! 🌙\n\n${day.institutionName} (${day.institutionState})\n\n${baseUrl}/${day.institutionCategory}/${day.institutionSlug}\n\n#SedekahJe #30Hari30QR`;
+	const formattedDate = formatDateBM(featuredDate);
+	const label = `Hari ${dayNumber}, ${day.institutionName}, ${formattedDate}. ${isSelected ? "Dipilih. Klik untuk tutup." : "Klik untuk lihat QR kod."}`;
 
 	return (
 		<Card
 			className={cn(
-				"p-3 min-h-[100px] cursor-pointer transition-all",
-				isToday && "ring-2 ring-emerald-500 ring-offset-2 animate-pulse-subtle",
-				isPast && "hover:bg-muted/50",
+				"min-h-[120px] overflow-hidden transition-shadow duration-200",
+				"focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
+				isSelected && "ring-2 ring-primary ring-offset-2 shadow-md",
+				isToday &&
+					!isSelected &&
+					"ring-2 ring-emerald-500 ring-offset-2 animate-pulse-subtle",
 			)}
-			onClick={() => day && setExpanded(!expanded)}
 		>
-			<CardContent className="p-0">
-				<div className="flex items-start gap-2">
-					<Image
-						src={getCategoryIconPath(day.institutionCategory)}
-						alt=""
-						width={24}
-						height={24}
-						className="flex-shrink-0 mt-0.5"
-					/>
-					<div className="min-w-0 flex-1">
-						<p className="font-semibold text-sm">Hari {dayNumber}</p>
-						<p className="text-xs text-muted-foreground">{featuredDate}</p>
-						<p className="text-sm font-medium truncate">
-							{day.institutionName}
-						</p>
-					</div>
-				</div>
-				{expanded && (
-					// biome-ignore lint/a11y/useKeyWithClickEvents: stopPropagation only, not actionable
-					<div
-						className="mt-4 pt-4 border-t space-y-4"
-						onClick={(e) => e.stopPropagation()}
-					>
-						<div className="flex justify-center">
-							{day.qrContent ? (
-								<QrCodeDisplay
-									qrContent={day.qrContent}
-									supportedPayment={
-										(day.supportedPayment ?? undefined) as
-											| ("duitnow" | "tng" | "boost")[]
-											| undefined
-									}
-									size={160}
-								/>
-							) : day.qrImage ? (
-								<Image
-									src={day.qrImage}
-									alt={`QR ${day.institutionName}`}
-									width={160}
-									height={160}
-									className="rounded-lg bg-white p-2"
-								/>
-							) : null}
-						</div>
-						{day.caption && (
-							<p className="text-sm text-muted-foreground">{day.caption}</p>
-						)}
-						<div className="flex flex-wrap gap-2">
-							<Share
-								data={{
-									category: day.institutionCategory,
-									name: day.institutionName,
-									slug: day.institutionSlug,
-									customMessage,
-								}}
-								platform="X"
-							/>
-							<Share
-								data={{
-									category: day.institutionCategory,
-									name: day.institutionName,
-									slug: day.institutionSlug,
-									customMessage,
-								}}
-								platform="WHATSAPP"
-							/>
-							<Button asChild variant="outline" size="sm">
-								<Link
-									href={`/${day.institutionCategory}/${day.institutionSlug}`}
-								>
-									Lihat institusi
-								</Link>
-							</Button>
-						</div>
-					</div>
+			<button
+				type="button"
+				className={cn(
+					"w-full text-left p-3 flex items-start gap-2 rounded-lg",
+					"hover:bg-accent/50 hover:shadow-sm",
+					"focus:outline-none focus-visible:ring-0",
+					isPast && !isSelected && "hover:bg-muted/50",
 				)}
-			</CardContent>
+				onClick={() => onSelect(dayNumber)}
+				onKeyDown={(e) => {
+					if (e.key === "Enter" || e.key === " ") {
+						e.preventDefault();
+						onSelect(dayNumber);
+					}
+				}}
+				aria-expanded={isSelected}
+				aria-controls={DETAIL_PANEL_ID}
+				aria-label={label}
+			>
+				<div className="min-w-0 flex-1">
+					<p className="font-semibold text-sm">Hari {dayNumber}</p>
+					<p className="text-xs text-muted-foreground">{formattedDate}</p>
+					<p
+						className="text-sm font-medium line-clamp-2"
+						title={day.institutionName}
+					>
+						{day.institutionName}
+					</p>
+				</div>
+				<ChevronRight
+					className={cn(
+						"h-4 w-4 flex-shrink-0 text-muted-foreground transition-transform duration-200",
+						isSelected && "rotate-90",
+					)}
+					aria-hidden
+				/>
+			</button>
 		</Card>
 	);
 }
+
+export { DETAIL_PANEL_ID };

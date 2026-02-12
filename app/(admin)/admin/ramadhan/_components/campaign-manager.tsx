@@ -154,8 +154,8 @@ export function CampaignManager({
 	return (
 		<div className="space-y-6">
 			<div className="flex flex-wrap gap-4 items-end">
-				<div className="space-y-2">
-					<Label>Tahun</Label>
+				<div className="flex flex-col gap-2">
+					<Label className="shrink-0">Tahun</Label>
 					<Select
 						value={String(year)}
 						onValueChange={(v) => {
@@ -164,7 +164,7 @@ export function CampaignManager({
 							router.replace(`/admin/ramadhan?year=${newYear}`);
 						}}
 					>
-						<SelectTrigger className="w-[120px]">
+						<SelectTrigger className="h-10 w-[120px]">
 							<SelectValue />
 						</SelectTrigger>
 						<SelectContent>
@@ -176,14 +176,14 @@ export function CampaignManager({
 						</SelectContent>
 					</Select>
 				</div>
-				<div className="space-y-2">
-					<Label>Tarikh Mula Ramadan (Gregorian)</Label>
+				<div className="flex flex-col gap-2">
+					<Label className="shrink-0">Tarikh Mula Ramadan (Gregorian)</Label>
 					<Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
 						<PopoverTrigger asChild>
 							<Button
 								variant="outline"
 								className={cn(
-									"w-[180px] justify-start text-left font-normal",
+									"h-10 w-[180px] justify-start text-left font-normal",
 									!startDate && "text-muted-foreground",
 								)}
 							>
@@ -210,7 +210,11 @@ export function CampaignManager({
 						</PopoverContent>
 					</Popover>
 				</div>
-				<Button onClick={handleSave} disabled={isPending}>
+				<Button
+					onClick={handleSave}
+					disabled={isPending}
+					className="h-10 shrink-0"
+				>
 					{isPending ? "Menyimpan..." : "Simpan"}
 				</Button>
 			</div>

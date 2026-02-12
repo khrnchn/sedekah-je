@@ -44,7 +44,7 @@ export default async function RamadhanPage() {
 	return (
 		<>
 			<Header />
-			<main className="container mx-auto px-4 py-8 max-w-4xl">
+			<main className="container mx-auto px-4 py-8 max-w-4xl lg:max-w-6xl">
 				<header className="mb-8">
 					<h1 className="text-3xl font-bold">
 						30 Hari 30 QR — Kempen Ramadan {year}
