@@ -1,4 +1,4 @@
-import { SettingsIcon } from "lucide-react";
+import { Moon, SettingsIcon } from "lucide-react";
 import { headers } from "next/headers";
 import Image from "next/image";
 import type * as React from "react";
@@ -62,6 +62,11 @@ const data = {
 			url: "https://analytics.farhanhelmy.com/share/qqGVUCdO8JGBoSk5/sedekah.je",
 			icon: "BarChart",
 			external: true,
+		},
+		{
+			title: "Ramadan",
+			url: "/admin/ramadhan",
+			icon: "Moon",
 		},
 	],
 	navSecondary: [

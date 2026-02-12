@@ -1,3 +1,4 @@
+import { RamadhanBanner } from "@/components/ramadhan-banner";
 import { Card } from "@/components/ui/card";
 import { Header } from "@/components/ui/header";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -24,6 +25,11 @@ export default async function Home({ searchParams }: Props) {
 	return (
 		<>
 			<Header />
+			<Suspense fallback={null}>
+				<div className="max-w-5xl mx-auto px-4 lg:px-6 pt-4">
+					<RamadhanBanner />
+				</div>
+			</Suspense>
 			<Suspense fallback={<HomeLoading />}>
 				<PageClient
 					initialInstitutions={institutions}
