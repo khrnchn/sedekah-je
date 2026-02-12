@@ -5,6 +5,11 @@ import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
+import {
 	Select,
 	SelectContent,
 	SelectItem,
@@ -13,15 +18,10 @@ import {
 } from "@/components/ui/select";
 import { getRamadhanDate } from "@/lib/ramadhan";
 import { cn } from "@/lib/utils";
-import { addDays, format, startOfDay } from "date-fns";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import {
-	useCallback,
-	useEffect,
-	useMemo,
-	useState,
-	useTransition,
-} from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { saveCampaign } from "../_lib/actions";
 import { InstitutionPicker } from "./institution-picker";
@@ -146,55 +146,10 @@ export function CampaignManager({
 		setDays(buildDaysFromExisting(defaultStart, initialCampaign));
 	}, [initialYear, initialCampaign]);
 
-	const start = useMemo(
-		() => startOfDay(new Date(`${startDate}T12:00:00`)),
-		[startDate],
-	);
-	const ramadhanDates = useMemo(
-		() => Array.from({ length: 30 }, (_, i) => addDays(start, i)),
-		[start],
-	);
-	const dateToDayNumber = useMemo(() => {
-		const map = new Map<string, number>();
-		for (let i = 0; i < 30; i++) {
-			const d = addDays(start, i);
-			map.set(format(d, "yyyy-MM-dd"), i + 1);
-		}
-		return map;
-	}, [start]);
-
-	const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-	const selectedRow = useMemo(() => {
-		if (!selectedDate) return null;
-		const dayNum = dateToDayNumber.get(format(selectedDate, "yyyy-MM-dd"));
-		return dayNum != null
-			? (days.find((d) => d.dayNumber === dayNum) ?? null)
-			: null;
-	}, [selectedDate, dateToDayNumber, days]);
-
-	const modifiers = useMemo(
-		() => ({
-			ramadhan: ramadhanDates,
-			assigned: ramadhanDates.filter((d) => {
-				const dayNum = dateToDayNumber.get(format(d, "yyyy-MM-dd"));
-				return (
-					dayNum != null &&
-					(days.find((r) => r.dayNumber === dayNum)?.institutionId ?? null) !=
-						null
-				);
-			}),
-		}),
-		[ramadhanDates, dateToDayNumber, days],
-	);
-	const modifiersClassNames = {
-		ramadhan: "bg-muted/50 font-medium",
-		assigned:
-			"bg-emerald-100 dark:bg-emerald-900/30 text-emerald-900 dark:text-emerald-100",
-	};
-	const disabledDates = (date: Date) => {
-		const dayNum = dateToDayNumber.get(format(date, "yyyy-MM-dd"));
-		return dayNum == null || dayNum < 1 || dayNum > 30;
-	};
+	const startDateAsDate = startDate
+		? new Date(`${startDate}T12:00:00`)
+		: undefined;
+	const [datePickerOpen, setDatePickerOpen] = useState(false);
 
 	return (
 		<div className="space-y-6">
@@ -223,85 +178,93 @@ export function CampaignManager({
 				</div>
 				<div className="space-y-2">
 					<Label>Tarikh Mula Ramadan (Gregorian)</Label>
-					<Input
-						type="date"
-						value={startDate}
-						onChange={(e) => setStartDate(e.target.value)}
-						className="w-[180px]"
-					/>
+					<Popover open={datePickerOpen} onOpenChange={setDatePickerOpen}>
+						<PopoverTrigger asChild>
+							<Button
+								variant="outline"
+								className={cn(
+									"w-[180px] justify-start text-left font-normal",
+									!startDate && "text-muted-foreground",
+								)}
+							>
+								<CalendarIcon className="mr-2 h-4 w-4" />
+								{startDate && startDateAsDate ? (
+									format(startDateAsDate, "dd MMM yyyy")
+								) : (
+									<span>Pilih tarikh</span>
+								)}
+							</Button>
+						</PopoverTrigger>
+						<PopoverContent className="w-auto p-0" align="start">
+							<Calendar
+								mode="single"
+								selected={startDateAsDate}
+								onSelect={(date) => {
+									if (date) {
+										setStartDate(format(date, "yyyy-MM-dd"));
+										setDatePickerOpen(false);
+									}
+								}}
+								defaultMonth={startDateAsDate}
+							/>
+						</PopoverContent>
+					</Popover>
 				</div>
 				<Button onClick={handleSave} disabled={isPending}>
 					{isPending ? "Menyimpan..." : "Simpan"}
 				</Button>
 			</div>
 
-			<div className="flex flex-col lg:flex-row gap-6">
-				<Calendar
-					mode="single"
-					selected={selectedDate}
-					onSelect={setSelectedDate}
-					defaultMonth={start}
-					disabled={disabledDates}
-					modifiers={modifiers}
-					modifiersClassNames={modifiersClassNames}
-					className={cn("rounded-md border")}
-				/>
-				<div className="flex-1 min-w-0 space-y-4">
-					{selectedRow ? (
-						<>
-							<div>
-								<h3 className="text-sm font-medium mb-2">
-									Hari {selectedRow.dayNumber} — {selectedRow.featuredDate}
-								</h3>
-								<div className="space-y-4">
-									<div>
-										<Label>Institusi</Label>
-										<div className="mt-1">
-											<InstitutionPicker
-												institutions={initialInstitutions}
-												value={selectedRow.institutionId}
-												onChange={(id) =>
-													updateDay(selectedRow.dayNumber, {
-														institutionId: id,
-														institutionName:
-															id !== null
-																? (initialInstitutions.find((i) => i.id === id)
-																		?.name ?? null)
-																: null,
-													})
-												}
-												placeholder="Pilih institusi..."
-											/>
-										</div>
-									</div>
-									<div>
-										<Label>Kapsyen</Label>
-										<Input
-											placeholder="Mesej harian (pilihan)"
-											value={selectedRow.caption ?? ""}
-											onChange={(e) =>
-												updateDay(selectedRow.dayNumber, {
-													caption: e.target.value || null,
-												})
-											}
-											className="mt-1"
-										/>
-									</div>
-								</div>
-							</div>
-						</>
-					) : (
-						<div
-							className={cn(
-								"rounded-lg border border-dashed p-8 text-center text-muted-foreground",
-							)}
-						>
-							<p className="text-sm">
-								Pilih tarikh pada kalendar untuk mengedit institusi.
-							</p>
-						</div>
-					)}
-				</div>
+			<div className="rounded-md border overflow-x-auto">
+				<table className="w-full text-sm">
+					<thead>
+						<tr className="border-b bg-muted/50">
+							<th className="text-left p-2 w-16">Hari</th>
+							<th className="text-left p-2 w-28">Tarikh</th>
+							<th className="text-left p-2 min-w-[220px]">Institusi</th>
+							<th className="text-left p-2">Kapsyen</th>
+						</tr>
+					</thead>
+					<tbody>
+						{days.map((row) => (
+							<tr key={row.dayNumber} className="border-b hover:bg-muted/30">
+								<td className="p-2 font-medium">{row.dayNumber}</td>
+								<td className="p-2 text-muted-foreground">
+									{row.featuredDate}
+								</td>
+								<td className="p-2">
+									<InstitutionPicker
+										institutions={initialInstitutions}
+										value={row.institutionId}
+										onChange={(id) =>
+											updateDay(row.dayNumber, {
+												institutionId: id,
+												institutionName:
+													id !== null
+														? (initialInstitutions.find((i) => i.id === id)
+																?.name ?? null)
+														: null,
+											})
+										}
+										placeholder="Pilih institusi..."
+									/>
+								</td>
+								<td className="p-2">
+									<Input
+										placeholder="Mesej harian (pilihan)"
+										value={row.caption ?? ""}
+										onChange={(e) =>
+											updateDay(row.dayNumber, {
+												caption: e.target.value || null,
+											})
+										}
+										className="max-w-xs"
+									/>
+								</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
 			</div>
 		</div>
 	);
