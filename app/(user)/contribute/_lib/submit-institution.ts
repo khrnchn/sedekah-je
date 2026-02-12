@@ -2,6 +2,7 @@
 
 import { db } from "@/db";
 import { institutions } from "@/db/institutions";
+import { geocodeInstitution } from "@/lib/geocode";
 import type { categories, states } from "@/lib/institution-constants";
 import { getUserById } from "@/lib/queries/users";
 import { r2Storage } from "@/lib/r2-client";
@@ -271,42 +272,15 @@ export async function submitInstitution(
 		};
 	}
 
-	// The logic for geocoding if coords are not present can remain,
-	// but it happens after our primary validation. We can re-assign coords.
+	// Geocode if coords not provided
 	if (!coords) {
-		// Attempt geocoding using Nominatim with timeout
-		try {
-			const query = `${parsed.data.name}, ${parsed.data.city}, ${parsed.data.state}, Malaysia`;
-			const controller = new AbortController();
-			const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-
-			const res = await fetch(
-				`https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${encodeURIComponent(
-					query,
-				)}`,
-				{
-					headers: { "User-Agent": "sedekahje-bot" },
-					signal: controller.signal,
-				},
-			);
-
-			clearTimeout(timeoutId);
-
-			if (res.ok) {
-				const results = (await res.json()) as Array<{
-					lat: string;
-					lon: string;
-				}>;
-				if (results.length > 0) {
-					coords = [
-						Number.parseFloat(results[0].lat),
-						Number.parseFloat(results[0].lon),
-					];
-				}
-			}
-		} catch (e) {
-			console.error("Geocoding failed:", e);
-		}
+		const geocoded = await geocodeInstitution(
+			parsed.data.name,
+			parsed.data.city,
+			parsed.data.state,
+		);
+		if (geocoded) coords = geocoded;
+		else console.error("Geocoding failed");
 	}
 
 	try {

@@ -4,8 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { formatFileSize } from "@/lib/image-utils";
 import { Suspense, lazy, useCallback, useEffect, useState } from "react";
-import type { InstitutionFormData } from "../_lib/validations";
-
 // Lazy load the QR extraction functionality
 const LazyQRProcessor = lazy(() =>
 	import("./qr-processor").then((mod) => ({ default: mod.QRProcessor })),
@@ -26,14 +24,6 @@ interface QRExtractionFeatureProps {
 function QRUploadFallback() {
 	return (
 		<div className="space-y-2">
-			<div className="flex gap-2 mb-2">
-				<Button type="button" variant="outline" size="sm" disabled>
-					Galeri
-				</Button>
-				<Button type="button" variant="outline" size="sm" disabled>
-					Kamera
-				</Button>
-			</div>
 			<Input
 				id="qrImage"
 				type="file"
@@ -54,9 +44,6 @@ export default function QRExtractionFeature({
 	onStatusChange,
 	onClearQrContent,
 }: QRExtractionFeatureProps) {
-	const [fileUploadMode, setFileUploadMode] = useState<"camera" | "gallery">(
-		"gallery",
-	);
 	const [qrContent, setQrContent] = useState<string | null>(null);
 	const [qrStatus, setQrStatus] = useState({
 		qrExtracting: false,
@@ -210,29 +197,6 @@ export default function QRExtractionFeature({
 			<p className="text-xs text-gray-600">
 				Saiz maksimum: 5MB • Format yang disokong: JPG, PNG, WebP
 			</p>
-			{/* Touch-friendly upload mode selector */}
-			<div className="flex gap-2 mb-3">
-				<Button
-					type="button"
-					variant={fileUploadMode === "gallery" ? "default" : "outline"}
-					size="default"
-					className="flex-1 h-10 text-base"
-					onClick={() => setFileUploadMode("gallery")}
-					disabled={isSubmitting || qrStatus.qrExtracting}
-				>
-					📁 Galeri
-				</Button>
-				<Button
-					type="button"
-					variant={fileUploadMode === "camera" ? "default" : "outline"}
-					size="default"
-					className="flex-1 h-10 text-base"
-					onClick={() => setFileUploadMode("camera")}
-					disabled={isSubmitting || qrStatus.qrExtracting}
-				>
-					📷 Kamera
-				</Button>
-			</div>
 
 			<Suspense fallback={<QRUploadFallback />}>
 				<LazyQRProcessor
@@ -243,13 +207,12 @@ export default function QRExtractionFeature({
 					onClearQrContent={handleClearQrContentCallback}
 				/>
 				{/* Standard file input */}
-				<div className="relative flex items-center gap-2">
+				<div className="space-y-2">
 					<Input
 						id="qrImage"
 						type="file"
 						name="qrImage"
 						accept="image/*"
-						capture={fileUploadMode === "camera" ? "environment" : undefined}
 						onChange={handleFileChangeWrapper}
 						disabled={isSubmitting || qrStatus.qrExtracting}
 						className="hidden"
@@ -258,8 +221,12 @@ export default function QRExtractionFeature({
 						type="button"
 						asChild
 						disabled={isSubmitting || qrStatus.qrExtracting}
+						className="w-full h-12 text-base"
 					>
-						<label htmlFor="qrImage" className="cursor-pointer">
+						<label
+							htmlFor="qrImage"
+							className="cursor-pointer flex items-center justify-center w-full h-12"
+						>
 							{qrStatus.qrExtracting
 								? "Memproses..."
 								: selectedFile
@@ -301,12 +268,6 @@ export default function QRExtractionFeature({
 						</div>
 					)}
 				</div>
-
-				{fileUploadMode === "camera" && (
-					<p className="text-xs text-gray-500 mt-1">
-						📱 Kamera akan dibuka secara langsung
-					</p>
-				)}
 			</Suspense>
 
 			{qrStatus.qrExtracting && (

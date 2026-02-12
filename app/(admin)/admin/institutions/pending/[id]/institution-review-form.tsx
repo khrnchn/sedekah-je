@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { Institution } from "@/db/institutions";
+import { geocodeInstitution } from "@/lib/geocode";
 import {
 	categories as CATEGORY_OPTIONS,
 	supportedPayments as PAYMENT_OPTIONS,
@@ -12,9 +13,14 @@ import {
 } from "@/lib/institution-constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { ExternalLink, Search } from "lucide-react";
+import { ExternalLink, Loader2, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { forwardRef, useImperativeHandle, useTransition } from "react";
+import {
+	forwardRef,
+	useImperativeHandle,
+	useState,
+	useTransition,
+} from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -40,6 +46,7 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 	function InstitutionReviewForm({ institution }, ref) {
 		const router = useRouter();
 		const [isPending, startTransition] = useTransition();
+		const [isRecalibrating, setIsRecalibrating] = useState(false);
 
 		const formattedSubmissionDate = institution.createdAt
 			? format(new Date(institution.createdAt), "d MMMM yyyy")
@@ -66,6 +73,25 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 				{ message: "Invalid URL" },
 			);
 
+		// Coordinate validation (lat -90 to 90, lon -180 to 180, both optional)
+		const coordString = z.string().optional().or(z.literal(""));
+		const latString = coordString.refine(
+			(val) => {
+				if (!val || val === "") return true;
+				const num = Number.parseFloat(val);
+				return !Number.isNaN(num) && num >= -90 && num <= 90;
+			},
+			{ message: "Latitude must be between -90 and 90" },
+		);
+		const lonString = coordString.refine(
+			(val) => {
+				if (!val || val === "") return true;
+				const num = Number.parseFloat(val);
+				return !Number.isNaN(num) && num >= -180 && num <= 180;
+			},
+			{ message: "Longitude must be between -180 and 180" },
+		);
+
 		// dynamically build schema based on whether original qrContent exists
 		const dynamicSchema = z.object({
 			name: z.string().min(1, "Name is required"),
@@ -73,6 +99,8 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 			state: z.enum(STATE_OPTIONS),
 			city: z.string().min(1),
 			address: z.string().optional(),
+			lat: latString,
+			lon: lonString,
 			facebook: urlOrEmpty,
 			instagram: urlOrEmpty,
 			website: urlOrEmpty,
@@ -93,6 +121,7 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 			register,
 			handleSubmit,
 			getValues,
+			setValue,
 			trigger,
 			watch,
 			formState: { errors },
@@ -104,6 +133,14 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 				state: institution.state || STATE_OPTIONS[0],
 				city: institution.city ?? "",
 				address: institution.address ?? "",
+				lat:
+					institution.coords && Array.isArray(institution.coords)
+						? String(institution.coords[0])
+						: "",
+				lon:
+					institution.coords && Array.isArray(institution.coords)
+						? String(institution.coords[1])
+						: "",
 				facebook: institution.socialMedia?.facebook ?? "",
 				instagram: institution.socialMedia?.instagram ?? "",
 				website: institution.socialMedia?.website ?? "",
@@ -131,12 +168,30 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 				facebook,
 				instagram,
 				website,
+				lat,
+				lon,
 				sourceUrl: _sourceUrl, // read-only
 				contributorRemarks: _contributorRemarks, // read-only
 				...rest
 			} = formData;
+			const latStr = lat?.trim() ?? "";
+			const lonStr = lon?.trim() ?? "";
+			const latNum = latStr ? Number.parseFloat(latStr) : Number.NaN;
+			const lonNum = lonStr ? Number.parseFloat(lonStr) : Number.NaN;
+			const coords: [number, number] | null =
+				latStr &&
+				lonStr &&
+				!Number.isNaN(latNum) &&
+				latNum >= -90 &&
+				latNum <= 90 &&
+				!Number.isNaN(lonNum) &&
+				lonNum >= -180 &&
+				lonNum <= 180
+					? [latNum, lonNum]
+					: null;
 			return {
 				...rest,
+				coords,
 				socialMedia: {
 					facebook: facebook || undefined,
 					instagram: instagram || undefined,
@@ -262,6 +317,83 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 								Address
 							</label>
 							<Textarea id="address" rows={3} {...register("address")} />
+						</div>
+
+						<div className="space-y-2">
+							<div className="font-medium">Coordinates</div>
+							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+								<div className="space-y-1">
+									<label
+										htmlFor="lat"
+										className="text-sm text-muted-foreground"
+									>
+										Latitude
+									</label>
+									<Input
+										id="lat"
+										placeholder="-90 to 90"
+										{...register("lat")}
+									/>
+									{errors.lat && (
+										<p className="text-sm text-red-500">{errors.lat.message}</p>
+									)}
+								</div>
+								<div className="space-y-1">
+									<label
+										htmlFor="lon"
+										className="text-sm text-muted-foreground"
+									>
+										Longitude
+									</label>
+									<Input
+										id="lon"
+										placeholder="-180 to 180"
+										{...register("lon")}
+									/>
+									{errors.lon && (
+										<p className="text-sm text-red-500">{errors.lon.message}</p>
+									)}
+								</div>
+							</div>
+							<Button
+								type="button"
+								variant="outline"
+								size="sm"
+								disabled={isRecalibrating}
+								onClick={async () => {
+									const name = getValues("name");
+									const city = getValues("city");
+									const state = getValues("state");
+									if (!name || !city || !state) {
+										toast.error(
+											"Name, city, and state required for recalibration",
+										);
+										return;
+									}
+									setIsRecalibrating(true);
+									try {
+										const result = await geocodeInstitution(name, city, state);
+										if (result) {
+											setValue("lat", String(result[0]));
+											setValue("lon", String(result[1]));
+											toast.success("Coordinates updated from address");
+										} else {
+											toast.error("Could not geocode address");
+										}
+									} finally {
+										setIsRecalibrating(false);
+									}
+								}}
+							>
+								{isRecalibrating ? (
+									<>
+										<Loader2 className="h-4 w-4 animate-spin" />
+										Recalibrating...
+									</>
+								) : (
+									"Recalibrate"
+								)}
+							</Button>
 						</div>
 
 						<div className="space-y-2">
