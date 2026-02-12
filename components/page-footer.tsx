@@ -71,12 +71,8 @@ const navigation = {
 	],
 	projects: [
 		{
-			name: "Portfolio Saya",
-			href: "https://khairin.my",
-		},
-		{
-			name: "Dropjual.com",
-			href: "https://dropjual.com",
+			name: "mnasrullah.com",
+			href: "https://mnasrullah.com",
 		},
 	],
 };

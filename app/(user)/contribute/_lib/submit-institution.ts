@@ -9,7 +9,6 @@ import {
 	logInstitutionSubmissionFailure,
 	logNewInstitution,
 } from "@/lib/telegram";
-import { verifyTurnstileToken } from "@/lib/turnstile";
 import { slugify } from "@/lib/utils";
 import { and, count, eq, gte } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
@@ -65,42 +64,6 @@ export async function submitInstitution(
 		contributorId: formData.get("contributorId"),
 		qrContent: formData.get("qrContent"),
 	};
-
-	// --- Verify Turnstile token (skip in development)
-	if (process.env.NODE_ENV !== "development") {
-		const turnstileToken = formData.get("turnstileToken") as string;
-		if (!turnstileToken) {
-			return {
-				status: "error",
-				errors: {
-					turnstileToken: ["Pengesahan keselamatan diperlukan"],
-				},
-			};
-		}
-
-		try {
-			// Verify Turnstile token directly without HTTP calls
-			const verifyResult = await verifyTurnstileToken(turnstileToken);
-			if (!verifyResult.success) {
-				return {
-					status: "error",
-					errors: {
-						turnstileToken: [
-							verifyResult.error || "Pengesahan keselamatan gagal",
-						],
-					},
-				};
-			}
-		} catch (error) {
-			console.error("Turnstile verification failed:", error);
-			return {
-				status: "error",
-				errors: {
-					turnstileToken: ["Ralat pengesahan keselamatan. Sila cuba lagi."],
-				},
-			};
-		}
-	}
 
 	// --- Authentication check
 	const contributorId = formData.get("contributorId") as string | null;
@@ -162,11 +125,30 @@ export async function submitInstitution(
 	let coords: [number, number] | undefined;
 	const lat = formData.get("lat");
 	const lon = formData.get("lon");
-	if (lat && lon) {
-		coords = [
-			Number.parseFloat(lat as string),
-			Number.parseFloat(lon as string),
-		];
+
+	// Only process coordinates if both are provided and not empty strings
+	if (lat && lon && typeof lat === "string" && typeof lon === "string") {
+		const latStr = lat.trim();
+		const lonStr = lon.trim();
+
+		if (latStr !== "" && lonStr !== "") {
+			const latNum = Number.parseFloat(latStr);
+			const lonNum = Number.parseFloat(lonStr);
+
+			// Validate that both are valid numbers within proper ranges
+			if (
+				!Number.isNaN(latNum) &&
+				Number.isFinite(latNum) &&
+				latNum >= -90 &&
+				latNum <= 90 &&
+				!Number.isNaN(lonNum) &&
+				Number.isFinite(lonNum) &&
+				lonNum >= -180 &&
+				lonNum <= 180
+			) {
+				coords = [latNum, lonNum];
+			}
+		}
 	}
 
 	// Generate unique slug before validation since it's required by the schema
