@@ -23,7 +23,8 @@
 				"noChildrenProp": "off"
 			},
 			"a11y": {
-				"noSvgWithoutTitle": "off"
+				"noSvgWithoutTitle": "off",
+				"useSemanticElements": "warn"
 			},
 			"security": {
 				"noDangerouslySetInnerHtml": "off"

@@ -12,6 +12,8 @@ type SharePlatform = keyof typeof SHARE_PLATFORMS;
 interface ShareData {
 	category: string;
 	name: string;
+	slug?: string;
+	customMessage?: string;
 }
 
 interface ShareProps {
@@ -24,11 +26,14 @@ const isMobile = () =>
 	/(android|iphone|ipad|mobile)/i.test(navigator.userAgent);
 
 const generateShareMessage = (data: ShareData) => {
+	if (data.customMessage) {
+		return encodeURIComponent(data.customMessage);
+	}
 	const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
-	const institutionSlug = `${baseUrl}/${data.category}/${slugify(data.name)}`;
-	// Encode the message to be URL-safe
+	const slug = data.slug ?? slugify(data.name);
+	const institutionUrl = `${baseUrl}/${data.category}/${slug}`;
 	return encodeURIComponent(
-		`Jom bersedekah! Dapatkan kod QR untuk ${data.name} melalui pautan di bawah. 🌟\n\n${institutionSlug}\n\nTerima kasih kerana menggunakan SedekahJe! 💖`,
+		`Jom bersedekah! Dapatkan kod QR untuk ${data.name} melalui pautan di bawah. 🌟\n\n${institutionUrl}\n\nTerima kasih kerana menggunakan SedekahJe! 💖`,
 	);
 };
 

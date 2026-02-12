@@ -22,7 +22,6 @@ import { HelpCircle, MapIcon } from "lucide-react";
 import Link from "next/link";
 
 import type { Institution as OldInstitution } from "@/app/types/institutions";
-import RamadanCountdown from "@/components/ramadan-countdown";
 import type { Institution } from "@/db/schema";
 
 type SearchParams = {
@@ -250,7 +249,6 @@ export function PageClient({
 
 	return (
 		<PageSection>
-			{/* <RamadanCountdown /> */}
 			<div className="sticky top-0 z-40 pt-4 pb-4 space-y-4">
 				<FilterCategory
 					onCategoryChange={handleCategoryChange}
