@@ -1,5 +1,3 @@
-"use server";
-
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import { count } from "drizzle-orm";
