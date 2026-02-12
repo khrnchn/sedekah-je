@@ -14,7 +14,6 @@ import {
 	states as STATE_OPTIONS,
 } from "@/lib/institution-constants";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Turnstile } from "@marsidev/react-turnstile";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import {
 	Suspense,
@@ -37,24 +36,18 @@ const LocationServicesFeature = lazy(
 function SubmitButton({
 	isSubmitting,
 	qrExtracting,
-	turnstileToken,
 	qrExtractionFailed,
 	hasFile,
 	isAuthenticated,
 }: {
 	isSubmitting: boolean;
 	qrExtracting: boolean;
-	turnstileToken: string;
 	qrExtractionFailed: boolean;
 	hasFile: boolean;
 	isAuthenticated: boolean;
 }) {
 	const isDisabled =
-		isSubmitting ||
-		!turnstileToken ||
-		qrExtracting ||
-		!hasFile ||
-		!isAuthenticated;
+		isSubmitting || qrExtracting || !hasFile || !isAuthenticated;
 
 	return (
 		<Button
@@ -115,9 +108,6 @@ export default function InstitutionFormOptimized() {
 	const [socialMediaExpanded, setSocialMediaExpanded] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [enableAdvancedFeatures, setEnableAdvancedFeatures] = useState(false);
-	const [turnstileToken, setTurnstileToken] = useState<string>(
-		process.env.NODE_ENV === "development" ? "dev-bypass-token" : "",
-	);
 
 	/* React Hook Form */
 	const form = useForm<InstitutionFormData>({
@@ -136,8 +126,6 @@ export default function InstitutionFormOptimized() {
 			contributorId: user?.id ?? "",
 			lat: "",
 			lon: "",
-			turnstileToken:
-				process.env.NODE_ENV === "development" ? "dev-bypass-token" : "",
 		},
 	});
 
@@ -188,11 +176,6 @@ export default function InstitutionFormOptimized() {
 		}
 	}, [user?.id, setValue]);
 
-	/* Update Turnstile token */
-	useEffect(() => {
-		setValue("turnstileToken", turnstileToken);
-	}, [turnstileToken, setValue]);
-
 	/* Form submission handler */
 	const onSubmit = async (data: InstitutionFormData) => {
 		// Authentication check
@@ -234,7 +217,7 @@ export default function InstitutionFormOptimized() {
 			const result = await submitInstitution(undefined, formData);
 
 			if (result.status === "success") {
-				toast.success("Jazakallahu khair. Terima kasih!", {
+				toast.success("Jazakallahu khair!", {
 					description: "Sumbangan anda sedang disemak.",
 				});
 				reset();
@@ -293,9 +276,6 @@ export default function InstitutionFormOptimized() {
 					{...register("contributorId")}
 					value={user?.id ?? ""}
 				/>
-				<input type="hidden" {...register("lat")} />
-				<input type="hidden" {...register("lon")} />
-				<input type="hidden" {...register("turnstileToken")} />
 
 				{/* Progressive location services */}
 				{enableAdvancedFeatures ? (
@@ -401,6 +381,46 @@ export default function InstitutionFormOptimized() {
 						)}
 					</div>
 				</div>
+
+				{/* Coordinates - mobile optimized grid */}
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+					<div className="space-y-2">
+						<label htmlFor="lat" className="font-medium text-base">
+							Latitud
+						</label>
+						<Input
+							id="lat"
+							type="number"
+							step="any"
+							{...register("lat")}
+							placeholder="Contoh: 3.1390"
+							className={`h-12 text-base ${errors.lat ? "border-red-500" : ""}`}
+						/>
+						{errors.lat && (
+							<p className="text-sm text-red-500">{errors.lat.message}</p>
+						)}
+					</div>
+					<div className="space-y-2">
+						<label htmlFor="lon" className="font-medium text-base">
+							Longitud
+						</label>
+						<Input
+							id="lon"
+							type="number"
+							step="any"
+							{...register("lon")}
+							placeholder="Contoh: 101.6869"
+							className={`h-12 text-base ${errors.lon ? "border-red-500" : ""}`}
+						/>
+						{errors.lon && (
+							<p className="text-sm text-red-500">{errors.lon.message}</p>
+						)}
+					</div>
+				</div>
+				<p className="text-sm text-muted-foreground">
+					Koordinat adalah pilihan. Jika tidak diisi, sistem akan cuba mencari
+					koordinat secara automatik.
+				</p>
 
 				{/* Additional info */}
 				<div className="space-y-2">
@@ -509,52 +529,9 @@ export default function InstitutionFormOptimized() {
 					)}
 				</div>
 
-				{/* Turnstile Security Verification - Only in Production */}
-				{process.env.NODE_ENV !== "development" && (
-					<div className="space-y-2">
-						<p className="font-medium text-base">
-							Pengesahan Keselamatan <span className="text-red-500">*</span>
-						</p>
-						<div className="flex justify-center">
-							<Turnstile
-								siteKey={
-									process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY || ""
-								}
-								onSuccess={setTurnstileToken}
-								onError={() => setTurnstileToken("")}
-								onExpire={() => setTurnstileToken("")}
-								options={{
-									theme: "auto",
-									size: "normal",
-									language: "ms",
-									refreshExpired: "auto",
-								}}
-							/>
-						</div>
-						{errors.turnstileToken && (
-							<p className="text-sm text-red-500 text-center">
-								{errors.turnstileToken.message}
-							</p>
-						)}
-					</div>
-				)}
-
-				{/* Development Mode Notice */}
-				{process.env.NODE_ENV === "development" && (
-					<div className="space-y-2">
-						<div className="bg-yellow-50 border border-yellow-200 rounded-md p-3">
-							<p className="text-sm text-yellow-800">
-								🚧 <strong>Development Mode:</strong> Turnstile verification
-								bypassed
-							</p>
-						</div>
-					</div>
-				)}
-
 				<SubmitButton
 					isSubmitting={isSubmitting}
 					qrExtracting={qrStatus.qrExtracting}
-					turnstileToken={turnstileToken}
 					qrExtractionFailed={qrStatus.qrExtractionFailed}
 					hasFile={qrStatus.hasFile}
 					isAuthenticated={!!user?.id}
