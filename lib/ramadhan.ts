@@ -18,9 +18,13 @@ export function getRamadhanDate(startDate: Date, dayNumber: number): Date {
 
 /**
  * Format date as YYYY-MM-DD for DB comparison.
+ * Uses local date components to avoid UTC shift (e.g. near midnight MYT).
  */
 export function toDateString(d: Date): string {
-	return d.toISOString().slice(0, 10);
+	const y = d.getFullYear();
+	const m = String(d.getMonth() + 1).padStart(2, "0");
+	const day = String(d.getDate()).padStart(2, "0");
+	return `${y}-${m}-${day}`;
 }
 
 /**

@@ -34,12 +34,14 @@ export default async function RamadhanPage() {
 		getTodaysFeatured(),
 	]);
 
-	const campaignByDay = new Map(campaign.map((c) => [c.dayNumber, c]));
+	const campaignByDay = Object.fromEntries(
+		campaign.map((c) => [c.dayNumber, c]),
+	) as Record<number, (typeof campaign)[number]>;
 
 	const todayDateStr = toDateString(getTodayMYT());
 	const todayDayNumber = todaysFeatured?.dayNumber ?? null;
 
-	const startDate = campaignByDay.get(1)?.featuredDate ?? `${year}-03-01`;
+	const startDate = campaignByDay[1]?.featuredDate ?? `${year}-03-01`;
 
 	return (
 		<>
