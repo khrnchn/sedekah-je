@@ -3,13 +3,14 @@ import Share from "@/components/share";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
+import RamadhanCountdown from "./ramadhan-countdown";
 
 const BASE_URL = "https://sedekah.je";
 
 export async function RamadhanBanner() {
 	try {
 		const featured = await getTodaysFeatured();
-		if (!featured) return null;
+		if (!featured) return <RamadhanCountdown />;
 
 		const customMessage = `QR Hari Ini — Hari ke-${featured.dayNumber}/30 Ramadan! 🌙\n\n${featured.institutionName} (${featured.institutionState})\n\n${BASE_URL}/ramadhan\n\n#SedekahJe #30Hari30QR`;
 
