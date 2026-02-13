@@ -107,6 +107,7 @@ export default function Share(props: ShareProps) {
 		if (typeof window === "undefined") return;
 
 		const message = generateShareMessage(data);
+		const hasCustomMessage = Boolean(data.customMessage);
 		const baseUrl = window.location.origin;
 		const slug = data.slug ?? slugify(data.name);
 		const url = `${baseUrl}/${data.category}/${slug}`;
@@ -116,7 +117,7 @@ export default function Share(props: ShareProps) {
 				await navigator.share({
 					title: `${data.name} — SedekahJe`,
 					text: message,
-					url,
+					...(hasCustomMessage ? {} : { url }),
 				});
 				return;
 			} catch (err) {
@@ -127,7 +128,8 @@ export default function Share(props: ShareProps) {
 
 		// Fallback: copy to clipboard
 		try {
-			await navigator.clipboard.writeText(`${message}\n\n${url}`);
+			const clipboardText = hasCustomMessage ? message : `${message}\n\n${url}`;
+			await navigator.clipboard.writeText(clipboardText);
 			setCopied(true);
 			setTimeout(() => setCopied(false), 2000);
 		} catch {

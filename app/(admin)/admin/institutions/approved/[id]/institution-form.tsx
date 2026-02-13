@@ -400,6 +400,8 @@ export default function ApprovedInstitutionForm({
 											} else {
 												toast.error("Could not geocode address");
 											}
+										} catch {
+											toast.error("Failed to recalibrate coordinates");
 										} finally {
 											setIsRecalibrating(false);
 										}

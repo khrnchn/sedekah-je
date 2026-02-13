@@ -17,7 +17,7 @@ import { RamadhanDayDetailPlaceholder } from "./ramadhan-day-detail-placeholder"
 type RamadhanCalendarProps = {
 	year: number;
 	startDate: string;
-	campaignByDay: Map<number, RamadhanCampaignDay>;
+	campaignByDay: Record<number, RamadhanCampaignDay>;
 	todayDayNumber: number | null;
 	todayDateStr: string;
 	baseUrl: string;
@@ -45,7 +45,7 @@ export function RamadhanCalendar({
 		const dayNumber = i + 1;
 		const date = getRamadhanDate(start, dayNumber);
 		const featuredDate = date.toISOString().slice(0, 10);
-		const day = campaignByDay.get(dayNumber) ?? null;
+		const day = campaignByDay[dayNumber] ?? null;
 		const isToday = todayDateStr === featuredDate;
 		const isPast = todayDateStr > featuredDate;
 		return (
@@ -62,7 +62,7 @@ export function RamadhanCalendar({
 		);
 	});
 
-	const selectedDayData = selectedDay ? campaignByDay.get(selectedDay) : null;
+	const selectedDayData = selectedDay ? campaignByDay[selectedDay] : null;
 
 	const detailContent =
 		selectedDayData && selectedDay !== null ? (
