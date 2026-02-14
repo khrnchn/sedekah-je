@@ -246,9 +246,9 @@ export async function approveInstitution(
 		.returning();
 
 	// Revalidate relevant pages to update the UI
-	revalidatePath("/admin/institutions/pending");
-	revalidatePath("/admin/institutions/approved");
-	revalidatePath("/admin/dashboard");
+	revalidatePath("/admin/institutions/pending", "page");
+	revalidatePath("/admin/institutions/approved", "page");
+	revalidatePath("/admin/dashboard", "page");
 
 	// Revalidate cached data and counts
 	revalidateTag("pending-institutions");
@@ -281,9 +281,9 @@ export async function rejectInstitution(
 		.returning();
 
 	// Revalidate relevant pages to update the UI
-	revalidatePath("/admin/institutions/pending");
-	revalidatePath("/admin/institutions/rejected");
-	revalidatePath("/admin/dashboard");
+	revalidatePath("/admin/institutions/pending", "page");
+	revalidatePath("/admin/institutions/rejected", "page");
+	revalidatePath("/admin/dashboard", "page");
 
 	// Revalidate cached data and counts
 	revalidateTag("pending-institutions");
@@ -406,13 +406,14 @@ export async function updateInstitutionByAdmin(
 		.returning();
 
 	// Revalidate relevant pages to update the UI
-	revalidatePath("/admin/institutions/pending");
-	revalidatePath("/admin/institutions/approved");
-	revalidatePath("/admin/dashboard");
+	revalidatePath("/admin/institutions/pending", "page");
+	revalidatePath("/admin/institutions/approved", "page");
+	revalidatePath("/admin/dashboard", "page");
 
 	// Revalidate cached data and counts
 	revalidateTag("pending-institutions");
 	revalidateTag("approved-institutions");
+	revalidateTag("institutions-count");
 	revalidateTag("institutions-data");
 	revalidateTag("institutions"); // Homepage cache
 
@@ -485,7 +486,7 @@ export async function assignContributorToInstitution(
 		.returning();
 
 	// Revalidate approved institutions data
-	revalidatePath("/admin/institutions/approved");
+	revalidatePath("/admin/institutions/approved", "page");
 	revalidateTag("approved-institutions");
 	revalidateTag("institutions-data");
 	revalidateTag("institutions"); // Homepage cache
@@ -547,9 +548,9 @@ export async function batchApproveInstitutions(
 		.returning();
 
 	// Revalidate relevant pages to update the UI
-	revalidatePath("/admin/institutions/pending");
-	revalidatePath("/admin/institutions/approved");
-	revalidatePath("/admin/dashboard");
+	revalidatePath("/admin/institutions/pending", "page");
+	revalidatePath("/admin/institutions/approved", "page");
+	revalidatePath("/admin/dashboard", "page");
 
 	// Revalidate cached counts for sidebar badges
 	revalidateTag("institutions-count");
@@ -617,12 +618,14 @@ export async function batchRejectInstitutions(
 		.returning();
 
 	// Revalidate relevant pages to update the UI
-	revalidatePath("/admin/institutions/pending");
-	revalidatePath("/admin/institutions/rejected");
+	revalidatePath("/admin/institutions/pending", "page");
+	revalidatePath("/admin/institutions/rejected", "page");
+	revalidatePath("/admin/dashboard", "page");
 
 	// Revalidate caches
 	revalidateTag("pending-institutions");
 	revalidateTag("rejected-institutions");
+	revalidateTag("institutions-count");
 
 	return {
 		success: true,

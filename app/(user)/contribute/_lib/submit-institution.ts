@@ -321,11 +321,12 @@ export async function submitInstitution(
 			}
 		}
 
-		// Revalidate paths to show the new submission
-		revalidatePath("/(user)/my-contributions", "page");
-		revalidatePath("/(admin)/admin/institutions/pending", "page");
-		revalidateTag("institution_count");
-		revalidateTag("pending_institution_count");
+		// Revalidate paths to show the new submission.
+		// Route groups are not part of the public pathname.
+		revalidatePath("/my-contributions", "page");
+		revalidatePath("/admin/institutions/pending", "page");
+		revalidateTag("institutions-count");
+		revalidateTag("pending-institutions");
 		revalidateTag(`user_contributions_count:${contributorId}`);
 
 		return { status: "success" };
