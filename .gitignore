@@ -40,3 +40,6 @@ yarn-error.log*
 next-env.d.ts
 
 .env
+
+# Script data (downloaded datasets)
+scripts/data/
