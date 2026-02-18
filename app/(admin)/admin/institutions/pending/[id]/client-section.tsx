@@ -8,6 +8,7 @@ import { useRef } from "react";
 import InstitutionReviewForm, {
 	type ReviewFormHandle,
 } from "./institution-review-form";
+import ManualQrInput from "./manual-qr-input";
 import QrImageToolbar from "./qr-image-toolbar";
 import QrReplacementUpload from "./qr-replacement-upload";
 import ReviewActions from "./review-actions";
@@ -124,6 +125,15 @@ export default function ClientSection({ institution }: Props) {
 										/>
 									</div>
 									<QrImageToolbar imageUrl={institution.qrImage || ""} />
+
+									{/* Manual QR String Input */}
+									<div className="w-full border-t pt-4">
+										<ManualQrInput
+											institutionId={institution.id}
+											supportedPayment={institution.supportedPayment}
+											onSuccess={handleQrReplacementSuccess}
+										/>
+									</div>
 
 									{/* QR Replacement Upload */}
 									<div className="w-full border-t pt-4">
