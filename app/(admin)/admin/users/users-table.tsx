@@ -4,7 +4,7 @@ import type { User } from "@/app/(admin)/admin/users/columns";
 import { ReusableDataTable } from "@/components/reusable-data-table";
 import type { Updater } from "@tanstack/react-table";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { columns } from "./columns";
 
 type UsersData = {
@@ -21,6 +21,20 @@ export function UsersTable({ data }: { data: UsersData }) {
 
 	const page = Number(searchParams.get("page") ?? 1);
 	const limit = Number(searchParams.get("limit") ?? 10);
+	const q = searchParams.get("q") ?? "";
+
+	const [draft, setDraft] = useState(q);
+	const debounceRef = useRef<NodeJS.Timeout | null>(null);
+
+	useEffect(() => {
+		setDraft(q);
+	}, [q]);
+
+	useEffect(() => {
+		return () => {
+			if (debounceRef.current) clearTimeout(debounceRef.current);
+		};
+	}, []);
 
 	const pagination = useMemo(
 		() => ({
@@ -42,6 +56,25 @@ export function UsersTable({ data }: { data: UsersData }) {
 		[pagination, router, pathname, searchParams],
 	);
 
+	const handleSearchChange = useCallback(
+		(value: string) => {
+			setDraft(value);
+			if (debounceRef.current) clearTimeout(debounceRef.current);
+			debounceRef.current = setTimeout(() => {
+				debounceRef.current = null;
+				const params = new URLSearchParams(searchParams.toString());
+				if (value.trim()) {
+					params.set("q", value.trim());
+				} else {
+					params.delete("q");
+				}
+				params.set("page", "1");
+				router.push(`${pathname}?${params.toString()}`);
+			}, 300);
+		},
+		[router, pathname, searchParams],
+	);
+
 	const pageCount = Math.ceil(data.total / pagination.pageSize);
 
 	return (
@@ -50,6 +83,8 @@ export function UsersTable({ data }: { data: UsersData }) {
 			data={data.users}
 			searchKey="email"
 			searchPlaceholder="Search by email..."
+			searchValue={draft}
+			onSearchChange={handleSearchChange}
 			pageCount={pageCount}
 			pagination={pagination}
 			onPaginationChange={handlePaginationChange}

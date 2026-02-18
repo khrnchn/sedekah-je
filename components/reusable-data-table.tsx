@@ -55,6 +55,9 @@ interface DataTableProps<TData, TValue> {
 	data: TData[];
 	searchKey?: string;
 	searchPlaceholder?: string;
+	/** Controlled search (server-side): value and onChange. When both set, search input syncs to URL instead of column filter. */
+	searchValue?: string;
+	onSearchChange?: (value: string) => void;
 	enableColumnVisibility?: boolean;
 	enablePagination?: boolean;
 	pageSize?: number;
@@ -75,6 +78,8 @@ export function ReusableDataTable<TData, TValue>({
 	data,
 	searchKey,
 	searchPlaceholder = "Search...",
+	searchValue: controlledSearchValue,
+	onSearchChange,
 	enableColumnVisibility = true,
 	enablePagination = true,
 	pageSize = 10,
@@ -152,11 +157,20 @@ export function ReusableDataTable<TData, TValue>({
 							<Input
 								placeholder={searchPlaceholder}
 								value={
-									(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""
+									onSearchChange
+										? (controlledSearchValue ?? "")
+										: ((table
+												.getColumn(searchKey)
+												?.getFilterValue() as string) ?? "")
 								}
-								onChange={(event) =>
-									table.getColumn(searchKey)?.setFilterValue(event.target.value)
-								}
+								onChange={(event) => {
+									const value = event.target.value;
+									if (onSearchChange) {
+										onSearchChange(value);
+									} else {
+										table.getColumn(searchKey)?.setFilterValue(value);
+									}
+								}}
 								className="h-8"
 							/>
 						</div>
