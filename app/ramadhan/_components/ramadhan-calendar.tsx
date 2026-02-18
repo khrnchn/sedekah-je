@@ -45,9 +45,11 @@ export function RamadhanCalendar({
 		const dayNumber = i + 1;
 		const date = getRamadhanDate(start, dayNumber);
 		const featuredDate = date.toISOString().slice(0, 10);
-		const day = campaignByDay[dayNumber] ?? null;
 		const isToday = todayDateStr === featuredDate;
 		const isPast = todayDateStr > featuredDate;
+		const isFuture = !isToday && !isPast;
+		// Hide institution data for future days — reveal only when the date arrives
+		const day = isFuture ? null : (campaignByDay[dayNumber] ?? null);
 		return (
 			<RamadhanDayCard
 				key={dayNumber}
@@ -56,13 +58,16 @@ export function RamadhanCalendar({
 				featuredDate={featuredDate}
 				isToday={isToday}
 				isPast={isPast}
+				isFuture={isFuture}
 				isSelected={selectedDay === dayNumber}
-				onSelect={handleSelect}
+				onSelect={isFuture ? undefined : handleSelect}
 			/>
 		);
 	});
 
-	const selectedDayData = selectedDay ? campaignByDay[selectedDay] : null;
+	const selectedDayData = selectedDay
+		? (campaignByDay[selectedDay] ?? null)
+		: null;
 
 	const detailContent =
 		selectedDayData && selectedDay !== null ? (

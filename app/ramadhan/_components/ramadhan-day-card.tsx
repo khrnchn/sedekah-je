@@ -3,7 +3,7 @@
 import { Card } from "@/components/ui/card";
 import { formatDateBM } from "@/lib/ramadhan";
 import { cn } from "@/lib/utils";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Lock } from "lucide-react";
 import type { RamadhanCampaignDay } from "../_lib/queries";
 
 type RamadhanDayCardProps = {
@@ -12,8 +12,9 @@ type RamadhanDayCardProps = {
 	featuredDate: string;
 	isToday: boolean;
 	isPast: boolean;
+	isFuture: boolean;
 	isSelected: boolean;
-	onSelect: (dayNumber: number) => void;
+	onSelect?: (dayNumber: number) => void;
 };
 
 const DETAIL_PANEL_ID = "ramadhan-day-detail";
@@ -24,6 +25,7 @@ export function RamadhanDayCard({
 	featuredDate,
 	isToday,
 	isPast,
+	isFuture,
 	isSelected,
 	onSelect,
 }: RamadhanDayCardProps) {
@@ -43,7 +45,14 @@ export function RamadhanDayCard({
 					<p className="text-xs text-muted-foreground">
 						{formatDateBM(featuredDate)}
 					</p>
-					<p className="text-sm text-muted-foreground mt-1">Belum diisi</p>
+					{isFuture ? (
+						<div className="flex items-center justify-center gap-1 mt-1 text-muted-foreground">
+							<Lock className="h-3 w-3" />
+							<p className="text-sm">Akan datang</p>
+						</div>
+					) : (
+						<p className="text-sm text-muted-foreground mt-1">Belum diisi</p>
+					)}
 				</div>
 			</Card>
 		);
@@ -71,11 +80,11 @@ export function RamadhanDayCard({
 					"focus:outline-none focus-visible:ring-0",
 					isPast && !isSelected && "hover:bg-muted/50",
 				)}
-				onClick={() => onSelect(dayNumber)}
+				onClick={() => onSelect?.(dayNumber)}
 				onKeyDown={(e) => {
 					if (e.key === "Enter" || e.key === " ") {
 						e.preventDefault();
-						onSelect(dayNumber);
+						onSelect?.(dayNumber);
 					}
 				}}
 				aria-expanded={isSelected}
