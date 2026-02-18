@@ -85,7 +85,7 @@ function AddControls() {
 
 const getMarkerIcon = (color?: MarkerColor) =>
 	new Icon({
-		iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${color}.png`,
+		iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${color ?? "violet"}.png`,
 		shadowUrl:
 			"https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
 		iconSize: [25, 41],
@@ -130,7 +130,10 @@ export default function MapLocation({
 				<Marker
 					key={idx}
 					position={institution.coords as LatLngExpression}
-					icon={getMarkerIcon(CategoryColor[institution.category])}
+					icon={getMarkerIcon(
+						CategoryColor[institution.category as keyof typeof CategoryColor] ??
+							"violet",
+					)}
 					eventHandlers={{ click: () => markerClickHandler(institution) }}
 				>
 					<Tooltip>{institution.name}</Tooltip>
