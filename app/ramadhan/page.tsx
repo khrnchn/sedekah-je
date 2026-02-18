@@ -1,5 +1,5 @@
 import { Header } from "@/components/ui/header";
-import { getTodayMYT, toDateString } from "@/lib/ramadhan";
+import { getIslamicDateMYT, toDateString } from "@/lib/ramadhan";
 import type { Metadata } from "next";
 import { RamadhanCalendar } from "./_components/ramadhan-calendar";
 import { RamadhanTodayCard } from "./_components/ramadhan-today-card";
@@ -8,8 +8,6 @@ import { getCampaignByYear, getTodaysFeatured } from "./_lib/queries";
 const BASE_URL = "https://sedekah.je";
 
 export async function generateMetadata(): Promise<Metadata> {
-	const today = getTodayMYT();
-	const dateStr = toDateString(today);
 	const featured = await getTodaysFeatured();
 	const dayNum = featured?.dayNumber ?? 1;
 
@@ -38,7 +36,7 @@ export default async function RamadhanPage() {
 		campaign.map((c) => [c.dayNumber, c]),
 	) as Record<number, (typeof campaign)[number]>;
 
-	const todayDateStr = toDateString(getTodayMYT());
+	const todayDateStr = toDateString(getIslamicDateMYT());
 	const todayDayNumber = todaysFeatured?.dayNumber ?? null;
 
 	const startDate = campaignByDay[1]?.featuredDate ?? `${year}-03-01`;

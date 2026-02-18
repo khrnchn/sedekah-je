@@ -45,6 +45,32 @@ export function getTodayMYT(): Date {
 }
 
 /**
+ * Get the current Islamic date in MYT.
+ * In the Islamic calendar, the new day begins at Maghrib (~7pm).
+ * So after 7pm MYT, this returns tomorrow's Gregorian date.
+ */
+export function getIslamicDateMYT(): Date {
+	const formatter = new Intl.DateTimeFormat("en-CA", {
+		timeZone: TIMEZONE,
+		year: "numeric",
+		month: "2-digit",
+		day: "2-digit",
+		hour: "2-digit",
+		hour12: false,
+	});
+	const parts = formatter.formatToParts(new Date());
+	const year = Number(parts.find((p) => p.type === "year")?.value ?? 0);
+	const month = Number(parts.find((p) => p.type === "month")?.value ?? 1) - 1;
+	const day = Number(parts.find((p) => p.type === "day")?.value ?? 1);
+	const hour = Number(parts.find((p) => p.type === "hour")?.value ?? 0);
+	const date = new Date(year, month, day);
+	if (hour >= 19) {
+		date.setDate(date.getDate() + 1);
+	}
+	return date;
+}
+
+/**
  * Check if today is within the 30-day Ramadan window.
  * @param startDate - Gregorian date when Ramadan begins
  * @returns true if today is between startDate and startDate + 29

@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 import { institutions, ramadhanCampaigns } from "@/db/schema";
-import { getTodayMYT, toDateString } from "@/lib/ramadhan";
+import { getIslamicDateMYT, toDateString } from "@/lib/ramadhan";
 import { eq } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 
@@ -124,6 +124,6 @@ const getTodaysFeaturedInternal = (dateStr: string) =>
 	)();
 
 export async function getTodaysFeatured() {
-	const dateStr = toDateString(getTodayMYT());
+	const dateStr = toDateString(getIslamicDateMYT());
 	return getTodaysFeaturedInternal(dateStr);
 }
