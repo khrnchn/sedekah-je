@@ -15,22 +15,7 @@ read how this project started [here](https://sedekah.je/blog/sedekah-je-lore).
 
 ## contributing qr
 
-to upload qr, you have three options:
-1. (recommended) use the [contribution form](https://sedekah.je/contribute). you'll have to login first.
-
-2. through [issue](https://github.com/khrnchn/sedekah-je/issues/new?assignees=&labels=addQR&projects=&template=add_qr_code.md&title=%5BaddQR%5D+Add+New+QR+Code)
-- replace relevant info into the placeholders
-- dont forget remarks, in this pattern - `{contributor}, {source} - {url}` (if available)
-- eg: `khairin, facebook - https://facebook.com/source-of-the-qr`
-- add additional info like coordinates
-- submit issue and pr will be automatically created
-- dont forget to remove all the dashes (-)
-
-3. through bulk contribution
-- click this notebook [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1ObRdwFqF9Ug6f1UjvDPB0X7m3hAyMaQj?usp=sharing) (no local setup require)
-- click File > Save a copy in Drive
-- follow the notebook instruction
-- get the QR info and paste it in institutions.ts
+use the [contribution form](https://sedekah.je/contribute). you'll have to login first.
 
 ## contributing code
 
