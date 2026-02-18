@@ -291,9 +291,7 @@ export default function ReviewActions({
 									<Button
 										disabled={isPending}
 										variant={dialog === "reject" ? "destructive" : "default"}
-										onClick={() =>
-											dialog && dialog !== "email" && handleAction(dialog)
-										}
+										onClick={() => dialog && handleAction(dialog)}
 									>
 										{isPending ? (
 											<Loader2 className="mr-2 h-4 w-4 animate-spin" />
