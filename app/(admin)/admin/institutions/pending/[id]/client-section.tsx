@@ -21,6 +21,7 @@ type Props = {
 		qrImage: string | null;
 		contributorName?: string | null;
 		contributorId?: string | null;
+		contributorEmail?: string | null;
 		contributorRemarks?: string | null;
 		sourceUrl?: string | null;
 		createdAt?: Date;
@@ -43,6 +44,7 @@ export default function ClientSection({ institution }: Props) {
 				<ReviewActions
 					institutionId={institution.id}
 					institutionName={institution.name}
+					contributorEmail={institution.contributorEmail ?? null}
 					formRef={formRef}
 				/>
 			</div>
