@@ -14,10 +14,11 @@ type SearchParams = {
 };
 
 type Props = {
-	searchParams: SearchParams;
+	searchParams: Promise<SearchParams>;
 };
 
-export default async function Home({ searchParams }: Props) {
+export default async function Home(props: Props) {
+	const searchParams = await props.searchParams;
 	// For initial server-side render, we'll fetch all approved institutions
 	// Client will handle filtering and pagination
 	const institutions = await getInstitutions();

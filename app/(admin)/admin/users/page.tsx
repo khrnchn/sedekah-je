@@ -5,11 +5,10 @@ import { TableSkeleton } from "@/components/ui/table-skeleton";
 import { Suspense } from "react";
 import AsyncUsersData from "./async-users-data";
 
-export default function Page({
-	searchParams,
-}: {
-	searchParams: { [key: string]: string | string[] | undefined };
+export default async function Page(props: {
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+	const searchParams = await props.searchParams;
 	return (
 		<SidebarProvider>
 			<AppSidebar variant="inset" />

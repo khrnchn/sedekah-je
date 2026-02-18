@@ -93,12 +93,12 @@ export const viewport: Viewport = {
 	viewportFit: "cover",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
-	const nextHeaders = headers();
+	const nextHeaders = await headers();
 	const pathname = nextHeaders.get("x-pathname");
 
 	// opt out default layout for /qr/:slug

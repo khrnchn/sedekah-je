@@ -3,16 +3,17 @@ import type { Metadata, ResolvingMetadata } from "next";
 import Script from "next/script";
 
 type LayoutProps = {
-	params: {
+	params: Promise<{
 		institution: string;
 		slug: string;
-	};
+	}>;
 };
 
 export async function generateMetadata(
-	{ params }: LayoutProps,
+	props: LayoutProps,
 	parent: ResolvingMetadata,
 ): Promise<Metadata> {
+	const params = await props.params;
 	const slug = params.slug;
 
 	const institution = await getInstitutionBySlug(slug);
@@ -55,13 +56,14 @@ export async function generateMetadata(
 	};
 }
 
-export default async function InstitutionLayout({
-	children,
-	params,
-}: {
+export default async function InstitutionLayout(props: {
 	children: React.ReactNode;
-	params: { slug: string };
+	params: Promise<{ slug: string }>;
 }) {
+	const params = await props.params;
+
+	const { children } = props;
+
 	const institution = await getInstitutionBySlug(params.slug);
 
 	return (

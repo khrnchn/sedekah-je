@@ -5,7 +5,8 @@ import { QRCodeSVG } from "qrcode.react";
 import { institutions } from "@/app/data/institutions";
 import { slugify } from "@/lib/utils";
 
-function QRSlug({ params }: { params: { slug: string } }) {
+async function QRSlug(props: { params: Promise<{ slug: string }> }) {
+	const params = await props.params;
 	const selected = institutions.find((i) => slugify(i.name) === params.slug);
 
 	// make typescript happy

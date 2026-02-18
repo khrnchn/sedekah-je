@@ -15,12 +15,13 @@ import type React from "react";
 import { InstitutionPageClient } from "./page-client";
 
 type Props = {
-	params: {
+	params: Promise<{
 		slug: string;
-	};
+	}>;
 };
 
-export default async function InstitutionPage({ params }: Props) {
+export default async function InstitutionPage(props: Props) {
+	const params = await props.params;
 	const institution = await getInstitutionBySlug(params.slug);
 
 	if (!institution) {
