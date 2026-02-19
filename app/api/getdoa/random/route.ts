@@ -60,5 +60,9 @@ export async function GET(request: NextRequest) {
 		);
 	}
 
-	return NextResponse.json(transformDoaResponse(doaData));
+	return NextResponse.json(transformDoaResponse(doaData), {
+		headers: {
+			"Cache-Control": "no-store",
+		},
+	});
 }

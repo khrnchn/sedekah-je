@@ -45,7 +45,11 @@ async function handleDoaList(request: NextRequest): Promise<NextResponse> {
 
 	const json = (await response.json()) as PaginatedDoaResponse;
 
-	return NextResponse.json(json);
+	return NextResponse.json(json, {
+		headers: {
+			"Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
+		},
+	});
 }
 
 async function handleRandomDoa(request: NextRequest): Promise<NextResponse> {
@@ -75,5 +79,9 @@ async function handleRandomDoa(request: NextRequest): Promise<NextResponse> {
 
 	const json = await response.json();
 
-	return NextResponse.json(json);
+	return NextResponse.json(json, {
+		headers: {
+			"Cache-Control": "no-store",
+		},
+	});
 }
