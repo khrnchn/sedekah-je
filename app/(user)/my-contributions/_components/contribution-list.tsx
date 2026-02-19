@@ -19,6 +19,7 @@ interface Contribution {
 	date: string;
 	status: string;
 	type: string;
+	adminNotes?: string | null;
 }
 
 interface ContributionListProps {
@@ -76,6 +77,12 @@ function ContributionItem({ contribution }: { contribution: Contribution }) {
 				<div className="text-xs md:text-sm text-muted-foreground">
 					{formatDate(contribution.date)}
 				</div>
+				{contribution.status === "rejected" &&
+					contribution.adminNotes?.trim() && (
+						<p className="text-xs text-muted-foreground italic mt-0.5">
+							Catatan: {contribution.adminNotes}
+						</p>
+					)}
 			</div>
 			<div className="flex items-center gap-2">
 				<Badge variant="secondary" className="text-xs">

@@ -20,6 +20,7 @@ export interface ContributionItem {
 	status: "pending" | "approved" | "rejected";
 	date: string; // ISO string
 	type: string;
+	adminNotes: string | null;
 }
 
 export interface MyContributionsResponse {
@@ -79,6 +80,7 @@ export async function getMyContributions(
 						status: institutions.status,
 						createdAt: institutions.createdAt,
 						category: institutions.category,
+						adminNotes: institutions.adminNotes,
 					})
 					.from(institutions)
 					.where(eq(institutions.contributorId, userId))
@@ -90,6 +92,7 @@ export async function getMyContributions(
 					status: inst.status as ContributionItem["status"],
 					date: inst.createdAt?.toISOString() ?? "",
 					type: inst.category,
+					adminNotes: inst.adminNotes ?? null,
 				}));
 			}
 
