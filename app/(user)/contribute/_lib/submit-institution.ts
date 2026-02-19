@@ -117,6 +117,31 @@ export async function submitInstitution(
 		}
 	}
 
+	// --- Duplicate QR content check
+	const qrContentRaw = rawFromForm.qrContent;
+	if (
+		qrContentRaw &&
+		typeof qrContentRaw === "string" &&
+		qrContentRaw.trim() !== ""
+	) {
+		const [existingQr] = await db
+			.select({ id: institutions.id })
+			.from(institutions)
+			.where(eq(institutions.qrContent, qrContentRaw.trim()))
+			.limit(1);
+
+		if (existingQr) {
+			return {
+				status: "error",
+				errors: {
+					general: [
+						"QR code ini telah pun wujud dalam sistem. Sila semak semula.",
+					],
+				},
+			};
+		}
+	}
+
 	const socialMedia = {
 		facebook: formData.get("facebook") || undefined,
 		instagram: formData.get("instagram") || undefined,
