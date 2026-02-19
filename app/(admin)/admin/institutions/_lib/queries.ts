@@ -565,6 +565,121 @@ export async function batchApproveInstitutions(
 }
 
 /**
+ * Undo approval of an institution (e.g. because of duplicates).
+ * Moves it from "approved" to "rejected" with a reason.
+ */
+export async function undoApproval(id: number, adminNotes?: string) {
+	const { session } = await requireAdminSession();
+	const reviewerId = session.user.id;
+
+	// Verify the institution exists and is approved
+	const [institution] = await db
+		.select({ id: institutions.id, status: institutions.status })
+		.from(institutions)
+		.where(eq(institutions.id, id))
+		.limit(1);
+
+	if (!institution) {
+		throw new Error("Institution not found");
+	}
+
+	if (institution.status !== "approved") {
+		throw new Error("Can only undo approval for approved institutions");
+	}
+
+	const result = await db
+		.update(institutions)
+		.set({
+			status: "rejected",
+			reviewedBy: reviewerId,
+			reviewedAt: new Date(),
+			adminNotes: adminNotes || "Approval undone (duplicate)",
+		})
+		.where(eq(institutions.id, id))
+		.returning();
+
+	// Revalidate relevant pages to update the UI
+	revalidatePath("/admin/institutions/approved", "page");
+	revalidatePath("/admin/institutions/rejected", "page");
+	revalidatePath("/admin/dashboard", "page");
+
+	// Revalidate cached data and counts
+	revalidateTag("approved-institutions");
+	revalidateTag("rejected-institutions");
+	revalidateTag("institutions-count");
+	revalidateTag("institutions-data");
+	revalidateTag("institutions"); // Homepage cache
+
+	return result;
+}
+
+/**
+ * Batch undo approval for multiple institutions (e.g. duplicates).
+ * Moves them from "approved" to "rejected".
+ */
+export async function batchUndoApproval(ids: number[], adminNotes?: string) {
+	const { session } = await requireAdminSession();
+	const reviewerId = session.user.id;
+
+	if (ids.length === 0) {
+		throw new Error("No institutions provided for batch undo");
+	}
+
+	if (ids.length > 100) {
+		throw new Error(
+			"Batch size too large. Maximum 100 institutions per batch.",
+		);
+	}
+
+	// Verify all institutions exist and are approved
+	const existingInstitutions = await db
+		.select({ id: institutions.id, status: institutions.status })
+		.from(institutions)
+		.where(inArray(institutions.id, ids));
+
+	const foundIds = existingInstitutions.map((inst) => inst.id);
+	const missingIds = ids.filter((id) => !foundIds.includes(id));
+	const nonApprovedInstitutions = existingInstitutions.filter(
+		(inst) => inst.status !== "approved",
+	);
+
+	if (missingIds.length > 0) {
+		throw new Error(`Institutions not found: ${missingIds.join(", ")}`);
+	}
+
+	if (nonApprovedInstitutions.length > 0) {
+		throw new Error(
+			`Some institutions are not approved: ${nonApprovedInstitutions.map((inst) => inst.id).join(", ")}`,
+		);
+	}
+
+	const result = await db
+		.update(institutions)
+		.set({
+			status: "rejected",
+			reviewedBy: reviewerId,
+			reviewedAt: new Date(),
+			adminNotes: adminNotes || "Approval undone (duplicate)",
+		})
+		.where(inArray(institutions.id, ids))
+		.returning();
+
+	// Revalidate relevant pages to update the UI
+	revalidatePath("/admin/institutions/approved", "page");
+	revalidatePath("/admin/institutions/rejected", "page");
+	revalidatePath("/admin/dashboard", "page");
+
+	// Revalidate caches
+	revalidateTag("approved-institutions");
+	revalidateTag("rejected-institutions");
+	revalidateTag("institutions-count");
+	revalidateTag("institutions-data");
+	revalidateTag("institutions"); // Homepage cache
+
+	return result;
+}
+
+/**
  * Batch reject multiple pending institutions
  */
 export async function batchRejectInstitutions(

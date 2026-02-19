@@ -1,6 +1,15 @@
 "use client";
 
 import { ReusableDataTable } from "@/components/reusable-data-table";
+import { Button } from "@/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 import {
 	Select,
 	SelectContent,
@@ -8,8 +17,13 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { categories, states } from "@/lib/institution-constants";
+import { Undo2Icon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { batchUndoApproval } from "../_lib/queries";
 import { createColumns } from "./columns";
 
 export type ApprovedInstitution = {
@@ -46,9 +60,13 @@ export default function ApprovedInstitutionsTable({
 	users: User[];
 }) {
 	const [institutions, setInstitutions] = useState(initialData);
+	const [selectedIds, setSelectedIds] = useState<number[]>([]);
 	const [category, setCategory] = useState<CategoryFilter>(ALL);
 	const [state, setState] = useState<StateFilter>(ALL);
 	const [contributor, setContributor] = useState<ContributorFilter>(ALL);
+	const [undoDialogOpen, setUndoDialogOpen] = useState(false);
+	const [undoNotes, setUndoNotes] = useState("Duplicate entry");
+	const router = useRouter();
 
 	useEffect(() => {
 		setInstitutions(initialData);
@@ -74,6 +92,29 @@ export default function ApprovedInstitutionsTable({
 	const uniqueContributors = Array.from(contributorMap.entries())
 		.map(([id, name]) => ({ id, name }))
 		.sort((a, b) => a.name.localeCompare(b.name));
+
+	async function handleBatchUndo(notes: string) {
+		try {
+			if (selectedIds.length > 100) {
+				toast.error(
+					"Please select fewer than 100 institutions for batch operations",
+				);
+				return;
+			}
+
+			await batchUndoApproval(selectedIds, notes);
+			toast.success(
+				`Successfully undone approval for ${selectedIds.length} institutions`,
+			);
+			router.refresh();
+		} catch (error) {
+			const errorMessage =
+				error instanceof Error ? error.message : "Failed to undo approval";
+			toast.error(errorMessage);
+		}
+		setUndoDialogOpen(false);
+		setSelectedIds([]);
+	}
 
 	const filterControls = (
 		<>
@@ -130,6 +171,19 @@ export default function ApprovedInstitutionsTable({
 		</>
 	);
 
+	const bulkButtons = (
+		<Button
+			variant="outline"
+			size="sm"
+			disabled={selectedIds.length === 0}
+			onClick={() => setUndoDialogOpen(true)}
+			className="gap-2 text-destructive hover:text-destructive"
+		>
+			<Undo2Icon className="h-4 w-4" />
+			Undo Selected ({selectedIds.length})
+		</Button>
+	);
+
 	return (
 		<>
 			<ReusableDataTable
@@ -138,8 +192,46 @@ export default function ApprovedInstitutionsTable({
 				searchKey="name"
 				searchPlaceholder="Search institutions..."
 				emptyStateMessage="No approved institutions found."
+				enableRowSelection
+				onSelectionChange={(rows: ApprovedInstitution[]) =>
+					setSelectedIds(rows.map((r) => r.id))
+				}
 				leftToolbarContent={filterControls}
+				rightToolbarContent={bulkButtons}
 			/>
+
+			{/* Batch Undo Dialog */}
+			<Dialog open={undoDialogOpen} onOpenChange={setUndoDialogOpen}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Undo Approval</DialogTitle>
+						<DialogDescription>
+							Are you sure you want to undo approval for {selectedIds.length}{" "}
+							institutions? They will be rejected and removed from the public
+							directory. This is typically used for duplicate entries.
+						</DialogDescription>
+					</DialogHeader>
+					<div className="py-4">
+						<Textarea
+							value={undoNotes}
+							onChange={(e) => setUndoNotes(e.target.value)}
+							placeholder="Reason for undoing approval (e.g. duplicate entries)"
+							className="min-h-[100px]"
+						/>
+					</div>
+					<DialogFooter>
+						<Button variant="outline" onClick={() => setUndoDialogOpen(false)}>
+							Cancel
+						</Button>
+						<Button
+							variant="destructive"
+							onClick={() => handleBatchUndo(undoNotes)}
+						>
+							Undo Approval ({selectedIds.length})
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
 		</>
 	);
 }
