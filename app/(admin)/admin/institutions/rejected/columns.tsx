@@ -18,6 +18,7 @@ type RejectedInstitution = {
 	createdAt: Date;
 	reviewedAt: Date | null;
 	reviewedBy: string | null;
+	adminNotes: string | null;
 };
 
 export const columns: ColumnDef<RejectedInstitution>[] = [
@@ -42,7 +43,14 @@ export const columns: ColumnDef<RejectedInstitution>[] = [
 			);
 		},
 		cell: ({ row }) => (
-			<div className="font-medium">{row.getValue("name")}</div>
+			<div>
+				<div className="font-medium">{row.getValue("name")}</div>
+				{row.original.adminNotes?.trim() && (
+					<p className="text-xs text-muted-foreground italic mt-0.5">
+						Catatan: {row.original.adminNotes}
+					</p>
+				)}
+			</div>
 		),
 	},
 	{

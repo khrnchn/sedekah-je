@@ -95,6 +95,7 @@ const getRejectedInstitutionsInternal = unstable_cache(
 				createdAt: institutions.createdAt,
 				reviewedAt: institutions.reviewedAt,
 				reviewedBy: institutions.reviewedBy,
+				adminNotes: institutions.adminNotes,
 			})
 			.from(institutions)
 			.leftJoin(users, eq(institutions.contributorId, users.id))

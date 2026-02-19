@@ -23,6 +23,7 @@ export type RejectedInstitution = {
 	createdAt: Date;
 	reviewedAt: Date | null;
 	reviewedBy: string | null;
+	adminNotes: string | null;
 };
 
 const ALL = "all" as const;
