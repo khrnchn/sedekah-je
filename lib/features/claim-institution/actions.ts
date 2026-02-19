@@ -13,7 +13,7 @@ import { claimRequestSchema } from "./validations";
 export async function submitClaimRequest(formData: FormData) {
 	try {
 		// Check authentication
-		const session = await auth.api.getSession({ headers: headers() });
+		const session = await auth.api.getSession({ headers: await headers() });
 		if (!session?.user) {
 			redirect("/auth");
 		}

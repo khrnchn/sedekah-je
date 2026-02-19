@@ -31,6 +31,18 @@ const nextConfig = {
 		return config;
 	},
 
+	turbopack: {
+		rules: {
+			"*.svg": {
+				loaders: ["@svgr/webpack"],
+				as: "*.js", // Import as JS for component use
+			},
+		},
+		resolveAlias: {
+			"~leaflet": "leaflet",
+		},
+	},
+
 	async headers() {
 		return [
 			{

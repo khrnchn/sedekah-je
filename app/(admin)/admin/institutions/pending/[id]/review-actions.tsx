@@ -35,7 +35,7 @@ type Props = {
 	institutionId: number;
 	institutionName: string;
 	contributorEmail?: string | null;
-	formRef: React.RefObject<ReviewFormHandle>;
+	formRef: React.RefObject<ReviewFormHandle | null>;
 };
 
 export default function ReviewActions({

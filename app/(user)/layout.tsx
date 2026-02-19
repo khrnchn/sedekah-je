@@ -7,7 +7,7 @@ interface UserLayoutProps {
 }
 
 export default async function UserLayout({ children }: UserLayoutProps) {
-	const session = await auth.api.getSession({ headers: headers() });
+	const session = await auth.api.getSession({ headers: await headers() });
 
 	if (!session) {
 		redirect("/auth");

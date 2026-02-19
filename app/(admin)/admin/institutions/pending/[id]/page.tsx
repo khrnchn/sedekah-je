@@ -8,10 +8,11 @@ import { getPendingInstitutionById } from "../../_lib/queries";
 import ClientSection from "./client-section";
 
 interface Props {
-	params: { id: string };
+	params: Promise<{ id: string }>;
 }
 
-export default async function PendingInstitutionReviewPage({ params }: Props) {
+export default async function PendingInstitutionReviewPage(props: Props) {
+	const params = await props.params;
 	const idNum = Number(params.id);
 	if (Number.isNaN(idNum)) {
 		notFound();

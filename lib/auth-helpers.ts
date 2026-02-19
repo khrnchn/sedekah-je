@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 
 export async function requireAdminSession() {
-	const hdrs = headers();
+	const hdrs = await headers();
 	const session = await auth.api.getSession({ headers: hdrs });
 
 	if (!session) {

@@ -32,7 +32,7 @@ type FetchType = "all" | "stats" | "contributions";
 export async function getMyContributions(
 	fetchType: FetchType = "all",
 ): Promise<Partial<MyContributionsResponse> | null> {
-	const hdrs = headers();
+	const hdrs = await headers();
 	const session = await auth.api.getSession({ headers: hdrs });
 
 	if (!session) {

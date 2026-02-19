@@ -7,8 +7,9 @@ export const runtime = "edge";
 
 export async function GET(
 	_req: NextRequest,
-	{ params }: { params: { slug: string } },
+	props: { params: Promise<{ slug: string }> },
 ) {
+	const params = await props.params;
 	const institution = institutions.find(
 		(inst) => slugify(inst.name) === params.slug,
 	);
