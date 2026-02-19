@@ -2,11 +2,23 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 import QrCodeDisplay from "@/components/ui/qrCodeDisplay";
+import { Textarea } from "@/components/ui/textarea";
 import type { supportedPayments } from "@/lib/institution-constants";
-import { PencilIcon, XIcon } from "lucide-react";
+import { Loader2, PencilIcon, Undo2Icon, XIcon } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+import { toast } from "sonner";
+import { undoApproval } from "../../_lib/queries";
 import ApprovedInstitutionForm from "./institution-form";
 
 type Props = {
@@ -30,10 +42,29 @@ type Props = {
 
 export default function ClientSection({ institution }: Props) {
 	const [isEditing, setIsEditing] = useState(false);
+	const [showUndoDialog, setShowUndoDialog] = useState(false);
+	const [undoNotes, setUndoNotes] = useState("Duplicate entry");
+	const [isPending, startTransition] = useTransition();
+	const router = useRouter();
 
 	const handleEditToggle = () => {
 		setIsEditing(!isEditing);
 	};
+
+	function handleUndoApproval() {
+		setShowUndoDialog(false);
+		startTransition(async () => {
+			const promise = undoApproval(institution.id, undoNotes);
+			toast.promise(promise, {
+				loading: "Undoing approval...",
+				success: () => {
+					router.push("/admin/institutions/approved");
+					return `${institution.name} approval has been undone.`;
+				},
+				error: (err) => `Failed to undo approval: ${err.message}`,
+			});
+		});
+	}
 
 	return (
 		<>
@@ -46,6 +77,20 @@ export default function ClientSection({ institution }: Props) {
 						</span>
 					</div>
 					<div className="flex items-center gap-2">
+						<Button
+							variant="destructive"
+							size="sm"
+							onClick={() => setShowUndoDialog(true)}
+							disabled={isPending}
+							className="gap-2"
+						>
+							{isPending ? (
+								<Loader2 className="h-4 w-4 animate-spin" />
+							) : (
+								<Undo2Icon className="h-4 w-4" />
+							)}
+							Undo Approval
+						</Button>
 						<Button
 							variant={isEditing ? "outline" : "ghost"}
 							size="sm"
@@ -67,6 +112,50 @@ export default function ClientSection({ institution }: Props) {
 					</div>
 				</div>
 			</div>
+
+			{/* Undo Approval Dialog */}
+			<Dialog
+				open={showUndoDialog}
+				onOpenChange={(open) => !isPending && setShowUndoDialog(open)}
+			>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>Undo Approval</DialogTitle>
+						<DialogDescription>
+							This will reject &ldquo;{institution.name}&rdquo; and remove it
+							from the public directory. This is typically used for duplicate
+							entries.
+						</DialogDescription>
+					</DialogHeader>
+					<div className="py-4">
+						<Textarea
+							value={undoNotes}
+							onChange={(e) => setUndoNotes(e.target.value)}
+							placeholder="Reason for undoing approval (e.g. duplicate of #123)"
+							className="min-h-[100px]"
+						/>
+					</div>
+					<DialogFooter>
+						<Button
+							variant="outline"
+							onClick={() => setShowUndoDialog(false)}
+							disabled={isPending}
+						>
+							Cancel
+						</Button>
+						<Button
+							variant="destructive"
+							onClick={handleUndoApproval}
+							disabled={isPending}
+						>
+							{isPending ? (
+								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+							) : null}
+							Undo Approval
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
 
 			<div className="grid lg:grid-cols-3 gap-6">
 				<div className="lg:col-span-2">

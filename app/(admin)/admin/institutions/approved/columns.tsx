@@ -2,12 +2,14 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import type { categories, states } from "@/lib/institution-constants";
 import type { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { ArrowUpDownIcon, EyeIcon } from "lucide-react";
 import Link from "next/link";
 import { AssignContributorDialog } from "./assign-contributor-dialog";
+import { UndoApprovalDialog } from "./undo-approval-dialog";
 
 type ApprovedInstitution = {
 	id: number;
@@ -32,6 +34,28 @@ type User = {
 export const createColumns = (
 	users: User[],
 ): ColumnDef<ApprovedInstitution>[] => [
+	{
+		id: "select",
+		header: ({ table }) => (
+			<Checkbox
+				checked={
+					table.getIsAllPageRowsSelected() ||
+					(table.getIsSomePageRowsSelected() && "indeterminate")
+				}
+				onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+				aria-label="Select all"
+			/>
+		),
+		cell: ({ row }) => (
+			<Checkbox
+				checked={row.getIsSelected()}
+				onCheckedChange={(value) => row.toggleSelected(!!value)}
+				aria-label="Select row"
+			/>
+		),
+		enableSorting: false,
+		enableHiding: false,
+	},
 	{
 		accessorKey: "id",
 		header: "ID",
@@ -129,6 +153,10 @@ export const createColumns = (
 						currentContributorId={row.original.contributorId}
 						currentContributorName={row.original.contributorName}
 						users={users}
+					/>
+					<UndoApprovalDialog
+						institutionId={row.original.id}
+						institutionName={row.original.name}
 					/>
 					<Button variant="ghost" size="sm" asChild>
 						<Link href={`/admin/institutions/approved/${row.original.id}`}>
