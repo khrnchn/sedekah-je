@@ -121,9 +121,9 @@ export async function AsyncTopContributors() {
 
 			<Card>
 				<CardHeader>
-					<CardTitle>Full List</CardTitle>
+					<CardTitle>Top 5 Penyumbang</CardTitle>
 					<CardDescription>
-						All contributors in the sedekah.je community
+						5 penyumbang terbanyak dalam komuniti sedekah.je
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
