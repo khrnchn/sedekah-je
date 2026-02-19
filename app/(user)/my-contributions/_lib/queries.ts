@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions } from "@/db/schema";
-import { count, desc, eq, sql } from "drizzle-orm";
+import { and, count, desc, eq, sql } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
 
@@ -118,4 +118,52 @@ export async function getContributionStats() {
 export async function getContributionList() {
 	const data = await getMyContributions("contributions");
 	return data?.contributions ?? [];
+}
+
+export interface InstitutionForEdit {
+	id: string;
+	name: string;
+	qrImage: string | null;
+	qrContent: string | null;
+}
+
+export async function getInstitutionForEdit(
+	institutionId: string,
+): Promise<InstitutionForEdit | null> {
+	const hdrs = headers();
+	const session = await auth.api.getSession({ headers: hdrs });
+
+	if (!session?.user?.id) {
+		return null;
+	}
+
+	const [inst] = await db
+		.select({
+			id: institutions.id,
+			name: institutions.name,
+			qrImage: institutions.qrImage,
+			qrContent: institutions.qrContent,
+			contributorId: institutions.contributorId,
+			status: institutions.status,
+		})
+		.from(institutions)
+		.where(
+			and(
+				eq(institutions.id, Number.parseInt(institutionId, 10)),
+				eq(institutions.contributorId, session.user.id),
+				eq(institutions.status, "rejected"),
+			),
+		)
+		.limit(1);
+
+	if (!inst) {
+		return null;
+	}
+
+	return {
+		id: inst.id.toString(),
+		name: inst.name,
+		qrImage: inst.qrImage ?? null,
+		qrContent: inst.qrContent ?? null,
+	};
 }

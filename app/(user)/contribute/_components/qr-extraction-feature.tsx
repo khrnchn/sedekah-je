@@ -19,6 +19,12 @@ interface QRExtractionFeatureProps {
 		hasFile: boolean;
 	}) => void;
 	onClearQrContent: (clearFn: (() => void) | null) => void;
+	/** When true, QR is optional (e.g. edit mode with existing image) */
+	optional?: boolean;
+	/** When provided, shows existing image with option to replace */
+	initialImageUrl?: string | null;
+	/** Unique input id when multiple instances may exist on page */
+	inputId?: string;
 }
 
 function QRUploadFallback() {
@@ -43,6 +49,9 @@ export default function QRExtractionFeature({
 	onQrContentChange,
 	onStatusChange,
 	onClearQrContent,
+	optional = false,
+	initialImageUrl = null,
+	inputId = "qrImage",
 }: QRExtractionFeatureProps) {
 	const [qrContent, setQrContent] = useState<string | null>(null);
 	const [qrStatus, setQrStatus] = useState({
@@ -100,12 +109,13 @@ export default function QRExtractionFeature({
 			setQrStatus(newStatus);
 			onStatusChange(newStatus);
 
-			const input = document.getElementById("qrImage") as HTMLInputElement;
+			const input = document.getElementById(inputId) as HTMLInputElement;
 			if (input) {
 				input.value = "";
 			}
 		},
 		[
+			inputId,
 			onQrContentChange,
 			onStatusChange,
 			qrStatus.qrExtractionFailed,
@@ -131,11 +141,11 @@ export default function QRExtractionFeature({
 		setQrStatus(resetStatus);
 		onStatusChange(resetStatus);
 
-		const input = document.getElementById("qrImage") as HTMLInputElement;
+		const input = document.getElementById(inputId) as HTMLInputElement;
 		if (input) {
 			input.value = "";
 		}
-	}, [clearQrContentFromHook, onQrContentChange, onStatusChange]);
+	}, [clearQrContentFromHook, inputId, onQrContentChange, onStatusChange]);
 
 	const handleFileChangeCallback = useCallback(
 		(handler: (event: React.ChangeEvent<HTMLInputElement>) => void) => {
@@ -191,9 +201,21 @@ export default function QRExtractionFeature({
 
 	return (
 		<div className="space-y-2">
-			<label htmlFor="qrImage" className="font-medium">
-				Gambar Kod QR <span className="text-red-500">*</span>
+			<label htmlFor={inputId} className="font-medium">
+				Gambar Kod QR {!optional && <span className="text-red-500">*</span>}
 			</label>
+			{initialImageUrl && (
+				<div className="space-y-2">
+					<p className="text-xs text-muted-foreground">Gambar semasa</p>
+					<div className="relative w-full max-w-[200px] rounded-lg border overflow-hidden bg-muted">
+						<img
+							src={initialImageUrl}
+							alt="QR semasa"
+							className="w-full h-auto object-contain"
+						/>
+					</div>
+				</div>
+			)}
 			<p className="text-xs text-gray-600">
 				Saiz maksimum: 5MB • Format yang disokong: JPG, PNG, WebP
 			</p>
@@ -209,7 +231,7 @@ export default function QRExtractionFeature({
 				{/* Standard file input */}
 				<div className="space-y-2">
 					<Input
-						id="qrImage"
+						id={inputId}
 						type="file"
 						name="qrImage"
 						accept="image/*"
@@ -224,14 +246,16 @@ export default function QRExtractionFeature({
 						className="w-full h-12 text-base"
 					>
 						<label
-							htmlFor="qrImage"
+							htmlFor={inputId}
 							className="cursor-pointer flex items-center justify-center w-full h-12"
 						>
 							{qrStatus.qrExtracting
 								? "Memproses..."
 								: selectedFile
 									? "Tukar Fail"
-									: "Pilih Fail"}
+									: initialImageUrl
+										? "Ganti Gambar"
+										: "Pilih Fail"}
 						</label>
 					</Button>
 					{selectedFile && (

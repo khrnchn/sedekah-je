@@ -2,7 +2,8 @@
 
 import { MobileProgressiveLoader } from "@/components/progressive-loader";
 import { ListItemSkeleton } from "@/components/user-page-components";
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useState } from "react";
+import { EditRejectedSheetWrapper } from "./edit-rejected-sheet-wrapper";
 
 const ContributionList = lazy(() =>
 	import("./contribution-list").then((module) => ({
@@ -25,14 +26,27 @@ interface LazyContributionListProps {
 export function LazyContributionList({
 	contributions,
 }: LazyContributionListProps) {
+	const [editInstitutionId, setEditInstitutionId] = useState<string | null>(
+		null,
+	);
+
 	return (
-		<MobileProgressiveLoader
-			fallback={<ListItemSkeleton count={5} />}
-			threshold={0.1}
-		>
-			<Suspense fallback={<ListItemSkeleton count={5} />}>
-				<ContributionList contributions={contributions} />
-			</Suspense>
-		</MobileProgressiveLoader>
+		<>
+			<MobileProgressiveLoader
+				fallback={<ListItemSkeleton count={5} />}
+				threshold={0.1}
+			>
+				<Suspense fallback={<ListItemSkeleton count={5} />}>
+					<ContributionList
+						contributions={contributions}
+						onEditRejected={setEditInstitutionId}
+					/>
+				</Suspense>
+			</MobileProgressiveLoader>
+			<EditRejectedSheetWrapper
+				editInstitutionId={editInstitutionId}
+				onClose={() => setEditInstitutionId(null)}
+			/>
+		</>
 	);
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
 	Card,
 	CardContent,
@@ -10,7 +11,7 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { CheckCircle2, Clock, XCircle } from "lucide-react";
+import { CheckCircle2, Clock, Pencil, XCircle } from "lucide-react";
 import { useMemo } from "react";
 
 interface Contribution {
@@ -24,6 +25,7 @@ interface Contribution {
 
 interface ContributionListProps {
 	contributions: Contribution[];
+	onEditRejected?: (institutionId: string) => void;
 }
 
 const formatDate = (date: string) => {
@@ -64,7 +66,13 @@ const getStatusColor = (status: string) => {
 	}
 };
 
-function ContributionItem({ contribution }: { contribution: Contribution }) {
+function ContributionItem({
+	contribution,
+	onEditRejected,
+}: {
+	contribution: Contribution;
+	onEditRejected?: (institutionId: string) => void;
+}) {
 	return (
 		<div className="flex items-center gap-2 md:gap-4 p-2 md:p-3 rounded-lg bg-background hover:bg-muted/50">
 			<div className="flex items-center justify-center w-8">
@@ -85,6 +93,18 @@ function ContributionItem({ contribution }: { contribution: Contribution }) {
 					)}
 			</div>
 			<div className="flex items-center gap-2">
+				{contribution.status === "rejected" && onEditRejected && (
+					<Button
+						type="button"
+						variant="ghost"
+						size="icon"
+						className="h-8 w-8 shrink-0"
+						onClick={() => onEditRejected(contribution.id)}
+						aria-label="Edit sumbangan ditolak"
+					>
+						<Pencil className="h-4 w-4" />
+					</Button>
+				)}
 				<Badge variant="secondary" className="text-xs">
 					{contribution.type}
 				</Badge>
@@ -99,7 +119,10 @@ function ContributionItem({ contribution }: { contribution: Contribution }) {
 	);
 }
 
-export function ContributionList({ contributions }: ContributionListProps) {
+export function ContributionList({
+	contributions,
+	onEditRejected,
+}: ContributionListProps) {
 	// Memoize filtered contributions for performance
 	const filteredContributions = useMemo(
 		() => ({
@@ -132,6 +155,7 @@ export function ContributionList({ contributions }: ContributionListProps) {
 								<ContributionItem
 									key={contribution.id}
 									contribution={contribution}
+									onEditRejected={onEditRejected}
 								/>
 							))}
 						</div>
@@ -142,6 +166,7 @@ export function ContributionList({ contributions }: ContributionListProps) {
 								<ContributionItem
 									key={contribution.id}
 									contribution={contribution}
+									onEditRejected={onEditRejected}
 								/>
 							))}
 						</div>
@@ -152,6 +177,7 @@ export function ContributionList({ contributions }: ContributionListProps) {
 								<ContributionItem
 									key={contribution.id}
 									contribution={contribution}
+									onEditRejected={onEditRejected}
 								/>
 							))}
 						</div>
@@ -162,6 +188,7 @@ export function ContributionList({ contributions }: ContributionListProps) {
 								<ContributionItem
 									key={contribution.id}
 									contribution={contribution}
+									onEditRejected={onEditRejected}
 								/>
 							))}
 						</div>

@@ -185,6 +185,33 @@ export async function logInstitutionClaim(claim: {
 	});
 }
 
+export async function logRejectedInstitutionUpdate(update: {
+	institutionId: string;
+	institutionName: string;
+	category: string;
+	state: string;
+	city: string;
+	contributorName: string;
+	contributorEmail: string;
+	previousName: string;
+}): Promise<void> {
+	await logToTelegram({
+		level: "info",
+		title: "Rejected Institution Updated",
+		description:
+			"User updated their rejected submission. Resubmitted for review... 🔄",
+		emoji: "📝",
+		data: {
+			institution: update.institutionName,
+			previousName: update.previousName,
+			category: update.category,
+			location: `${update.city}, ${update.state}`,
+			contributor: update.contributorName,
+			email: update.contributorEmail,
+		},
+	});
+}
+
 export async function logInstitutionSubmissionFailure(failure: {
 	error: string;
 	institutionName?: string;
