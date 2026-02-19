@@ -130,7 +130,7 @@ export interface InstitutionForEdit {
 export async function getInstitutionForEdit(
 	institutionId: string,
 ): Promise<InstitutionForEdit | null> {
-	const hdrs = headers();
+	const hdrs = await headers();
 	const session = await auth.api.getSession({ headers: hdrs });
 
 	if (!session?.user?.id) {
