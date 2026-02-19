@@ -45,6 +45,12 @@ export const auth = betterAuth({
 			: process.env.VERCEL_URL
 				? `https://${process.env.VERCEL_URL}`
 				: "http://localhost:3000"),
+	trustedOrigins: [
+		"https://sedekah.je",
+		"https://sedekah-je-production.up.railway.app",
+		...(process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : []),
+		"http://localhost:3000",
+	],
 	databaseHooks: {
 		user: {
 			create: {
