@@ -79,6 +79,7 @@ const FilterState = ({ onStateChange, className, initialState }: Props) => {
 							<SelectItem
 								key={state.value}
 								value={state.value}
+								textValue={state.label}
 								className="flex items-center"
 							>
 								{state.flag ? (
