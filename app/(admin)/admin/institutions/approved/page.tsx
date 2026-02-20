@@ -3,11 +3,15 @@
 import { AdminLayout } from "@/components/admin-layout";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { Suspense } from "react";
-import AsyncApprovedData from "./async-approved-data";
-import ApprovedTableLoading from "./table-loading";
+import { getAllUsers, getApprovedInstitutions } from "../_lib/queries";
+import ApprovedInstitutionsTable from "./approved-table";
 
-export default function ApprovedInstitutionsPage() {
+export default async function ApprovedInstitutionsPage() {
+	const [institutions, users] = await Promise.all([
+		getApprovedInstitutions(),
+		getAllUsers(),
+	]);
+
 	return (
 		<SidebarProvider>
 			<AppSidebar variant="inset" />
@@ -21,9 +25,7 @@ export default function ApprovedInstitutionsPage() {
 						{ label: "Approved" },
 					]}
 				>
-					<Suspense fallback={<ApprovedTableLoading />}>
-						<AsyncApprovedData />
-					</Suspense>
+					<ApprovedInstitutionsTable initialData={institutions} users={users} />
 				</AdminLayout>
 			</SidebarInset>
 		</SidebarProvider>

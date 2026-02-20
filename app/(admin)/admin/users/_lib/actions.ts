@@ -11,7 +11,7 @@ import { getAuthClient } from "./client";
 export type UserRole = "user" | "admin";
 
 export async function setUserRole(userId: string, role: UserRole) {
-	const authClient = getAuthClient();
+	const authClient = await getAuthClient();
 	try {
 		// Get current session to check if user is trying to remove their own admin role
 		const session = await auth.api.getSession({
@@ -56,7 +56,7 @@ export async function setUserRole(userId: string, role: UserRole) {
 }
 
 export async function removeAdminRole(userId: string) {
-	const authClient = getAuthClient();
+	const authClient = await getAuthClient();
 	try {
 		// Get current session to check if user is trying to remove their own admin role
 		const session = await auth.api.getSession({

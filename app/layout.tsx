@@ -1,4 +1,3 @@
-import { Analytics } from "@vercel/analytics/react";
 import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
 import { headers } from "next/headers";
@@ -156,7 +155,6 @@ export default async function RootLayout({
 							disableTransitionOnChange
 						>
 							{children}
-							<Analytics />
 							<Toaster richColors />
 							<DisclaimerModal />
 						</ThemeProvider>

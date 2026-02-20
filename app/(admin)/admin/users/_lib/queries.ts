@@ -5,9 +5,8 @@ import { institutions } from "@/db/schema";
 import type { User } from "better-auth";
 import { inArray } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
-import { getAuthClient } from "./client";
-
-type AuthClient = ReturnType<typeof getAuthClient>;
+import { headers } from "next/headers";
+import { getAuthClientFromCookie } from "./client";
 
 function normalizeParam(v: string | string[] | undefined): string {
 	if (v === undefined || v === null) return "";
@@ -18,16 +17,16 @@ function normalizeParam(v: string | string[] | undefined): string {
 export async function getUsers(searchParams: {
 	[key: string]: string | string[] | undefined;
 }) {
+	const cookie = (await headers()).get("cookie") ?? "";
 	const qNorm = normalizeParam(searchParams.q);
 	const pageNorm = String(Number(searchParams.page) || 1);
 	const limitNorm = String(Number(searchParams.limit) || 10);
 	const sortByNorm = normalizeParam(searchParams.sortBy);
 	const sortDirNorm = normalizeParam(searchParams.sortDirection);
 
-	const authClient = getAuthClient();
-
 	return unstable_cache(
 		async () => {
+			const authClient = getAuthClientFromCookie(cookie);
 			const pageNumber = Number(pageNorm) || 1;
 			const pageLimit = Number(limitNorm) || 10;
 			const offset = (pageNumber - 1) * pageLimit;
