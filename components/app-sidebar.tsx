@@ -59,7 +59,7 @@ const data = {
 		},
 		{
 			title: "Analytics",
-			url: "https://analytics.farhanhelmy.com/share/qqGVUCdO8JGBoSk5/sedekah.je",
+			url: "https://umami-production-8fc8.up.railway.app/share/WE1UDYzx8hipoZC7",
 			icon: "BarChart",
 			external: true,
 		},

@@ -137,8 +137,8 @@ export default async function RootLayout({
 				/>
 				<Script
 					defer
-					src="https://analytics.farhanhelmy.com/script.js"
-					data-website-id="c2f79734-cbe5-4b9d-afd0-75e063e0aadb"
+					src="https://umami-production-8fc8.up.railway.app/script.js"
+					data-website-id="fc2662e6-e375-416a-9ff2-44d7f8e2b343"
 				/>
 			</head>
 			<body

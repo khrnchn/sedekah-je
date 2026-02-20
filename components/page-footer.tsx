@@ -65,7 +65,7 @@ const navigation = {
 		},
 		{
 			name: "Data Trafik",
-			href: "https://analytics.farhanhelmy.com/share/qqGVUCdO8JGBoSk5/sedekah.je",
+			href: "https://umami-production-8fc8.up.railway.app/share/WE1UDYzx8hipoZC7",
 		},
 		{ name: "Logo", href: "https://www.flaticon.com/free-icons/holy" },
 	],
