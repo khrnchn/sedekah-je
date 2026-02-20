@@ -1,5 +1,11 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
+import html2canvas from "html2canvas";
+import { Clipboard, Download, Loader2, MapPin, QrCode } from "lucide-react";
+import Image from "next/image";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
 import { institutions as rawInstitutions } from "@/app/data/institutions";
 import type { Institution } from "@/app/types/institutions";
 import FilterCategory from "@/components/filter-category";
@@ -14,13 +20,7 @@ import { Header } from "@/components/ui/header";
 import PageSection from "@/components/ui/pageSection";
 import QrCodeDisplay from "@/components/ui/qrCodeDisplay";
 import useClientDimensions from "@/hooks/use-client-dimensions";
-import { removeDuplicateInstitutions, slugify } from "@/lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
-import html2canvas from "html2canvas";
-import { Clipboard, Download, Loader2, MapPin, QrCode } from "lucide-react";
-import Image from "next/image";
-import { useCallback, useMemo, useRef, useState } from "react";
-import { toast } from "sonner";
+import { getBaseUrl, removeDuplicateInstitutions, slugify } from "@/lib/utils";
 
 const Rawak = () => {
 	const [randomInstitution, setRandomInstitution] =
@@ -194,7 +194,7 @@ const Rawak = () => {
 													iframe.height = "600px";
 
 													// Set the source to the QR page URL
-													const qrPageUrl = `${window.location.origin}/qr/${slugify(randomInstitution.name)}`;
+													const qrPageUrl = `${getBaseUrl()}/qr/${slugify(randomInstitution.name)}`;
 													console.log("Loading QR page:", qrPageUrl);
 													iframe.src = qrPageUrl;
 

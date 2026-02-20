@@ -1,9 +1,9 @@
 "use client";
 
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/hooks/use-auth";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 interface ProtectedRouteProps {
 	children: React.ReactNode;
@@ -18,18 +18,27 @@ export function ProtectedRoute({
 	requireAdmin = false,
 	fallback,
 }: ProtectedRouteProps) {
-	const { user, isAuthenticated, isLoading, isAdmin } = useAuth();
+	const { isAuthenticated, isLoading, isAdmin } = useAuth();
 	const router = useRouter();
+	const pathname = usePathname();
 
 	useEffect(() => {
 		if (!isLoading) {
 			if (requireAuth && !isAuthenticated) {
-				router.push(`/auth?redirect=${window.location.pathname}`);
+				router.push(`/auth?redirect=${pathname}`);
 			} else if (requireAdmin && !isAdmin) {
 				router.push("/");
 			}
 		}
-	}, [isLoading, isAuthenticated, isAdmin, requireAuth, requireAdmin, router]);
+	}, [
+		isLoading,
+		isAuthenticated,
+		isAdmin,
+		requireAuth,
+		requireAdmin,
+		router,
+		pathname,
+	]);
 
 	if (isLoading) {
 		return (
