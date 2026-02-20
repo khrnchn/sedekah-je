@@ -218,7 +218,7 @@ export function ClaimRequestsTable({ data }: ClaimRequestsTableProps) {
 						<div>
 							<Label htmlFor="adminNotes">
 								{actionType === "approve"
-									? "Nota Admin (Pilihan)"
+									? "Nota Admin (Optional)"
 									: "Sebab Penolakan"}
 							</Label>
 							<Textarea

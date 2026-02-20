@@ -57,7 +57,7 @@ export async function AsyncTopContributors() {
 								{topContributors[1].name}
 							</div>
 							<div className="text-xs md:text-sm text-muted-foreground">
-								{topContributors[1].contributions} contributions
+								{topContributors[1].contributions} submissions
 							</div>
 						</div>
 						<div className="w-full h-16 md:h-24 bg-slate-300/50 rounded-t-lg flex items-center justify-center mt-2">
@@ -82,7 +82,7 @@ export async function AsyncTopContributors() {
 								{topContributors[0].name}
 							</div>
 							<div className="text-xs md:text-sm text-muted-foreground">
-								{topContributors[0].contributions} contributions
+								{topContributors[0].contributions} submissions
 							</div>
 						</div>
 						<div className="w-full h-20 md:h-32 bg-yellow-400/50 rounded-t-lg flex items-center justify-center mt-2">
@@ -107,7 +107,7 @@ export async function AsyncTopContributors() {
 								{topContributors[2].name}
 							</div>
 							<div className="text-xs md:text-sm text-muted-foreground">
-								{topContributors[2].contributions} contributions
+								{topContributors[2].contributions} submissions
 							</div>
 						</div>
 						<div className="w-full h-12 md:h-20 bg-amber-500/50 rounded-t-lg flex items-center justify-center mt-2">
@@ -123,7 +123,7 @@ export async function AsyncTopContributors() {
 				<CardHeader>
 					<CardTitle>Top 5 Penyumbang</CardTitle>
 					<CardDescription>
-						5 penyumbang terbanyak dalam komuniti sedekah.je
+						5 penyumbang dengan submission terbanyak dalam komuniti sedekah.je
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
@@ -145,7 +145,7 @@ export async function AsyncTopContributors() {
 										{contributor.name}
 									</div>
 									<div className="text-xs md:text-sm text-muted-foreground">
-										{contributor.contributions} contributions
+										{contributor.contributions} submissions
 									</div>
 								</div>
 							</div>

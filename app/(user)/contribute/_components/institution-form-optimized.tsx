@@ -514,7 +514,7 @@ export default function InstitutionFormOptimized() {
 						onClick={() => setSocialMediaExpanded(!socialMediaExpanded)}
 						className="flex items-center space-x-2 font-medium p-0 h-auto hover:bg-transparent text-base"
 					>
-						<span>Social Media (Pilihan)</span>
+						<span>Social Media (Optional)</span>
 						{socialMediaExpanded ? (
 							<ChevronUp className="w-4 h-4" />
 						) : (

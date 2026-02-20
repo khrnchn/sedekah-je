@@ -75,7 +75,7 @@ export function ClaimModal({
 				<form onSubmit={handleSubmit}>
 					<div className="grid gap-4 py-4">
 						<div className="grid gap-2">
-							<Label htmlFor="sourceUrl">URL Sumber (Pilihan)</Label>
+							<Label htmlFor="sourceUrl">URL Sumber (Optional)</Label>
 							<Input
 								id="sourceUrl"
 								type="url"
@@ -89,7 +89,7 @@ export function ClaimModal({
 							</p>
 						</div>
 						<div className="grid gap-2">
-							<Label htmlFor="description">Keterangan (Pilihan)</Label>
+							<Label htmlFor="description">Keterangan (Optional)</Label>
 							<Textarea
 								id="description"
 								placeholder="Sila berikan keterangan tambahan mengenai tuntutan anda..."
