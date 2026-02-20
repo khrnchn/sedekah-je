@@ -5,7 +5,7 @@ import { db } from "@/db";
 import { institutions, users } from "@/db/schema";
 import { requireAdminSession } from "@/lib/auth-helpers";
 import { slugify } from "@/lib/utils";
-import { and, count, desc, eq, inArray, ne } from "drizzle-orm";
+import { and, count, desc, eq, inArray, ne, sql } from "drizzle-orm";
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { headers } from "next/headers";
 
@@ -359,6 +359,12 @@ export async function getApprovedInstitutionById(id: number) {
 			reviewedBy: institutions.reviewedBy,
 			reviewedAt: institutions.reviewedAt,
 			adminNotes: institutions.adminNotes,
+			reviewerName: sql<string | null>`(
+				select ${users.name}
+				from ${users}
+				where ${users.id} = ${institutions.reviewedBy}
+				limit 1
+			)`,
 		})
 		.from(institutions)
 		.leftJoin(users, eq(institutions.contributorId, users.id))

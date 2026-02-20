@@ -32,6 +32,7 @@ type Props = {
 		createdAt?: Date;
 		reviewedAt?: Date | null;
 		reviewedBy?: string | null;
+		reviewerName?: string | null;
 		adminNotes?: string | null;
 	};
 	isEditing: boolean;
@@ -796,11 +797,21 @@ export default function ApprovedInstitutionForm({
 					</CardTitle>
 				</CardHeader>
 				<CardContent className="space-y-4">
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+					<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 						<div className="space-y-2">
 							<div className="font-medium text-muted-foreground">Status</div>
 							<div className="p-3 bg-background rounded-md border">
 								<div className="font-medium text-green-600">Approved</div>
+							</div>
+						</div>
+						<div className="space-y-2">
+							<div className="font-medium text-muted-foreground">
+								Approved By
+							</div>
+							<div className="p-3 bg-background rounded-md border">
+								<div className="font-medium">
+									{institution.reviewerName ?? institution.reviewedBy ?? "-"}
+								</div>
 							</div>
 						</div>
 						<div className="space-y-2">
