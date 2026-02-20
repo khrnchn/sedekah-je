@@ -19,6 +19,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  Moon,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -47,6 +48,11 @@ const links = [
     name: "Carta Penyumbang",
     href: "/leaderboard",
     icon: BarChart,
+  },
+  {
+    name: "Ramadhan",
+    href: "/ramadhan",
+    icon: Moon,
   },
 ];
 

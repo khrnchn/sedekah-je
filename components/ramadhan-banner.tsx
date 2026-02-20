@@ -1,18 +1,13 @@
 import { getTodaysFeatured } from "@/app/ramadhan/_lib/queries";
-import Share from "@/components/share";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import RamadhanCountdown from "./ramadhan-countdown";
 
-const BASE_URL = "https://sedekah.je";
-
 export async function RamadhanBanner() {
 	try {
 		const featured = await getTodaysFeatured();
 		if (!featured) return <RamadhanCountdown />;
-
-		const customMessage = `QR Hari Ini — Hari ke-${featured.dayNumber}/30 Ramadan! 🌙\n\n${featured.institutionName} (${featured.institutionState})\n\n${BASE_URL}/ramadhan\n\n#SedekahJe #30Hari30QR`;
 
 		return (
 			<Card className="relative overflow-hidden bg-gradient-to-r from-emerald-400 to-teal-800 text-white shadow-lg">
@@ -32,15 +27,13 @@ export async function RamadhanBanner() {
 						>
 							<Link href="/ramadhan">Lihat QR</Link>
 						</Button>
-						<Share
-							data={{
-								category: featured.institutionCategory,
-								name: featured.institutionName,
-								slug: featured.institutionSlug,
-								customMessage,
-							}}
-							platform="X"
-						/>
+						<Button
+							asChild
+							size="sm"
+							className="bg-white/20 text-white hover:bg-white/30 border border-white/40"
+						>
+							<Link href="/ramadhan">Senarai QR Ramadhan</Link>
+						</Button>
 					</div>
 				</CardContent>
 			</Card>
