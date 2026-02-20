@@ -117,6 +117,17 @@ export async function submitInstitution(
 		}
 	}
 
+	// --- Require QR image
+	const qrImageFile = formData.get("qrImage") as File | null;
+	if (!qrImageFile || qrImageFile.size === 0) {
+		return {
+			status: "error",
+			errors: {
+				qrImage: ["Gambar kod QR diperlukan."],
+			},
+		};
+	}
+
 	// --- Duplicate QR content check
 	const qrContentRaw = rawFromForm.qrContent;
 	if (
@@ -200,7 +211,6 @@ export async function submitInstitution(
 	console.log("Validation passed, proceeding with submission");
 
 	// --- Handle QR image (optional)
-	const qrImageFile = formData.get("qrImage") as File | null;
 	let qrImageUrl: string | undefined;
 	// We get qrContent from the form data now, no more backend processing
 	const qrContent = formData.get("qrContent") as string | null;
