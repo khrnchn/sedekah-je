@@ -43,8 +43,6 @@ const ALL = "all" as const;
 
 type CategoryFilter = (typeof categories)[number] | typeof ALL;
 type StateFilter = (typeof states)[number] | typeof ALL;
-type ContributorFilter = string | typeof ALL;
-
 type User = {
 	id: string;
 	name: string | null;
@@ -63,7 +61,6 @@ export default function ApprovedInstitutionsTable({
 	const [selectedIds, setSelectedIds] = useState<number[]>([]);
 	const [category, setCategory] = useState<CategoryFilter>(ALL);
 	const [state, setState] = useState<StateFilter>(ALL);
-	const [contributor, setContributor] = useState<ContributorFilter>(ALL);
 	const [undoDialogOpen, setUndoDialogOpen] = useState(false);
 	const [undoNotes, setUndoNotes] = useState("Duplicate entry");
 	const router = useRouter();
@@ -77,21 +74,8 @@ export default function ApprovedInstitutionsTable({
 	const filteredData = institutions.filter((inst) => {
 		if (category !== ALL && inst.category !== category) return false;
 		if (state !== ALL && inst.state !== state) return false;
-		if (contributor !== ALL && inst.contributorId !== contributor) return false;
 		return true;
 	});
-
-	// Get unique contributors for the filter
-	const contributorMap = new Map<string, string>();
-	for (const inst of institutions) {
-		if (inst.contributorId && inst.contributorName) {
-			contributorMap.set(inst.contributorId, inst.contributorName);
-		}
-	}
-
-	const uniqueContributors = Array.from(contributorMap.entries())
-		.map(([id, name]) => ({ id, name }))
-		.sort((a, b) => a.name.localeCompare(b.name));
 
 	async function handleBatchUndo(notes: string) {
 		try {
@@ -147,23 +131,6 @@ export default function ApprovedInstitutionsTable({
 					{states.map((st) => (
 						<SelectItem key={st} value={st}>
 							{st}
-						</SelectItem>
-					))}
-				</SelectContent>
-			</Select>
-
-			<Select
-				value={contributor}
-				onValueChange={(value: ContributorFilter) => setContributor(value)}
-			>
-				<SelectTrigger className="w-[180px]">
-					<SelectValue placeholder="Filter by contributor" />
-				</SelectTrigger>
-				<SelectContent>
-					<SelectItem value={ALL}>All contributors</SelectItem>
-					{uniqueContributors.map((cont) => (
-						<SelectItem key={cont.id} value={cont.id}>
-							{cont.name}
 						</SelectItem>
 					))}
 				</SelectContent>
