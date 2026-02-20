@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -6,12 +7,14 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import Link from "next/link";
 
 const PageHeader = ({
 	pageTitle,
 	showHeader,
-}: { pageTitle: string; showHeader: boolean }) => {
+}: {
+	pageTitle: string;
+	showHeader: boolean;
+}) => {
 	return (
 		<div>
 			<Breadcrumb>

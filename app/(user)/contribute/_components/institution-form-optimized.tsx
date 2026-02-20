@@ -1,10 +1,24 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import {
-	type InstitutionFormData,
+	lazy,
+	Suspense,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
+import { Controller, useForm } from "react-hook-form";
+import { toast } from "sonner";
+import {
 	extendedInstitutionFormClientSchema,
+	type InstitutionFormData,
 } from "@/app/(user)/contribute/_lib/validations";
 import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { FormField } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
 	Select,
@@ -20,19 +34,7 @@ import {
 	categories as CATEGORY_OPTIONS,
 	states as STATE_OPTIONS,
 } from "@/lib/institution-constants";
-import { cn } from "@/lib/utils";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronDown, ChevronUp } from "lucide-react";
-import {
-	Suspense,
-	lazy,
-	useCallback,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
-import { Controller, useForm } from "react-hook-form";
-import { toast } from "sonner";
+import { cn, toTitleCase } from "@/lib/utils";
 import { submitInstitution } from "../_lib/submit-institution";
 
 // Lazy load heavy features for better mobile performance
@@ -44,7 +46,6 @@ const LocationServicesFeature = lazy(
 function SubmitButton({
 	isSubmitting,
 	qrExtracting,
-	qrExtractionFailed,
 	hasFile,
 	isAuthenticated,
 }: {
@@ -308,78 +309,78 @@ export default function InstitutionFormOptimized() {
 				</div>
 
 				{/* Institution name - mobile optimized */}
-				<div className="space-y-2">
-					<label htmlFor="name" className="font-medium text-base">
-						Nama Institusi <span className="text-red-500">*</span>
-					</label>
-					<Input
-						id="name"
-						{...register("name")}
-						placeholder="Contoh: Masjid Al-Falah"
-						className={`h-12 text-base ${errors.name ? "border-red-500" : ""}`}
-						autoComplete="organization"
-					/>
-					{errors.name && (
-						<p className="text-sm text-red-500">{errors.name.message}</p>
+				<Controller
+					control={control}
+					name="name"
+					render={({ field, fieldState }) => (
+						<Field className="space-y-2" {...field}>
+							<FieldLabel htmlFor="name" className="font-medium text-base">
+								Nama Institusi <span className="text-red-500">*</span>
+							</FieldLabel>
+							<Input
+								id="name"
+								{...register("name")}
+								placeholder="Contoh: Masjid Al-Falah"
+								className={`h-12 text-base ${fieldState.invalid ? "border-red-500" : ""}`}
+								autoComplete="organization"
+							/>
+							{errors.name && (
+								<p className="text-sm text-red-500">{errors.name.message}</p>
+							)}
+						</Field>
 					)}
-				</div>
+				/>
 
 				{/* Category - mobile optimized */}
-				<div className="space-y-2">
-					<label htmlFor="category" className="font-medium text-base">
-						Kategori <span className="text-red-500">*</span>
-					</label>
-					<Controller
-						name="category"
-						control={control}
-						render={({ field }) => (
+				<Controller
+					name="category"
+					control={control}
+					render={({ field, fieldState }) => (
+						<Field className="space-y-2" {...field}>
+							<FieldLabel className="font-medium text-base">
+								Kategory <span className="text-red-500">*</span>
+							</FieldLabel>
 							<Select value={field.value ?? ""} onValueChange={field.onChange}>
 								<SelectTrigger
 									id="category"
-									className={cn(
-										"w-full h-12 text-base",
-										errors.category && "border-red-500",
-									)}
-									aria-invalid={!!errors.category}
+									className={cn("w-full h-12 text-base")}
+									aria-invalid={fieldState.invalid}
 								>
 									<SelectValue placeholder="Pilih kategori" />
 								</SelectTrigger>
 								<SelectContent>
 									{CATEGORY_OPTIONS.map((c) => (
 										<SelectItem key={c} value={c} className="capitalize">
-											{c}
+											{toTitleCase(c)}
 										</SelectItem>
 									))}
 								</SelectContent>
+								{fieldState.invalid && (
+									<FieldError errors={[fieldState.error]} />
+								)}
 							</Select>
-						)}
-					/>
-					{errors.category && (
-						<p className="text-sm text-red-500">{errors.category.message}</p>
+						</Field>
 					)}
-				</div>
+				/>
 
 				{/* Location - mobile optimized grid */}
 				<div className="grid grid-cols-1 gap-4">
-					<div className="space-y-2">
-						<label htmlFor="state" className="font-medium text-base">
-							Negeri <span className="text-red-500">*</span>
-						</label>
-						<Controller
-							name="state"
-							control={control}
-							render={({ field }) => (
+					<Controller
+						name="state"
+						control={control}
+						render={({ field, fieldState }) => (
+							<Field className="space-y-2">
+								<FieldLabel htmlFor="state" className="font-medium text-base">
+									Negeri <span className="text-red-500">*</span>
+								</FieldLabel>
 								<Select
 									value={field.value ?? ""}
 									onValueChange={field.onChange}
 								>
 									<SelectTrigger
 										id="state"
-										className={cn(
-											"w-full h-12 text-base",
-											errors.state && "border-red-500",
-										)}
-										aria-invalid={!!errors.state}
+										className={cn("w-full h-12 text-base")}
+										aria-invalid={fieldState.invalid}
 									>
 										<SelectValue placeholder="Pilih negeri" />
 									</SelectTrigger>
@@ -391,63 +392,90 @@ export default function InstitutionFormOptimized() {
 										))}
 									</SelectContent>
 								</Select>
-							)}
-						/>
-						{errors.state && (
-							<p className="text-sm text-red-500">{errors.state.message}</p>
+								{fieldState.invalid && (
+									<FieldError errors={[fieldState.error]} />
+								)}
+							</Field>
 						)}
-					</div>
-					<div className="space-y-2">
-						<label htmlFor="city" className="font-medium text-base">
-							Bandar <span className="text-red-500">*</span>
-						</label>
-						<Input
-							id="city"
-							{...register("city")}
-							placeholder="Contoh: Shah Alam"
-							className={`h-12 text-base ${errors.city ? "border-red-500" : ""}`}
-							autoComplete="address-level2"
-						/>
-						{errors.city && (
-							<p className="text-sm text-red-500">{errors.city.message}</p>
+					/>
+					<Controller
+						name="city"
+						control={control}
+						render={({ field, fieldState }) => (
+							<Field className="space-y-2">
+								<FieldLabel htmlFor="city" className="font-medium text-base">
+									Bandar <span className="text-red-500">*</span>
+								</FieldLabel>
+								<Input
+									id="city"
+									{...field}
+									placeholder="Contoh: Shah Alam"
+									className={cn(
+										"h-12 text-base",
+										fieldState.invalid && "border-red-500",
+									)}
+									autoComplete="address-level2"
+								/>
+								{fieldState.invalid && (
+									<FieldError errors={[fieldState.error]} />
+								)}
+							</Field>
 						)}
-					</div>
+					/>
 				</div>
 
 				{/* Coordinates - mobile optimized grid */}
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-					<div className="space-y-2">
-						<label htmlFor="lat" className="font-medium text-base">
-							Latitud
-						</label>
-						<Input
-							id="lat"
-							type="number"
-							step="any"
-							{...register("lat")}
-							placeholder="Contoh: 3.1390"
-							className={`h-12 text-base ${errors.lat ? "border-red-500" : ""}`}
-						/>
-						{errors.lat && (
-							<p className="text-sm text-red-500">{errors.lat.message}</p>
+					<Controller
+						name="lat"
+						control={control}
+						render={({ field, fieldState }) => (
+							<Field className="space-y-2">
+								<FieldLabel htmlFor="lat" className="font-medium text-base">
+									Latitud
+								</FieldLabel>
+								<Input
+									id="lat"
+									type="number"
+									step="any"
+									{...field}
+									placeholder="Contoh: 3.1390"
+									className={cn(
+										"h-12 text-base",
+										fieldState.invalid && "border-red-500",
+									)}
+								/>
+								{fieldState.invalid && (
+									<FieldError errors={[fieldState.error]} />
+								)}
+							</Field>
 						)}
-					</div>
-					<div className="space-y-2">
-						<label htmlFor="lon" className="font-medium text-base">
-							Longitud
-						</label>
-						<Input
-							id="lon"
-							type="number"
-							step="any"
-							{...register("lon")}
-							placeholder="Contoh: 101.6869"
-							className={`h-12 text-base ${errors.lon ? "border-red-500" : ""}`}
-						/>
-						{errors.lon && (
-							<p className="text-sm text-red-500">{errors.lon.message}</p>
+					/>
+					<Controller
+						name="lon"
+						control={control}
+						render={({ field, fieldState }) => (
+							<Field className="space-y-2">
+								<FieldLabel htmlFor="lon" className="font-medium text-base">
+									Longitud
+								</FieldLabel>
+								<Input
+									id="lon"
+									type="number"
+									step="any"
+									{...field}
+									placeholder="Contoh: 101.6869"
+									className={cn(
+										"h-12 text-base",
+										fieldState.invalid && "border-red-500",
+									)}
+								/>
+								{fieldState.invalid && (
+									<FieldError errors={[fieldState.error]} />
+								)}
+							</Field>
 						)}
-					</div>
+					/>
 				</div>
 				<p className="text-sm text-muted-foreground">
 					Koordinat adalah pilihan. Jika tidak diisi, sistem akan cuba mencari
@@ -455,56 +483,87 @@ export default function InstitutionFormOptimized() {
 				</p>
 
 				{/* Additional info */}
-				<div className="space-y-2">
-					<label htmlFor="contributorRemarks" className="font-medium text-base">
-						Info Tambahan
-					</label>
-					<textarea
-						id="contributorRemarks"
-						{...register("contributorRemarks")}
-						placeholder="Info tambahan berkenaan institusi ini"
-						className={`w-full min-h-[100px] px-3 py-2 text-base border rounded-md bg-background resize-vertical ${errors.contributorRemarks ? "border-red-500" : ""}`}
-					/>
-					{errors.contributorRemarks && (
-						<p className="text-sm text-red-500">
-							{errors.contributorRemarks.message}
-						</p>
+				<Controller
+					name="contributorRemarks"
+					control={control}
+					render={({ field, fieldState }) => (
+						<Field className="space-y-2">
+							<FieldLabel
+								htmlFor="contributorRemarks"
+								className="font-medium text-base"
+							>
+								Info Tambahan
+							</FieldLabel>
+							<textarea
+								id="contributorRemarks"
+								{...field}
+								placeholder="Info tambahan berkenaan institusi ini"
+								className={cn(
+									"w-full min-h-[100px] px-3 py-2 text-base border rounded-md bg-background resize-vertical",
+									fieldState.invalid && "border-red-500",
+								)}
+							/>
+							{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+						</Field>
 					)}
-				</div>
+				/>
 
 				{/* Social media source */}
-				<div className="space-y-2">
-					<div className="flex items-center space-x-3">
-						<input
-							type="checkbox"
-							id="fromSocialMedia"
-							{...register("fromSocialMedia")}
-							className="rounded w-4 h-4"
-						/>
-						<label htmlFor="fromSocialMedia" className="font-medium text-base">
-							Saya dapat maklumat QR ini dari media sosial
-						</label>
-					</div>
+				<Field className="space-y-2">
+					<Controller
+						name="fromSocialMedia"
+						control={control}
+						render={({ field }) => (
+							<div className="flex items-center space-x-3">
+								<input
+									type="checkbox"
+									id="fromSocialMedia"
+									checked={field.value}
+									onChange={field.onChange}
+									onBlur={field.onBlur}
+									name={field.name}
+									ref={field.ref}
+									className="rounded w-4 h-4"
+								/>
+								<FieldLabel
+									htmlFor="fromSocialMedia"
+									className="font-medium text-base"
+								>
+									Saya dapat maklumat QR ini dari media sosial
+								</FieldLabel>
+							</div>
+						)}
+					/>
 					{fromSocialMedia && (
-						<div className="space-y-2 pl-6">
-							<label htmlFor="sourceUrl" className="font-medium text-sm">
-								Alamat Web
-							</label>
-							<Input
-								id="sourceUrl"
-								{...register("sourceUrl")}
-								placeholder="https://facebook.com/post/123 atau URL Instagram"
-								className={`h-12 text-base ${errors.sourceUrl ? "border-red-500" : ""}`}
-								type="url"
-							/>
-							{errors.sourceUrl && (
-								<p className="text-sm text-red-500">
-									{errors.sourceUrl.message}
-								</p>
+						<Controller
+							name="sourceUrl"
+							control={control}
+							render={({ field, fieldState }) => (
+								<Field className="space-y-2 pl-6">
+									<FieldLabel
+										htmlFor="sourceUrl"
+										className="font-medium text-sm"
+									>
+										Alamat Web
+									</FieldLabel>
+									<Input
+										id="sourceUrl"
+										{...field}
+										placeholder="https://facebook.com/post/123 atau URL Instagram"
+										className={cn(
+											"h-12 text-base",
+											fieldState.invalid && "border-red-500",
+										)}
+										type="url"
+									/>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
 							)}
-						</div>
+						/>
 					)}
-				</div>
+				</Field>
 
 				{/* Collapsible social media section */}
 				<div className="space-y-2">
@@ -523,40 +582,87 @@ export default function InstitutionFormOptimized() {
 					</Button>
 					{socialMediaExpanded && (
 						<div className="space-y-3 pl-4 border-l-2 border-gray-200">
-							<Input
-								id="facebook"
-								{...register("facebook")}
-								placeholder="Facebook URL"
-								className={`h-12 text-base ${errors.facebook ? "border-red-500" : ""}`}
-								type="url"
+							<Controller
+								name="facebook"
+								control={control}
+								render={({ field, fieldState }) => (
+									<Field className="space-y-2">
+										<FieldLabel
+											htmlFor="facebook"
+											className="font-medium text-sm"
+										>
+											Facebook
+										</FieldLabel>
+										<Input
+											id="facebook"
+											{...field}
+											placeholder="Facebook URL"
+											className={cn(
+												"h-12 text-base",
+												fieldState.invalid && "border-red-500",
+											)}
+											type="url"
+										/>
+										{fieldState.invalid && (
+											<FieldError errors={[fieldState.error]} />
+										)}
+									</Field>
+								)}
 							/>
-							{errors.facebook && (
-								<p className="text-sm text-red-500">
-									{errors.facebook.message}
-								</p>
-							)}
-							<Input
-								id="instagram"
-								{...register("instagram")}
-								placeholder="Instagram URL"
-								className={`h-12 text-base ${errors.instagram ? "border-red-500" : ""}`}
-								type="url"
+							<Controller
+								name="instagram"
+								control={control}
+								render={({ field, fieldState }) => (
+									<Field className="space-y-2">
+										<FieldLabel
+											htmlFor="instagram"
+											className="font-medium text-sm"
+										>
+											Instagram
+										</FieldLabel>
+										<Input
+											id="instagram"
+											{...field}
+											placeholder="Instagram URL"
+											className={cn(
+												"h-12 text-base",
+												fieldState.invalid && "border-red-500",
+											)}
+											type="url"
+										/>
+										{fieldState.invalid && (
+											<FieldError errors={[fieldState.error]} />
+										)}
+									</Field>
+								)}
 							/>
-							{errors.instagram && (
-								<p className="text-sm text-red-500">
-									{errors.instagram.message}
-								</p>
-							)}
-							<Input
-								id="website"
-								{...register("website")}
-								placeholder="Website URL"
-								className={`h-12 text-base ${errors.website ? "border-red-500" : ""}`}
-								type="url"
+							<Controller
+								name="website"
+								control={control}
+								render={({ field, fieldState }) => (
+									<Field className="space-y-2">
+										<FieldLabel
+											htmlFor="website"
+											className="font-medium text-sm"
+										>
+											Website
+										</FieldLabel>
+										<Input
+											id="website"
+											{...field}
+											placeholder="Website URL"
+											className={cn(
+												"h-12 text-base",
+												fieldState.invalid && "border-red-500",
+											)}
+											type="url"
+										/>
+										{fieldState.invalid && (
+											<FieldError errors={[fieldState.error]} />
+										)}
+									</Field>
+								)}
 							/>
-							{errors.website && (
-								<p className="text-sm text-red-500">{errors.website.message}</p>
-							)}
 						</div>
 					)}
 				</div>

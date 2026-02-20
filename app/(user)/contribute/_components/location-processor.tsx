@@ -1,8 +1,8 @@
 "use client";
 
-import { useLocationPrefillLazy } from "@/hooks/use-location-prefill-lazy";
 import { useEffect, useRef } from "react";
 import type { UseFormSetValue } from "react-hook-form";
+import { useLocationPrefillLazy } from "@/hooks/use-location-prefill-lazy";
 import type { InstitutionFormData } from "../_lib/validations";
 
 interface LocationProcessorProps {
@@ -18,8 +18,7 @@ export function LocationProcessor({
 	onFetchLocation,
 	onLoadingState,
 }: LocationProcessorProps) {
-	const { loadingLocation, fetchLocation, prefilledCity, prefilledState } =
-		useLocationPrefillLazy(setValue);
+	const { loadingLocation, fetchLocation } = useLocationPrefillLazy(setValue);
 
 	const isInitialized = useRef(false);
 

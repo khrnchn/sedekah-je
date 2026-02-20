@@ -1,17 +1,15 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.4.3/schema.json",
 	"files": {
 		"ignoreUnknown": true,
-		"ignore": [".next", "node_modules"]
+		"includes": ["**", "!**/.next", "!**/node_modules"]
 	},
 	"vcs": {
 		"enabled": false,
 		"clientKind": "git",
 		"useIgnoreFile": false
 	},
-	"organizeImports": {
-		"enabled": true
-	},
+	"assist": { "actions": { "source": { "organizeImports": "on" } } },
 	"linter": {
 		"enabled": true,
 		"rules": {
@@ -24,13 +22,14 @@
 			},
 			"a11y": {
 				"noSvgWithoutTitle": "off",
-				"useSemanticElements": "warn"
+				"useSemanticElements": "warn",
+				"useKeyWithClickEvents": "warn"
 			},
 			"security": {
 				"noDangerouslySetInnerHtml": "off"
 			}
 		},
-		"ignore": ["node_modules", "components/ui"]
+		"includes": ["**", "!**/node_modules", "!**/components/ui"]
 	},
 	"formatter": {
 		"enabled": true,
@@ -40,7 +39,7 @@
 		"indentWidth": 2,
 		"lineWidth": 80,
 		"lineEnding": "lf",
-		"ignore": ["node_modules", "components/ui"]
+		"includes": ["**", "!**/node_modules", "!**/components/ui"]
 	},
 	"javascript": {
 		"formatter": {
