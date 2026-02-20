@@ -1,10 +1,11 @@
 "use client";
 
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import QrCodeDisplay from "@/components/ui/qrCodeDisplay";
 import type { supportedPayments } from "@/lib/institution-constants";
-import Image from "next/image";
-import { useRef } from "react";
 import InstitutionReviewForm, {
 	type ReviewFormHandle,
 } from "./institution-review-form";
@@ -30,11 +31,11 @@ type Props = {
 };
 
 export default function ClientSection({ institution }: Props) {
+	const router = useRouter();
 	const formRef = useRef<ReviewFormHandle | null>(null);
 
 	const handleQrReplacementSuccess = () => {
-		// Refresh the page to show the updated QR code
-		window.location.reload();
+		router.refresh();
 	};
 
 	return (
