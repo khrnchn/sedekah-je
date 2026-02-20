@@ -1,16 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import type { Institution } from "@/db/institutions";
-import { geocodeInstitution } from "@/lib/geocode";
-import {
-	categories as CATEGORY_OPTIONS,
-	supportedPayments as PAYMENT_OPTIONS,
-	states as STATE_OPTIONS,
-} from "@/lib/institution-constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { ExternalLink, Loader2, Search } from "lucide-react";
@@ -21,30 +10,118 @@ import {
 	useState,
 	useTransition,
 } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Field,
+	FieldError,
+	FieldGroup,
+	FieldLabel,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import type { Institution } from "@/db/institutions";
+import { geocodeInstitution } from "@/lib/geocode";
+import {
+	categories as CATEGORY_OPTIONS,
+	supportedPayments as PAYMENT_OPTIONS,
+	states as STATE_OPTIONS,
+} from "@/lib/institution-constants";
+import { toTitleCase } from "@/lib/utils";
 import { updateInstitutionByAdmin } from "../../_lib/queries";
 
+type PartialInstitution = Partial<Institution> & {
+	id: number;
+	sourceUrl?: string;
+	contributorRemarks?: string;
+	contributorName?: string | null;
+	contributorId?: string | null;
+	contributorEmail?: string | null;
+	createdAt?: Date;
+};
+
 type Props = {
-	institution: Partial<Institution> & {
-		id: number;
-		sourceUrl?: string;
-		contributorRemarks?: string;
-		contributorName?: string | null;
-		contributorId?: string | null;
-		contributorEmail?: string | null;
-		createdAt?: Date;
-	};
+	institution: PartialInstitution;
 };
 
 export type ReviewFormHandle = {
 	save: () => Promise<boolean>;
 };
 
+// Coordinate validation (lat -90 to 90, lon -180 to 180, both optional)
+const coordString = z.string().optional().or(z.literal(""));
+const latString = coordString.refine(
+	(val) => {
+		if (!val || val === "") return true;
+		const num = Number.parseFloat(val);
+		return !Number.isNaN(num) && num >= -90 && num <= 90;
+	},
+	{ message: "Latitude must be between -90 and 90" },
+);
+const lonString = coordString.refine(
+	(val) => {
+		if (!val || val === "") return true;
+		const num = Number.parseFloat(val);
+		return !Number.isNaN(num) && num >= -180 && num <= 180;
+	},
+	{ message: "Longitude must be between -180 and 180" },
+);
+
+// Helper schema for optional valid URL
+const urlOrEmpty = z
+	.string()
+	.optional()
+	.refine(
+		(val) => {
+			if (!val || val === "") return true;
+			try {
+				new URL(val);
+				return true;
+			} catch {
+				return false;
+			}
+		},
+		{ message: "Invalid URL" },
+	);
+
+const reviewSchema = (institution: PartialInstitution) =>
+	z.object({
+		name: z.string().min(1, "Name is required"),
+		category: z.enum(CATEGORY_OPTIONS),
+		state: z.enum(STATE_OPTIONS),
+		city: z.string().min(1),
+		address: z.string().optional(),
+		lat: latString,
+		lon: lonString,
+		facebook: urlOrEmpty,
+		instagram: urlOrEmpty,
+		website: urlOrEmpty,
+		sourceUrl: z.string().optional(),
+		contributorRemarks: z.string().optional(),
+		supportedPayment: z
+			.array(z.enum(PAYMENT_OPTIONS))
+			.min(1, "At least one payment method is required"),
+		qrContent: institution.qrContent
+			? z.string().optional()
+			: z
+					.string()
+					.min(1, "QR content required when automatic extraction fails"),
+	});
+
 const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 	function InstitutionReviewForm({ institution }, ref) {
 		const router = useRouter();
+
 		const [isPending, startTransition] = useTransition();
 		const [isRecalibrating, setIsRecalibrating] = useState(false);
 
@@ -56,65 +133,7 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 			? format(new Date(institution.createdAt), "p")
 			: "N/A";
 
-		// Helper schema for optional valid URL
-		const urlOrEmpty = z
-			.string()
-			.optional()
-			.refine(
-				(val) => {
-					if (!val || val === "") return true;
-					try {
-						new URL(val);
-						return true;
-					} catch {
-						return false;
-					}
-				},
-				{ message: "Invalid URL" },
-			);
-
-		// Coordinate validation (lat -90 to 90, lon -180 to 180, both optional)
-		const coordString = z.string().optional().or(z.literal(""));
-		const latString = coordString.refine(
-			(val) => {
-				if (!val || val === "") return true;
-				const num = Number.parseFloat(val);
-				return !Number.isNaN(num) && num >= -90 && num <= 90;
-			},
-			{ message: "Latitude must be between -90 and 90" },
-		);
-		const lonString = coordString.refine(
-			(val) => {
-				if (!val || val === "") return true;
-				const num = Number.parseFloat(val);
-				return !Number.isNaN(num) && num >= -180 && num <= 180;
-			},
-			{ message: "Longitude must be between -180 and 180" },
-		);
-
-		// dynamically build schema based on whether original qrContent exists
-		const dynamicSchema = z.object({
-			name: z.string().min(1, "Name is required"),
-			category: z.enum(CATEGORY_OPTIONS),
-			state: z.enum(STATE_OPTIONS),
-			city: z.string().min(1),
-			address: z.string().optional(),
-			lat: latString,
-			lon: lonString,
-			facebook: urlOrEmpty,
-			instagram: urlOrEmpty,
-			website: urlOrEmpty,
-			sourceUrl: z.string().optional(),
-			contributorRemarks: z.string().optional(),
-			supportedPayment: z
-				.array(z.enum(PAYMENT_OPTIONS))
-				.min(1, "At least one payment method is required"),
-			qrContent: institution.qrContent
-				? z.string().optional()
-				: z
-						.string()
-						.min(1, "QR content required when automatic extraction fails"),
-		});
+		const dynamicSchema = reviewSchema(institution);
 		type LocalFormData = z.infer<typeof dynamicSchema>;
 
 		const {
@@ -124,7 +143,7 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 			setValue,
 			trigger,
 			watch,
-			formState: { errors },
+			control,
 		} = useForm<LocalFormData>({
 			resolver: zodResolver(dynamicSchema),
 			defaultValues: {
@@ -243,117 +262,176 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 						</CardTitle>
 					</CardHeader>
 					<CardContent className="space-y-4">
-						<div className="space-y-2">
-							<label className="font-medium" htmlFor="name">
-								Name
-							</label>
-							<Input id="name" {...register("name")} />
-							{errors.name && (
-								<p className="text-sm text-red-500">{errors.name.message}</p>
-							)}
-						</div>
-
-						<div className="space-y-2">
-							<label className="font-medium" htmlFor="category">
-								Category
-							</label>
-							<select
-								id="category"
-								{...register("category")}
-								className="w-full h-10 px-3 border rounded-md bg-background"
-							>
-								<option value="" disabled>
-									Select category
-								</option>
-								{CATEGORY_OPTIONS.map((c) => (
-									<option key={c} value={c} className="capitalize">
-										{c}
-									</option>
-								))}
-							</select>
-							{errors.category && (
-								<p className="text-sm text-red-500">
-									{errors.category.message}
-								</p>
-							)}
-						</div>
+						<FieldGroup>
+							<Controller
+								name="name"
+								control={control}
+								render={({ field, fieldState }) => (
+									<Field>
+										<FieldLabel>Name</FieldLabel>
+										<Input
+											{...field}
+											id="name"
+											aria-invalid={fieldState.invalid}
+											placeholder="Nama Institusi"
+										/>
+										{fieldState.invalid && (
+											<FieldError errors={[fieldState.error]} />
+										)}
+									</Field>
+								)}
+							/>
+						</FieldGroup>
+						<FieldGroup>
+							<Controller
+								control={control}
+								name="category"
+								render={({ field, fieldState }) => (
+									<Field>
+										<FieldLabel>Kategori</FieldLabel>
+										<Select value={field.value} onValueChange={field.onChange}>
+											<SelectTrigger className="w-full bg-background h-10">
+												<SelectValue placeholder="Pilih kategori" />
+											</SelectTrigger>
+											<SelectContent>
+												{CATEGORY_OPTIONS.map((c) => (
+													<SelectItem key={c} value={c} className="capitalize">
+														{toTitleCase(c)}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+										{fieldState.invalid && (
+											<FieldError errors={[fieldState.error]} />
+										)}
+									</Field>
+								)}
+							/>
+						</FieldGroup>
 
 						<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-							<div className="space-y-2">
-								<label htmlFor="state" className="font-medium">
-									State
-								</label>
-								<select
-									id="state"
-									{...register("state")}
-									className="w-full h-10 px-3 border rounded-md bg-background"
-								>
-									<option value="" disabled>
-										Select state
-									</option>
-									{STATE_OPTIONS.map((s) => (
-										<option key={s} value={s} className="capitalize">
-											{s}
-										</option>
-									))}
-								</select>
-								{errors.state && (
-									<p className="text-sm text-red-500">{errors.state.message}</p>
-								)}
-							</div>
-							<div className="space-y-2">
-								<label htmlFor="city" className="font-medium">
-									City
-								</label>
-								<Input id="city" {...register("city")} />
-								{errors.city && (
-									<p className="text-sm text-red-500">{errors.city.message}</p>
-								)}
-							</div>
+							<FieldGroup>
+								<Controller
+									control={control}
+									name="state"
+									render={({ field, fieldState }) => (
+										<Field>
+											<FieldLabel>State</FieldLabel>
+											<Select
+												value={field.value}
+												onValueChange={field.onChange}
+											>
+												<SelectTrigger
+													className="w-full bg-background h-10"
+													id="state"
+													aria-invalid={fieldState.invalid}
+												>
+													<SelectValue placeholder="Select state" />
+												</SelectTrigger>
+												<SelectContent>
+													{STATE_OPTIONS.map((s) => (
+														<SelectItem
+															key={s}
+															value={s}
+															className="capitalize"
+														>
+															{s}
+														</SelectItem>
+													))}
+												</SelectContent>
+											</Select>
+											{fieldState.invalid && (
+												<FieldError errors={[fieldState.error]} />
+											)}
+										</Field>
+									)}
+								/>
+							</FieldGroup>
+							<FieldGroup>
+								<Controller
+									name="city"
+									control={control}
+									render={({ field, fieldState }) => (
+										<Field>
+											<FieldLabel>City</FieldLabel>
+											<Input
+												{...field}
+												id="city"
+												aria-invalid={fieldState.invalid}
+											/>
+											{fieldState.invalid && (
+												<FieldError errors={[fieldState.error]} />
+											)}
+										</Field>
+									)}
+								/>
+							</FieldGroup>
 						</div>
 
-						<div className="space-y-2">
-							<label htmlFor="address" className="font-medium">
-								Address
-							</label>
-							<Textarea id="address" rows={3} {...register("address")} />
-						</div>
+						<FieldGroup>
+							<Controller
+								name="address"
+								control={control}
+								render={({ field, fieldState }) => (
+									<Field>
+										<FieldLabel>Address</FieldLabel>
+										<Textarea
+											{...field}
+											id="address"
+											rows={3}
+											aria-invalid={fieldState.invalid}
+										/>
+										{fieldState.invalid && (
+											<FieldError errors={[fieldState.error]} />
+										)}
+									</Field>
+								)}
+							/>
+						</FieldGroup>
 
-						<div className="space-y-2">
-							<div className="font-medium">Coordinates</div>
+						<FieldGroup>
+							<FieldLabel>Coordinates</FieldLabel>
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-								<div className="space-y-1">
-									<label
-										htmlFor="lat"
-										className="text-sm text-muted-foreground"
-									>
-										Latitude
-									</label>
-									<Input
-										id="lat"
-										placeholder="-90 to 90"
-										{...register("lat")}
-									/>
-									{errors.lat && (
-										<p className="text-sm text-red-500">{errors.lat.message}</p>
+								<Controller
+									name="lat"
+									control={control}
+									render={({ field, fieldState }) => (
+										<Field>
+											<FieldLabel className="text-sm text-muted-foreground font-normal">
+												Latitude
+											</FieldLabel>
+											<Input
+												{...field}
+												id="lat"
+												placeholder="-90 to 90"
+												aria-invalid={fieldState.invalid}
+											/>
+											{fieldState.invalid && (
+												<FieldError errors={[fieldState.error]} />
+											)}
+										</Field>
 									)}
-								</div>
-								<div className="space-y-1">
-									<label
-										htmlFor="lon"
-										className="text-sm text-muted-foreground"
-									>
-										Longitude
-									</label>
-									<Input
-										id="lon"
-										placeholder="-180 to 180"
-										{...register("lon")}
-									/>
-									{errors.lon && (
-										<p className="text-sm text-red-500">{errors.lon.message}</p>
+								/>
+								<Controller
+									name="lon"
+									control={control}
+									render={({ field, fieldState }) => (
+										<Field>
+											<FieldLabel className="text-sm text-muted-foreground font-normal">
+												Longitude
+											</FieldLabel>
+											<Input
+												{...field}
+												id="lon"
+												placeholder="-180 to 180"
+												aria-invalid={fieldState.invalid}
+											/>
+											{fieldState.invalid && (
+												<FieldError errors={[fieldState.error]} />
+											)}
+										</Field>
 									)}
-								</div>
+								/>
 							</div>
 							<Button
 								type="button"
@@ -396,47 +474,71 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 									"Recalibrate"
 								)}
 							</Button>
-						</div>
+						</FieldGroup>
 
-						<div className="space-y-2">
-							<div className="font-medium">Supported Payment Methods</div>
-							<div className="flex flex-wrap gap-3">
-								{PAYMENT_OPTIONS.map((payment) => (
-									<label key={payment} className="flex items-center space-x-2">
-										<input
-											type="checkbox"
-											value={payment}
-											{...register("supportedPayment")}
-											className="rounded border-gray-300"
-										/>
-										<span className="capitalize">{payment}</span>
-									</label>
-								))}
-							</div>
-							{errors.supportedPayment && (
-								<p className="text-sm text-red-500">
-									{errors.supportedPayment.message}
-								</p>
-							)}
-						</div>
+						<FieldGroup>
+							<Controller
+								name="supportedPayment"
+								control={control}
+								render={({ field, fieldState }) => (
+									<Field>
+										<FieldLabel>Supported Payment Methods</FieldLabel>
+										<div className="flex flex-wrap gap-3 mt-2">
+											{PAYMENT_OPTIONS.map((payment) => (
+												<label
+													key={payment}
+													className="flex items-center space-x-2"
+												>
+													<input
+														type="checkbox"
+														value={payment}
+														checked={field.value?.includes(payment)}
+														onChange={(e) => {
+															const valueCopy = [...(field.value || [])];
+															if (e.target.checked) {
+																field.onChange([...valueCopy, payment]);
+															} else {
+																field.onChange(
+																	valueCopy.filter((v) => v !== payment),
+																);
+															}
+														}}
+														className="rounded border-gray-300"
+													/>
+													<span className="capitalize">{payment}</span>
+												</label>
+											))}
+										</div>
+										{fieldState.invalid && (
+											<FieldError errors={[fieldState.error]} />
+										)}
+									</Field>
+								)}
+							/>
+						</FieldGroup>
 						{/* Manual QR Content field (only shown if missing) */}
 						{!institution.qrContent && (
-							<div className="space-y-2">
-								<label htmlFor="qrContent" className="font-medium">
-									Manual QR Content
-								</label>
-								<Textarea
-									id="qrContent"
-									rows={3}
-									placeholder="Paste scanned QR text here"
-									{...register("qrContent")}
+							<FieldGroup>
+								<Controller
+									name="qrContent"
+									control={control}
+									render={({ field, fieldState }) => (
+										<Field>
+											<FieldLabel>Manual QR Content</FieldLabel>
+											<Textarea
+												{...field}
+												id="qrContent"
+												rows={3}
+												placeholder="Paste scanned QR text here"
+												aria-invalid={fieldState.invalid}
+											/>
+											{fieldState.invalid && (
+												<FieldError errors={[fieldState.error]} />
+											)}
+										</Field>
+									)}
 								/>
-								{errors.qrContent && (
-									<p className="text-sm text-red-500">
-										{errors.qrContent.message as string}
-									</p>
-								)}
-							</div>
+							</FieldGroup>
 						)}
 					</CardContent>
 				</Card>
@@ -449,138 +551,153 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 						</CardTitle>
 					</CardHeader>
 					<CardContent className="space-y-4">
-						<div className="space-y-2">
-							<label htmlFor="facebook" className="font-medium">
-								Facebook URL
-							</label>
-							<div className="flex gap-2">
-								<Input
-									id="facebook"
-									placeholder="https://facebook.com/..."
-									{...register("facebook")}
-								/>
-								{facebookUrl ? (
-									<Button
-										type="button"
-										variant="outline"
-										size="icon"
-										onClick={() => window.open(facebookUrl, "_blank")}
-									>
-										<ExternalLink className="h-4 w-4" />
-									</Button>
-								) : (
-									<Button
-										type="button"
-										variant="outline"
-										size="icon"
-										onClick={() =>
-											window.open(
-												generateGoogleSearchUrl(
-													"facebook",
-													institution.name || "",
-												),
-												"_blank",
-											)
-										}
-									>
-										<Search className="h-4 w-4" />
-									</Button>
+						<FieldGroup>
+							<Controller
+								name="facebook"
+								control={control}
+								render={({ field, fieldState }) => (
+									<Field>
+										<FieldLabel>Facebook URL</FieldLabel>
+										<div className="flex gap-2">
+											<Input
+												{...field}
+												id="facebook"
+												placeholder="https://facebook.com/..."
+												aria-invalid={fieldState.invalid}
+											/>
+											{facebookUrl ? (
+												<Button
+													type="button"
+													variant="outline"
+													size="icon"
+													onClick={() => window.open(facebookUrl, "_blank")}
+												>
+													<ExternalLink className="h-4 w-4" />
+												</Button>
+											) : (
+												<Button
+													type="button"
+													variant="outline"
+													size="icon"
+													onClick={() =>
+														window.open(
+															generateGoogleSearchUrl(
+																"facebook",
+																institution.name || "",
+															),
+															"_blank",
+														)
+													}
+												>
+													<Search className="h-4 w-4" />
+												</Button>
+											)}
+										</div>
+										{fieldState.invalid && (
+											<FieldError errors={[fieldState.error]} />
+										)}
+									</Field>
 								)}
-							</div>
-							{errors.facebook && (
-								<p className="text-sm text-red-500">
-									{errors.facebook.message as string}
-								</p>
-							)}
-						</div>
-						<div className="space-y-2">
-							<label htmlFor="instagram" className="font-medium">
-								Instagram URL
-							</label>
-							<div className="flex gap-2">
-								<Input
-									id="instagram"
-									placeholder="https://instagram.com/..."
-									{...register("instagram")}
-								/>
-								{instagramUrl ? (
-									<Button
-										type="button"
-										variant="outline"
-										size="icon"
-										onClick={() => window.open(instagramUrl, "_blank")}
-									>
-										<ExternalLink className="h-4 w-4" />
-									</Button>
-								) : (
-									<Button
-										type="button"
-										variant="outline"
-										size="icon"
-										onClick={() =>
-											window.open(
-												generateGoogleSearchUrl(
-													"instagram",
-													institution.name || "",
-												),
-												"_blank",
-											)
-										}
-									>
-										<Search className="h-4 w-4" />
-									</Button>
+							/>
+						</FieldGroup>
+						<FieldGroup>
+							<Controller
+								name="instagram"
+								control={control}
+								render={({ field, fieldState }) => (
+									<Field>
+										<FieldLabel>Instagram URL</FieldLabel>
+										<div className="flex gap-2">
+											<Input
+												{...field}
+												id="instagram"
+												placeholder="https://instagram.com/..."
+												aria-invalid={fieldState.invalid}
+											/>
+											{instagramUrl ? (
+												<Button
+													type="button"
+													variant="outline"
+													size="icon"
+													onClick={() => window.open(instagramUrl, "_blank")}
+												>
+													<ExternalLink className="h-4 w-4" />
+												</Button>
+											) : (
+												<Button
+													type="button"
+													variant="outline"
+													size="icon"
+													onClick={() =>
+														window.open(
+															generateGoogleSearchUrl(
+																"instagram",
+																institution.name || "",
+															),
+															"_blank",
+														)
+													}
+												>
+													<Search className="h-4 w-4" />
+												</Button>
+											)}
+										</div>
+										{fieldState.invalid && (
+											<FieldError errors={[fieldState.error]} />
+										)}
+									</Field>
 								)}
-							</div>
-							{errors.instagram && (
-								<p className="text-sm text-red-500">
-									{errors.instagram.message as string}
-								</p>
-							)}
-						</div>
-						<div className="space-y-2">
-							<label htmlFor="website" className="font-medium">
-								Website URL
-							</label>
-							<div className="flex gap-2">
-								<Input
-									id="website"
-									placeholder="https://..."
-									{...register("website")}
-								/>
-								{websiteUrl ? (
-									<Button
-										type="button"
-										variant="outline"
-										size="icon"
-										onClick={() => window.open(websiteUrl, "_blank")}
-									>
-										<ExternalLink className="h-4 w-4" />
-									</Button>
-								) : (
-									<Button
-										type="button"
-										variant="outline"
-										size="icon"
-										onClick={() =>
-											window.open(
-												generateGoogleSearchUrl(
-													"website",
-													institution.name || "",
-												),
-												"_blank",
-											)
-										}
-									>
-										<Search className="h-4 w-4" />
-									</Button>
+							/>
+						</FieldGroup>
+						<FieldGroup>
+							<Controller
+								name="website"
+								control={control}
+								render={({ field, fieldState }) => (
+									<Field>
+										<FieldLabel>Website URL</FieldLabel>
+										<div className="flex gap-2">
+											<Input
+												{...field}
+												id="website"
+												placeholder="https://..."
+												aria-invalid={fieldState.invalid}
+											/>
+											{websiteUrl ? (
+												<Button
+													type="button"
+													variant="outline"
+													size="icon"
+													onClick={() => window.open(websiteUrl, "_blank")}
+												>
+													<ExternalLink className="h-4 w-4" />
+												</Button>
+											) : (
+												<Button
+													type="button"
+													variant="outline"
+													size="icon"
+													onClick={() =>
+														window.open(
+															generateGoogleSearchUrl(
+																"website",
+																institution.name || "",
+															),
+															"_blank",
+														)
+													}
+												>
+													<Search className="h-4 w-4" />
+												</Button>
+											)}
+										</div>
+										{fieldState.invalid && (
+											<FieldError errors={[fieldState.error]} />
+										)}
+									</Field>
 								)}
-							</div>
-							{errors.website && (
-								<p className="text-sm text-red-500">
-									{errors.website.message as string}
-								</p>
-							)}
-						</div>
+							/>
+						</FieldGroup>
 					</CardContent>
 				</Card>
 
@@ -623,47 +740,47 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 								</div>
 							</div>
 						</div>
-						<div className="space-y-2">
-							<label
-								htmlFor="sourceUrl"
-								className="font-medium text-muted-foreground"
-							>
-								Source URL (if from social media)
-							</label>
-							<div className="flex gap-2">
-								<Input
-									id="sourceUrl"
-									{...register("sourceUrl")}
+						<FieldGroup>
+							<Field>
+								<FieldLabel className="text-muted-foreground font-medium">
+									Source URL (if from social media)
+								</FieldLabel>
+								<div className="flex gap-2">
+									<Input
+										id="sourceUrl"
+										{...register("sourceUrl")}
+										disabled
+										placeholder="No source URL provided"
+									/>
+									{institution.sourceUrl && (
+										<Button
+											type="button"
+											variant="outline"
+											size="icon"
+											onClick={() =>
+												window.open(institution.sourceUrl, "_blank")
+											}
+										>
+											<ExternalLink className="h-4 w-4" />
+										</Button>
+									)}
+								</div>
+							</Field>
+						</FieldGroup>
+						<FieldGroup>
+							<Field>
+								<FieldLabel className="text-muted-foreground font-medium">
+									Contributor Notes
+								</FieldLabel>
+								<Textarea
+									id="contributorRemarks"
+									rows={3}
+									{...register("contributorRemarks")}
 									disabled
-									placeholder="No source URL provided"
+									placeholder="No additional notes provided"
 								/>
-								{institution.sourceUrl && (
-									<Button
-										type="button"
-										variant="outline"
-										size="icon"
-										onClick={() => window.open(institution.sourceUrl, "_blank")}
-									>
-										<ExternalLink className="h-4 w-4" />
-									</Button>
-								)}
-							</div>
-						</div>
-						<div className="space-y-2">
-							<label
-								htmlFor="contributorRemarks"
-								className="font-medium text-muted-foreground"
-							>
-								Contributor Notes
-							</label>
-							<Textarea
-								id="contributorRemarks"
-								rows={3}
-								{...register("contributorRemarks")}
-								disabled
-								placeholder="No additional notes provided"
-							/>
-						</div>
+							</Field>
+						</FieldGroup>
 					</CardContent>
 				</Card>
 

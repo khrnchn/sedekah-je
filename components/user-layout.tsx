@@ -20,7 +20,10 @@ interface UserLayoutProps {
 function UserPageHeader({
 	title,
 	description,
-}: { title?: string; description?: string }) {
+}: {
+	title?: string;
+	description?: string;
+}) {
 	if (!title && !description) return null;
 
 	return (

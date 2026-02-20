@@ -1,9 +1,11 @@
 "use client";
 
+import Image from "next/image";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { formatFileSize } from "@/lib/image-utils";
-import { Suspense, lazy, useCallback, useEffect, useState } from "react";
+
 // Lazy load the QR extraction functionality
 const LazyQRProcessor = lazy(() =>
 	import("./qr-processor").then((mod) => ({ default: mod.QRProcessor })),
@@ -208,7 +210,8 @@ export default function QRExtractionFeature({
 				<div className="space-y-2">
 					<p className="text-xs text-muted-foreground">Gambar semasa</p>
 					<div className="relative w-full max-w-[200px] rounded-lg border overflow-hidden bg-muted">
-						<img
+						<Image
+							unoptimized
 							src={initialImageUrl}
 							alt="QR semasa"
 							className="w-full h-auto object-contain"

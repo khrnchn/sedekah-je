@@ -1,3 +1,6 @@
+import { Home } from "lucide-react";
+import Link from "next/link";
+import { Fragment } from "react";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -7,9 +10,6 @@ import {
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
-import { Home } from "lucide-react";
-import Link from "next/link";
-import { Fragment } from "react";
 
 interface AdminBreadcrumbItem {
 	label: string;
@@ -29,7 +29,9 @@ import { ClientSidebarTrigger } from "./client-sidebar-trigger";
 // Server component for breadcrumbs
 function ServerBreadcrumbs({
 	breadcrumbs,
-}: { breadcrumbs?: AdminBreadcrumbItem[] }) {
+}: {
+	breadcrumbs?: AdminBreadcrumbItem[];
+}) {
 	return (
 		<Breadcrumb>
 			<BreadcrumbList>
