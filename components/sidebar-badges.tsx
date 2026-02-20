@@ -8,19 +8,12 @@ import { Badge } from "@/components/ui/badge";
 import { getTotalUsersCount } from "@/lib/queries/users";
 import { Suspense } from "react";
 
-const sidebarBadgeClassName =
-	"bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90 text-[11px] font-medium";
-
 // Async badge components that stream in
 async function PendingBadge() {
 	try {
 		const count = await getPendingInstitutionsCount();
 		if (count === 0) return <></>;
-		return (
-			<Badge variant="destructive" className={sidebarBadgeClassName}>
-				{count}
-			</Badge>
-		);
+		return <Badge variant="destructive">{count}</Badge>;
 	} catch {
 		return <></>;
 	}
@@ -30,11 +23,7 @@ async function ApprovedBadge() {
 	try {
 		const count = await getApprovedInstitutionsCount();
 		if (count === 0) return <></>;
-		return (
-			<Badge variant="success" className={sidebarBadgeClassName}>
-				{count}
-			</Badge>
-		);
+		return <Badge variant="default">{count}</Badge>;
 	} catch {
 		return <></>;
 	}
@@ -44,11 +33,7 @@ async function RejectedBadge() {
 	try {
 		const count = await getRejectedInstitutionsCount();
 		if (count === 0) return <></>;
-		return (
-			<Badge variant="destructive" className={sidebarBadgeClassName}>
-				{count}
-			</Badge>
-		);
+		return <Badge variant="destructive">{count}</Badge>;
 	} catch {
 		return <></>;
 	}
@@ -58,11 +43,7 @@ async function ClaimsBadge() {
 	try {
 		const count = await getPendingClaimRequestsCount();
 		if (count === 0) return <></>;
-		return (
-			<Badge variant="destructive" className={sidebarBadgeClassName}>
-				{count}
-			</Badge>
-		);
+		return <Badge variant="destructive">{count}</Badge>;
 	} catch {
 		return <></>;
 	}
@@ -72,11 +53,7 @@ async function UsersBadge() {
 	try {
 		const count = await getTotalUsersCount();
 		if (count === 0) return <></>;
-		return (
-			<Badge variant="default" className={sidebarBadgeClassName}>
-				{count}
-			</Badge>
-		);
+		return <Badge variant="default">{count}</Badge>;
 	} catch {
 		return <></>;
 	}
