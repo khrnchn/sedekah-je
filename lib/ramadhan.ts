@@ -133,3 +133,13 @@ export function formatDateBM(dateStr: string): string {
 	const month = BM_MONTHS[(m ?? 1) - 1] ?? "";
 	return `${d ?? 0} ${month} ${y ?? 0}`;
 }
+
+/**
+ * Format a date string (YYYY-MM-DD) without year in Bahasa Malaysia.
+ * Example: "2026-03-19" -> "19 Mac"
+ */
+export function formatDateBMShort(dateStr: string): string {
+	const [, m, d] = dateStr.split("-").map(Number);
+	const month = BM_MONTHS[(m ?? 1) - 1] ?? "";
+	return `${d ?? 0} ${month}`;
+}

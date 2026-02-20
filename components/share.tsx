@@ -29,6 +29,7 @@ interface SharePropsNative {
 	data: ShareData;
 	platform?: never;
 	variant?: "outline" | "secondary" | "ghost";
+	size?: "default" | "sm" | "lg" | "icon";
 	className?: string;
 }
 
@@ -138,13 +139,14 @@ export default function Share(props: ShareProps) {
 	};
 
 	const variant = "variant" in props ? (props.variant ?? "outline") : "outline";
+	const size = "size" in props ? (props.size ?? "default") : "default";
 	const className = "className" in props ? props.className : undefined;
 
 	return (
 		<Button
 			type="button"
 			variant={variant}
-			size="sm"
+			size={size}
 			onClick={handleNativeShare}
 			className={className ? `gap-2 ${className}` : "gap-2"}
 		>

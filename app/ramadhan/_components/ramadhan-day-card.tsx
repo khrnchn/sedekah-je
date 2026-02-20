@@ -1,7 +1,7 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import { formatDateBM } from "@/lib/ramadhan";
+import { formatDateBM, formatDateBMShort } from "@/lib/ramadhan";
 import { cn } from "@/lib/utils";
 import { ChevronRight, Lock } from "lucide-react";
 import type { RamadhanCampaignDay } from "../_lib/queries";
@@ -43,7 +43,7 @@ export function RamadhanDayCard({
 						Hari {dayNumber}
 					</p>
 					<p className="text-xs text-muted-foreground">
-						{formatDateBM(featuredDate)}
+						{formatDateBMShort(featuredDate)}
 					</p>
 					{isFuture ? (
 						<div className="flex items-center justify-center gap-1 mt-1 text-muted-foreground">
@@ -58,7 +58,7 @@ export function RamadhanDayCard({
 		);
 	}
 
-	const formattedDate = formatDateBM(featuredDate);
+	const formattedDate = formatDateBMShort(featuredDate);
 	const label = `Hari ${dayNumber}, ${day.institutionName}, ${formattedDate}. ${isSelected ? "Dipilih. Klik untuk tutup." : "Klik untuk lihat QR kod."}`;
 
 	return (
@@ -95,7 +95,7 @@ export function RamadhanDayCard({
 					<p className="font-semibold text-sm">Hari {dayNumber}</p>
 					<p className="text-xs text-muted-foreground">{formattedDate}</p>
 					<p
-						className="text-sm font-medium line-clamp-2"
+						className="text-xs font-medium line-clamp-3"
 						title={day.institutionName}
 					>
 						{day.institutionName}
