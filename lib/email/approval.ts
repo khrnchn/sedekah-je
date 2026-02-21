@@ -10,7 +10,6 @@ import { env } from "@/env";
 export async function sendInstitutionApprovalEmail(params: {
 	recipientEmail: string;
 	recipientName: string | null;
-	institutionName: string;
 	approveLink: string;
 }): Promise<{ ok: boolean; error?: string }> {
 	const apiKey = env.MAILERSEND_API_KEY;
