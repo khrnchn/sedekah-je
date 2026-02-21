@@ -1,10 +1,11 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { X } from "lucide-react";
+import { ExternalLink, X } from "lucide-react";
 import Link from "next/link";
 import type { QuestMosqueWithStatus } from "@/app/quest/_lib/types";
 import { Badge } from "@/components/ui/badge";
+import QrCodeDisplay from "@/components/ui/qrCodeDisplay";
 
 type QuestMosqueDetailProps = {
 	mosque: QuestMosqueWithStatus | null;
@@ -50,9 +51,12 @@ export default function QuestMosqueDetail({
 									{mosque.institutionCategory && mosque.institutionSlug && (
 										<Link
 											href={`/${mosque.institutionCategory}/${mosque.institutionSlug}`}
-											className="text-sm font-medium text-green-400 underline-offset-4 hover:underline"
+											target="_blank"
+											rel="noreferrer"
+											className="inline-flex items-center gap-1 text-sm font-medium text-green-400 underline-offset-4 hover:underline"
 										>
-											Lihat QR
+											<span className="sr-only">Buka halaman institusi</span>
+											<ExternalLink className="h-4 w-4" />
 										</Link>
 									)}
 								</>
@@ -65,6 +69,15 @@ export default function QuestMosqueDetail({
 								</Badge>
 							)}
 						</div>
+						{mosque.isUnlocked && mosque.qrContent && (
+							<div className="mt-4 flex">
+								<QrCodeDisplay
+									qrContent={mosque.qrContent}
+									supportedPayment={mosque.supportedPayment ?? undefined}
+									size={120}
+								/>
+							</div>
+						)}
 					</div>
 				</motion.div>
 			)}

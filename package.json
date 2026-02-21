@@ -16,6 +16,7 @@
 		"db:seed": "bun db/main.ts",
 		"db:truncate": "bun db/truncate.ts",
 		"db:seed-quest": "bun scripts/seed-quest-mosques.ts",
+		"db:geocode-quest": "bun scripts/geocode-quest-mosques.ts",
 		"clean": "rm -rf node_modules/ .next/ bun.lock*",
 		"prepare": "husky"
 	},

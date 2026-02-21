@@ -21,6 +21,8 @@ export const getQuestMosques = unstable_cache(
 				updatedAt: questMosques.updatedAt,
 				institutionSlug: institutions.slug,
 				institutionCategory: institutions.category,
+				qrContent: institutions.qrContent,
+				supportedPayment: institutions.supportedPayment,
 			})
 			.from(questMosques)
 			.leftJoin(institutions, eq(questMosques.institutionId, institutions.id))
@@ -39,6 +41,8 @@ export const getQuestMosques = unstable_cache(
 			isUnlocked: r.institutionSlug !== null,
 			institutionSlug: r.institutionSlug,
 			institutionCategory: r.institutionCategory,
+			qrContent: r.qrContent,
+			supportedPayment: r.supportedPayment,
 		}));
 	},
 	["quest-mosques"],
