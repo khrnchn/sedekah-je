@@ -163,19 +163,23 @@ const isValidCoords = (
 
 function createMosqueIcon(
 	size: [number, number],
-	options: { locked: boolean },
+	options: { locked: boolean; selected: boolean },
 ) {
 	const [width, height] = size;
 	const lockBadge = options.locked
 		? `<span style="position:absolute;right:2px;bottom:4px;display:flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:9999px;background:rgba(24,24,27,0.9);border:1px solid rgba(113,113,122,0.9);font-size:10px;line-height:1;">🔒</span>`
 		: "";
-	const lockedFilter = options.locked
+	const glow = options.locked
 		? "filter:grayscale(1) brightness(0.75) contrast(0.9);opacity:0.9;"
-		: "";
+		: options.selected
+			? "filter:drop-shadow(0 0 10px rgba(16,185,129,0.95)) drop-shadow(0 0 22px rgba(16,185,129,0.65));"
+			: "filter:drop-shadow(0 0 6px rgba(16,185,129,0.45));";
+	const pulseClass = options.selected ? " quest-marker-pulse" : "";
+	const lockedFilter = options.locked ? "is-locked" : "";
 
 	return divIcon({
-		className: "quest-marker-icon",
-		html: `<div style="position:relative;width:${width}px;height:${height}px;"><img src="/masjid.svg" alt="" style="display:block;width:${width}px;height:${height}px;${lockedFilter}" />${lockBadge}</div>`,
+		className: `quest-marker-icon${pulseClass} ${lockedFilter}`.trim(),
+		html: `<div style="position:relative;width:${width}px;height:${height}px;"><img src="/masjid.svg" alt="" style="display:block;width:${width}px;height:${height}px;${glow}" />${lockBadge}</div>`,
 		iconSize: size,
 		iconAnchor: [width / 2, height],
 		tooltipAnchor: [0, -height],
@@ -188,19 +192,23 @@ export default function QuestMapLeaflet({
 	onMarkerClick,
 }: QuestMapLeafletProps) {
 	const unlockedDefaultIcon = useMemo(
-		() => createMosqueIcon(MARKER_SIZE_DEFAULT, { locked: false }),
+		() =>
+			createMosqueIcon(MARKER_SIZE_DEFAULT, { locked: false, selected: false }),
 		[],
 	);
 	const unlockedSelectedIcon = useMemo(
-		() => createMosqueIcon(MARKER_SIZE_SELECTED, { locked: false }),
+		() =>
+			createMosqueIcon(MARKER_SIZE_SELECTED, { locked: false, selected: true }),
 		[],
 	);
 	const lockedDefaultIcon = useMemo(
-		() => createMosqueIcon(MARKER_SIZE_DEFAULT, { locked: true }),
+		() =>
+			createMosqueIcon(MARKER_SIZE_DEFAULT, { locked: true, selected: false }),
 		[],
 	);
 	const lockedSelectedIcon = useMemo(
-		() => createMosqueIcon(MARKER_SIZE_SELECTED, { locked: true }),
+		() =>
+			createMosqueIcon(MARKER_SIZE_SELECTED, { locked: true, selected: true }),
 		[],
 	);
 
@@ -261,6 +269,15 @@ export default function QuestMapLeaflet({
 					.quest-marker-icon {
 						background: transparent !important;
 						border: 0 !important;
+					}
+					.quest-marker-pulse {
+						animation: quest-pin-pulse 1.5s ease-out infinite;
+						transform-origin: center bottom;
+					}
+					@keyframes quest-pin-pulse {
+						0% { transform: scale(1); }
+						50% { transform: scale(1.06); }
+						100% { transform: scale(1); }
 					}
 					.quest-map-dark .leaflet-layer,
 					.quest-map-dark .leaflet-control-zoom-in,
