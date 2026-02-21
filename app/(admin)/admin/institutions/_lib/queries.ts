@@ -8,10 +8,8 @@ import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions, users } from "@/db/schema";
 import { requireAdminSession } from "@/lib/auth-helpers";
-import {
-	buildInstitutionApproveLink,
-	sendInstitutionApprovalEmail,
-} from "@/lib/email/approval";
+import { sendInstitutionApprovalEmail } from "@/lib/email/approval";
+import { buildInstitutionApproveLink } from "@/lib/email/approval-link";
 import { slugify } from "@/lib/utils";
 
 // Helper function to generate a unique slug
