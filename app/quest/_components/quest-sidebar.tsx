@@ -4,7 +4,6 @@ import type {
 	QuestMosqueWithStatus,
 	QuestSortOption,
 } from "@/app/quest/_lib/types";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
 	Select,
 	SelectContent,
@@ -30,7 +29,7 @@ export default function QuestSidebar({
 	onSortChange,
 }: QuestSidebarProps) {
 	return (
-		<div className="flex w-80 flex-col border-r border-zinc-800 bg-zinc-950">
+		<div className="relative z-10 flex w-80 flex-col border-r border-zinc-800 bg-zinc-950">
 			<div className="border-b border-zinc-800 px-4 py-3">
 				<Select
 					value={sort}
@@ -55,7 +54,7 @@ export default function QuestSidebar({
 					</SelectContent>
 				</Select>
 			</div>
-			<ScrollArea className="flex-1">
+			<div className="flex-1 overflow-y-auto">
 				<div className="space-y-1 p-2">
 					{mosques.map((mosque) => (
 						<QuestMosqueListItem
@@ -71,7 +70,7 @@ export default function QuestSidebar({
 						</p>
 					)}
 				</div>
-			</ScrollArea>
+			</div>
 		</div>
 	);
 }

@@ -7,23 +7,22 @@ import "leaflet-defaulticon-compatibility";
 
 import { createLeafletContext, LeafletProvider } from "@react-leaflet/core";
 import type { MapOptions } from "leaflet";
-import { Map as LeafletMap } from "leaflet";
+import { icon, Map as LeafletMap } from "leaflet";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { CircleMarker, TileLayer, Tooltip, useMap } from "react-leaflet";
+import { Marker, TileLayer, Tooltip, useMap } from "react-leaflet";
 import type { QuestMosqueWithStatus } from "@/app/quest/_lib/types";
 
 const PETALING_CENTER: [number, number] = [3.1, 101.65];
-const PETALING_ZOOM = 12;
+const PETALING_ZOOM = 13;
 
 const DARK_TILE_URL =
 	"https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
 const DARK_TILE_ATTRIBUTION =
 	'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>';
 
-const COLOR_UNLOCKED = "#22c55e";
-const COLOR_LOCKED = "#71717a";
-const COLOR_SELECTED = "#eab308";
+const MARKER_SIZE_DEFAULT: [number, number] = [52, 68];
+const MARKER_SIZE_SELECTED: [number, number] = [64, 84];
 
 type QuestMapLeafletProps = {
 	mosques: QuestMosqueWithStatus[];
@@ -125,24 +124,68 @@ function FlyToSelected({
 	);
 
 	useEffect(() => {
-		if (!selected?.coords) return;
+		if (!selected?.coords || !isValidCoords(selected.coords)) return;
 		map.flyTo(selected.coords, 14, { duration: 0.8 });
 	}, [map, selected?.coords]);
 
 	return null;
 }
 
+function SyncMapSize() {
+	const map = useMap();
+
+	useEffect(() => {
+		const invalidate = () => map.invalidateSize({ pan: false });
+
+		// Ensure size is correct after initial mount/layout.
+		requestAnimationFrame(invalidate);
+
+		const container = map.getContainer();
+		const resizeObserver = new ResizeObserver(invalidate);
+		resizeObserver.observe(container);
+
+		window.addEventListener("resize", invalidate);
+		return () => {
+			resizeObserver.disconnect();
+			window.removeEventListener("resize", invalidate);
+		};
+	}, [map]);
+
+	return null;
+}
+
+const isValidCoords = (
+	coords: QuestMosqueWithStatus["coords"],
+): coords is [number, number] =>
+	Array.isArray(coords) &&
+	coords.length === 2 &&
+	coords.every((value) => typeof value === "number" && Number.isFinite(value));
+
 export default function QuestMapLeaflet({
 	mosques,
 	selectedId,
 	onMarkerClick,
 }: QuestMapLeafletProps) {
-	const getColor = useCallback(
-		(mosque: QuestMosqueWithStatus) => {
-			if (mosque.id === selectedId) return COLOR_SELECTED;
-			return mosque.isUnlocked ? COLOR_UNLOCKED : COLOR_LOCKED;
-		},
-		[selectedId],
+	const defaultMarkerIcon = useMemo(
+		() =>
+			icon({
+				iconUrl: "/masjid.svg",
+				iconSize: MARKER_SIZE_DEFAULT,
+				iconAnchor: [MARKER_SIZE_DEFAULT[0] / 2, MARKER_SIZE_DEFAULT[1]],
+				tooltipAnchor: [0, -MARKER_SIZE_DEFAULT[1]],
+			}),
+		[],
+	);
+
+	const selectedMarkerIcon = useMemo(
+		() =>
+			icon({
+				iconUrl: "/masjid.svg",
+				iconSize: MARKER_SIZE_SELECTED,
+				iconAnchor: [MARKER_SIZE_SELECTED[0] / 2, MARKER_SIZE_SELECTED[1]],
+				tooltipAnchor: [0, -MARKER_SIZE_SELECTED[1]],
+			}),
+		[],
 	);
 
 	return (
@@ -156,18 +199,14 @@ export default function QuestMapLeaflet({
 			>
 				<TileLayer attribution={DARK_TILE_ATTRIBUTION} url={DARK_TILE_URL} />
 				{mosques.map((mosque) => {
-					if (!mosque.coords) return null;
+					if (!isValidCoords(mosque.coords)) return null;
+					const isSelected = mosque.id === selectedId;
 					return (
-						<CircleMarker
+						<Marker
 							key={mosque.id}
-							center={mosque.coords}
-							radius={mosque.id === selectedId ? 10 : 7}
-							pathOptions={{
-								color: getColor(mosque),
-								fillColor: getColor(mosque),
-								fillOpacity: 0.8,
-								weight: mosque.id === selectedId ? 3 : 1,
-							}}
+							position={mosque.coords}
+							icon={isSelected ? selectedMarkerIcon : defaultMarkerIcon}
+							opacity={mosque.isUnlocked ? 1 : 0.7}
 							eventHandlers={{
 								click: () => onMarkerClick(mosque.id),
 							}}
@@ -179,9 +218,10 @@ export default function QuestMapLeaflet({
 							>
 								{mosque.name}
 							</Tooltip>
-						</CircleMarker>
+						</Marker>
 					);
 				})}
+				<SyncMapSize />
 				<FlyToSelected mosques={mosques} selectedId={selectedId} />
 				<style>
 					{`
