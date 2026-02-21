@@ -17,7 +17,15 @@ function normalizeParam(v: string | string[] | undefined): string {
 export async function getUsers(searchParams: {
 	[key: string]: string | string[] | undefined;
 }) {
-	const cookie = (await headers()).get("cookie") ?? "";
+	const headersList = await headers();
+	const cookie = headersList.get("cookie") ?? "";
+	const forwardedProto = headersList.get("x-forwarded-proto");
+	const forwardedHost = headersList.get("x-forwarded-host");
+	const host = headersList.get("host");
+	const baseHost = forwardedHost ?? host ?? "";
+	const baseURL = baseHost
+		? `${forwardedProto ?? (baseHost.includes("localhost") ? "http" : "https")}://${baseHost}`
+		: undefined;
 	const qNorm = normalizeParam(searchParams.q);
 	const pageNorm = String(Number(searchParams.page) || 1);
 	const limitNorm = String(Number(searchParams.limit) || 10);
@@ -26,7 +34,7 @@ export async function getUsers(searchParams: {
 
 	return unstable_cache(
 		async () => {
-			const authClient = getAuthClientFromCookie(cookie);
+			const authClient = getAuthClientFromCookie(cookie, baseURL);
 			const pageNumber = Number(pageNorm) || 1;
 			const pageLimit = Number(limitNorm) || 10;
 			const offset = (pageNumber - 1) * pageLimit;
