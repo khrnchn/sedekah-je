@@ -25,7 +25,7 @@ export function ProtectedRoute({
 	useEffect(() => {
 		if (!isLoading) {
 			if (requireAuth && !isAuthenticated) {
-				router.push(`/auth?redirect=${pathname}`);
+				router.push(`/auth?redirect=${encodeURIComponent(pathname)}`);
 			} else if (requireAdmin && !isAdmin) {
 				router.push("/");
 			}
