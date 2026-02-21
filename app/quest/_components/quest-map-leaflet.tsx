@@ -7,7 +7,7 @@ import "leaflet-defaulticon-compatibility";
 
 import { createLeafletContext, LeafletProvider } from "@react-leaflet/core";
 import type { MapOptions } from "leaflet";
-import { icon, Map as LeafletMap } from "leaflet";
+import { divIcon, Map as LeafletMap } from "leaflet";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Marker, TileLayer, Tooltip, useMap } from "react-leaflet";
@@ -161,35 +161,51 @@ const isValidCoords = (
 	coords.length === 2 &&
 	coords.every((value) => typeof value === "number" && Number.isFinite(value));
 
+function createMosqueIcon(
+	size: [number, number],
+	options: { locked: boolean },
+) {
+	const [width, height] = size;
+	const lockBadge = options.locked
+		? `<span style="position:absolute;right:2px;bottom:4px;display:flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:9999px;background:rgba(24,24,27,0.9);border:1px solid rgba(113,113,122,0.9);font-size:10px;line-height:1;">🔒</span>`
+		: "";
+	const lockedFilter = options.locked
+		? "filter:grayscale(1) brightness(0.75) contrast(0.9);opacity:0.9;"
+		: "";
+
+	return divIcon({
+		className: "quest-marker-icon",
+		html: `<div style="position:relative;width:${width}px;height:${height}px;"><img src="/masjid.svg" alt="" style="display:block;width:${width}px;height:${height}px;${lockedFilter}" />${lockBadge}</div>`,
+		iconSize: size,
+		iconAnchor: [width / 2, height],
+		tooltipAnchor: [0, -height],
+	});
+}
+
 export default function QuestMapLeaflet({
 	mosques,
 	selectedId,
 	onMarkerClick,
 }: QuestMapLeafletProps) {
-	const defaultMarkerIcon = useMemo(
-		() =>
-			icon({
-				iconUrl: "/masjid.svg",
-				iconSize: MARKER_SIZE_DEFAULT,
-				iconAnchor: [MARKER_SIZE_DEFAULT[0] / 2, MARKER_SIZE_DEFAULT[1]],
-				tooltipAnchor: [0, -MARKER_SIZE_DEFAULT[1]],
-			}),
+	const unlockedDefaultIcon = useMemo(
+		() => createMosqueIcon(MARKER_SIZE_DEFAULT, { locked: false }),
 		[],
 	);
-
-	const selectedMarkerIcon = useMemo(
-		() =>
-			icon({
-				iconUrl: "/masjid.svg",
-				iconSize: MARKER_SIZE_SELECTED,
-				iconAnchor: [MARKER_SIZE_SELECTED[0] / 2, MARKER_SIZE_SELECTED[1]],
-				tooltipAnchor: [0, -MARKER_SIZE_SELECTED[1]],
-			}),
+	const unlockedSelectedIcon = useMemo(
+		() => createMosqueIcon(MARKER_SIZE_SELECTED, { locked: false }),
+		[],
+	);
+	const lockedDefaultIcon = useMemo(
+		() => createMosqueIcon(MARKER_SIZE_DEFAULT, { locked: true }),
+		[],
+	);
+	const lockedSelectedIcon = useMemo(
+		() => createMosqueIcon(MARKER_SIZE_SELECTED, { locked: true }),
 		[],
 	);
 
 	return (
-		<div className="h-full w-full">
+		<div className="quest-map-dark h-full w-full">
 			<SafeMapContainer
 				center={PETALING_CENTER}
 				zoom={PETALING_ZOOM}
@@ -201,12 +217,18 @@ export default function QuestMapLeaflet({
 				{mosques.map((mosque) => {
 					if (!isValidCoords(mosque.coords)) return null;
 					const isSelected = mosque.id === selectedId;
+					const markerIcon = mosque.isUnlocked
+						? isSelected
+							? unlockedSelectedIcon
+							: unlockedDefaultIcon
+						: isSelected
+							? lockedSelectedIcon
+							: lockedDefaultIcon;
 					return (
 						<Marker
 							key={mosque.id}
 							position={mosque.coords}
-							icon={isSelected ? selectedMarkerIcon : defaultMarkerIcon}
-							opacity={mosque.isUnlocked ? 1 : 0.7}
+							icon={markerIcon}
 							eventHandlers={{
 								click: () => onMarkerClick(mosque.id),
 							}}
@@ -235,6 +257,16 @@ export default function QuestMapLeaflet({
 					}
 					.quest-tooltip::before {
 						border-top-color: #3f3f46 !important;
+					}
+					.quest-marker-icon {
+						background: transparent !important;
+						border: 0 !important;
+					}
+					.quest-map-dark .leaflet-layer,
+					.quest-map-dark .leaflet-control-zoom-in,
+					.quest-map-dark .leaflet-control-zoom-out,
+					.quest-map-dark .leaflet-control-attribution {
+						filter: none !important;
 					}
 					.leaflet-control-zoom a {
 						background: #27272a !important;
