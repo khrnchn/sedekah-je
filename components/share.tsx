@@ -1,9 +1,9 @@
 "use client";
 
-import { slugify } from "@/lib/utils";
 import { Share2 } from "lucide-react";
 import { useTheme } from "next-themes";
-import React, { useState } from "react";
+import { useState } from "react";
+import { getBaseUrl, slugify } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { WhatsAppIcon, XIcon } from "./ui/icons";
 
@@ -39,7 +39,7 @@ const generateShareMessage = (data: ShareData) => {
 	if (data.customMessage) {
 		return data.customMessage;
 	}
-	const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
+	const baseUrl = getBaseUrl();
 	const slug = data.slug ?? slugify(data.name);
 	const institutionUrl = `${baseUrl}/${data.category}/${slug}`;
 	return `Jom bersedekah! Dapatkan kod QR untuk ${data.name} melalui pautan di bawah. 🌟\n\n${institutionUrl}\n\nTerima kasih kerana menggunakan SedekahJe! 💖`;
@@ -109,7 +109,7 @@ export default function Share(props: ShareProps) {
 
 		const message = generateShareMessage(data);
 		const hasCustomMessage = Boolean(data.customMessage);
-		const baseUrl = window.location.origin;
+		const baseUrl = getBaseUrl();
 		const slug = data.slug ?? slugify(data.name);
 		const url = `${baseUrl}/${data.category}/${slug}`;
 

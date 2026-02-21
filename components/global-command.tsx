@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
 	CommandDialog,
 	CommandEmpty,
@@ -10,8 +12,6 @@ import {
 } from "@/components/ui/command";
 import type { Institution } from "@/db/institutions";
 import { getInstitutions } from "@/lib/queries/institutions";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 
 export function GlobalCommand() {
 	const [open, setOpen] = useState(false);

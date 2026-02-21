@@ -1,6 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 export default function OfflinePage() {
+	const router = useRouter();
+
 	return (
 		<div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 text-center">
 			<div className="max-w-md space-y-4">
@@ -12,7 +16,7 @@ export default function OfflinePage() {
 				</p>
 				<button
 					type="button"
-					onClick={() => window.location.reload()}
+					onClick={() => router.refresh()}
 					className="rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
 				>
 					Cuba Lagi
