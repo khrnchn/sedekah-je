@@ -1,0 +1,602 @@
+[
+	{
+		"jaisId": 3,
+		"nama": "MASJID JAMEK RAJA TUN UDA SEK.16",
+		"alamat": "JALAN PERSIARAN SELANGOR, SEKSYEN 16 Bandar Shah Alam 40200",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 5,
+		"nama": "MASJID JAMEK SULTAN ABDUL AZIZ",
+		"alamat": "69G, LORONG 3, SEKSYEN 3, JALAN TEMPLER Bandar Petaling Jaya 46000",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 10,
+		"nama": "MASJID NAHDHAH AL-ISLAM",
+		"alamat": "MASJID NAHDHAH AL-ISLAM SEKSYEN 18 Bandar Shah Alam 40000",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 12,
+		"nama": "MASJID AL-HIDAYAH SEKSYEN 18",
+		"alamat": "MASJID AL-HIDAYAH SEKSYEN 18 JALAN 18/1, SEKSYEN 18 Bandar Shah Alam 40200",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 19,
+		"nama": "MASJID AL-AZHARIAH",
+		"alamat": "JALAN 18/4, SEKSYEN 18 Bandar Shah Alam 40200",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 20,
+		"nama": "MASJID AL-ISTIQAMAH KAYANGAN HEIGHT",
+		"alamat": "NO. 11 JLN. MERAH SAGA U9/5 SEKSYEN U9 KAYANGAN HEIGHT Bandar Shah Alam 40150",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 29,
+		"nama": "MASJID AL-MUJAHIDEEN",
+		"alamat": "MASJID AL-MUJAHIDEEN DAMANSARA UTAMA Bandar Petaling Jaya 47400",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 33,
+		"nama": "MASJID AL-I`TISAM, TTDI JAYA",
+		"alamat": "JALAN SASTERA, SEKSYEN U2/1 SEKSYEN U2, TMN TTDI JAYA Bandar Shah Alam 40150",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 36,
+		"nama": "MASJID AR-RAHMAH,DAMANSARA BARU",
+		"alamat": "MASJID AR-RAHMAH JLN 17A/4 DAMANSARA BARU Bandar Petaling Jaya 46400",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 37,
+		"nama": "MASJID KOTA DAMANSARA",
+		"alamat": "MASJID KOTA DAMANSARA SEKSYEN 5 PETALING JAYA Mukim Petaling 47810",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 48,
+		"nama": "MASJID TAMAN SUBANG PERDANA",
+		"alamat": "JALAN SP 2/6, SEKSYEN 2, TAMAN SUBANG PERDANA, SEKSYEN U3 Bandar Shah Alam 40150",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 50,
+		"nama": "MASJID RIADHATUS SOLIHIN SEKSYEN 17",
+		"alamat": "MASJID RIADHATUS SOLIHIN JALAN BELANAK 17/43 SEKSYEN 17, Bandar Shah Alam 40200",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 52,
+		"nama": "MASJID AL-AMIN SEKSYEN 17",
+		"alamat": "JALAN JELAWAT SATU 17/1A Bandar Shah Alam 40200",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 58,
+		"nama": "MASJID AMINAH AL-MUHAIRI",
+		"alamat": "MASJID AMINAH AL-MUHAIRI SEA PARK, PETAL Mukim Petaling 47300",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 60,
+		"nama": "MASJID AR-RAHMAN KG TUNKU",
+		"alamat": "NO 7 JALAN SS1/31, KAMPUNG TUNKU Bandar Petaling Jaya 47300",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 63,
+		"nama": "MASJID AL-UBUDIAH SEKSYEN 19",
+		"alamat": "JALAN JORAN 19/24 SEKSYEN 19, SHAH ALAM Bandar Shah Alam 40300",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 81,
+		"nama": "MASJID AL-MAKMURIAH KG SG KAYU ARA",
+		"alamat": "MASJID AL-MAKMURIAH KG SG KAYU DAMANSARA & 47400 PETALING JAYA Bandar Petaling Jaya 47400",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 82,
+		"nama": "MASJID AL-EHSAN SEKSYEN 24",
+		"alamat": "MASJID AL-EHSAN JALAN JELI 24/25 SEKSYEN 24, SHAH ALAM Mukim Petaling 40000",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 89,
+		"nama": "MASJID DATO` KAMARUDDIN",
+		"alamat": "MASJID 51A SEKSYEN 51A ,PETALING JAYA Mukim Petaling 46100",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 92,
+		"nama": "MASJID AL-ISLAH",
+		"alamat": "MASJID AL-ISLAH, NO. 16 SERI KEMBANGAN Mukim Petaling 43300",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 97,
+		"nama": "MASJID FASTABIQUL KHAIRAT, JALAN KEBUN",
+		"alamat": "MASJID FASTABIQUL KHAIRAT NO. 12 KG KEBUN BUNGA, BATU 3, SHAH ALAM Bandar Shah Alam 40150",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 99,
+		"nama": "MASJID JAMEK QARYAH SERDANG",
+		"alamat": "MASJID JAMEK QARYAH SERDANG UNIVERSITI PUTRA MALAYSIA Mukim Petaling 43400",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 107,
+		"nama": "MASJID BAITUL MAHABBAH",
+		"alamat": "MASJID BAITUL MAHABBAH JALAN SUNGAI JAI 27/15, SEKSYEN 27 TAMAN BUNGA NEGARA, Mukim Petaling 40400",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 113,
+		"nama": "MASJID JAMEK BATU 14 PUCHONG",
+		"alamat": "MASJID JAMEK BATU 14 PUCHONG & JALAN PUCHONG Mukim Petaling 47100",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 116,
+		"nama": "MASJID AL-FAIZIN, SEKSYEN 28",
+		"alamat": "MASJID AL-FAIZIN JALAN 28/23, SEKSYEN 28, SHAH ALAM Mukim Petaling 40000",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 129,
+		"nama": "MASJID HIDAYATUL MUTTAQIN, KAMPUNG BUKIT LANCHONG",
+		"alamat": "MASJID HIDAYATUL MUTTAQIN KAMPUNG BUKIT LANCHONG , SHAH Mukim Petaling 40400",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 131,
+		"nama": "MASJID NURUL HUDA KG KENANGAN",
+		"alamat": "MASJID NURUL HUDA KG KENANGAN, JALAN KLANG, PUCHONG Mukim Petaling",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 139,
+		"nama": "MASJID AL-HUDA KG PAYA JARAS",
+		"alamat": "BATU 15, KG PAYA JARAS Pekan Sungai Buloh 47000",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 140,
+		"nama": "MASJID AN-NUR, KAMPUNG MELAYU SUBANG",
+		"alamat": "LOT 3484 JALAN MERBAU KAMPUNG MELAYU SUBANG Bandar Shah Alam 40150",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 143,
+		"nama": "MASJID AL-AMIN TAMAN TENAGA",
+		"alamat": "MASJID AL-AMIN TAMAN TENAGA JALAN PUCHONG Pekan Puchong 47100",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 145,
+		"nama": "MASJID AL-BAROKAH KG BUKIT CHERAKAH",
+		"alamat": "MASJID AL-BAROKAH KG BUKIT CHERAKAH Pekan Puchong 41050",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 148,
+		"nama": "MASJID BATU 12 PUCHONG",
+		"alamat": "MASJID BATU 12 PUCHONG BATU 12 JALAN KLANG Mukim Petaling",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 150,
+		"nama": "MASJID JAMEK KG SG PELONG",
+		"alamat": "MASJID JAMEK KG SG PLONG BATU 16 KG SG PLONG Pekan Sungai Buloh 47000",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 153,
+		"nama": "MASJID AL-FALAH KG BUDIMAN",
+		"alamat": "MASJID AL-FALAH BATU 2/12, KG BUDIMAN MERU, KLANG Mukim Petaling 40150",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 167,
+		"nama": "MASJID JUMHURIAH TAMAN DATO` HARUN",
+		"alamat": "JALAN PJS 2/7, TAMAN DATO’ HARUN, Mukim Petaling 58200",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 173,
+		"nama": "MASJID NURUL AMIN KG MERBAU SEMPAK",
+		"alamat": "MASJID NURUL AMIN BATU 18 KG MERBAU SEMPAK Pekan Sungai Buloh 47000",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 174,
+		"nama": "MASJID NURUL EHSAN KG MEDAN",
+		"alamat": "MASJID NURUL EHSAN JALAN KLANG LAMA Mukim Petaling",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 175,
+		"nama": "MASJID AS-SALAM PANGSAPURI PETALING PERMAI",
+		"alamat": "JLN PJS 1/21, TAMAN PETALING U PETALING JAYA Mukim Petaling 46150",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 178,
+		"nama": "MASJID JAMEK JAMIUL EHSAN",
+		"alamat": "MASJID JAMEK JAMIUL EHSAN KAMPUNG KUBU GAJAH, SG BULOH Mukim Petaling 40700",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 181,
+		"nama": "MASJID RIADHUS SOLIHIN, SERI KEMBANGAN",
+		"alamat": "MASJID RIADHUS SOLIHIN JALAN 5 SERDANG JAYA Mukim Petaling",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 184,
+		"nama": "MASJID BANDAR BUKIT PUCHONG",
+		"alamat": "LOT 2611 JALAN BP 7 BANDAR BUKIT 47100 PUCHONG Pekan Puchong 47100",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 189,
+		"nama": "MASJID AL-MUKARRAMAH, BANDAR SERI DAMANSARA",
+		"alamat": "JALAN SAGA 8/1, BANDAR SRI DAMANSARA Bandar Petaling Jaya 52200",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 190,
+		"nama": "MASJID AL-MUNAWWARAH SEKSYEN 27 SHAH ALAM",
+		"alamat": "PUSAT BANDAR HICOM, SEKSYEN 27 Bandar Shah Alam 40400",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 191,
+		"nama": "MASJID LAPANGAN TERBANG SULTAN ABDUL AZIZ",
+		"alamat": "MASJID LAPANGAN TERBANG SULTAN SALAHUDDIN ABDUL AZIZ SHAH SUBANG Bandar Shah Alam 47200",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 194,
+		"nama": "MASJID DARUL EHSAN",
+		"alamat": "JALAN SS 15/2E 47500 SUBANG JAYA Bandar Shah Alam 47500",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 200,
+		"nama": "MASJID NURUL YAQIN KELANA JAYA",
+		"alamat": "MASJID NURUL YAQIN JALAN SS 7/ KELANA JAYA, PETALING JAYA Bandar Petaling Jaya",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 203,
+		"nama": "MASJID KOMPLEKS TABUNG HAJI",
+		"alamat": "KOMPLEKS TABUNG HAJI KELANA JAYA JALAN SS 6/1, KELANA JAYA Bandar Petaling Jaya 47301",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 208,
+		"nama": "MASJID AL-EHSAN BANDAR KINRARA",
+		"alamat": "JALAN BK5/1 BANDAR KINRARA 5, BANDAR KINRARA 5 Pekan Puchong 47180",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 211,
+		"nama": "MASJID AR-RAHMAH, SG.WAY",
+		"alamat": "MASJID AR-RAHMAH JALAN SS 9/7, SERI SETIA, PETALING JAYA Mukim Petaling",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 218,
+		"nama": "MASJID RIDHWANI SG WAY BARU",
+		"alamat": "MASJID AR-RIDHWANI JALAN SS 9A/88 SERI SETIA, PETALING JAYA Mukim Petaling",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 219,
+		"nama": "MASJID AL-MUHTADIN",
+		"alamat": "MASJID AL-MUHTADIN JLN PJU 10/1D DAMANSARA DAMAI Bandar Petaling Jaya 47830",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 220,
+		"nama": "MASJID TENGKU KELANA JAYA PETRA",
+		"alamat": "MASJID TENGKU KELANA JAYA PETRA KELANA JAYA SS 7/13 Bandar Petaling Jaya 47301",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 224,
+		"nama": "MASJID AL-ISLAMIAH KG LINDUNGAN",
+		"alamat": "MASJID AL-ISLAMIAH KG LINDUNGAN JALAN PJS 6,SG WAY Bandar Petaling Jaya 46000",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 226,
+		"nama": "MASJID PANGKALAN TUDM SUBANG",
+		"alamat": "MASJID PANGKALAN TUDM SUBANG Bandar Shah Alam 40000",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 228,
+		"nama": "MASJID AL- MUKMINUN USJ 2",
+		"alamat": "MASJID AL- MUKMINUN USJ 2 LOT 6 & 8, JALAN USJ 2/4S Bandar Subang Jaya 47500",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 230,
+		"nama": "MASJID Al-FALAH USJ 9",
+		"alamat": "MASJID Al-FALAH JALAN USJ 9/1, Bandar Subang Jaya 47620",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 234,
+		"nama": "MASJID KOLEJ ISLAM MALAYA",
+		"alamat": "MASJID KOLEJ ISLAM 46350 PETALING JAYA Mukim Petaling 46350",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 236,
+		"nama": "MASJID ABU BAKAR AS-SIDDIQ",
+		"alamat": "MASJID ABU BAKAR AS-SIDDIQ LOT 12682, JALAN SS 19/7A, SUBANG JAYA Bandar Subang Jaya 47500",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 240,
+		"nama": "MASJID AL-EHSAN KELANA JAYA",
+		"alamat": "MASJID AL-EHSAN SS 4A KELANA JAYA Bandar Damansara 47301",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 245,
+		"nama": "MASJID BANDAR BARU SG BULOH",
+		"alamat": "MASJID BANDAR BARU SG BULOH, Pekan Sungai Buloh 47000",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 256,
+		"nama": "MASJID AL-ISTIQOMAH SRI LANGKAS TAMBAHAN",
+		"alamat": "MASJID AL-ISTIQOMAH BATU 13 JALAN KLANG LA Mukim Petaling",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 260,
+		"nama": "MASJID AN-NUR USJ 4",
+		"alamat": "LOT 6, JLN USJ 4/1N Bandar Shah Alam 47600",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 275,
+		"nama": "MASJID AL- IKHLAS (LGM)",
+		"alamat": "INSTITUT PENYELIDIKAN GETAH MALAYSIA, STESEN PERCUBAAN GETAH (LGM) Bandar Shah Alam 47000",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 276,
+		"nama": "MASJID AT-TAQWA DESA SUBANG PERMAI",
+		"alamat": "MASJID AT-TAQWA DESA SUBANG PERMAI, Bandar Shah Alam 40150",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 277,
+		"nama": "MASJID AL-HUSNA BANDAR SUNWAY",
+		"alamat": "MASJID AL-HUSNA BANDAR SUNWAY JALAN PJS 10/22 Bandar Shah Alam 46000",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 278,
+		"nama": "MASJID AL-HIDAYAH",
+		"alamat": "JALAN SS 3/4, KELANA JAYA Bandar Petaling Jaya 47300",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 333,
+		"nama": "MASJID TUN ABDUL AZIZ",
+		"alamat": "JALAN SEMANGAT, SEKSYEN 14 Bandar Petaling Jaya 46100",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 336,
+		"nama": "MASJID NURUL IMAN BATU 13",
+		"alamat": "LOT 1, LORONG 3, KG. TENGAH BATU 13 Pekan Puchong 47100",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 337,
+		"nama": "MASJID JAMEK PERTANIAN SERDANG",
+		"alamat": "MASJID JAMEK (LAMA), KOMPLEKS PERTANIAN SERDANG, BEG BERKUNCI 304, PEJABAT POS UPM Pekan Serdang 43400",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 338,
+		"nama": "MASJID AS-SALAM PUCHONG PERDANA",
+		"alamat": "MASJID AS-SALAM, PUCHONG PERDANA, TAMAN PUCHONG PERDANA Bandar Shah Alam",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 339,
+		"nama": "MASJID AL-IRSYAD",
+		"alamat": "JALAN PERSIARAN MEWAH, SUBANG MEWAH USJ 1, 47610, SUBANG JAYA Bandar Subang Jaya",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 340,
+		"nama": "MASJID AL-MUTTAQIN",
+		"alamat": "LOT 6627, JALAN PUTRA PERMAI 3, TAMAN EQUINE, BANDAR PUTRA PERMAI, 43300 SERI KEMBANGAN Pekan Serdang",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 341,
+		"nama": "MASJID DARUSSALAM",
+		"alamat": "BATU 13 1/2, KAMPUNG PASIR BARU KM 23, 47100 PUCHONG Pekan Puchong",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 359,
+		"nama": "MASJID SULTAN SALAHUDDIN ABDUL AZIZ SHAH, SHAH ALAM",
+		"alamat": "PERSIARAN MASJID, SEKSYEN 5, Bandar Shah Alam 40676",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 369,
+		"nama": "MASJID TUANKU MIZAN, UITM SHAH ALAM",
+		"alamat": "UNIVERSITI TEKNOLOGI MARA, 40540 SHAH ALAM, Bandar Shah Alam 40540",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 380,
+		"nama": "MASJID BAITUL AMIN, PUSAT BANDAR PUCHONG",
+		"alamat": "PUSAT BANDAR PUCHONG JALAN WAWASAN Mukim Petaling 47100",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 399,
+		"nama": "MASJID TENGKU AMPUAN JEMAAH BUKIT JELUTONG",
+		"alamat": "JALAN MIMBAR U8/2 BUKIT JELUTONG Bandar Shah Alam 40150",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 401,
+		"nama": "MASJID AT-TAQWA TAMAN DESA SERDANG",
+		"alamat": "JALAN DESA SERDANG 21, TAMAN DESA SERDANG Pekan Serdang 43300",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 402,
+		"nama": "MASJID AS-SYAKIRIN PUCHONG UTAMA",
+		"alamat": "NO 17 JALAN PU 10/13 FASA 4 TAMAN PUCHONG UTAMA Pekan Puchong 47100",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 405,
+		"nama": "MASJID SEKSYEN 7",
+		"alamat": "SEKSYEN 7, SHAH ALAM Bandar Shah Alam 40000",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 411,
+		"nama": "MASJID AL-IKHLAS, SEKSYEN 13",
+		"alamat": "JALAN LOMPAT PAGAR 13/37 SEKSYEN 13 Bandar Shah Alam 40100",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 416,
+		"nama": "MASJID AL-QUDDUS",
+		"alamat": "TAMAN PINGGIRAN PUTRA Bandar Shah Alam",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 427,
+		"nama": "MASJID ARA DAMANSARA",
+		"alamat": "NO.3, JALAN PJU 1A/37 ARA DAMANSARA Mukim Damansara 47301",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 428,
+		"nama": "MASJID AN NUR TEMASYA GLENMARIE",
+		"alamat": "1-3n, Jalan Perintis U1/52, Kawasan Perindustrian Temasya, 40150 Shah Alam, Selangor Bandar Glenmarie 40150",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 429,
+		"nama": "MASJID BANDAR UTAMA",
+		"alamat": "BANDAR UTAMA DAMANSARA, PETALING JAYA Bandar Petaling Jaya 47800",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 432,
+		"nama": "MASJID SUBANG BESTARI",
+		"alamat": "Lot 65989/66323 JALAN NOVA U5/93,SUBANG BESTARI Bandar Shah Alam 40150",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 433,
+		"nama": "MASJID TAMAN SUBANG PERDANA",
+		"alamat": "Seksyen 2, Jalan SP 2/6, Taman Subang Perdana, 40150 Shah Alam, Selangor 40150",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 434,
+		"nama": "MASJID ASY-SYARIF",
+		"alamat": "Jalan Sb Indah 1, Taman Sungai Besi Indah 43300 Seri Kembangan, Selangor 43300",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 435,
+		"nama": "MASJID KAMPUNG SERI AMAN",
+		"alamat": "Jalan Aman, Kampung Seri Aman, 47100 Puchong, Selangor 47100",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 436,
+		"nama": "MASJID AR-RAUDHAH PUNCAK PERDANA",
+		"alamat": "Seksyen U10 Puncak Perdana 40170 Shah Alam, Selangor Bandar Shah Alam 40170",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 437,
+		"nama": "MASJID AL-MADANIAH SUBANG JAYA",
+		"alamat": "Jalan USJ 18/7, Usj 18, 47630 Subang Jaya, Selangor 47630",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 438,
+		"nama": "MASJID PUTRA HEIGHTS",
+		"alamat": "Persiaran Putra Indah, Putra Heights, 47650 Subang Jaya , Selangor 47650",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 439,
+		"nama": "MASJID RAJA BENDAHARA TENGKU BADAR SHAH",
+		"alamat": "Denai Alam, 40160 Shah Alam, Selangor 40160",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 440,
+		"nama": "MASJID SETIA ALAM",
+		"alamat": "2, Jalan Setia Prima T U13/T, Setia Alam Seksyen, U13 Shah Alam, 40170 Shah Alam, Selangor 40170",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 441,
+		"nama": "MASJID DAMANSARA PERDANA",
+		"alamat": "Damansara Perdana 47820 Petaling Jaya, Selangor 47820",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 442,
+		"nama": "MASJID BUKIT RAHMAN PUTRA",
+		"alamat": "Bukit Rahman Putra, 47000 Sungai Buloh, Selangor 47000",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 443,
+		"nama": "MASJID SUBANG BESTARI",
+		"alamat": "55, Jalan Nova U5/93, Subang Bestari, 40150 Shah Alam, Selangor 40150",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 444,
+		"nama": "Masjid Damansara Perdana",
+		"alamat": "No.6, JLN PJU 8/8,PETALING JAYA, SELANGOR DAMANSARA PERDANA, Bandar Damansara 47820",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 445,
+		"nama": "Masjid Kg Seri Aman",
+		"alamat": "Jln Aman, Kg Seri Aman, Puchong, Pekan Puchong 47150",
+		"daerah": "Petaling"
+	},
+	{
+		"jaisId": 446,
+		"nama": "MASJID AR-RAUDHAH",
+		"alamat": "TAMAN PUNCAK PERDANA SEKSYEN U10 Bandar Shah Alam 40170",
+		"daerah": "Petaling"
+	}
+]
