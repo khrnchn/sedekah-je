@@ -1,13 +1,17 @@
 "use server";
 
+import { and, count, desc, eq, inArray, ne, sql } from "drizzle-orm";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
+import { headers } from "next/headers";
 import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions, users } from "@/db/schema";
 import { requireAdminSession } from "@/lib/auth-helpers";
+import {
+	buildInstitutionApproveLink,
+	sendInstitutionApprovalEmail,
+} from "@/lib/email/approval";
 import { slugify } from "@/lib/utils";
-import { and, count, desc, eq, inArray, ne, sql } from "drizzle-orm";
-import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
-import { headers } from "next/headers";
 
 // Helper function to generate a unique slug
 async function generateUniqueSlug(
@@ -256,6 +260,27 @@ export async function approveInstitution(
 	revalidateTag("approved-institutions");
 	revalidateTag("institutions-count");
 	revalidateTag("institutions"); // Homepage cache
+
+	// Send approval email to submitter (fire-and-forget; do not fail approval)
+	const row = result[0];
+	if (row?.contributorId) {
+		const [contributor] = await db
+			.select({ email: users.email, name: users.name })
+			.from(users)
+			.where(eq(users.id, row.contributorId))
+			.limit(1);
+		if (contributor?.email) {
+			const approveLink = buildInstitutionApproveLink(row.category, row.slug);
+			sendInstitutionApprovalEmail({
+				recipientEmail: contributor.email,
+				recipientName: contributor.name ?? null,
+				institutionName: row.name,
+				approveLink,
+			}).catch((err) => {
+				console.error("[approval email]", err);
+			});
+		}
+	}
 
 	return result;
 }
@@ -567,6 +592,36 @@ export async function batchApproveInstitutions(
 	// Revalidate cached data tables
 	revalidateTag("institutions-data");
 	revalidateTag("institutions"); // Homepage cache
+
+	// Send approval emails to submitters (fire-and-forget)
+	const contributorIds = [
+		...new Set(
+			result.map((r) => r.contributorId).filter((id): id is string => !!id),
+		),
+	];
+	if (contributorIds.length > 0) {
+		const contributors = await db
+			.select({ id: users.id, email: users.email, name: users.name })
+			.from(users)
+			.where(inArray(users.id, contributorIds));
+		const contributorMap = new Map(
+			contributors.map((c) => [c.id, { email: c.email, name: c.name }]),
+		);
+		for (const row of result) {
+			if (!row.contributorId) continue;
+			const c = contributorMap.get(row.contributorId);
+			if (!c?.email) continue;
+			const approveLink = buildInstitutionApproveLink(row.category, row.slug);
+			sendInstitutionApprovalEmail({
+				recipientEmail: c.email,
+				recipientName: c.name ?? null,
+				institutionName: row.name,
+				approveLink,
+			}).catch((err) => {
+				console.error("[approval email]", row.id, err);
+			});
+		}
+	}
 
 	return result;
 }
