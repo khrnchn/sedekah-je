@@ -632,23 +632,29 @@ export async function batchApproveInstitutions(
 				const contributorMap = new Map(
 					contributors.map((c) => [c.id, { email: c.email, name: c.name }]),
 				);
-				for (const row of rows) {
-					if (!row.contributorId) continue;
-					const c = contributorMap.get(row.contributorId);
-					if (!c?.email) continue;
+				const rowsToEmail = rows.filter((row) => {
+					const c = contributorMap.get(row.contributorId ?? "");
+					return Boolean(row.contributorId && c?.email);
+				});
+				const emailPromises = rowsToEmail.map((row) => {
+					const c = contributorMap.get(row.contributorId as string);
 					const approveLink = buildInstitutionApproveLink(
 						row.category,
 						row.slug,
 					);
-					const send = await sendInstitutionApprovalEmail({
-						recipientEmail: c.email,
-						recipientName: c.name ?? null,
+					return sendInstitutionApprovalEmail({
+						recipientEmail: c!.email,
+						recipientName: c!.name ?? null,
 						approveLink,
+					}).then((send) => {
+						if (!send.ok) console.error("[approval email]", row.id, send.error);
 					});
-					if (!send.ok) {
-						console.error("[approval email]", row.id, send.error);
-					}
-				}
+				});
+				const results = await Promise.allSettled(emailPromises);
+				results.forEach((r, i) => {
+					if (r.status === "rejected")
+						console.error("[approval email]", rowsToEmail[i]?.id, r.reason);
+				});
 			} catch (err) {
 				console.error("[approval email]", err);
 			}
