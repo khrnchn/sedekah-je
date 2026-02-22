@@ -130,21 +130,6 @@ export async function submitQuestContribution(
 		}
 	}
 
-	// 5b. Validate optional sourceUrl
-	const rawSourceUrl = formData.get("sourceUrl") as string | null;
-	let sourceUrl: string | null = null;
-	if (rawSourceUrl && rawSourceUrl.trim() !== "") {
-		try {
-			const u = new URL(rawSourceUrl.trim());
-			if (u.protocol !== "http:" && u.protocol !== "https:") {
-				return { status: "error", message: "URL tidak sah." };
-			}
-			sourceUrl = rawSourceUrl.trim();
-		} catch {
-			return { status: "error", message: "URL tidak sah." };
-		}
-	}
-
 	// 6. Generate slug
 	const slug = await generateUniqueSlug(questMosque.name);
 
@@ -176,7 +161,6 @@ export async function submitQuestContribution(
 				coords: questMosque.coords,
 				qrImage: qrImageUrl,
 				qrContent: qrContent?.trim() || null,
-				sourceUrl,
 				supportedPayment: ["duitnow"],
 				status: "pending",
 				contributorId: userId,

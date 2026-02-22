@@ -6,7 +6,6 @@ import { toast } from "sonner";
 import { submitQuestContribution } from "@/app/quest/_lib/actions";
 import type { QuestMosqueWithStatus } from "@/app/quest/_lib/types";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Dialog,
 	DialogContent,
@@ -20,7 +19,6 @@ import {
 	DrawerTitle,
 } from "@/components/ui/drawer";
 import { GoogleIcon } from "@/components/ui/icons";
-import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useQrExtractionLazy } from "@/hooks/use-qr-extraction-lazy";
@@ -31,15 +29,6 @@ type QuestContributeFormProps = {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 };
-
-function isValidUrl(s: string): boolean {
-	try {
-		const u = new URL(s);
-		return u.protocol === "http:" || u.protocol === "https:";
-	} catch {
-		return false;
-	}
-}
 
 function ContributeFormContent({
 	mosque,
@@ -57,23 +46,10 @@ function ContributeFormContent({
 		handleQrImageChange,
 	} = useQrExtractionLazy();
 	const [submitting, setSubmitting] = useState(false);
-	const [fromOnline, setFromOnline] = useState(false);
-	const [sourceUrl, setSourceUrl] = useState("");
-	const [submitAttempted, setSubmitAttempted] = useState(false);
 	const fileInputRef = useRef<HTMLInputElement>(null);
-
-	const sourceUrlError =
-		submitAttempted && fromOnline && sourceUrl.trim() && !isValidUrl(sourceUrl);
 
 	const handleSubmit = useCallback(async () => {
 		if (!fileInputRef.current?.files?.[0]) return;
-
-		setSubmitAttempted(true);
-
-		if (fromOnline && sourceUrl.trim() && !isValidUrl(sourceUrl)) {
-			toast("URL tidak sah.");
-			return;
-		}
 
 		setSubmitting(true);
 		try {
@@ -82,9 +58,6 @@ function ContributeFormContent({
 			formData.set("qrImage", fileInputRef.current.files[0]);
 			if (qrContent) {
 				formData.set("qrContent", qrContent);
-			}
-			if (sourceUrl.trim()) {
-				formData.set("sourceUrl", sourceUrl.trim());
 			}
 
 			const result = await submitQuestContribution(formData);
@@ -100,7 +73,7 @@ function ContributeFormContent({
 		} finally {
 			setSubmitting(false);
 		}
-	}, [mosque.id, qrContent, onSuccess, fromOnline, sourceUrl]);
+	}, [mosque.id, qrContent, onSuccess]);
 
 	if (authLoading) {
 		return (
@@ -179,44 +152,6 @@ function ContributeFormContent({
 				<div className="flex items-center gap-2 text-sm text-amber-400">
 					<XCircle className="h-4 w-4" />
 					<span>QR tidak dikesan - admin akan semak secara manual</span>
-				</div>
-			)}
-
-			<div className="flex items-center gap-2">
-				<Checkbox
-					id="quest-from-online"
-					checked={fromOnline}
-					onCheckedChange={(c) => setFromOnline(c === true)}
-				/>
-				<label
-					htmlFor="quest-from-online"
-					className="cursor-pointer text-sm text-zinc-400"
-				>
-					Saya jumpa QR ini dari online
-				</label>
-			</div>
-
-			{fromOnline && (
-				<div className="space-y-1.5">
-					<label htmlFor="quest-source-url" className="text-sm text-zinc-400">
-						Sumber URL (pilihan)
-					</label>
-					<Input
-						id="quest-source-url"
-						type="text"
-						placeholder="https://facebook.com/post/..."
-						value={sourceUrl}
-						onChange={(e) => setSourceUrl(e.target.value)}
-						className={
-							sourceUrlError
-								? "border-amber-500 focus-visible:ring-amber-500"
-								: ""
-						}
-					/>
-					<p className="text-xs text-zinc-500">Bantu admin sahkan sumber QR.</p>
-					{sourceUrlError && (
-						<p className="text-xs text-amber-400">URL tidak sah.</p>
-					)}
 				</div>
 			)}
 
