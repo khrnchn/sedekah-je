@@ -20,18 +20,24 @@ type QuestMapProps = {
 	mosques: QuestMosqueWithStatus[];
 	selectedId: number | null;
 	onMarkerClick: (id: number) => void;
+	bottomSheetOpen?: boolean;
+	isDesktop?: boolean;
 };
 
 export default function QuestMap({
 	mosques,
 	selectedId,
 	onMarkerClick,
+	bottomSheetOpen,
+	isDesktop,
 }: QuestMapProps) {
 	return (
 		<QuestMapLeaflet
 			mosques={mosques}
 			selectedId={selectedId}
 			onMarkerClick={onMarkerClick}
+			bottomSheetOpen={bottomSheetOpen}
+			isDesktop={isDesktop}
 		/>
 	);
 }

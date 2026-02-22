@@ -75,6 +75,8 @@ type QuestMapLeafletProps = {
 	mosques: QuestMosqueWithStatus[];
 	selectedId: number | null;
 	onMarkerClick: (id: number) => void;
+	bottomSheetOpen?: boolean;
+	isDesktop?: boolean;
 };
 
 type SafeMapContainerProps = {
@@ -159,9 +161,13 @@ function SafeMapContainer({
 function FlyToSelected({
 	mosques,
 	selectedId,
+	bottomSheetOpen,
+	isDesktop,
 }: {
 	mosques: QuestMosqueWithStatus[];
 	selectedId: number | null;
+	bottomSheetOpen?: boolean;
+	isDesktop?: boolean;
 }) {
 	const map = useMap();
 
@@ -172,8 +178,19 @@ function FlyToSelected({
 
 	useEffect(() => {
 		if (!selected?.coords || !isValidCoords(selected.coords)) return;
-		map.flyTo(selected.coords, 14, { duration: 0.8 });
-	}, [map, selected?.coords]);
+		const zoom = 14;
+		const shouldOffset = Boolean(bottomSheetOpen) && !isDesktop;
+		const offsetY = shouldOffset ? Math.round(map.getSize().y * 0.3) : 0;
+
+		if (offsetY > 0) {
+			const point = map.project(selected.coords, zoom);
+			const target = map.unproject([point.x, point.y + offsetY], zoom);
+			map.flyTo(target, zoom, { duration: 0.8 });
+			return;
+		}
+
+		map.flyTo(selected.coords, zoom, { duration: 0.8 });
+	}, [map, selected?.coords, bottomSheetOpen, isDesktop]);
 
 	return null;
 }
@@ -237,6 +254,8 @@ export default function QuestMapLeaflet({
 	mosques,
 	selectedId,
 	onMarkerClick,
+	bottomSheetOpen,
+	isDesktop,
 }: QuestMapLeafletProps) {
 	const unlockedDefaultIcon = useMemo(
 		() =>
@@ -311,7 +330,12 @@ export default function QuestMapLeaflet({
 					);
 				})}
 				<SyncMapSize />
-				<FlyToSelected mosques={mosques} selectedId={selectedId} />
+				<FlyToSelected
+					mosques={mosques}
+					selectedId={selectedId}
+					bottomSheetOpen={bottomSheetOpen}
+					isDesktop={isDesktop}
+				/>
 				<style>
 					{`
 					.quest-tooltip {
