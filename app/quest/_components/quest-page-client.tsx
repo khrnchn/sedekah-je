@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type {
 	QuestLeaderboardEntry,
 	QuestMosqueWithStatus,
@@ -19,6 +19,8 @@ type QuestPageClientProps = {
 	stats: QuestStats;
 	leaderboard: QuestLeaderboardEntry[];
 };
+
+type QuestStatusFilter = "all" | "unlocked" | "locked";
 
 function sortMosques(
 	mosques: QuestMosqueWithStatus[],
@@ -43,17 +45,40 @@ export default function QuestPageClient({
 	const isDesktop = useMediaQuery("(min-width: 768px)");
 	const [selectedId, setSelectedId] = useState<number | null>(null);
 	const [sort, setSort] = useState<QuestSortOption>("alphabetical");
+	const [searchQuery, setSearchQuery] = useState("");
+	const [statusFilter, setStatusFilter] = useState<QuestStatusFilter>("all");
 	const [sheetOpen, setSheetOpen] = useState(false);
 
+	const filteredMosques = useMemo(() => {
+		const normalizedQuery = searchQuery.trim().toLowerCase();
+
+		return mosques.filter((mosque) => {
+			if (statusFilter === "unlocked" && !mosque.isUnlocked) return false;
+			if (statusFilter === "locked" && mosque.isUnlocked) return false;
+
+			if (!normalizedQuery) return true;
+
+			const haystack = `${mosque.name} ${mosque.address ?? ""}`.toLowerCase();
+			return haystack.includes(normalizedQuery);
+		});
+	}, [mosques, searchQuery, statusFilter]);
+
 	const sortedMosques = useMemo(
-		() => sortMosques(mosques, sort),
-		[mosques, sort],
+		() => sortMosques(filteredMosques, sort),
+		[filteredMosques, sort],
 	);
 
 	const selectedMosque = useMemo(
-		() => mosques.find((m) => m.id === selectedId) ?? null,
-		[mosques, selectedId],
+		() => sortedMosques.find((m) => m.id === selectedId) ?? null,
+		[sortedMosques, selectedId],
 	);
+
+	useEffect(() => {
+		if (selectedId === null) return;
+		if (!sortedMosques.some((mosque) => mosque.id === selectedId)) {
+			setSelectedId(null);
+		}
+	}, [selectedId, sortedMosques]);
 
 	const handleSelect = useCallback(
 		(id: number) => {
@@ -75,15 +100,20 @@ export default function QuestPageClient({
 				{isDesktop && (
 					<QuestSidebar
 						mosques={sortedMosques}
+						totalMosques={mosques.length}
 						selectedId={selectedId}
 						onSelect={handleSelect}
 						sort={sort}
 						onSortChange={setSort}
+						searchQuery={searchQuery}
+						onSearchQueryChange={setSearchQuery}
+						statusFilter={statusFilter}
+						onStatusFilterChange={setStatusFilter}
 					/>
 				)}
 				<div className="relative flex-1">
 					<QuestMap
-						mosques={mosques}
+						mosques={sortedMosques}
 						selectedId={selectedId}
 						onMarkerClick={handleSelect}
 						bottomSheetOpen={sheetOpen}
@@ -99,12 +129,17 @@ export default function QuestPageClient({
 				{!isDesktop && (
 					<QuestBottomSheet
 						mosques={sortedMosques}
+						totalMosques={mosques.length}
 						selectedId={selectedId}
 						selectedMosque={selectedMosque}
 						onSelect={handleSelect}
 						onClearSelection={() => setSelectedId(null)}
 						sort={sort}
 						onSortChange={setSort}
+						searchQuery={searchQuery}
+						onSearchQueryChange={setSearchQuery}
+						statusFilter={statusFilter}
+						onStatusFilterChange={setStatusFilter}
 						open={sheetOpen}
 						onOpenChange={(open) => {
 							setSheetOpen(open);

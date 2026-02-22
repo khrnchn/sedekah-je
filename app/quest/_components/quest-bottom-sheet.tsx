@@ -13,6 +13,7 @@ import {
 	DrawerTitle,
 	DrawerTrigger,
 } from "@/components/ui/drawer";
+import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
 	Select,
@@ -21,32 +22,51 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { cn } from "@/lib/utils";
 import QuestMosqueDetail from "./quest-mosque-detail";
 import QuestMosqueListItem from "./quest-mosque-list-item";
 
+type QuestStatusFilter = "all" | "unlocked" | "locked";
+
 type QuestBottomSheetProps = {
 	mosques: QuestMosqueWithStatus[];
+	totalMosques: number;
 	selectedId: number | null;
 	selectedMosque: QuestMosqueWithStatus | null;
 	onSelect: (id: number) => void;
 	onClearSelection: () => void;
 	sort: QuestSortOption;
 	onSortChange: (sort: QuestSortOption) => void;
+	searchQuery: string;
+	onSearchQueryChange: (value: string) => void;
+	statusFilter: QuestStatusFilter;
+	onStatusFilterChange: (filter: QuestStatusFilter) => void;
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 };
 
 export default function QuestBottomSheet({
 	mosques,
+	totalMosques,
 	selectedId,
 	selectedMosque,
 	onSelect,
 	onClearSelection,
 	sort,
 	onSortChange,
+	searchQuery,
+	onSearchQueryChange,
+	statusFilter,
+	onStatusFilterChange,
 	open,
 	onOpenChange,
 }: QuestBottomSheetProps) {
+	const statusFilters: { value: QuestStatusFilter; label: string }[] = [
+		{ value: "all", label: "Semua" },
+		{ value: "unlocked", label: "Tersedia" },
+		{ value: "locked", label: "Belum" },
+	];
+
 	return (
 		<Drawer open={open} onOpenChange={onOpenChange}>
 			<DrawerTrigger asChild>
@@ -88,7 +108,31 @@ export default function QuestBottomSheet({
 							<DrawerTitle className="text-zinc-100">
 								Senarai Masjid
 							</DrawerTitle>
-							<div className="mt-2">
+							<div className="mt-2 space-y-2">
+								<Input
+									value={searchQuery}
+									onChange={(event) => onSearchQueryChange(event.target.value)}
+									placeholder="Cari masjid atau alamat..."
+									className="h-8 border-zinc-700 bg-zinc-900 text-xs text-zinc-200 placeholder:text-zinc-500"
+								/>
+								<div className="flex items-center gap-1 rounded-md bg-zinc-900 p-1">
+									{statusFilters.map((filter) => (
+										<button
+											key={filter.value}
+											type="button"
+											aria-pressed={statusFilter === filter.value}
+											onClick={() => onStatusFilterChange(filter.value)}
+											className={cn(
+												"flex-1 rounded px-2 py-1 text-[11px] font-medium transition-colors",
+												statusFilter === filter.value
+													? "bg-zinc-700 text-zinc-100"
+													: "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200",
+											)}
+										>
+											{filter.label}
+										</button>
+									))}
+								</div>
 								<Select
 									value={sort}
 									onValueChange={(v) => onSortChange(v as QuestSortOption)}
@@ -111,6 +155,9 @@ export default function QuestBottomSheet({
 										</SelectItem>
 									</SelectContent>
 								</Select>
+								<p className="text-[11px] text-zinc-500">
+									{mosques.length}/{totalMosques} masjid
+								</p>
 							</div>
 						</DrawerHeader>
 						<ScrollArea className="flex-1 px-2 pb-4">

@@ -8,7 +8,8 @@ import "leaflet-defaulticon-compatibility";
 import { createLeafletContext, LeafletProvider } from "@react-leaflet/core";
 import type { FeatureCollection, Geometry } from "geojson";
 import type { MapOptions } from "leaflet";
-import { divIcon, Map as LeafletMap } from "leaflet";
+import { divIcon, Map as LeafletMap, latLngBounds } from "leaflet";
+import { LocateFixed } from "lucide-react";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GeoJSON, Marker, TileLayer, Tooltip, useMap } from "react-leaflet";
@@ -122,7 +123,7 @@ function SafeMapContainer({
 				key.startsWith("_leaflet_id"),
 			);
 			if (leafletKey) {
-				delete (node as Record<string, unknown>)[leafletKey];
+				Reflect.deleteProperty(node, leafletKey);
 			}
 			node.innerHTML = "";
 
@@ -218,6 +219,41 @@ function SyncMapSize() {
 	return null;
 }
 
+function RecenterControl() {
+	const map = useMap();
+
+	const handleRecenter = useCallback(() => {
+		if (PETALING_BOUNDARY_COORDS.length > 0) {
+			map.fitBounds(latLngBounds(PETALING_BOUNDARY_COORDS), {
+				padding: [24, 24],
+				maxZoom: 14,
+			});
+			return;
+		}
+		map.setView(PETALING_CENTER, PETALING_ZOOM);
+	}, [map]);
+
+	return (
+		<div className="leaflet-top leaflet-right">
+			<div className="leaflet-control quest-recenter-control">
+				<button
+					type="button"
+					aria-label="Kembali ke sempadan Petaling"
+					title="Kembali ke Petaling"
+					className="quest-recenter-button"
+					onClick={(event) => {
+						event.preventDefault();
+						event.stopPropagation();
+						handleRecenter();
+					}}
+				>
+					<LocateFixed className="h-4 w-4" />
+				</button>
+			</div>
+		</div>
+	);
+}
+
 const isValidCoords = (
 	coords: QuestMosqueWithStatus["coords"],
 ): coords is [number, number] =>
@@ -254,7 +290,6 @@ export default function QuestMapLeaflet({
 	mosques,
 	selectedId,
 	onMarkerClick,
-	isDesktop,
 }: QuestMapLeafletProps) {
 	const unlockedDefaultIcon = useMemo(
 		() =>
@@ -284,7 +319,7 @@ export default function QuestMapLeaflet({
 				zoom={PETALING_ZOOM}
 				scrollWheelZoom
 				className="h-full w-full z-0"
-				zoomControl={false}
+				zoomControl
 			>
 				<TileLayer attribution={DARK_TILE_ATTRIBUTION} url={DARK_TILE_URL} />
 				<GeoJSON
@@ -302,8 +337,7 @@ export default function QuestMapLeaflet({
 				{mosques.map((mosque) => {
 					if (!isValidCoords(mosque.coords)) return null;
 					const isSelected = mosque.id === selectedId;
-					const emphasizeSelected = !isDesktop;
-					const useSelectedVariant = isSelected && emphasizeSelected;
+					const useSelectedVariant = isSelected;
 					const markerIcon = mosque.isUnlocked
 						? useSelectedVariant
 							? unlockedSelectedIcon
@@ -332,6 +366,7 @@ export default function QuestMapLeaflet({
 				})}
 				<SyncMapSize />
 				<FlyToSelected mosques={mosques} selectedId={selectedId} />
+				<RecenterControl />
 				<style>
 					{`
 					.quest-tooltip {
@@ -371,6 +406,27 @@ export default function QuestMapLeaflet({
 					}
 					.leaflet-control-zoom a:hover {
 						background: #3f3f46 !important;
+					}
+					.quest-recenter-control {
+						margin-top: 8px;
+						border: 1px solid #3f3f46 !important;
+						border-radius: 4px !important;
+						overflow: hidden;
+						box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+					}
+					.quest-recenter-button {
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						width: 30px;
+						height: 30px;
+						background: #27272a;
+						color: #e4e4e7;
+						border: 0;
+						cursor: pointer;
+					}
+					.quest-recenter-button:hover {
+						background: #3f3f46;
 					}
 					.leaflet-control-attribution {
 						background: rgba(24, 24, 27, 0.8) !important;
