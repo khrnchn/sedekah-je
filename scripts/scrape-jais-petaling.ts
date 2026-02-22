@@ -3,6 +3,8 @@ import * as cheerio from "cheerio";
 const BASE_URL = "https://e-masjid.jais.gov.my";
 const LIST_URL = `${BASE_URL}/dashboard/listmasjid`;
 const PROFILE_URL = (id: number) => `${BASE_URL}/profail/masjid/${id}/showhome`;
+const PROFILE_RETRIES = 3;
+const PROFILE_RETRY_DELAY_MS = 300;
 
 interface Mosque {
 	jaisId: number;
@@ -14,6 +16,11 @@ interface Mosque {
 async function getPetalingMosqueIds(): Promise<{ id: number; nama: string }[]> {
 	console.log("Fetching mosque list...");
 	const res = await fetch(LIST_URL);
+	if (!res.ok) {
+		throw new Error(
+			`Failed to fetch mosque list (${res.status} ${res.statusText})`,
+		);
+	}
 	const html = await res.text();
 	const $ = cheerio.load(html);
 
@@ -33,7 +40,7 @@ async function getPetalingMosqueIds(): Promise<{ id: number; nama: string }[]> {
 		const idMatch = profileLink.match(/\/profail\/masjid\/(\d+)\//);
 		if (!idMatch) return;
 
-		const id = Number.parseInt(idMatch[1]);
+		const id = Number.parseInt(idMatch[1], 10);
 
 		// Skip test entries
 		const lower = nama.toLowerCase();
@@ -46,25 +53,51 @@ async function getPetalingMosqueIds(): Promise<{ id: number; nama: string }[]> {
 	return mosques;
 }
 
+async function sleep(ms: number) {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function getAddress(id: number): Promise<string> {
-	const res = await fetch(PROFILE_URL(id));
-	const html = await res.text();
-	const $ = cheerio.load(html);
-
-	let address = "";
-
-	// Find the element labelled "Alamat" and get the next sibling's text
-	$("td, th, dt, label").each((_, el) => {
-		const text = $(el).text().trim();
-		if (text === "Alamat") {
-			const next = $(el).next();
-			if (next.length) {
-				address = next.text().replace(/\s+/g, " ").trim();
+	for (let attempt = 1; attempt <= PROFILE_RETRIES; attempt++) {
+		try {
+			const res = await fetch(PROFILE_URL(id));
+			if (!res.ok) {
+				if (attempt === PROFILE_RETRIES) {
+					console.warn(
+						`Failed to fetch profile for ID ${id}: ${res.status} ${res.statusText}`,
+					);
+					return "";
+				}
+				await sleep(PROFILE_RETRY_DELAY_MS * attempt);
+				continue;
 			}
-		}
-	});
+			const html = await res.text();
+			const $ = cheerio.load(html);
 
-	return address;
+			let address = "";
+
+			// Find the element labelled "Alamat" and get the next sibling's text
+			$("td, th, dt, label").each((_, el) => {
+				const text = $(el).text().trim();
+				if (text === "Alamat") {
+					const next = $(el).next();
+					if (next.length) {
+						address = next.text().replace(/\s+/g, " ").trim();
+					}
+				}
+			});
+
+			return address;
+		} catch (error) {
+			if (attempt === PROFILE_RETRIES) {
+				console.warn(`Failed to fetch profile for ID ${id}:`, error);
+				return "";
+			}
+			await sleep(PROFILE_RETRY_DELAY_MS * attempt);
+		}
+	}
+
+	return "";
 }
 
 async function main() {
@@ -101,4 +134,7 @@ async function main() {
 	);
 }
 
-main();
+main().catch((err) => {
+	console.error("Scrape failed:", err);
+	process.exit(1);
+});

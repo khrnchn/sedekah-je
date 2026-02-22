@@ -175,7 +175,7 @@ export default function QuestLeaderboard({
 	const { user } = useAuth();
 	const isMobile = useIsMobile();
 	const [open, setOpen] = useState(false);
-	const leaderCount = leaderboard[0]?.count ?? 0;
+	const entriesCount = leaderboard.length;
 
 	const trigger = (
 		<Button
@@ -188,9 +188,9 @@ export default function QuestLeaderboard({
 		>
 			<Trophy className="h-4 w-4" />
 			<span className="hidden sm:inline">Leaderboard</span>
-			{leaderCount > 0 && (
+			{entriesCount > 0 && (
 				<span className="hidden text-xs text-zinc-400 lg:inline">
-					Top {leaderCount}
+					Top {entriesCount}
 				</span>
 			)}
 		</Button>

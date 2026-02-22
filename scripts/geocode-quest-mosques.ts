@@ -1,4 +1,4 @@
-import { and, isNull, sql } from "drizzle-orm";
+import { isNull, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { questMosques } from "@/db/schema";
 
@@ -98,8 +98,8 @@ function buildQuery(mosque: {
 
 	const nameVariants = [
 		normalizedName,
-		normalizedName.replace(/^masjid\\s+/i, "").trim(),
-		normalizedName.replace(/[,]/g, " ").replace(/\\s+/g, " ").trim(),
+		normalizedName.replace(/^masjid\s+/i, "").trim(),
+		normalizedName.replace(/,\s*/g, " ").replace(/\s+/g, " ").trim(),
 	];
 
 	const variants = [
@@ -135,7 +135,7 @@ async function main() {
 			district: questMosques.district,
 		})
 		.from(questMosques)
-		.where(and(isNull(questMosques.coords), sql`true`))
+		.where(isNull(questMosques.coords))
 		.orderBy(questMosques.id)
 		.limit(limit > 0 ? limit : undefined);
 

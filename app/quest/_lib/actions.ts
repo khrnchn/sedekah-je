@@ -184,8 +184,14 @@ export async function submitQuestContribution(
 			})
 			.returning({ id: institutions.id });
 
+		await db
+			.update(questMosques)
+			.set({ institutionId: newId })
+			.where(eq(questMosques.id, questMosque.id));
+
 		// 9. Telegram notification
 		try {
+			// Avoid sending raw contributor email to third-party notifications.
 			await logNewInstitution({
 				id: newId.toString(),
 				name: questMosque.name,
@@ -193,13 +199,14 @@ export async function submitQuestContribution(
 				state: "Selangor",
 				city: questMosque.district,
 				contributorName: session.user.name || "Unknown",
-				contributorEmail: session.user.email,
+				contributorEmail: "redacted",
 			});
 		} catch (telegramError) {
 			console.error("Failed to log to Telegram:", telegramError);
 		}
 
 		// 10. Revalidate caches
+		revalidateTag("quest-mosques");
 		revalidateTag("institutions-count");
 		revalidateTag("pending-institutions");
 		revalidateTag(`user_contributions_count:${userId}`);

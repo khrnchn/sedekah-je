@@ -55,15 +55,16 @@ export const getQuestMosques = unstable_cache(
 
 export const getQuestStats = unstable_cache(
 	async (): Promise<QuestStats> => {
-		const rows = await db
+		const [stats] = await db
 			.select({
-				institutionId: questMosques.institutionId,
+				total: count(),
+				unlocked: count(questMosques.institutionId),
 			})
 			.from(questMosques);
 
 		return {
-			total: rows.length,
-			unlocked: rows.filter((r) => r.institutionId !== null).length,
+			total: Number(stats?.total ?? 0),
+			unlocked: Number(stats?.unlocked ?? 0),
 		};
 	},
 	["quest-stats"],

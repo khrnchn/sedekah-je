@@ -82,15 +82,13 @@ export default function QuestPageClient({
 
 	const handleSelect = useCallback(
 		(id: number) => {
-			setSelectedId((prev) => {
-				const next = prev === id ? null : id;
-				if (!isDesktop && next !== null) {
-					setSheetOpen(true);
-				}
-				return next;
-			});
+			const next = selectedId === id ? null : id;
+			setSelectedId(next);
+			if (!isDesktop && next !== null) {
+				setSheetOpen(true);
+			}
 		},
-		[isDesktop],
+		[isDesktop, selectedId],
 	);
 
 	return (

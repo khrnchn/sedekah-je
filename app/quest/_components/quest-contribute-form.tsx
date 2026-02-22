@@ -83,7 +83,7 @@ function ContributeFormContent({
 			if (qrContent) {
 				formData.set("qrContent", qrContent);
 			}
-			if (sourceUrl.trim()) {
+			if (fromOnline && sourceUrl.trim()) {
 				formData.set("sourceUrl", sourceUrl.trim());
 			}
 
