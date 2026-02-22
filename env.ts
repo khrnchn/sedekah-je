@@ -13,6 +13,12 @@ export const env = createEnv({
 		SUPABASE_ANON_KEY: z.string().optional(),
 		SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
 
+		// MailerSend (optional, for institution approval emails)
+		MAILERSEND_API_KEY: z.string().min(1).optional(),
+		MAILERSEND_FROM_EMAIL: z.string().email().optional(),
+		MAILERSEND_FROM_NAME: z.string().optional(),
+		MAILERSEND_APPROVAL_TEMPLATE_ID: z.string().min(1).optional(),
+
 		// Cloudflare R2 Storage
 		R2_ENDPOINT: z.string().url(),
 		R2_ACCESS_KEY_ID: z.string(),
