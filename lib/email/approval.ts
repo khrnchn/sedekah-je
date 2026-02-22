@@ -11,6 +11,10 @@ export async function sendInstitutionApprovalEmail(params: {
 	recipientEmail: string;
 	recipientName: string | null;
 	approveLink: string;
+	city: string;
+	state: string;
+	category: string;
+	institutionName: string;
 }): Promise<{ ok: boolean; error?: string }> {
 	const apiKey = env.MAILERSEND_API_KEY;
 	const templateId = env.MAILERSEND_APPROVAL_TEMPLATE_ID;
@@ -31,8 +35,12 @@ export async function sendInstitutionApprovalEmail(params: {
 			{
 				email: params.recipientEmail,
 				data: {
+					city: params.city,
 					name: params.recipientName ?? "Pengguna",
-					approveLink: params.approveLink,
+					state: params.state,
+					category: params.category,
+					approveLink: params.approveLink ?? "https://sedekah.je",
+					institutionName: params.institutionName,
 				},
 			},
 		];

@@ -269,6 +269,8 @@ export async function approveInstitution(
 			category: row.category,
 			slug: row.slug,
 			name: row.name,
+			state: row.state ?? "",
+			city: row.city ?? "",
 		};
 		after(async () => {
 			try {
@@ -286,6 +288,10 @@ export async function approveInstitution(
 						recipientEmail: contributor.email,
 						recipientName: contributor.name ?? null,
 						approveLink,
+						city: payload.city,
+						state: payload.state,
+						category: payload.category,
+						institutionName: payload.name,
 					});
 					if (!send.ok) {
 						console.error("[approval email]", send.error);
@@ -615,6 +621,8 @@ export async function batchApproveInstitutions(
 		category: r.category,
 		slug: r.slug,
 		name: r.name,
+		state: r.state ?? "",
+		city: r.city ?? "",
 	}));
 	const hasContributors = rows.some((r) => r.contributorId);
 	if (hasContributors) {
@@ -646,6 +654,10 @@ export async function batchApproveInstitutions(
 						recipientEmail: c!.email,
 						recipientName: c!.name ?? null,
 						approveLink,
+						city: row.city,
+						state: row.state,
+						category: row.category,
+						institutionName: row.name,
 					}).then((send) => {
 						if (!send.ok) console.error("[approval email]", row.id, send.error);
 					});
