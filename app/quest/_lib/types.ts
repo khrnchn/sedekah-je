@@ -15,3 +15,11 @@ export type QuestStats = {
 	total: number;
 	unlocked: number;
 };
+
+export type QuestLeaderboardEntry = {
+	rank: number;
+	userId: string;
+	name: string | null;
+	image: string | null;
+	count: number;
+};

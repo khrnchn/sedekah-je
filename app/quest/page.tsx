@@ -1,5 +1,9 @@
 import QuestPageClient from "./_components/quest-page-client";
-import { getQuestMosques, getQuestStats } from "./_lib/queries";
+import {
+	getQuestLeaderboard,
+	getQuestMosques,
+	getQuestStats,
+} from "./_lib/queries";
 
 export const metadata = {
 	title: "Mosque Quest | Sedekah.je",
@@ -7,10 +11,17 @@ export const metadata = {
 };
 
 export default async function QuestPage() {
-	const [mosques, stats] = await Promise.all([
+	const [mosques, stats, leaderboard] = await Promise.all([
 		getQuestMosques(),
 		getQuestStats(),
+		getQuestLeaderboard(),
 	]);
 
-	return <QuestPageClient mosques={mosques} stats={stats} />;
+	return (
+		<QuestPageClient
+			mosques={mosques}
+			stats={stats}
+			leaderboard={leaderboard}
+		/>
+	);
 }

@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import type {
+	QuestLeaderboardEntry,
 	QuestMosqueWithStatus,
 	QuestSortOption,
 	QuestStats,
@@ -16,6 +17,7 @@ import QuestSidebar from "./quest-sidebar";
 type QuestPageClientProps = {
 	mosques: QuestMosqueWithStatus[];
 	stats: QuestStats;
+	leaderboard: QuestLeaderboardEntry[];
 };
 
 function sortMosques(
@@ -36,6 +38,7 @@ function sortMosques(
 export default function QuestPageClient({
 	mosques,
 	stats,
+	leaderboard,
 }: QuestPageClientProps) {
 	const isDesktop = useMediaQuery("(min-width: 768px)");
 	const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -67,7 +70,7 @@ export default function QuestPageClient({
 
 	return (
 		<div className="flex h-dvh w-full flex-col bg-zinc-950">
-			<QuestHeader stats={stats} />
+			<QuestHeader stats={stats} leaderboard={leaderboard} />
 			<div className="relative flex flex-1 overflow-hidden">
 				{isDesktop && (
 					<QuestSidebar
@@ -83,6 +86,8 @@ export default function QuestPageClient({
 						mosques={mosques}
 						selectedId={selectedId}
 						onMarkerClick={handleSelect}
+						bottomSheetOpen={sheetOpen}
+						isDesktop={isDesktop}
 					/>
 					{isDesktop && (
 						<QuestMosqueDetail

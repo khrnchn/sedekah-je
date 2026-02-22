@@ -1,10 +1,14 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { asc, count, desc, eq, isNotNull, sql } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import { db } from "@/db";
-import { institutions, questMosques } from "@/db/schema";
-import type { QuestMosqueWithStatus, QuestStats } from "./types";
+import { institutions, questMosques, users } from "@/db/schema";
+import type {
+	QuestLeaderboardEntry,
+	QuestMosqueWithStatus,
+	QuestStats,
+} from "./types";
 
 export const getQuestMosques = unstable_cache(
 	async (): Promise<QuestMosqueWithStatus[]> => {
@@ -63,5 +67,35 @@ export const getQuestStats = unstable_cache(
 		};
 	},
 	["quest-stats"],
+	{ revalidate: 300, tags: ["quest-mosques"] },
+);
+
+export const getQuestLeaderboard = unstable_cache(
+	async (): Promise<QuestLeaderboardEntry[]> => {
+		const contributionsCount = count(questMosques.id);
+		const rows = await db
+			.select({
+				userId: users.id,
+				name: users.name,
+				image: sql<string | null>`coalesce(${users.image}, ${users.avatarUrl})`,
+				count: contributionsCount,
+			})
+			.from(questMosques)
+			.innerJoin(institutions, eq(questMosques.institutionId, institutions.id))
+			.innerJoin(users, eq(institutions.contributorId, users.id))
+			.where(isNotNull(institutions.contributorId))
+			.groupBy(users.id, users.name, users.image, users.avatarUrl)
+			.orderBy(desc(contributionsCount), asc(users.name), asc(users.id))
+			.limit(10);
+
+		return rows.map((row, index) => ({
+			rank: index + 1,
+			userId: row.userId,
+			name: row.name,
+			image: row.image,
+			count: Number(row.count),
+		}));
+	},
+	["quest-leaderboard"],
 	{ revalidate: 300, tags: ["quest-mosques"] },
 );
