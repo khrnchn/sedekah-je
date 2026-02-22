@@ -130,7 +130,7 @@ export default function QuestLeaderboard({
 			size="sm"
 			aria-label="Lihat leaderboard"
 			onClick={() => setOpen(true)}
-			className="border-zinc-700 bg-zinc-900 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100"
+			className="gap-1.5 border-zinc-700 bg-zinc-900 text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100"
 		>
 			<Trophy className="h-4 w-4" />
 			<span className="hidden sm:inline">Leaderboard</span>

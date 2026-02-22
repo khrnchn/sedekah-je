@@ -24,8 +24,6 @@ export default function QuestHeader({ stats, leaderboard }: QuestHeaderProps) {
 					>
 						Petaling
 					</Badge>
-				</div>
-				<div>
 					<QuestLeaderboard leaderboard={leaderboard} />
 				</div>
 				<div className="flex items-center gap-3 sm:ml-auto sm:min-w-[220px]">
