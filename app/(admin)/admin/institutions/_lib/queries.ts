@@ -1,13 +1,16 @@
 "use server";
 
+import { and, count, desc, eq, inArray, ne, sql } from "drizzle-orm";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
+import { headers } from "next/headers";
+import { after } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions, users } from "@/db/schema";
 import { requireAdminSession } from "@/lib/auth-helpers";
+import { sendInstitutionApprovalEmail } from "@/lib/email/approval";
+import { buildInstitutionApproveLink } from "@/lib/email/approval-link";
 import { slugify } from "@/lib/utils";
-import { and, count, desc, eq, inArray, ne, sql } from "drizzle-orm";
-import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
-import { headers } from "next/headers";
 
 // Helper function to generate a unique slug
 async function generateUniqueSlug(
@@ -256,6 +259,49 @@ export async function approveInstitution(
 	revalidateTag("approved-institutions");
 	revalidateTag("institutions-count");
 	revalidateTag("institutions"); // Homepage cache
+
+	// Schedule approval email after response is sent (avoids serverless killing the request)
+	const row = result[0];
+	const contributorId = row?.contributorId ?? null;
+	if (contributorId && row) {
+		const payload = {
+			contributorId,
+			category: row.category,
+			slug: row.slug,
+			name: row.name,
+			state: row.state ?? "",
+			city: row.city ?? "",
+		};
+		after(async () => {
+			try {
+				const [contributor] = await db
+					.select({ email: users.email, name: users.name })
+					.from(users)
+					.where(eq(users.id, payload.contributorId))
+					.limit(1);
+				if (contributor?.email) {
+					const approveLink = buildInstitutionApproveLink(
+						payload.category,
+						payload.slug,
+					);
+					const send = await sendInstitutionApprovalEmail({
+						recipientEmail: contributor.email,
+						recipientName: contributor.name ?? null,
+						approveLink,
+						city: payload.city,
+						state: payload.state,
+						category: payload.category,
+						institutionName: payload.name,
+					});
+					if (!send.ok) {
+						console.error("[approval email]", send.error);
+					}
+				}
+			} catch (err) {
+				console.error("[approval email]", err);
+			}
+		});
+	}
 
 	return result;
 }
@@ -567,6 +613,65 @@ export async function batchApproveInstitutions(
 	// Revalidate cached data tables
 	revalidateTag("institutions-data");
 	revalidateTag("institutions"); // Homepage cache
+
+	// Schedule approval emails after response is sent (avoids serverless killing the request)
+	const rows = result.map((r) => ({
+		id: r.id,
+		contributorId: r.contributorId,
+		category: r.category,
+		slug: r.slug,
+		name: r.name,
+		state: r.state ?? "",
+		city: r.city ?? "",
+	}));
+	const hasContributors = rows.some((r) => r.contributorId);
+	if (hasContributors) {
+		after(async () => {
+			try {
+				const contributorIds = [
+					...new Set(
+						rows.map((r) => r.contributorId).filter((id): id is string => !!id),
+					),
+				];
+				const contributors = await db
+					.select({ id: users.id, email: users.email, name: users.name })
+					.from(users)
+					.where(inArray(users.id, contributorIds));
+				const contributorMap = new Map(
+					contributors.map((c) => [c.id, { email: c.email, name: c.name }]),
+				);
+				const rowsToEmail = rows.filter((row) => {
+					const c = contributorMap.get(row.contributorId ?? "");
+					return Boolean(row.contributorId && c?.email);
+				});
+				const emailPromises = rowsToEmail.map((row) => {
+					const c = contributorMap.get(row.contributorId as string);
+					const approveLink = buildInstitutionApproveLink(
+						row.category,
+						row.slug,
+					);
+					return sendInstitutionApprovalEmail({
+						recipientEmail: c!.email,
+						recipientName: c!.name ?? null,
+						approveLink,
+						city: row.city,
+						state: row.state,
+						category: row.category,
+						institutionName: row.name,
+					}).then((send) => {
+						if (!send.ok) console.error("[approval email]", row.id, send.error);
+					});
+				});
+				const results = await Promise.allSettled(emailPromises);
+				results.forEach((r, i) => {
+					if (r.status === "rejected")
+						console.error("[approval email]", rowsToEmail[i]?.id, r.reason);
+				});
+			} catch (err) {
+				console.error("[approval email]", err);
+			}
+		});
+	}
 
 	return result;
 }

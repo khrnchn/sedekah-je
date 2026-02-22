@@ -29,6 +29,13 @@
 			"when": 1770929065151,
 			"tag": "0003_ramadhan_campaigns",
 			"breakpoints": true
+		},
+		{
+			"idx": 4,
+			"version": "7",
+			"when": 1771692856309,
+			"tag": "0004_parallel_rafael_vega",
+			"breakpoints": true
 		}
 	]
 }
