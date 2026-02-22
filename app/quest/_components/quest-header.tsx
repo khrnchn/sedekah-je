@@ -10,15 +10,10 @@ type QuestHeaderProps = {
 
 export default function QuestHeader({ stats }: QuestHeaderProps) {
 	const pct = stats.total > 0 ? (stats.unlocked / stats.total) * 100 : 0;
-	const remaining = Math.max(stats.total - stats.unlocked, 0);
-	const objective =
-		remaining > 0
-			? `Unlock ${Math.min(3, remaining)} lagi`
-			: "Semua masjid unlocked";
 
 	return (
 		<div className="border-b border-zinc-800 bg-zinc-950 px-4 py-3">
-			<div className="flex flex-wrap items-center gap-3">
+			<div className="flex flex-col gap-3 sm:flex-row sm:items-center">
 				<div className="flex items-center gap-2">
 					<h1 className="text-lg font-bold text-zinc-100">Mosque Quest</h1>
 					<Badge
@@ -28,10 +23,7 @@ export default function QuestHeader({ stats }: QuestHeaderProps) {
 						Petaling
 					</Badge>
 				</div>
-				<Badge className="border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 text-xs hover:bg-emerald-500/15">
-					Objective: {objective}
-				</Badge>
-				<div className="ml-auto flex min-w-[220px] items-center gap-3">
+				<div className="flex items-center gap-3 sm:ml-auto sm:min-w-[220px]">
 					<span className="text-sm text-zinc-400">
 						{stats.unlocked}/{stats.total} masjid
 					</span>

@@ -52,13 +52,13 @@ export default function QuestBottomSheet({
 			<DrawerTrigger asChild>
 				<button
 					type="button"
-					className="fixed bottom-6 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full bg-zinc-800 px-4 py-2.5 text-sm font-medium text-zinc-200 shadow-lg ring-1 ring-zinc-700 transition-colors hover:bg-zinc-700"
+					className="fixed bottom-[calc(env(safe-area-inset-bottom)+1rem)] left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full bg-zinc-800 px-4 py-2.5 text-sm font-medium text-zinc-200 shadow-lg ring-1 ring-zinc-700 transition-colors hover:bg-zinc-700"
 				>
 					<List className="h-4 w-4" />
 					Senarai Masjid
 				</button>
 			</DrawerTrigger>
-			<DrawerContent className="flex h-[70dvh] flex-col overflow-hidden border-zinc-800 bg-zinc-950">
+			<DrawerContent className="flex h-[72dvh] flex-col overflow-hidden border-zinc-800 bg-zinc-950 pb-[env(safe-area-inset-bottom)] sm:h-[70dvh]">
 				{selectedMosque ? (
 					<div className="flex h-full flex-col">
 						<DrawerHeader className="pb-2">
