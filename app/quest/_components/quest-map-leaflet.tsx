@@ -290,6 +290,7 @@ export default function QuestMapLeaflet({
 	mosques,
 	selectedId,
 	onMarkerClick,
+	isDesktop,
 }: QuestMapLeafletProps) {
 	const unlockedDefaultIcon = useMemo(
 		() =>
@@ -337,7 +338,7 @@ export default function QuestMapLeaflet({
 				{mosques.map((mosque) => {
 					if (!isValidCoords(mosque.coords)) return null;
 					const isSelected = mosque.id === selectedId;
-					const useSelectedVariant = isSelected;
+					const useSelectedVariant = isSelected && !isDesktop;
 					const markerIcon = mosque.isUnlocked
 						? useSelectedVariant
 							? unlockedSelectedIcon
