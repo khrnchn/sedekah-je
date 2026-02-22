@@ -6,14 +6,15 @@ import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 import "leaflet-defaulticon-compatibility";
 
 import { createLeafletContext, LeafletProvider } from "@react-leaflet/core";
+import type { FeatureCollection, Geometry } from "geojson";
 import type { MapOptions } from "leaflet";
 import { divIcon, Map as LeafletMap } from "leaflet";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Marker, TileLayer, Tooltip, useMap } from "react-leaflet";
+import { GeoJSON, Marker, TileLayer, Tooltip, useMap } from "react-leaflet";
 import type { QuestMosqueWithStatus } from "@/app/quest/_lib/types";
+import petalingBoundary from "@/data/petaling-boundary.json";
 
-const PETALING_CENTER: [number, number] = [3.1, 101.65];
 const PETALING_ZOOM = 13;
 
 const DARK_TILE_URL =
@@ -21,8 +22,54 @@ const DARK_TILE_URL =
 const DARK_TILE_ATTRIBUTION =
 	'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>';
 
-const MARKER_SIZE_DEFAULT: [number, number] = [52, 68];
-const MARKER_SIZE_SELECTED: [number, number] = [64, 84];
+const MARKER_SIZE_DEFAULT: [number, number] = [42, 56];
+const MARKER_SIZE_SELECTED: [number, number] = [52, 68];
+const PETALING_BOUNDARY = petalingBoundary as FeatureCollection;
+
+function collectBoundaryCoords(geo: FeatureCollection): [number, number][] {
+	const coords: [number, number][] = [];
+
+	const walkGeometry = (geometry: Geometry | null) => {
+		if (!geometry) return;
+
+		if (geometry.type === "Polygon") {
+			for (const ring of geometry.coordinates) {
+				for (const [lon, lat] of ring) coords.push([lat, lon]);
+			}
+			return;
+		}
+
+		if (geometry.type === "MultiPolygon") {
+			for (const polygon of geometry.coordinates) {
+				for (const ring of polygon) {
+					for (const [lon, lat] of ring) coords.push([lat, lon]);
+				}
+			}
+		}
+	};
+
+	for (const feature of geo.features) {
+		walkGeometry(feature.geometry);
+	}
+
+	return coords;
+}
+
+const PETALING_BOUNDARY_COORDS = collectBoundaryCoords(PETALING_BOUNDARY);
+const PETALING_CENTER = (() => {
+	if (PETALING_BOUNDARY_COORDS.length === 0)
+		return [3.1, 101.65] as [number, number];
+	let totalLat = 0;
+	let totalLon = 0;
+	for (const [lat, lon] of PETALING_BOUNDARY_COORDS) {
+		totalLat += lat;
+		totalLon += lon;
+	}
+	return [
+		totalLat / PETALING_BOUNDARY_COORDS.length,
+		totalLon / PETALING_BOUNDARY_COORDS.length,
+	] as [number, number];
+})();
 
 type QuestMapLeafletProps = {
 	mosques: QuestMosqueWithStatus[];
@@ -222,6 +269,18 @@ export default function QuestMapLeaflet({
 				zoomControl={false}
 			>
 				<TileLayer attribution={DARK_TILE_ATTRIBUTION} url={DARK_TILE_URL} />
+				<GeoJSON
+					data={PETALING_BOUNDARY}
+					style={() => ({
+						color: "#22c55e",
+						weight: 2,
+						opacity: 0.85,
+						fillColor: "#22c55e",
+						fillOpacity: 0.08,
+						dashArray: "8 6",
+					})}
+					interactive={false}
+				/>
 				{mosques.map((mosque) => {
 					if (!isValidCoords(mosque.coords)) return null;
 					const isSelected = mosque.id === selectedId;
