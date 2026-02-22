@@ -8,12 +8,7 @@ import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
 import "leaflet.locatecontrol";
 import "leaflet.fullscreen/Control.FullScreen.css";
 import "leaflet.fullscreen";
-import { institutions } from "@/app/data/institutions";
-import { CategoryColor, type Institution } from "@/app/types/institutions";
-import L from "leaflet";
-
-import { slugify } from "@/lib/utils";
-import { Icon, type LatLngExpression } from "leaflet";
+import L, { Icon, type LatLngExpression } from "leaflet";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import {
@@ -23,6 +18,9 @@ import {
 	Tooltip,
 	useMap,
 } from "react-leaflet";
+import { institutions } from "@/app/data/institutions";
+import { CategoryColor, type Institution } from "@/app/types/institutions";
+import { slugify } from "@/lib/utils";
 
 type MarkerColor =
 	| "blue"
@@ -83,6 +81,51 @@ function AddControls() {
 	return null;
 }
 
+function SyncMapSize() {
+	const map = useMap();
+
+	useEffect(() => {
+		const invalidate = () => map.invalidateSize({ pan: false });
+
+		// Ensure size is correct after initial mount/layout.
+		requestAnimationFrame(invalidate);
+
+		const container = map.getContainer();
+		const resizeObserver = new ResizeObserver(invalidate);
+		resizeObserver.observe(container);
+
+		window.addEventListener("resize", invalidate);
+		return () => {
+			resizeObserver.disconnect();
+			window.removeEventListener("resize", invalidate);
+		};
+	}, [map]);
+
+	return null;
+}
+
+function FlyToMarker({
+	marker,
+	center,
+	zoom,
+}: {
+	marker?: MapMarker;
+	center: LatLngExpression;
+	zoom: number;
+}) {
+	const map = useMap();
+
+	useEffect(() => {
+		if (marker?.coords) {
+			map.flyTo(marker.coords, 13, { duration: 0.6 });
+			return;
+		}
+		map.setView(center, zoom, { animate: false });
+	}, [map, marker?.coords, center, zoom]);
+
+	return null;
+}
+
 const getMarkerIcon = (color?: MarkerColor) =>
 	new Icon({
 		iconUrl: `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-${color ?? "violet"}.png`,
@@ -123,12 +166,12 @@ export default function MapLocation({
 		}
 
 		// Render filtered markers
-		return filteredInstitutions?.map((institution, idx) => {
+		return filteredInstitutions?.map((institution) => {
 			if (!institution.coords) return null;
 
 			return (
 				<Marker
-					key={idx}
+					key={institution.id}
 					position={institution.coords as LatLngExpression}
 					icon={getMarkerIcon(
 						CategoryColor[institution.category as keyof typeof CategoryColor] ??
@@ -155,6 +198,8 @@ export default function MapLocation({
 			/>
 			{renderMarkers}
 			<AddControls />
+			<SyncMapSize />
+			<FlyToMarker marker={marker} center={center} zoom={zoom} />
 		</MapContainer>
 	);
 }

@@ -1,11 +1,11 @@
 "use client";
 
+import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 import {
 	ChartContainer,
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 
 const COLORS = {
 	mosque: "#10b981",
@@ -43,7 +43,10 @@ export function CategoryChart({ data }: CategoryChartProps) {
 						outerRadius={80}
 						paddingAngle={5}
 						dataKey="count"
-						label={({ category, count }) => `${category}: ${count}`}
+						label={({ payload, value }) => {
+							const entry = payload as CategoryData | undefined;
+							return `${entry?.category ?? "Unknown"}: ${entry?.count ?? value}`;
+						}}
 					>
 						{data.map((entry, index) => (
 							<Cell

@@ -15,6 +15,8 @@
 		"artisan:plop": "NODE_OPTIONS='--import tsx' plop --plopfile=plopfile.ts",
 		"db:seed": "bun db/main.ts",
 		"db:truncate": "bun db/truncate.ts",
+		"db:seed-quest": "bun scripts/seed-quest-mosques.ts",
+		"db:geocode-quest": "bun scripts/geocode-quest-mosques.ts",
 		"clean": "rm -rf node_modules/ .next/ bun.lock*",
 		"prepare": "husky"
 	},
@@ -97,6 +99,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.4.3",
+		"@playwright/test": "^1.58.2",
 		"@types/adm-zip": "^0.5.7",
 		"@types/leaflet": "^1.9.12",
 		"@types/lodash-es": "^4.17.12",
@@ -106,6 +109,7 @@
 		"@types/react-dom": "19.2.3",
 		"@vite-pwa/assets-generator": "^1.0.0",
 		"adm-zip": "^0.5.16",
+		"cheerio": "^1.2.0",
 		"drizzle-kit": "^0.30.1",
 		"eslint": "^9.39.2",
 		"eslint-config-next": "15.5.12",
