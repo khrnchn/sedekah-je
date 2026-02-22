@@ -5,6 +5,7 @@ import type {
 	QuestMosqueWithStatus,
 	QuestSortOption,
 } from "@/app/quest/_lib/types";
+import { Button } from "@/components/ui/button";
 import {
 	Drawer,
 	DrawerContent,
@@ -20,12 +21,15 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import QuestMosqueDetail from "./quest-mosque-detail";
 import QuestMosqueListItem from "./quest-mosque-list-item";
 
 type QuestBottomSheetProps = {
 	mosques: QuestMosqueWithStatus[];
 	selectedId: number | null;
+	selectedMosque: QuestMosqueWithStatus | null;
 	onSelect: (id: number) => void;
+	onClearSelection: () => void;
 	sort: QuestSortOption;
 	onSortChange: (sort: QuestSortOption) => void;
 	open: boolean;
@@ -35,7 +39,9 @@ type QuestBottomSheetProps = {
 export default function QuestBottomSheet({
 	mosques,
 	selectedId,
+	selectedMosque,
 	onSelect,
+	onClearSelection,
 	sort,
 	onSortChange,
 	open,
@@ -52,54 +58,80 @@ export default function QuestBottomSheet({
 					Senarai Masjid
 				</button>
 			</DrawerTrigger>
-			<DrawerContent className="max-h-[70dvh] border-zinc-800 bg-zinc-950">
-				<DrawerHeader className="pb-2">
-					<DrawerTitle className="text-zinc-100">Senarai Masjid</DrawerTitle>
-					<div className="mt-2">
-						<Select
-							value={sort}
-							onValueChange={(v) => onSortChange(v as QuestSortOption)}
-						>
-							<SelectTrigger className="h-8 w-full border-zinc-700 bg-zinc-900 text-zinc-300 text-xs">
-								<SelectValue />
-							</SelectTrigger>
-							<SelectContent className="border-zinc-700 bg-zinc-900">
-								<SelectItem
-									value="alphabetical"
-									className="text-zinc-300 text-xs focus:bg-zinc-800 focus:text-zinc-100"
-								>
-									A-Z
-								</SelectItem>
-								<SelectItem
-									value="status"
-									className="text-zinc-300 text-xs focus:bg-zinc-800 focus:text-zinc-100"
-								>
-									Status
-								</SelectItem>
-							</SelectContent>
-						</Select>
-					</div>
-				</DrawerHeader>
-				<ScrollArea className="flex-1 px-2 pb-4">
-					<div className="space-y-1">
-						{mosques.map((mosque) => (
-							<QuestMosqueListItem
-								key={mosque.id}
-								mosque={mosque}
-								isSelected={mosque.id === selectedId}
-								onSelect={(id) => {
-									onSelect(id);
-									onOpenChange(false);
-								}}
+			<DrawerContent className="flex h-[70dvh] flex-col overflow-hidden border-zinc-800 bg-zinc-950">
+				{selectedMosque ? (
+					<div className="flex h-full flex-col">
+						<DrawerHeader className="pb-2">
+							<DrawerTitle className="text-zinc-100">
+								Butiran Masjid
+							</DrawerTitle>
+							<Button
+								type="button"
+								variant="ghost"
+								className="mt-1 h-7 w-fit px-2 text-xs text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
+								onClick={onClearSelection}
+							>
+								Kembali ke Senarai
+							</Button>
+						</DrawerHeader>
+						<ScrollArea className="flex-1 px-3 pb-4">
+							<QuestMosqueDetail
+								mosque={selectedMosque}
+								onClose={onClearSelection}
+								variant="sheet"
 							/>
-						))}
-						{mosques.length === 0 && (
-							<p className="py-8 text-center text-sm text-zinc-500">
-								Tiada masjid ditemui
-							</p>
-						)}
+						</ScrollArea>
 					</div>
-				</ScrollArea>
+				) : (
+					<>
+						<DrawerHeader className="pb-2">
+							<DrawerTitle className="text-zinc-100">
+								Senarai Masjid
+							</DrawerTitle>
+							<div className="mt-2">
+								<Select
+									value={sort}
+									onValueChange={(v) => onSortChange(v as QuestSortOption)}
+								>
+									<SelectTrigger className="h-8 w-full border-zinc-700 bg-zinc-900 text-zinc-300 text-xs">
+										<SelectValue />
+									</SelectTrigger>
+									<SelectContent className="border-zinc-700 bg-zinc-900">
+										<SelectItem
+											value="alphabetical"
+											className="text-zinc-300 text-xs focus:bg-zinc-800 focus:text-zinc-100"
+										>
+											A-Z
+										</SelectItem>
+										<SelectItem
+											value="status"
+											className="text-zinc-300 text-xs focus:bg-zinc-800 focus:text-zinc-100"
+										>
+											Status
+										</SelectItem>
+									</SelectContent>
+								</Select>
+							</div>
+						</DrawerHeader>
+						<ScrollArea className="flex-1 px-2 pb-4">
+							<div className="space-y-1">
+								{mosques.map((mosque) => (
+									<QuestMosqueListItem
+										key={mosque.id}
+										mosque={mosque}
+										isSelected={mosque.id === selectedId}
+										onSelect={onSelect}
+									/>
+								))}
+								{mosques.length === 0 && (
+									<p className="py-8 text-center text-sm text-zinc-500">
+										Tiada masjid ditemui
+									</p>
+								)}
+							</div>
+						</ScrollArea>
+					</>
+				)}
 			</DrawerContent>
 		</Drawer>
 	);

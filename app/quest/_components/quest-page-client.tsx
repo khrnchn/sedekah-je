@@ -52,9 +52,18 @@ export default function QuestPageClient({
 		[mosques, selectedId],
 	);
 
-	const handleSelect = useCallback((id: number) => {
-		setSelectedId((prev) => (prev === id ? null : id));
-	}, []);
+	const handleSelect = useCallback(
+		(id: number) => {
+			setSelectedId((prev) => {
+				const next = prev === id ? null : id;
+				if (!isDesktop && next !== null) {
+					setSheetOpen(true);
+				}
+				return next;
+			});
+		},
+		[isDesktop],
+	);
 
 	return (
 		<div className="flex h-dvh w-full flex-col bg-zinc-950">
@@ -75,20 +84,27 @@ export default function QuestPageClient({
 						selectedId={selectedId}
 						onMarkerClick={handleSelect}
 					/>
-					<QuestMosqueDetail
-						mosque={selectedMosque}
-						onClose={() => setSelectedId(null)}
-					/>
+					{isDesktop && (
+						<QuestMosqueDetail
+							mosque={selectedMosque}
+							onClose={() => setSelectedId(null)}
+						/>
+					)}
 				</div>
 				{!isDesktop && (
 					<QuestBottomSheet
 						mosques={sortedMosques}
 						selectedId={selectedId}
+						selectedMosque={selectedMosque}
 						onSelect={handleSelect}
+						onClearSelection={() => setSelectedId(null)}
 						sort={sort}
 						onSortChange={setSort}
 						open={sheetOpen}
-						onOpenChange={setSheetOpen}
+						onOpenChange={(open) => {
+							setSheetOpen(open);
+							if (!open) setSelectedId(null);
+						}}
 					/>
 				)}
 			</div>
