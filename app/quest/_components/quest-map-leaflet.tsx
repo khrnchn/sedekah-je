@@ -23,7 +23,6 @@ const DARK_TILE_ATTRIBUTION =
 	'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>';
 
 const MARKER_SIZE_DEFAULT: [number, number] = [42, 56];
-const MARKER_SIZE_SELECTED: [number, number] = [52, 68];
 const PETALING_BOUNDARY = petalingBoundary as FeatureCollection;
 
 function collectBoundaryCoords(geo: FeatureCollection): [number, number][] {
@@ -161,13 +160,9 @@ function SafeMapContainer({
 function FlyToSelected({
 	mosques,
 	selectedId,
-	bottomSheetOpen,
-	isDesktop,
 }: {
 	mosques: QuestMosqueWithStatus[];
 	selectedId: number | null;
-	bottomSheetOpen?: boolean;
-	isDesktop?: boolean;
 }) {
 	const map = useMap();
 
@@ -178,19 +173,24 @@ function FlyToSelected({
 
 	useEffect(() => {
 		if (!selected?.coords || !isValidCoords(selected.coords)) return;
-		const zoom = 14;
-		const shouldOffset = Boolean(bottomSheetOpen) && !isDesktop;
-		const offsetY = shouldOffset ? Math.round(map.getSize().y * 0.3) : 0;
 
-		if (offsetY > 0) {
-			const point = map.project(selected.coords, zoom);
-			const target = map.unproject([point.x, point.y + offsetY], zoom);
-			map.flyTo(target, zoom, { duration: 0.8 });
-			return;
-		}
+		const coords = selected.coords;
+		let cancelled = false;
 
-		map.flyTo(selected.coords, zoom, { duration: 0.8 });
-	}, [map, selected?.coords, bottomSheetOpen, isDesktop]);
+		// Delay slightly to let any layout changes (e.g. bottom sheet opening)
+		// settle before we read the map container size and fly.
+		const timer = setTimeout(() => {
+			if (cancelled) return;
+
+			map.invalidateSize({ pan: false });
+			map.flyTo(coords, 14, { duration: 0.8 });
+		}, 50);
+
+		return () => {
+			cancelled = true;
+			clearTimeout(timer);
+		};
+	}, [map, selected?.coords]);
 
 	return null;
 }
@@ -254,7 +254,6 @@ export default function QuestMapLeaflet({
 	mosques,
 	selectedId,
 	onMarkerClick,
-	bottomSheetOpen,
 	isDesktop,
 }: QuestMapLeafletProps) {
 	const unlockedDefaultIcon = useMemo(
@@ -264,7 +263,7 @@ export default function QuestMapLeaflet({
 	);
 	const unlockedSelectedIcon = useMemo(
 		() =>
-			createMosqueIcon(MARKER_SIZE_SELECTED, { locked: false, selected: true }),
+			createMosqueIcon(MARKER_SIZE_DEFAULT, { locked: false, selected: true }),
 		[],
 	);
 	const lockedDefaultIcon = useMemo(
@@ -274,7 +273,7 @@ export default function QuestMapLeaflet({
 	);
 	const lockedSelectedIcon = useMemo(
 		() =>
-			createMosqueIcon(MARKER_SIZE_SELECTED, { locked: true, selected: true }),
+			createMosqueIcon(MARKER_SIZE_DEFAULT, { locked: true, selected: true }),
 		[],
 	);
 
@@ -303,11 +302,13 @@ export default function QuestMapLeaflet({
 				{mosques.map((mosque) => {
 					if (!isValidCoords(mosque.coords)) return null;
 					const isSelected = mosque.id === selectedId;
+					const emphasizeSelected = !isDesktop;
+					const useSelectedVariant = isSelected && emphasizeSelected;
 					const markerIcon = mosque.isUnlocked
-						? isSelected
+						? useSelectedVariant
 							? unlockedSelectedIcon
 							: unlockedDefaultIcon
-						: isSelected
+						: useSelectedVariant
 							? lockedSelectedIcon
 							: lockedDefaultIcon;
 					return (
@@ -330,12 +331,7 @@ export default function QuestMapLeaflet({
 					);
 				})}
 				<SyncMapSize />
-				<FlyToSelected
-					mosques={mosques}
-					selectedId={selectedId}
-					bottomSheetOpen={bottomSheetOpen}
-					isDesktop={isDesktop}
-				/>
+				<FlyToSelected mosques={mosques} selectedId={selectedId} />
 				<style>
 					{`
 					.quest-tooltip {
