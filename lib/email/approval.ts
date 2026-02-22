@@ -39,7 +39,7 @@ export async function sendInstitutionApprovalEmail(params: {
 					name: params.recipientName ?? "Pengguna",
 					state: params.state,
 					category: params.category,
-					approveLink: params.approveLink ?? "https://sedekah.je",
+					approveLink: params.approveLink,
 					institutionName: params.institutionName,
 				},
 			},
