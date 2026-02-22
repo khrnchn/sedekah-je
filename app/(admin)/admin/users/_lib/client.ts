@@ -12,14 +12,7 @@ const resolveBaseURL = (allHeaders?: Headers) => {
 		return `${proto}://${host}`;
 	}
 
-	return (
-		process.env.NEXT_PUBLIC_APP_URL ??
-		(process.env.VERCEL_ENV === "production"
-			? "https://sedekah.je"
-			: process.env.VERCEL_URL
-				? `https://${process.env.VERCEL_URL}`
-				: "http://localhost:3000")
-	);
+	return process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 };
 
 export const getAuthClient = async () => {
