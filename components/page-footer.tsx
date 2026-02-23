@@ -1,9 +1,8 @@
 "use client";
 
-import { Separator } from "@/components/ui/separator";
 import { ExternalLink, Heart } from "lucide-react";
-import { useTheme } from "next-themes";
 import Image from "next/image";
+import { Separator } from "@/components/ui/separator";
 
 const navigation = {
 	social: [
@@ -78,13 +77,8 @@ const navigation = {
 };
 
 export default function PageFooter() {
-	const { theme } = useTheme();
-
 	return (
-		<footer
-			aria-labelledby="footer-heading"
-			className="bg-gradient-to-br from-background to-muted/20 border-t border-border/40 mt-16"
-		>
+		<footer className="bg-gradient-to-br from-background to-muted/20 border-t border-border/40 mt-16">
 			<h2 id="footer-heading" className="sr-only">
 				Footer
 			</h2>
@@ -252,6 +246,20 @@ export default function PageFooter() {
 					<div className="flex items-center gap-4 text-xs text-muted-foreground">
 						<a href="/faq" className="hover:text-foreground transition-colors">
 							Soalan Lazim
+						</a>
+						<span>•</span>
+						<a
+							href="/privacy"
+							className="hover:text-foreground transition-colors"
+						>
+							Privacy
+						</a>
+						<span>•</span>
+						<a
+							href="/terms"
+							className="hover:text-foreground transition-colors"
+						>
+							Terms
 						</a>
 						<span>•</span>
 						<a

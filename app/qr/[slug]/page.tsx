@@ -1,19 +1,21 @@
 // import SedekahjeLogo from "./masjid.svg";
-import SedekahjeLogo from "@/components/sedekahje-logo";
-import { QRCodeSVG } from "qrcode.react";
 
-import { institutions } from "@/app/data/institutions";
-import { slugify } from "@/lib/utils";
+import { QRCodeSVG } from "qrcode.react";
+import SedekahjeLogo from "@/components/sedekahje-logo";
+import { getInstitutionBySlug } from "@/lib/queries/institutions";
 
 async function QRSlug(props: { params: Promise<{ slug: string }> }) {
 	const params = await props.params;
-	const selected = institutions.find((i) => slugify(i.name) === params.slug);
+	const selected = await getInstitutionBySlug(params.slug);
 
 	// make typescript happy
 	if (!selected?.qrContent) return null;
-	if (!selected?.supportedPayment) return null;
-
-	const type = selected.supportedPayment[0] as "duitnow" | "boost" | "tng";
+	const type =
+		(selected.supportedPayment?.[0] as
+			| "duitnow"
+			| "boost"
+			| "tng"
+			| undefined) ?? "duitnow";
 
 	const map = {
 		duitnow: {
