@@ -3,25 +3,31 @@
 import { findNearest, getDistance } from "geolib";
 import type { GeolibInputCoordinates } from "geolib/es/types";
 import { debounce } from "lodash-es";
+import { Filter, HelpCircle, MapIcon } from "lucide-react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-
+import type { Institution as OldInstitution } from "@/app/types/institutions";
 import CollapsibleCustomMap from "@/components/custom-map";
-import RawakFooter from "@/components/rawak-footer";
-import { Card } from "@/components/ui/card";
-import InstitutionCard from "@/components/ui/institution-card";
-import PageSection from "@/components/ui/pageSection";
-import { Skeleton } from "@/components/ui/skeleton";
-
 import FilterCategory from "@/components/filter-category";
 import FilterState from "@/components/filter-state";
 import FilteredCount from "@/components/filtered-count";
+import RawakFooter from "@/components/rawak-footer";
 import Search from "@/components/search";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { HelpCircle, MapIcon } from "lucide-react";
-import Link from "next/link";
-
-import type { Institution as OldInstitution } from "@/app/types/institutions";
+import { Card } from "@/components/ui/card";
+import {
+	Drawer,
+	DrawerContent,
+	DrawerFooter,
+	DrawerHeader,
+	DrawerTitle,
+	DrawerTrigger,
+} from "@/components/ui/drawer";
+import InstitutionCard from "@/components/ui/institution-card";
+import PageSection from "@/components/ui/pageSection";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { Institution } from "@/db/schema";
 
 type SearchParams = {
@@ -43,7 +49,7 @@ export function PageClient({
 	initialSearchParams,
 }: Props) {
 	const router = useRouter();
-	const searchParams = useSearchParams();
+	const _searchParams = useSearchParams();
 
 	// URL state
 	const [query, setQuery] = useState<string>(initialSearchParams.search || "");
@@ -55,10 +61,10 @@ export function PageClient({
 	);
 
 	// Component state
-	const [institutions, setInstitutions] =
+	const [institutions, _setInstitutions] =
 		useState<Institution[]>(initialInstitutions);
-	const [isLoading, setIsLoading] = useState<boolean>(false);
-	const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
+	const [isLoading, _setIsLoading] = useState<boolean>(false);
+	const [isLoadingMore, _setIsLoadingMore] = useState<boolean>(false);
 	const [offset, setOffset] = useState<number>(0);
 	const [allItemsLoaded, setAllItemsLoaded] = useState<boolean>(false);
 	const [currentUserCoordinate, setCurrentUserCoordinate] =
@@ -181,6 +187,10 @@ export function PageClient({
 		() => query !== "" || selectedCategories.length > 0 || selectedState !== "",
 		[query, selectedCategories, selectedState],
 	);
+	const activeFilterCount = useMemo(
+		() => (selectedState !== "" ? 1 : 0) + selectedCategories.length,
+		[selectedState, selectedCategories],
+	);
 	const filteredInstitutionsContainsClosest = useMemo(
 		() =>
 			filteredInstitutions.findIndex((i) => i.id === closestInstitution?.id) !==
@@ -188,6 +198,7 @@ export function PageClient({
 		[filteredInstitutions, closestInstitution],
 	);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: run once on mount for geolocation
 	useEffect(() => {
 		getLocation();
 	}, []);
@@ -249,7 +260,8 @@ export function PageClient({
 
 	return (
 		<PageSection>
-			<div className="sticky top-0 z-40 pt-4 pb-4 space-y-4">
+			{/* Desktop (sm+): keep current stacked filter UI */}
+			<div className="hidden sm:block sticky top-0 z-40 pt-4 pb-4 space-y-4 bg-background border-b shadow-sm">
 				<FilterCategory
 					onCategoryChange={handleCategoryChange}
 					selectedState={selectedState}
@@ -279,6 +291,62 @@ export function PageClient({
 					{(selectedState !== "" || selectedCategories.length > 0) && (
 						<FilteredCount count={filteredInstitutions.length} />
 					)}
+				</div>
+			</div>
+
+			{/* Mobile (<sm): compact sticky row + filter drawer */}
+			<div className="sm:hidden sticky top-0 z-40 pt-4 pb-4 bg-background border-b shadow-sm">
+				<div className="flex items-center gap-2 w-full">
+					<div className="flex-1 min-w-0">
+						<Search
+							onSearchChange={handleSearch}
+							className="w-full"
+							initialValue={query}
+						/>
+					</div>
+					<Drawer>
+						<DrawerTrigger asChild>
+							<Button
+								variant="outline"
+								size="default"
+								className="shrink-0 flex items-center gap-2"
+							>
+								<Filter className="h-4 w-4" />
+								<span>Filter</span>
+								{activeFilterCount > 0 && (
+									<Badge
+										variant="secondary"
+										className="ml-0.5 h-5 min-w-5 px-1.5"
+									>
+										{activeFilterCount}
+									</Badge>
+								)}
+							</Button>
+						</DrawerTrigger>
+						<DrawerContent className="max-h-[85vh] flex flex-col">
+							<DrawerHeader>
+								<DrawerTitle>Filter</DrawerTitle>
+							</DrawerHeader>
+							<div className="flex-1 overflow-y-auto px-4 pb-4 space-y-4">
+								<FilterState
+									onStateChange={handleStateChange}
+									className="w-full"
+									initialState={selectedState}
+								/>
+								<FilterCategory
+									onCategoryChange={handleCategoryChange}
+									selectedState={selectedState}
+									institutions={adaptedInstitutions}
+									initialCategories={selectedCategories}
+								/>
+							</div>
+							{(selectedState !== "" || selectedCategories.length > 0) && (
+								<DrawerFooter>
+									<FilteredCount count={filteredInstitutions.length} />
+								</DrawerFooter>
+							)}
+						</DrawerContent>
+					</Drawer>
 				</div>
 			</div>
 

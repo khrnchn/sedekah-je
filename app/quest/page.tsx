@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import QuestPageClient from "./_components/quest-page-client";
 import {
 	getQuestLeaderboard,
@@ -5,9 +6,23 @@ import {
 	getQuestStats,
 } from "./_lib/queries";
 
-export const metadata = {
-	title: "Mosque Quest | Sedekah.je",
+export const metadata: Metadata = {
+	title: "Mosque Quest",
 	description: "Terokai masjid di daerah Petaling dan sumbang QR code mereka.",
+	openGraph: {
+		title: "Mosque Quest | Sedekah Je",
+		description:
+			"Terokai masjid di daerah Petaling dan sumbang QR code mereka.",
+		url: "https://sedekah.je/quest",
+	},
+	twitter: {
+		title: "Mosque Quest | Sedekah Je",
+		description:
+			"Terokai masjid di daerah Petaling dan sumbang QR code mereka.",
+	},
+	alternates: {
+		canonical: "https://sedekah.je/quest",
+	},
 };
 
 export default async function QuestPage() {
