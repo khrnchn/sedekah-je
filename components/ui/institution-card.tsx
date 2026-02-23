@@ -201,7 +201,7 @@ const InstitutionCard = forwardRef<
 							exit={{ opacity: 0 }}
 							className="fixed inset-0 h-full w-full z-50 bg-black/50 flex flex-col items-center justify-center"
 						>
-							<div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-xs w-full flex flex-col items-center gap-4">
+							<div className="bg-card rounded-lg p-6 max-w-xs w-full flex flex-col items-center gap-4 border shadow-lg">
 								<div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
 								<p className="text-center font-medium">
 									Memuat turun kod QR...
@@ -216,14 +216,14 @@ const InstitutionCard = forwardRef<
 
 				<AnimatePresence>
 					{active ? (
-						<div className="fixed inset-0 grid place-items-center z-[100]">
+						<div className="fixed inset-0 z-[100] grid place-items-center px-3 sm:px-4">
 							<motion.button
 								key={`button-${name}-${id}`}
 								layout
 								initial={{ opacity: 0 }}
 								animate={{ opacity: 1 }}
 								exit={{ opacity: 0, transition: { duration: 0.05 } }}
-								className="flex absolute top-2 right-2 lg:hidden items-center justify-center bg-white dark:bg-slate-800 rounded-full h-6 w-6 z-10"
+								className="flex absolute top-2 right-2 lg:hidden items-center justify-center bg-card rounded-full h-6 w-6 z-10 border"
 								onClick={(e) => {
 									e.stopPropagation();
 									setActive(null);
@@ -240,7 +240,7 @@ const InstitutionCard = forwardRef<
 									setActive(null);
 								}}
 								whileDrag={{ scale: 1.05 }}
-								className="w-full max-w-[500px] h-full md:h-fit p-5 md:max-h-[90%] flex flex-col bg-white dark:bg-slate-800 sm:rounded-3xl overflow-auto lg:overflow-hidden"
+								className="w-full max-w-[500px] h-full md:h-fit p-5 md:max-h-[90%] flex flex-col bg-card border shadow-xl sm:rounded-3xl overflow-auto lg:overflow-hidden"
 							>
 								<motion.div
 									layoutId={`image-${name}-${id}`}
