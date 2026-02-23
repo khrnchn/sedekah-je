@@ -1,6 +1,17 @@
 "use server";
 
-import { and, count, desc, eq, inArray, ne, sql } from "drizzle-orm";
+import {
+	and,
+	count,
+	desc,
+	eq,
+	ilike,
+	inArray,
+	lt,
+	ne,
+	or,
+	sql,
+} from "drizzle-orm";
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import { headers } from "next/headers";
 import { after } from "next/server";
@@ -10,6 +21,7 @@ import { institutions, users } from "@/db/schema";
 import { requireAdminSession } from "@/lib/auth-helpers";
 import { sendInstitutionApprovalEmail } from "@/lib/email/approval";
 import { buildInstitutionApproveLink } from "@/lib/email/approval-link";
+import { reverseGeocodeInstitution } from "@/lib/geocode";
 import { slugify } from "@/lib/utils";
 
 // Helper function to generate a unique slug
@@ -338,6 +350,88 @@ export async function rejectInstitution(
 	revalidateTag("institutions-count");
 
 	return result;
+}
+
+/**
+ * Search institutions by name for duplicate check during admin review.
+ * Returns matching institutions with link-ready fields.
+ */
+export async function searchApprovedInstitutionsForDuplicateCheck(
+	search: string,
+	options?: { limit?: number },
+) {
+	await requireAdminSession();
+	const limit = options?.limit ?? 15;
+	const trimmed = search.trim();
+	if (!trimmed) return [];
+
+	return db
+		.select({
+			id: institutions.id,
+			name: institutions.name,
+			slug: institutions.slug,
+			category: institutions.category,
+			city: institutions.city,
+			state: institutions.state,
+		})
+		.from(institutions)
+		.where(
+			and(
+				eq(institutions.status, "approved"),
+				ilike(institutions.name, `%${trimmed}%`),
+			),
+		)
+		.orderBy(institutions.name)
+		.limit(limit);
+}
+
+/**
+ * Reverse geocode coords for admin tooling (server-side to avoid browser CORS issues).
+ */
+export async function reverseGeocodeInstitutionByAdmin(
+	lat: number,
+	lon: number,
+) {
+	await requireAdminSession();
+	return reverseGeocodeInstitution(lat, lon);
+}
+
+/**
+ * Get the next pending institution ID in canonical order (createdAt DESC, id DESC).
+ * Used for Save & Next flow. Returns null if no next pending exists.
+ */
+export async function getNextPendingInstitutionId(
+	currentId: number,
+): Promise<number | null> {
+	await requireAdminSession();
+
+	const [current] = await db
+		.select({ id: institutions.id, createdAt: institutions.createdAt })
+		.from(institutions)
+		.where(
+			and(eq(institutions.id, currentId), eq(institutions.status, "pending")),
+		)
+		.limit(1);
+
+	// Next row: createdAt < curr OR (createdAt = curr AND id < curr), ordered DESC
+	const nextCondition = current
+		? or(
+				lt(institutions.createdAt, current.createdAt),
+				and(
+					eq(institutions.createdAt, current.createdAt),
+					lt(institutions.id, current.id),
+				),
+			)
+		: sql`true`; // Fallback: current not pending, take first pending
+
+	const [next] = await db
+		.select({ id: institutions.id })
+		.from(institutions)
+		.where(and(eq(institutions.status, "pending"), nextCondition))
+		.orderBy(desc(institutions.createdAt), desc(institutions.id))
+		.limit(1);
+
+	return next?.id ?? null;
 }
 
 /**
