@@ -216,7 +216,7 @@ const InstitutionCard = forwardRef<
 
 				<AnimatePresence>
 					{active ? (
-						<div className="fixed inset-0 z-[100] grid place-items-center px-3 sm:px-4">
+						<div className="fixed inset-0 z-[100] grid place-items-center px-3 py-3 sm:px-4 sm:py-4">
 							<motion.button
 								key={`button-${name}-${id}`}
 								layout
@@ -240,26 +240,26 @@ const InstitutionCard = forwardRef<
 									setActive(null);
 								}}
 								whileDrag={{ scale: 1.05 }}
-								className="w-full max-w-[500px] h-full md:h-fit p-5 md:max-h-[90%] flex flex-col bg-card border shadow-xl sm:rounded-3xl overflow-auto lg:overflow-hidden"
+								className="w-full max-w-[460px] max-h-[calc(100dvh-1.5rem)] sm:max-h-[calc(100dvh-2rem)] p-5 flex flex-col bg-card border shadow-xl rounded-3xl overflow-auto lg:overflow-hidden"
 							>
 								<motion.div
 									layoutId={`image-${name}-${id}`}
-									className="flex items-center justify-center"
+									className="flex items-center justify-center rounded-2xl border bg-muted/30 p-3"
 								>
 									{qrContent ? (
 										<QrCodeDisplay
 											qrContent={qrContent}
 											supportedPayment={supportedPayment}
-											size={500}
+											size={300}
 										/>
 									) : (
 										<Image
 											priority
-											width={200}
-											height={200}
+											width={300}
+											height={300}
 											src={qrImage}
 											alt={name}
-											className="w-full h-full lg:h-full sm:rounded-tr-lg sm:rounded-tl-lg object-cover object-top"
+											className="aspect-square w-full max-w-[300px] rounded-xl object-cover object-top"
 										/>
 									)}
 								</motion.div>
