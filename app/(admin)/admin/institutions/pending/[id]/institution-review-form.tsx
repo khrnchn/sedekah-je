@@ -2,7 +2,14 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { CaseSensitive, ExternalLink, Loader2, Search } from "lucide-react";
+import {
+	Building2,
+	CaseSensitive,
+	ExternalLink,
+	Loader2,
+	MapPin,
+	Search,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
 	forwardRef,
@@ -16,12 +23,25 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
+import {
 	Field,
 	FieldError,
 	FieldGroup,
 	FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
 import {
 	Select,
 	SelectContent,
@@ -38,7 +58,11 @@ import {
 	states as STATE_OPTIONS,
 } from "@/lib/institution-constants";
 import { toTitleCase } from "@/lib/utils";
-import { updateInstitutionByAdmin } from "../../_lib/queries";
+import {
+	reverseGeocodeInstitutionByAdmin,
+	searchApprovedInstitutionsForDuplicateCheck,
+	updateInstitutionByAdmin,
+} from "../../_lib/queries";
 
 type PartialInstitution = Partial<Institution> & {
 	id: number;
@@ -94,6 +118,36 @@ const urlOrEmpty = z
 		{ message: "Invalid URL" },
 	);
 
+/** Parse "lat, lon" paste from Google Maps etc. Returns null if not two valid coords. */
+function parseCoordPaste(text: string): { lat: number; lon: number } | null {
+	const numbers = text.match(/-?\d+\.?\d*/g);
+	if (!numbers || numbers.length < 2) return null;
+
+	const a = Number.parseFloat(numbers[0]);
+	const b = Number.parseFloat(numbers[1]);
+	if (Number.isNaN(a) || Number.isNaN(b)) return null;
+
+	// Malaysia: lat 1–7, lon 99–120. Google Maps format is "lat, lon".
+	let lat: number;
+	let lon: number;
+	if (a >= 1 && a <= 7 && b >= 99 && b <= 120) {
+		lat = a;
+		lon = b;
+	} else if (b >= 1 && b <= 7 && a >= 99 && a <= 120) {
+		lat = b;
+		lon = a;
+	} else {
+		// Assume first is lat, second is lon (Google Maps default)
+		lat = Math.abs(a) <= 90 ? a : b;
+		lon = Math.abs(a) <= 90 ? b : a;
+	}
+
+	if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+		return null;
+	}
+	return { lat, lon };
+}
+
 const reviewSchema = (institution: PartialInstitution) =>
 	z.object({
 		name: z.string().min(1, "Name is required"),
@@ -122,8 +176,33 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 	function InstitutionReviewForm({ institution }, ref) {
 		const router = useRouter();
 
-		const [isPending, startTransition] = useTransition();
+		const [_isPending, startTransition] = useTransition();
 		const [isRecalibrating, setIsRecalibrating] = useState(false);
+		const [isFillingAddress, setIsFillingAddress] = useState(false);
+		const [replaceAddressDialog, setReplaceAddressDialog] = useState<{
+			open: boolean;
+			newAddress: string;
+		}>({ open: false, newAddress: "" });
+		const [checkExistingOpen, setCheckExistingOpen] = useState(false);
+		const [checkExistingQuery, setCheckExistingQuery] = useState("");
+		const [checkExistingResults, setCheckExistingResults] = useState<
+			Awaited<ReturnType<typeof searchApprovedInstitutionsForDuplicateCheck>>
+		>([]);
+		const [isCheckingExisting, setIsCheckingExisting] = useState(false);
+		const [hasSearchedExisting, setHasSearchedExisting] = useState(false);
+
+		function runCheckExistingSearch() {
+			const q = checkExistingQuery.trim();
+			if (!q) return;
+			setIsCheckingExisting(true);
+			searchApprovedInstitutionsForDuplicateCheck(q)
+				.then((res) => {
+					setCheckExistingResults(res);
+					setHasSearchedExisting(true);
+				})
+				.catch(() => toast.error("Failed to search"))
+				.finally(() => setIsCheckingExisting(false));
+		}
 
 		const formattedSubmissionDate = institution.createdAt
 			? format(new Date(institution.createdAt), "d MMMM yyyy")
@@ -173,6 +252,21 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 		const facebookUrl = watch("facebook");
 		const instagramUrl = watch("instagram");
 		const websiteUrl = watch("website");
+		const latVal = watch("lat");
+		const lonVal = watch("lon");
+		const latNum = Number.parseFloat(latVal ?? "");
+		const lonNum = Number.parseFloat(lonVal ?? "");
+		const hasValidCoords =
+			latVal != null &&
+			lonVal != null &&
+			latVal.trim() !== "" &&
+			lonVal.trim() !== "" &&
+			!Number.isNaN(latNum) &&
+			!Number.isNaN(lonNum) &&
+			latNum >= -90 &&
+			latNum <= 90 &&
+			lonNum >= -180 &&
+			lonNum <= 180;
 
 		const generateGoogleSearchUrl = (
 			platform: string,
@@ -274,7 +368,7 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 									if (address) setValue("address", toTitleCase(address));
 								}}
 							>
-								<CaseSensitive className="h-4 w-4" />
+								<CaseSensitive className="mr-2 h-4 w-4" />
 								Capitalize All
 							</Button>
 						</div>
@@ -287,12 +381,129 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 								render={({ field, fieldState }) => (
 									<Field>
 										<FieldLabel>Name</FieldLabel>
-										<Input
-											{...field}
-											id="name"
-											aria-invalid={fieldState.invalid}
-											placeholder="Nama Institusi"
-										/>
+										<div className="flex gap-2">
+											<Input
+												{...field}
+												id="name"
+												className="flex-1"
+												aria-invalid={fieldState.invalid}
+												placeholder="Nama Institusi"
+											/>
+											<Popover
+												open={checkExistingOpen}
+												onOpenChange={(open) => {
+													setCheckExistingOpen(open);
+													if (!open) {
+														setCheckExistingResults([]);
+														setCheckExistingQuery("");
+														setHasSearchedExisting(false);
+													} else {
+														setCheckExistingQuery(
+															getValues("name")?.trim() ?? "",
+														);
+													}
+												}}
+											>
+												<PopoverTrigger asChild>
+													<Button
+														type="button"
+														variant="outline"
+														size="icon"
+														className="shrink-0"
+														title="Check existing"
+													>
+														<Search className="h-4 w-4" />
+													</Button>
+												</PopoverTrigger>
+												<PopoverContent
+													className="w-96 max-h-80 overflow-y-auto"
+													align="start"
+												>
+													<div className="space-y-2">
+														<div className="text-sm font-medium text-muted-foreground">
+															Search institutions
+														</div>
+														<div className="flex gap-2">
+															<Input
+																placeholder="Type to search (partial name, etc.)"
+																value={checkExistingQuery}
+																onChange={(e) =>
+																	setCheckExistingQuery(e.target.value)
+																}
+																onKeyDown={(e) => {
+																	if (e.key === "Enter") {
+																		e.preventDefault();
+																		runCheckExistingSearch();
+																	}
+																}}
+																className="flex-1"
+															/>
+															<Button
+																type="button"
+																size="sm"
+																disabled={
+																	!checkExistingQuery.trim() ||
+																	isCheckingExisting
+																}
+																onClick={runCheckExistingSearch}
+															>
+																{isCheckingExisting ? (
+																	<Loader2 className="h-4 w-4 animate-spin" />
+																) : (
+																	<Search className="h-4 w-4" />
+																)}
+															</Button>
+														</div>
+														{isCheckingExisting ? (
+															<p className="text-sm text-muted-foreground py-2 flex items-center gap-2">
+																<Loader2 className="h-4 w-4 animate-spin" />
+																Searching...
+															</p>
+														) : hasSearchedExisting &&
+															checkExistingResults.length === 0 ? (
+															<p className="text-sm text-muted-foreground py-2">
+																No matches found
+															</p>
+														) : checkExistingResults.length > 0 ? (
+															<ul className="space-y-1">
+																{checkExistingResults.map((inst) => (
+																	<li key={inst.id}>
+																		<a
+																			href={`/${inst.category}/${inst.slug}`}
+																			target="_blank"
+																			rel="noopener noreferrer"
+																			className="flex items-center gap-2 rounded-md p-2 text-sm hover:bg-muted transition-colors"
+																		>
+																			<Building2 className="h-4 w-4 shrink-0 text-muted-foreground" />
+																			<div className="min-w-0 flex-1">
+																				<div className="font-medium truncate">
+																					{inst.name}
+																				</div>
+																				<div className="text-xs text-muted-foreground">
+																					{inst.city}
+																					{inst.state ? `, ${inst.state}` : ""}
+																				</div>
+																			</div>
+																			<ExternalLink className="h-3 w-3 shrink-0" />
+																		</a>
+																	</li>
+																))}
+															</ul>
+														) : null}
+														{checkExistingQuery.trim() && (
+															<a
+																href={`/?search=${encodeURIComponent(checkExistingQuery.trim())}`}
+																target="_blank"
+																rel="noopener noreferrer"
+																className="block pt-2 text-sm text-primary hover:underline"
+															>
+																View on homepage →
+															</a>
+														)}
+													</div>
+												</PopoverContent>
+											</Popover>
+										</div>
 										{fieldState.invalid && (
 											<FieldError errors={[fieldState.error]} />
 										)}
@@ -386,26 +597,201 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 							</FieldGroup>
 						</div>
 
+						{/* Lookup Toolbar */}
 						<FieldGroup>
-							<Controller
-								name="address"
-								control={control}
-								render={({ field, fieldState }) => (
-									<Field>
-										<FieldLabel>Address</FieldLabel>
-										<Textarea
-											{...field}
-											id="address"
-											rows={3}
-											aria-invalid={fieldState.invalid}
-										/>
-										{fieldState.invalid && (
-											<FieldError errors={[fieldState.error]} />
-										)}
-									</Field>
-								)}
-							/>
+							<FieldLabel className="text-muted-foreground font-medium">
+								Quick Lookup
+							</FieldLabel>
+							<div className="flex flex-wrap gap-2">
+								{(() => {
+									const name = getValues("name")?.trim() ?? "";
+									const city = getValues("city")?.trim() ?? "";
+									const stateVal = getValues("state") ?? "";
+									const lookupQuery = `${name}, ${city}, ${stateVal}`;
+									const searchQuery = `${name} ${city} ${stateVal}`;
+									const hasLookupFields =
+										Boolean(name) && Boolean(city) && Boolean(stateVal);
+
+									return (
+										<>
+											<Button
+												type="button"
+												variant="outline"
+												size="sm"
+												disabled={!hasLookupFields}
+												onClick={() =>
+													window.open(
+														`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(lookupQuery)}`,
+														"_blank",
+													)
+												}
+											>
+												<MapPin className="mr-2 h-4 w-4" />
+												Google Maps
+											</Button>
+											<Button
+												type="button"
+												variant="outline"
+												size="sm"
+												disabled={!hasLookupFields}
+												onClick={() =>
+													window.open(
+														`https://www.openstreetmap.org/search?query=${encodeURIComponent(lookupQuery)}`,
+														"_blank",
+													)
+												}
+											>
+												<MapPin className="mr-2 h-4 w-4" />
+												OSM
+											</Button>
+											<Button
+												type="button"
+												variant="outline"
+												size="sm"
+												disabled={!hasLookupFields}
+												onClick={() =>
+													window.open(
+														`https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`,
+														"_blank",
+													)
+												}
+											>
+												<Search className="mr-2 h-4 w-4" />
+												Google Search
+											</Button>
+											{institution.sourceUrl && (
+												<Button
+													type="button"
+													variant="outline"
+													size="sm"
+													onClick={() =>
+														window.open(institution.sourceUrl, "_blank")
+													}
+												>
+													<ExternalLink className="mr-2 h-4 w-4" />
+													Source URL
+												</Button>
+											)}
+										</>
+									);
+								})()}
+							</div>
 						</FieldGroup>
+
+						<FieldGroup>
+							<div className="flex items-start gap-2">
+								<div className="flex-1">
+									<Controller
+										name="address"
+										control={control}
+										render={({ field, fieldState }) => (
+											<Field>
+												<FieldLabel>Address</FieldLabel>
+												<Textarea
+													{...field}
+													id="address"
+													rows={3}
+													aria-invalid={fieldState.invalid}
+												/>
+												{fieldState.invalid && (
+													<FieldError errors={[fieldState.error]} />
+												)}
+											</Field>
+										)}
+									/>
+								</div>
+								<Button
+									type="button"
+									variant="outline"
+									size="sm"
+									className="shrink-0 mt-8"
+									disabled={isFillingAddress || !hasValidCoords}
+									onClick={async () => {
+										const latStr = getValues("lat")?.trim() ?? "";
+										const lonStr = getValues("lon")?.trim() ?? "";
+										const lat = Number.parseFloat(latStr);
+										const lon = Number.parseFloat(lonStr);
+										const currentAddress = getValues("address")?.trim() ?? "";
+
+										setIsFillingAddress(true);
+										try {
+											const result = await reverseGeocodeInstitutionByAdmin(
+												lat,
+												lon,
+											);
+											if (result) {
+												const newAddr = result.addressLine;
+												if (currentAddress && currentAddress !== newAddr) {
+													setReplaceAddressDialog({
+														open: true,
+														newAddress: newAddr,
+													});
+												} else {
+													setValue("address", newAddr);
+													toast.success("Address filled from coordinates");
+												}
+											} else {
+												toast.error("No address found for these coordinates");
+											}
+										} catch {
+											toast.error("Failed to fetch address");
+										} finally {
+											setIsFillingAddress(false);
+										}
+									}}
+								>
+									{isFillingAddress ? (
+										<Loader2 className="h-4 w-4 animate-spin" />
+									) : (
+										"Fill Address from Coords"
+									)}
+								</Button>
+							</div>
+						</FieldGroup>
+
+						{/* Confirm overwrite address dialog */}
+						<Dialog
+							open={replaceAddressDialog.open}
+							onOpenChange={(open) =>
+								!open &&
+								setReplaceAddressDialog({ open: false, newAddress: "" })
+							}
+						>
+							<DialogContent>
+								<DialogHeader>
+									<DialogTitle>Replace address?</DialogTitle>
+									<DialogDescription>
+										Address field already has content. Replace with the
+										reverse-geocoded result?
+									</DialogDescription>
+								</DialogHeader>
+								<DialogFooter>
+									<Button
+										variant="outline"
+										onClick={() =>
+											setReplaceAddressDialog({
+												open: false,
+												newAddress: "",
+											})
+										}
+									>
+										Cancel
+									</Button>
+									<Button
+										onClick={() => {
+											setValue("address", replaceAddressDialog.newAddress);
+											setReplaceAddressDialog({
+												open: false,
+												newAddress: "",
+											});
+											toast.success("Address replaced");
+										}}
+									>
+										Replace
+									</Button>
+								</DialogFooter>
+							</DialogContent>
+						</Dialog>
 
 						<FieldGroup>
 							<FieldLabel>Coordinates</FieldLabel>
@@ -423,6 +809,16 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 												id="lat"
 												placeholder="-90 to 90"
 												aria-invalid={fieldState.invalid}
+												onPaste={(e) => {
+													const text = e.clipboardData?.getData("text") ?? "";
+													const parsed = parseCoordPaste(text);
+													if (parsed) {
+														e.preventDefault();
+														setValue("lat", String(parsed.lat));
+														setValue("lon", String(parsed.lon));
+														toast.success("Coordinates pasted");
+													}
+												}}
 											/>
 											{fieldState.invalid && (
 												<FieldError errors={[fieldState.error]} />
@@ -443,6 +839,16 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 												id="lon"
 												placeholder="-180 to 180"
 												aria-invalid={fieldState.invalid}
+												onPaste={(e) => {
+													const text = e.clipboardData?.getData("text") ?? "";
+													const parsed = parseCoordPaste(text);
+													if (parsed) {
+														e.preventDefault();
+														setValue("lat", String(parsed.lat));
+														setValue("lon", String(parsed.lon));
+														toast.success("Coordinates pasted");
+													}
+												}}
 											/>
 											{fieldState.invalid && (
 												<FieldError errors={[fieldState.error]} />
