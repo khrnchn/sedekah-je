@@ -94,7 +94,7 @@ const Rawak = () => {
 						exit={{ opacity: 0 }}
 						className="fixed inset-0 h-full w-full z-50 bg-black/50 flex flex-col items-center justify-center"
 					>
-						<div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-xs w-full flex flex-col items-center gap-4">
+						<div className="bg-card rounded-lg p-6 max-w-xs w-full flex flex-col items-center gap-4 border shadow-lg">
 							<div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
 							<p className="text-center font-medium">Memuat turun kod QR...</p>
 							<p className="text-center text-sm text-gray-500 dark:text-gray-400">
@@ -323,12 +323,9 @@ const Rawak = () => {
 								</div>
 							</div>
 						) : (
-							<div className="flex flex-col items-center justify-center h-full min-h-[300px] bg-gray-50 dark:bg-gray-800 rounded-lg p-8 transition-colors duration-200">
-								<QrCode
-									size={48}
-									className="text-gray-400 dark:text-gray-500 mb-4"
-								/>
-								<p className="text-gray-600 dark:text-gray-300 text-lg mb-6 text-center">
+							<div className="flex flex-col items-center justify-center h-full min-h-[300px] bg-muted rounded-lg p-8 transition-colors duration-200">
+								<QrCode size={48} className="text-muted-foreground/70 mb-4" />
+								<p className="text-muted-foreground text-lg mb-6 text-center">
 									Klik butang untuk menjana kod QR rawak.
 								</p>
 							</div>
