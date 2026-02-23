@@ -1,4 +1,4 @@
-import { Moon, SettingsIcon } from "lucide-react";
+import { SettingsIcon } from "lucide-react";
 import { headers } from "next/headers";
 import Image from "next/image";
 import type * as React from "react";
@@ -26,6 +26,7 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
+
 const data = {
 	navMain: [
 		{
@@ -67,6 +68,11 @@ const data = {
 			title: "Ramadan",
 			url: "/admin/ramadhan",
 			icon: "Moon",
+		},
+		{
+			title: "Threads",
+			url: "/admin/threads",
+			icon: "MessageCircle",
 		},
 	],
 	navSecondary: [

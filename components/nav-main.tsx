@@ -6,7 +6,7 @@ import {
 	Home as HomeIcon,
 	LayoutDashboard,
 	type LucideIcon,
-	MailIcon,
+	MessageCircle,
 	Moon,
 	PlusCircleIcon,
 	TwitterIcon,
@@ -31,6 +31,7 @@ const iconMap: Record<string, LucideIcon> = {
 	BarChart,
 	Home: HomeIcon,
 	Moon,
+	MessageCircle,
 };
 
 export function NavMain({
