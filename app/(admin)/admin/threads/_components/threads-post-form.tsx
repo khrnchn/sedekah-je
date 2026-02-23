@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,12 +12,54 @@ type Props = {
 	isConfigured: boolean;
 };
 
+const LAST_POST_ID_STORAGE_KEY = "threads:last-post-id";
+
 export function ThreadsPostForm({ isConfigured }: Props) {
 	const initialState = { status: "idle" } as const;
 	const [state, formAction, isPending] = useActionState(
 		createThreadsPostAction,
 		initialState,
 	);
+	const [replyToId, setReplyToId] = useState("");
+	const [hydrated, setHydrated] = useState(false);
+
+	useEffect(() => {
+		setHydrated(true);
+		try {
+			const cachedPostId = window.localStorage.getItem(
+				LAST_POST_ID_STORAGE_KEY,
+			);
+			if (cachedPostId) {
+				setReplyToId(cachedPostId);
+			}
+		} catch {
+			// Ignore storage access issues (private mode, blocked storage, etc).
+		}
+	}, []);
+
+	useEffect(() => {
+		if (state.status === "success" && state.postId) {
+			setReplyToId(state.postId);
+			try {
+				window.localStorage.setItem(LAST_POST_ID_STORAGE_KEY, state.postId);
+			} catch {
+				// Ignore storage access issues (private mode, blocked storage, etc).
+			}
+		}
+	}, [state.status, state.postId]);
+
+	const useCachedPostId = () => {
+		try {
+			const cachedPostId = window.localStorage.getItem(
+				LAST_POST_ID_STORAGE_KEY,
+			);
+			if (cachedPostId) {
+				setReplyToId(cachedPostId);
+			}
+		} catch {
+			// Ignore storage access issues (private mode, blocked storage, etc).
+		}
+	};
 
 	return (
 		<Card>
@@ -73,12 +115,24 @@ export function ThreadsPostForm({ isConfigured }: Props) {
 						<Input
 							id="reply-to-id"
 							name="reply_to_id"
+							value={replyToId}
+							onChange={(event) => setReplyToId(event.target.value)}
 							placeholder="Paste previous post ID to continue a thread"
 						/>
 						<p className="text-muted-foreground text-xs">
 							Leave empty to create a new root post. Fill this to post as a
 							reply in an existing thread chain.
 						</p>
+						{hydrated && (
+							<Button
+								type="button"
+								variant="outline"
+								size="sm"
+								onClick={useCachedPostId}
+							>
+								Use last post ID
+							</Button>
+						)}
 					</div>
 
 					<Button type="submit" disabled={!isConfigured || isPending}>
