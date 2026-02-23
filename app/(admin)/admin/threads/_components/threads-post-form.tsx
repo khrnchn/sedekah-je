@@ -10,11 +10,16 @@ import { createThreadsPostAction } from "../_lib/actions";
 
 type Props = {
 	isConfigured: boolean;
+	recentPosts: Array<{
+		id: string;
+		text?: string;
+		timestamp?: string;
+	}>;
 };
 
 const LAST_POST_ID_STORAGE_KEY = "threads:last-post-id";
 
-export function ThreadsPostForm({ isConfigured }: Props) {
+export function ThreadsPostForm({ isConfigured, recentPosts }: Props) {
 	const initialState = { status: "idle" } as const;
 	const [state, formAction, isPending] = useActionState(
 		createThreadsPostAction,
@@ -134,6 +139,42 @@ export function ThreadsPostForm({ isConfigured }: Props) {
 							</Button>
 						)}
 					</div>
+
+					{recentPosts.length > 0 && (
+						<div className="space-y-2">
+							<Label>Recent posts</Label>
+							<div className="space-y-2">
+								{recentPosts.map((post) => (
+									<div
+										key={post.id}
+										className="flex items-start justify-between gap-2 rounded-md border p-2 text-sm"
+									>
+										<div className="space-y-1">
+											<p className="font-mono text-xs">{post.id}</p>
+											{post.text && (
+												<p className="text-muted-foreground line-clamp-2">
+													{post.text}
+												</p>
+											)}
+											{post.timestamp && (
+												<p className="text-muted-foreground text-xs">
+													{new Date(post.timestamp).toLocaleString()}
+												</p>
+											)}
+										</div>
+										<Button
+											type="button"
+											variant="secondary"
+											size="sm"
+											onClick={() => setReplyToId(post.id)}
+										>
+											Use
+										</Button>
+									</div>
+								))}
+							</div>
+						</div>
+					)}
 
 					<Button type="submit" disabled={!isConfigured || isPending}>
 						{isPending ? "Publishing..." : "Publish to Threads"}
