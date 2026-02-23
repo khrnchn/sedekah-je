@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { ExternalLink, Loader2, Search } from "lucide-react";
+import { CaseSensitive, ExternalLink, Loader2, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
 	forwardRef,
@@ -260,6 +260,24 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 						<CardTitle className="text-xl font-semibold flex items-center gap-2">
 							📋 Institution Info
 						</CardTitle>
+						<div className="flex justify-end">
+							<Button
+								type="button"
+								variant="outline"
+								size="sm"
+								onClick={() => {
+									const name = getValues("name");
+									const city = getValues("city");
+									const address = getValues("address");
+									if (name) setValue("name", toTitleCase(name));
+									if (city) setValue("city", toTitleCase(city));
+									if (address) setValue("address", toTitleCase(address));
+								}}
+							>
+								<CaseSensitive className="h-4 w-4" />
+								Capitalize All
+							</Button>
+						</div>
 					</CardHeader>
 					<CardContent className="space-y-4">
 						<FieldGroup>
