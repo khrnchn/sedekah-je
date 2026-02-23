@@ -2,6 +2,21 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import type { Institution } from "../app/types/institutions";
 
+/**
+ * Returns the base URL of the application.
+ * Uses NEXT_PUBLIC_APP_URL env var when available, falls back to window.location.origin
+ * on the client side, or localhost:3000 as a safe default.
+ */
+export function getBaseUrl(): string {
+	if (process.env.NEXT_PUBLIC_APP_URL) {
+		return process.env.NEXT_PUBLIC_APP_URL;
+	}
+	if (typeof window !== "undefined") {
+		return window.location.origin;
+	}
+	return "http://localhost:3000";
+}
+
 export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }

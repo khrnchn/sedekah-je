@@ -1,5 +1,12 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
+import html2canvas from "html2canvas";
+import { DownloadIcon, Eye, Share2, User } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { forwardRef, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import type { Institution } from "@/app/types/institutions";
 import Share from "@/components/share";
 import { Button } from "@/components/ui/button";
@@ -20,13 +27,6 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 import { cn, slugify } from "@/lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
-import html2canvas from "html2canvas";
-import { DownloadIcon, Eye, Share2, User } from "lucide-react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { forwardRef, useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
 import { ClaimModal } from "./claim-modal";
 import QrCodeDisplay from "./qrCodeDisplay";
 
@@ -98,9 +98,8 @@ const InstitutionCard = forwardRef<
 				contributorEmail === "khairin13chan@gmail.com");
 
 		const router = useRouter();
-		const navigateToItem = (category: string, slug: string) => {
-			router.push(`/${category}/${slug}`);
-		};
+		const slug = slugify(name);
+		const href = `/${category}/${slug}`;
 
 		useEffect(() => {
 			function onKeyDown(event: KeyboardEvent) {
@@ -152,11 +151,11 @@ const InstitutionCard = forwardRef<
 					src: window.URL.createObjectURL(imgBlob),
 				});
 				imageEl.onload = (e) => {
-					//@ts-ignore
+					//@ts-expect-error
 					canvas.width = e.target?.width;
-					//@ts-ignore
+					//@ts-expect-error
 					canvas.height = e.target?.height;
-					//@ts-ignore
+					//@ts-expect-error
 					ctx?.drawImage(e.target, 0, 0, e.target?.width, e.target?.height);
 					canvas.toBlob(copyToClipboard, "image/png", 1);
 				};
@@ -202,7 +201,7 @@ const InstitutionCard = forwardRef<
 							exit={{ opacity: 0 }}
 							className="fixed inset-0 h-full w-full z-50 bg-black/50 flex flex-col items-center justify-center"
 						>
-							<div className="bg-background rounded-lg p-6 max-w-xs w-full flex flex-col items-center gap-4">
+							<div className="bg-white dark:bg-slate-800 rounded-lg p-6 max-w-xs w-full flex flex-col items-center gap-4">
 								<div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
 								<p className="text-center font-medium">
 									Memuat turun kod QR...
@@ -224,7 +223,7 @@ const InstitutionCard = forwardRef<
 								initial={{ opacity: 0 }}
 								animate={{ opacity: 1 }}
 								exit={{ opacity: 0, transition: { duration: 0.05 } }}
-								className="flex absolute top-2 right-2 lg:hidden items-center justify-center bg-background rounded-full h-6 w-6 z-10"
+								className="flex absolute top-2 right-2 lg:hidden items-center justify-center bg-white dark:bg-slate-800 rounded-full h-6 w-6 z-10"
 								onClick={(e) => {
 									e.stopPropagation();
 									setActive(null);
@@ -241,7 +240,7 @@ const InstitutionCard = forwardRef<
 									setActive(null);
 								}}
 								whileDrag={{ scale: 1.05 }}
-								className="w-full max-w-[500px] h-full md:h-fit p-5 md:max-h-[90%] flex flex-col bg-background sm:rounded-3xl overflow-auto lg:overflow-hidden"
+								className="w-full max-w-[500px] h-full md:h-fit p-5 md:max-h-[90%] flex flex-col bg-white dark:bg-slate-800 sm:rounded-3xl overflow-auto lg:overflow-hidden"
 							>
 								<motion.div
 									layoutId={`image-${name}-${id}`}
@@ -325,7 +324,8 @@ const InstitutionCard = forwardRef<
 									? "border-[hsl(var(--primary))] animate-pulse-subtle"
 									: "",
 							)}
-							onClick={() => navigateToItem(category, slugify(name))}
+							onMouseEnter={() => router.prefetch(href)}
+							onClick={() => router.push(href)}
 						>
 							<CardContent className="flex flex-col items-center gap-2 p-4 h-full">
 								{isClosest && (
