@@ -1,8 +1,9 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { AlertTriangle, RefreshCw } from "lucide-react";
+import Link from "next/link";
 import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
 
 export default function AdminError({
 	error,
@@ -40,14 +41,8 @@ export default function AdminError({
 						<RefreshCw className="mr-2 h-4 w-4" />
 						Try again
 					</Button>
-					<Button
-						onClick={() => {
-							window.location.href = "/admin";
-						}}
-						variant="outline"
-						className="min-w-[120px]"
-					>
-						Go to Dashboard
+					<Button asChild variant="outline" className="min-w-[120px]">
+						<Link href="/admin">Go to Dashboard</Link>
 					</Button>
 				</div>
 
