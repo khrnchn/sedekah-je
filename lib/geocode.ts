@@ -1,4 +1,72 @@
 /**
+ * Reverse geocode coordinates using Nominatim (OpenStreetMap).
+ * Returns a normalized display address string or null if lookup fails.
+ */
+export async function reverseGeocodeInstitution(
+	lat: number,
+	lon: number,
+): Promise<{ addressLine: string; city?: string; state?: string } | null> {
+	try {
+		const controller = new AbortController();
+		const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+		const res = await fetch(
+			`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`,
+			{
+				headers: { "User-Agent": "sedekahje-bot" },
+				signal: controller.signal,
+			},
+		);
+
+		clearTimeout(timeoutId);
+
+		if (!res.ok) return null;
+
+		const data = (await res.json()) as {
+			address?: {
+				road?: string;
+				house_number?: string;
+				suburb?: string;
+				village?: string;
+				town?: string;
+				city?: string;
+				municipality?: string;
+				state?: string;
+				postcode?: string;
+				country?: string;
+			};
+			display_name?: string;
+		};
+
+		const addr = data.address;
+		if (!addr) return null;
+
+		const parts: string[] = [];
+		const street = [addr.house_number, addr.road].filter(Boolean).join(" ");
+		if (street) parts.push(street);
+		const sub = addr.suburb ?? addr.village ?? addr.town ?? addr.municipality;
+		if (sub) parts.push(sub);
+		if (addr.city && sub !== addr.city) parts.push(addr.city);
+		if (addr.state) parts.push(addr.state);
+		if (addr.postcode) parts.push(addr.postcode);
+		if (addr.country) parts.push(addr.country);
+
+		const addressLine =
+			parts.length > 0 ? parts.join(", ") : (data.display_name ?? "");
+		if (!addressLine) return null;
+
+		return {
+			addressLine,
+			city: addr.city ?? addr.town ?? addr.village ?? addr.municipality,
+			state: addr.state,
+		};
+	} catch (err) {
+		console.error("[reverse geocode]", err);
+		return null;
+	}
+}
+
+/**
  * Geocode an institution using Nominatim (OpenStreetMap).
  * Returns [latitude, longitude] or null if geocoding fails.
  */

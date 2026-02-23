@@ -1,5 +1,9 @@
 "use client";
 
+import { ChevronDown, ChevronRight, Loader2, Mail } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -24,11 +28,11 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/use-auth";
-import { ChevronDown, Loader2, Mail } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
-import { toast } from "sonner";
-import { approveInstitution, rejectInstitution } from "../../_lib/queries";
+import {
+	approveInstitution,
+	getNextPendingInstitutionId,
+	rejectInstitution,
+} from "../../_lib/queries";
 import type { ReviewFormHandle } from "./institution-review-form";
 
 type Props = {
@@ -155,6 +159,52 @@ export default function ReviewActions({
 								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
 							) : null}
 							Save Changes
+						</DropdownMenuItem>
+						<DropdownMenuItem
+							disabled={isSaving}
+							onSelect={async () => {
+								if (!user?.id) {
+									toast.error("User not authenticated");
+									return;
+								}
+
+								setIsSaving(true);
+								const ok = await formRef.current?.save();
+								if (!ok) {
+									setIsSaving(false);
+									return;
+								}
+
+								// Compute next while current is still pending to preserve list order
+								let nextId: number | null = null;
+								try {
+									nextId = await getNextPendingInstitutionId(institutionId);
+								} catch (e) {
+									console.error("[next-navigation]", e);
+								}
+
+								try {
+									await approveInstitution(institutionId, user.id);
+									if (nextId != null) {
+										router.push(`/admin/institutions/pending/${nextId}`);
+									} else {
+										router.push("/admin/institutions/pending");
+										toast.success("Approved. No more pending institutions");
+									}
+								} catch (e) {
+									console.error("[approve-and-next]", e);
+									toast.error("Failed to approve institution");
+								} finally {
+									setIsSaving(false);
+								}
+							}}
+						>
+							{isSaving ? (
+								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+							) : (
+								<ChevronRight className="mr-2 h-4 w-4" />
+							)}
+							Save, Approve & Next
 						</DropdownMenuItem>
 						<DropdownMenuItem
 							onSelect={handleSaveAndApprove}
