@@ -1,4 +1,3 @@
-import { SettingsIcon } from "lucide-react";
 import { headers } from "next/headers";
 import Image from "next/image";
 import type * as React from "react";
@@ -14,6 +13,7 @@ import {
 	AsyncRejectedBadge,
 	AsyncUsersBadge,
 } from "@/components/sidebar-badges";
+import { SidebarSettingsItem } from "@/components/sidebar-settings-item";
 import { SidebarThemeToggle } from "@/components/sidebar-theme-toggle";
 import {
 	Sidebar,
@@ -73,13 +73,6 @@ const data = {
 			title: "Threads",
 			url: "/admin/threads",
 			icon: "MessageCircle",
-		},
-	],
-	navSecondary: [
-		{
-			title: "Settings",
-			url: "/admin/settings",
-			icon: SettingsIcon,
 		},
 	],
 	institutions: [
@@ -180,14 +173,7 @@ export async function AppSidebar({
 				<SidebarGroup className="mt-auto">
 					<SidebarGroupContent>
 						<SidebarMenu>
-							<SidebarMenuItem>
-								<SidebarMenuButton asChild>
-									<a href="/admin/settings">
-										<SettingsIcon className="h-4 w-4" />
-										<span>Settings</span>
-									</a>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
+							<SidebarSettingsItem />
 							<SidebarThemeToggle />
 						</SidebarMenu>
 					</SidebarGroupContent>

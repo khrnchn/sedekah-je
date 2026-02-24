@@ -10,6 +10,7 @@ import {
 	User,
 	XCircle,
 } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -35,6 +36,10 @@ const iconMap: Record<string, LucideIcon> = {
 	User,
 };
 
+function isPathActive(pathname: string, url: string) {
+	return pathname === url || pathname.startsWith(`${url}/`);
+}
+
 export function NavInstitutions({
 	items,
 }: {
@@ -53,6 +58,7 @@ export function NavInstitutions({
 	}[];
 }) {
 	const { isMobile } = useSidebar();
+	const pathname = usePathname();
 
 	return (
 		<SidebarGroup className="group-data-[collapsible=icon]:hidden">
@@ -60,9 +66,10 @@ export function NavInstitutions({
 			<SidebarMenu>
 				{items.map((item) => {
 					const IconComponent = iconMap[item.icon];
+					const isActive = isPathActive(pathname, item.url);
 					return (
 						<SidebarMenuItem key={item.name}>
-							<SidebarMenuButton asChild>
+							<SidebarMenuButton asChild isActive={isActive}>
 								<a href={item.url}>
 									{IconComponent && <IconComponent className="h-4 w-4" />}
 									<span>{item.name}</span>

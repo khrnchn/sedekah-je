@@ -13,6 +13,7 @@ import {
 	Users,
 } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,11 @@ const iconMap: Record<string, LucideIcon> = {
 	Moon,
 	MessageCircle,
 };
+
+function isPathActive(pathname: string, url: string) {
+	if (url === "/") return pathname === "/";
+	return pathname === url || pathname.startsWith(`${url}/`);
+}
 
 export function NavMain({
 	items,
@@ -63,6 +69,8 @@ export function NavMain({
 		badgeComponent?: React.ReactNode;
 	}[];
 }) {
+	const pathname = usePathname();
+
 	return (
 		<SidebarGroup>
 			<SidebarGroupContent className="flex flex-col gap-2">
@@ -103,9 +111,14 @@ export function NavMain({
 				<SidebarMenu>
 					{items.map((item) => {
 						const IconComponent = item.icon ? iconMap[item.icon] : null;
+						const isActive = !item.external && isPathActive(pathname, item.url);
 						return (
 							<SidebarMenuItem key={item.title}>
-								<SidebarMenuButton asChild tooltip={item.title}>
+								<SidebarMenuButton
+									asChild
+									tooltip={item.title}
+									isActive={isActive}
+								>
 									{item.external ? (
 										<a
 											href={item.url}
