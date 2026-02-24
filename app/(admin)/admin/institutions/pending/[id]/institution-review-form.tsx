@@ -511,34 +511,40 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 								)}
 							/>
 						</FieldGroup>
-						<FieldGroup>
-							<Controller
-								control={control}
-								name="category"
-								render={({ field, fieldState }) => (
-									<Field>
-										<FieldLabel>Kategori</FieldLabel>
-										<Select value={field.value} onValueChange={field.onChange}>
-											<SelectTrigger className="w-full bg-background h-10">
-												<SelectValue placeholder="Pilih kategori" />
-											</SelectTrigger>
-											<SelectContent>
-												{CATEGORY_OPTIONS.map((c) => (
-													<SelectItem key={c} value={c} className="capitalize">
-														{toTitleCase(c)}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
-										{fieldState.invalid && (
-											<FieldError errors={[fieldState.error]} />
-										)}
-									</Field>
-								)}
-							/>
-						</FieldGroup>
-
-						<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+						<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+							<FieldGroup>
+								<Controller
+									control={control}
+									name="category"
+									render={({ field, fieldState }) => (
+										<Field>
+											<FieldLabel>Kategori</FieldLabel>
+											<Select
+												value={field.value}
+												onValueChange={field.onChange}
+											>
+												<SelectTrigger className="w-full bg-background h-10">
+													<SelectValue placeholder="Pilih kategori" />
+												</SelectTrigger>
+												<SelectContent>
+													{CATEGORY_OPTIONS.map((c) => (
+														<SelectItem
+															key={c}
+															value={c}
+															className="capitalize"
+														>
+															{toTitleCase(c)}
+														</SelectItem>
+													))}
+												</SelectContent>
+											</Select>
+											{fieldState.invalid && (
+												<FieldError errors={[fieldState.error]} />
+											)}
+										</Field>
+									)}
+								/>
+							</FieldGroup>
 							<FieldGroup>
 								<Controller
 									control={control}
@@ -794,7 +800,54 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 						</Dialog>
 
 						<FieldGroup>
-							<FieldLabel>Coordinates</FieldLabel>
+							<div className="flex flex-wrap items-center justify-between gap-2">
+								<FieldLabel>Coordinates</FieldLabel>
+								<Button
+									type="button"
+									variant="outline"
+									size="sm"
+									disabled={isRecalibrating}
+									onClick={async () => {
+										const name = getValues("name");
+										const city = getValues("city");
+										const state = getValues("state");
+										if (!name || !city || !state) {
+											toast.error(
+												"Name, city, and state required for recalibration",
+											);
+											return;
+										}
+										setIsRecalibrating(true);
+										try {
+											const result = await geocodeInstitution(
+												name,
+												city,
+												state,
+											);
+											if (result) {
+												setValue("lat", String(result[0]));
+												setValue("lon", String(result[1]));
+												toast.success("Coordinates updated from address");
+											} else {
+												toast.error("Could not geocode address");
+											}
+										} catch {
+											toast.error("Failed to recalibrate coordinates");
+										} finally {
+											setIsRecalibrating(false);
+										}
+									}}
+								>
+									{isRecalibrating ? (
+										<>
+											<Loader2 className="h-4 w-4 animate-spin" />
+											Recalibrating...
+										</>
+									) : (
+										"Recalibrate"
+									)}
+								</Button>
+							</div>
 							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 								<Controller
 									name="lat"
@@ -857,47 +910,6 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 									)}
 								/>
 							</div>
-							<Button
-								type="button"
-								variant="outline"
-								size="sm"
-								disabled={isRecalibrating}
-								onClick={async () => {
-									const name = getValues("name");
-									const city = getValues("city");
-									const state = getValues("state");
-									if (!name || !city || !state) {
-										toast.error(
-											"Name, city, and state required for recalibration",
-										);
-										return;
-									}
-									setIsRecalibrating(true);
-									try {
-										const result = await geocodeInstitution(name, city, state);
-										if (result) {
-											setValue("lat", String(result[0]));
-											setValue("lon", String(result[1]));
-											toast.success("Coordinates updated from address");
-										} else {
-											toast.error("Could not geocode address");
-										}
-									} catch {
-										toast.error("Failed to recalibrate coordinates");
-									} finally {
-										setIsRecalibrating(false);
-									}
-								}}
-							>
-								{isRecalibrating ? (
-									<>
-										<Loader2 className="h-4 w-4 animate-spin" />
-										Recalibrating...
-									</>
-								) : (
-									"Recalibrate"
-								)}
-							</Button>
 						</FieldGroup>
 
 						<FieldGroup>
@@ -975,153 +987,155 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 						</CardTitle>
 					</CardHeader>
 					<CardContent className="space-y-4">
-						<FieldGroup>
-							<Controller
-								name="facebook"
-								control={control}
-								render={({ field, fieldState }) => (
-									<Field>
-										<FieldLabel>Facebook URL</FieldLabel>
-										<div className="flex gap-2">
-											<Input
-												{...field}
-												id="facebook"
-												placeholder="https://facebook.com/..."
-												aria-invalid={fieldState.invalid}
-											/>
-											{facebookUrl ? (
-												<Button
-													type="button"
-													variant="outline"
-													size="icon"
-													onClick={() => window.open(facebookUrl, "_blank")}
-												>
-													<ExternalLink className="h-4 w-4" />
-												</Button>
-											) : (
-												<Button
-													type="button"
-													variant="outline"
-													size="icon"
-													onClick={() =>
-														window.open(
-															generateGoogleSearchUrl(
-																"facebook",
-																institution.name || "",
-															),
-															"_blank",
-														)
-													}
-												>
-													<Search className="h-4 w-4" />
-												</Button>
+						<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+							<FieldGroup>
+								<Controller
+									name="facebook"
+									control={control}
+									render={({ field, fieldState }) => (
+										<Field>
+											<FieldLabel>Facebook URL</FieldLabel>
+											<div className="flex gap-2">
+												<Input
+													{...field}
+													id="facebook"
+													placeholder="https://facebook.com/..."
+													aria-invalid={fieldState.invalid}
+												/>
+												{facebookUrl ? (
+													<Button
+														type="button"
+														variant="outline"
+														size="icon"
+														onClick={() => window.open(facebookUrl, "_blank")}
+													>
+														<ExternalLink className="h-4 w-4" />
+													</Button>
+												) : (
+													<Button
+														type="button"
+														variant="outline"
+														size="icon"
+														onClick={() =>
+															window.open(
+																generateGoogleSearchUrl(
+																	"facebook",
+																	institution.name || "",
+																),
+																"_blank",
+															)
+														}
+													>
+														<Search className="h-4 w-4" />
+													</Button>
+												)}
+											</div>
+											{fieldState.invalid && (
+												<FieldError errors={[fieldState.error]} />
 											)}
-										</div>
-										{fieldState.invalid && (
-											<FieldError errors={[fieldState.error]} />
-										)}
-									</Field>
-								)}
-							/>
-						</FieldGroup>
-						<FieldGroup>
-							<Controller
-								name="instagram"
-								control={control}
-								render={({ field, fieldState }) => (
-									<Field>
-										<FieldLabel>Instagram URL</FieldLabel>
-										<div className="flex gap-2">
-											<Input
-												{...field}
-												id="instagram"
-												placeholder="https://instagram.com/..."
-												aria-invalid={fieldState.invalid}
-											/>
-											{instagramUrl ? (
-												<Button
-													type="button"
-													variant="outline"
-													size="icon"
-													onClick={() => window.open(instagramUrl, "_blank")}
-												>
-													<ExternalLink className="h-4 w-4" />
-												</Button>
-											) : (
-												<Button
-													type="button"
-													variant="outline"
-													size="icon"
-													onClick={() =>
-														window.open(
-															generateGoogleSearchUrl(
-																"instagram",
-																institution.name || "",
-															),
-															"_blank",
-														)
-													}
-												>
-													<Search className="h-4 w-4" />
-												</Button>
+										</Field>
+									)}
+								/>
+							</FieldGroup>
+							<FieldGroup>
+								<Controller
+									name="instagram"
+									control={control}
+									render={({ field, fieldState }) => (
+										<Field>
+											<FieldLabel>Instagram URL</FieldLabel>
+											<div className="flex gap-2">
+												<Input
+													{...field}
+													id="instagram"
+													placeholder="https://instagram.com/..."
+													aria-invalid={fieldState.invalid}
+												/>
+												{instagramUrl ? (
+													<Button
+														type="button"
+														variant="outline"
+														size="icon"
+														onClick={() => window.open(instagramUrl, "_blank")}
+													>
+														<ExternalLink className="h-4 w-4" />
+													</Button>
+												) : (
+													<Button
+														type="button"
+														variant="outline"
+														size="icon"
+														onClick={() =>
+															window.open(
+																generateGoogleSearchUrl(
+																	"instagram",
+																	institution.name || "",
+																),
+																"_blank",
+															)
+														}
+													>
+														<Search className="h-4 w-4" />
+													</Button>
+												)}
+											</div>
+											{fieldState.invalid && (
+												<FieldError errors={[fieldState.error]} />
 											)}
-										</div>
-										{fieldState.invalid && (
-											<FieldError errors={[fieldState.error]} />
-										)}
-									</Field>
-								)}
-							/>
-						</FieldGroup>
-						<FieldGroup>
-							<Controller
-								name="website"
-								control={control}
-								render={({ field, fieldState }) => (
-									<Field>
-										<FieldLabel>Website URL</FieldLabel>
-										<div className="flex gap-2">
-											<Input
-												{...field}
-												id="website"
-												placeholder="https://..."
-												aria-invalid={fieldState.invalid}
-											/>
-											{websiteUrl ? (
-												<Button
-													type="button"
-													variant="outline"
-													size="icon"
-													onClick={() => window.open(websiteUrl, "_blank")}
-												>
-													<ExternalLink className="h-4 w-4" />
-												</Button>
-											) : (
-												<Button
-													type="button"
-													variant="outline"
-													size="icon"
-													onClick={() =>
-														window.open(
-															generateGoogleSearchUrl(
-																"website",
-																institution.name || "",
-															),
-															"_blank",
-														)
-													}
-												>
-													<Search className="h-4 w-4" />
-												</Button>
+										</Field>
+									)}
+								/>
+							</FieldGroup>
+							<FieldGroup>
+								<Controller
+									name="website"
+									control={control}
+									render={({ field, fieldState }) => (
+										<Field>
+											<FieldLabel>Website URL</FieldLabel>
+											<div className="flex gap-2">
+												<Input
+													{...field}
+													id="website"
+													placeholder="https://..."
+													aria-invalid={fieldState.invalid}
+												/>
+												{websiteUrl ? (
+													<Button
+														type="button"
+														variant="outline"
+														size="icon"
+														onClick={() => window.open(websiteUrl, "_blank")}
+													>
+														<ExternalLink className="h-4 w-4" />
+													</Button>
+												) : (
+													<Button
+														type="button"
+														variant="outline"
+														size="icon"
+														onClick={() =>
+															window.open(
+																generateGoogleSearchUrl(
+																	"website",
+																	institution.name || "",
+																),
+																"_blank",
+															)
+														}
+													>
+														<Search className="h-4 w-4" />
+													</Button>
+												)}
+											</div>
+											{fieldState.invalid && (
+												<FieldError errors={[fieldState.error]} />
 											)}
-										</div>
-										{fieldState.invalid && (
-											<FieldError errors={[fieldState.error]} />
-										)}
-									</Field>
-								)}
-							/>
-						</FieldGroup>
+										</Field>
+									)}
+								/>
+							</FieldGroup>
+						</div>
 					</CardContent>
 				</Card>
 
@@ -1173,7 +1187,9 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 									<Input
 										id="sourceUrl"
 										{...register("sourceUrl")}
-										disabled
+										readOnly
+										aria-readonly="true"
+										className="read-only:opacity-100 bg-background/90 border-blue-200 dark:border-blue-800 text-foreground placeholder:text-muted-foreground"
 										placeholder="No source URL provided"
 									/>
 									{institution.sourceUrl && (
@@ -1200,64 +1216,13 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 									id="contributorRemarks"
 									rows={3}
 									{...register("contributorRemarks")}
-									disabled
+									readOnly
+									aria-readonly="true"
+									className="read-only:opacity-100 bg-background/90 border-blue-200 dark:border-blue-800 text-foreground placeholder:text-muted-foreground leading-relaxed"
 									placeholder="No additional notes provided"
 								/>
 							</Field>
 						</FieldGroup>
-					</CardContent>
-				</Card>
-
-				{/* Review History Section */}
-				<Card className="p-4 mb-6 rounded-lg shadow-sm border-dashed border-2 border-muted-foreground/30">
-					<CardHeader className="pb-4">
-						<CardTitle className="text-xl font-semibold flex items-center gap-2">
-							📋 Review History
-						</CardTitle>
-					</CardHeader>
-					<CardContent className="space-y-4">
-						<div className="flex flex-col items-center justify-center py-8 text-center">
-							<div className="text-6xl mb-4">🏗️</div>
-							<h3 className="text-lg font-semibold text-muted-foreground mb-2">
-								Coming Soon
-							</h3>
-							<p className="text-sm text-muted-foreground max-w-md">
-								Review history will show previous admin actions, status changes,
-								and notes for this institution submission.
-							</p>
-						</div>
-						{/* Mock preview of what it will look like */}
-						<div className="border-t pt-4">
-							<div className="text-xs text-muted-foreground mb-3">Preview:</div>
-							<div className="space-y-3 opacity-50">
-								<div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
-									<div className="w-2 h-2 bg-blue-500 rounded-full mt-2" />
-									<div className="flex-1">
-										<div className="flex items-center gap-2 text-sm">
-											<span className="font-medium">Admin User</span>
-											<span className="text-muted-foreground">•</span>
-											<span className="text-muted-foreground">2 hours ago</span>
-										</div>
-										<div className="text-sm text-muted-foreground mt-1">
-											Updated institution details and saved changes
-										</div>
-									</div>
-								</div>
-								<div className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
-									<div className="w-2 h-2 bg-amber-500 rounded-full mt-2" />
-									<div className="flex-1">
-										<div className="flex items-center gap-2 text-sm">
-											<span className="font-medium">System</span>
-											<span className="text-muted-foreground">•</span>
-											<span className="text-muted-foreground">1 day ago</span>
-										</div>
-										<div className="text-sm text-muted-foreground mt-1">
-											Institution submitted for review
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
 					</CardContent>
 				</Card>
 
