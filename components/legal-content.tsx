@@ -35,11 +35,8 @@ export function LegalContent({ showTitle = true }: LegalContentProps) {
 					</p>
 					<p>
 						To request account/data deletion or privacy-related support, contact{" "}
-						<Link
-							href="mailto:khairin13chan@gmail.com"
-							className="text-primary"
-						>
-							khairin13chan@gmail.com
+						<Link href="mailto:ask@sedekah.je" className="text-primary">
+							ask@sedekah.je
 						</Link>
 						.
 					</p>
@@ -72,11 +69,8 @@ export function LegalContent({ showTitle = true }: LegalContentProps) {
 					<h2 className="text-xl font-semibold">Contact</h2>
 					<p>
 						For legal, privacy, or compliance questions, contact{" "}
-						<Link
-							href="mailto:khairin13chan@gmail.com"
-							className="text-primary"
-						>
-							khairin13chan@gmail.com
+						<Link href="mailto:ask@sedekah.je" className="text-primary">
+							ask@sedekah.je
 						</Link>
 						.
 					</p>
