@@ -43,7 +43,9 @@ function buildCampaignTemplate(params: {
 
 	const lines = [
 		"Kempen 30 Hari 30 QR SedekahJe",
+		"",
 		`day ${day} - ${mosqueName}`,
+		"",
 		"links:",
 		"1. page ramadhan - sedekah.je/ramadhan",
 		`2. page masjid - ${mosqueUrl}`,
