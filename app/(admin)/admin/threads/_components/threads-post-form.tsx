@@ -1,6 +1,13 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import {
+	type ClipboardEvent,
+	useActionState,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,6 +17,8 @@ import { createThreadsPostAction } from "../_lib/actions";
 
 type Props = {
 	isConfigured: boolean;
+	campaignLatestReplyId?: string;
+	latestRecentPostId?: string;
 	recentPosts: Array<{
 		id: string;
 		text?: string;
@@ -18,33 +27,92 @@ type Props = {
 };
 
 const LAST_POST_ID_STORAGE_KEY = "threads:last-post-id";
+const CAMPAIGN_THREAD_PARENT_POST_ID = "18106182523855087";
 
-export function ThreadsPostForm({ isConfigured, recentPosts }: Props) {
+type ThreadTargetMode = "campaign-latest" | "campaign-parent" | "custom";
+
+function buildCampaignTemplate(params: {
+	day: string;
+	mosqueName: string;
+	mosqueUrl: string;
+	includeHashtag: boolean;
+}): string {
+	const day = params.day.trim() || "1";
+	const mosqueName = params.mosqueName.trim() || "masjid";
+	const mosqueUrl = params.mosqueUrl.trim() || "sedekah.je/mosque/your-slug";
+
+	const lines = [
+		"Kempen 30 Hari 30 QR SedekahJe",
+		`day ${day} - ${mosqueName}`,
+		"links:",
+		"1. page ramadhan - sedekah.je/ramadhan",
+		`2. page masjid - ${mosqueUrl}`,
+	];
+
+	if (params.includeHashtag) {
+		lines.push("#sedekahramadhan");
+	}
+
+	return lines.join("\n");
+}
+
+function readCachedPostId(): string | null {
+	try {
+		return window.localStorage.getItem(LAST_POST_ID_STORAGE_KEY);
+	} catch {
+		return null;
+	}
+}
+
+export function ThreadsPostForm({
+	campaignLatestReplyId,
+	isConfigured,
+	latestRecentPostId,
+	recentPosts,
+}: Props) {
 	const initialState = { status: "idle" } as const;
 	const [state, formAction, isPending] = useActionState(
 		createThreadsPostAction,
 		initialState,
 	);
-	const [replyToId, setReplyToId] = useState("");
+	const [threadTargetMode, setThreadTargetMode] =
+		useState<ThreadTargetMode>("campaign-latest");
+	const [replyToId, setReplyToId] = useState(CAMPAIGN_THREAD_PARENT_POST_ID);
+	const [text, setText] = useState("");
+	const [day, setDay] = useState("1");
+	const [mosqueName, setMosqueName] = useState("");
+	const [mosqueUrl, setMosqueUrl] = useState("");
+	const [includeHashtag, setIncludeHashtag] = useState(false);
+	const [selectedImageName, setSelectedImageName] = useState("");
 	const [hydrated, setHydrated] = useState(false);
+	const imageInputRef = useRef<HTMLInputElement | null>(null);
+
+	const suggestedLatestReplyId = useMemo(
+		() =>
+			campaignLatestReplyId ||
+			latestRecentPostId ||
+			CAMPAIGN_THREAD_PARENT_POST_ID,
+		[campaignLatestReplyId, latestRecentPostId],
+	);
 
 	useEffect(() => {
 		setHydrated(true);
-		try {
-			const cachedPostId = window.localStorage.getItem(
-				LAST_POST_ID_STORAGE_KEY,
-			);
-			if (cachedPostId) {
-				setReplyToId(cachedPostId);
-			}
-		} catch {
-			// Ignore storage access issues (private mode, blocked storage, etc).
+		const cachedPostId = readCachedPostId();
+		if (cachedPostId) {
+			setReplyToId(cachedPostId);
+			return;
 		}
-	}, []);
+		setReplyToId(suggestedLatestReplyId);
+	}, [suggestedLatestReplyId]);
 
 	useEffect(() => {
 		if (state.status === "success" && state.postId) {
 			setReplyToId(state.postId);
+			setText("");
+			if (imageInputRef.current) {
+				imageInputRef.current.value = "";
+			}
+			setSelectedImageName("");
 			try {
 				window.localStorage.setItem(LAST_POST_ID_STORAGE_KEY, state.postId);
 			} catch {
@@ -54,16 +122,45 @@ export function ThreadsPostForm({ isConfigured, recentPosts }: Props) {
 	}, [state.status, state.postId]);
 
 	const useCachedPostId = () => {
-		try {
-			const cachedPostId = window.localStorage.getItem(
-				LAST_POST_ID_STORAGE_KEY,
-			);
-			if (cachedPostId) {
-				setReplyToId(cachedPostId);
-			}
-		} catch {
-			// Ignore storage access issues (private mode, blocked storage, etc).
+		const cachedPostId = readCachedPostId();
+		if (cachedPostId) {
+			setReplyToId(cachedPostId);
 		}
+	};
+
+	const applyThreadTargetMode = (mode: ThreadTargetMode) => {
+		setThreadTargetMode(mode);
+		if (mode === "campaign-parent") {
+			setReplyToId(CAMPAIGN_THREAD_PARENT_POST_ID);
+			return;
+		}
+		if (mode === "campaign-latest") {
+			const cachedPostId = readCachedPostId();
+			setReplyToId(cachedPostId || suggestedLatestReplyId);
+		}
+	};
+
+	const handleImageFile = (file: File | null) => {
+		if (!file) {
+			setSelectedImageName("");
+			return;
+		}
+		setSelectedImageName(file.name || "clipboard-image.png");
+	};
+
+	const handlePasteImage = (event: ClipboardEvent<HTMLTextAreaElement>) => {
+		const imageItem = Array.from(event.clipboardData.items).find((item) =>
+			item.type.startsWith("image/"),
+		);
+		if (!imageItem) return;
+
+		const file = imageItem.getAsFile();
+		if (!file || !imageInputRef.current) return;
+
+		const dataTransfer = new DataTransfer();
+		dataTransfer.items.add(file);
+		imageInputRef.current.files = dataTransfer.files;
+		handleImageFile(file);
 	};
 
 	return (
@@ -102,41 +199,204 @@ export function ThreadsPostForm({ isConfigured, recentPosts }: Props) {
 					</div>
 				)}
 
-				<form action={formAction} className="space-y-4">
+				<form
+					action={formAction}
+					className="space-y-4"
+					encType="multipart/form-data"
+				>
+					<div className="space-y-2 rounded-md border p-3">
+						<Label>Thread target</Label>
+						<div className="flex flex-wrap gap-2">
+							<Button
+								type="button"
+								variant={
+									threadTargetMode === "campaign-latest" ? "default" : "outline"
+								}
+								size="sm"
+								onClick={() => applyThreadTargetMode("campaign-latest")}
+							>
+								1 day 1 QR: Continue latest
+							</Button>
+							<Button
+								type="button"
+								variant={
+									threadTargetMode === "campaign-parent" ? "default" : "outline"
+								}
+								size="sm"
+								onClick={() => applyThreadTargetMode("campaign-parent")}
+							>
+								1 day 1 QR: Parent root
+							</Button>
+							<Button
+								type="button"
+								variant={threadTargetMode === "custom" ? "default" : "outline"}
+								size="sm"
+								onClick={() => applyThreadTargetMode("custom")}
+							>
+								Custom
+							</Button>
+						</div>
+						<p className="text-muted-foreground text-xs">
+							Parent root ID: <code>{CAMPAIGN_THREAD_PARENT_POST_ID}</code>
+						</p>
+					</div>
+
+					<div className="space-y-3 rounded-md border p-3">
+						<Label>30 Hari 30 QR template</Label>
+						<div className="grid gap-3 md:grid-cols-2">
+							<div className="space-y-2">
+								<Label htmlFor="campaign-day">Day</Label>
+								<Input
+									id="campaign-day"
+									value={day}
+									onChange={(event) => setDay(event.target.value)}
+									placeholder="2"
+								/>
+							</div>
+							<div className="space-y-2">
+								<Label htmlFor="campaign-mosque-name">Mosque name</Label>
+								<Input
+									id="campaign-mosque-name"
+									value={mosqueName}
+									onChange={(event) => setMosqueName(event.target.value)}
+									placeholder="masjid al muhtadin damansara damai"
+								/>
+							</div>
+						</div>
+						<div className="space-y-2">
+							<Label htmlFor="campaign-mosque-url">Page masjid link</Label>
+							<Input
+								id="campaign-mosque-url"
+								value={mosqueUrl}
+								onChange={(event) => setMosqueUrl(event.target.value)}
+								placeholder="sedekah.je/mosque/masjid-slug"
+							/>
+						</div>
+						<label className="flex items-center gap-2 text-sm">
+							<input
+								type="checkbox"
+								checked={includeHashtag}
+								onChange={(event) => setIncludeHashtag(event.target.checked)}
+							/>
+							Include #sedekahramadhan
+						</label>
+						<Button
+							type="button"
+							variant="outline"
+							size="sm"
+							onClick={() =>
+								setText(
+									buildCampaignTemplate({
+										day,
+										mosqueName,
+										mosqueUrl,
+										includeHashtag,
+									}),
+								)
+							}
+						>
+							Generate template into post text
+						</Button>
+					</div>
+
 					<div className="space-y-2">
 						<Label htmlFor="threads-text">Post text</Label>
 						<Textarea
 							id="threads-text"
 							name="text"
+							value={text}
+							onChange={(event) => setText(event.target.value)}
+							onPaste={handlePasteImage}
 							placeholder="Write your post (max 500 chars)"
 							maxLength={500}
-							required
 							rows={6}
 						/>
+						<p className="text-muted-foreground text-xs">
+							Text is optional when an image is attached.
+						</p>
+					</div>
+
+					<div className="space-y-2">
+						<Label htmlFor="threads-image">
+							Attach image (optional, supports paste from clipboard)
+						</Label>
+						<Input
+							ref={imageInputRef}
+							id="threads-image"
+							name="image"
+							type="file"
+							accept="image/*"
+							onChange={(event) =>
+								handleImageFile(event.target.files?.[0] ?? null)
+							}
+						/>
+						{selectedImageName && (
+							<div className="flex items-center justify-between gap-2 rounded-md border p-2 text-xs">
+								<span className="truncate">
+									Selected image: <code>{selectedImageName}</code>
+								</span>
+								<Button
+									type="button"
+									variant="ghost"
+									size="sm"
+									onClick={() => {
+										if (imageInputRef.current) {
+											imageInputRef.current.value = "";
+										}
+										setSelectedImageName("");
+									}}
+								>
+									Clear
+								</Button>
+							</div>
+						)}
+						<p className="text-muted-foreground text-xs">
+							Tip: snip and copy, then paste directly in the post text box to
+							auto-attach.
+						</p>
 					</div>
 
 					<div className="space-y-2">
 						<Label htmlFor="reply-to-id">Reply to post ID (optional)</Label>
-						<Input
-							id="reply-to-id"
-							name="reply_to_id"
-							value={replyToId}
-							onChange={(event) => setReplyToId(event.target.value)}
-							placeholder="Paste previous post ID to continue a thread"
-						/>
+						{threadTargetMode === "custom" ? (
+							<Input
+								id="reply-to-id"
+								name="reply_to_id"
+								value={replyToId}
+								onChange={(event) => setReplyToId(event.target.value)}
+								placeholder="Paste previous post ID to continue a thread"
+							/>
+						) : (
+							<>
+								<Input id="reply-to-id" value={replyToId} readOnly />
+								<input type="hidden" name="reply_to_id" value={replyToId} />
+							</>
+						)}
 						<p className="text-muted-foreground text-xs">
 							Leave empty to create a new root post. Fill this to post as a
 							reply in an existing thread chain.
 						</p>
 						{hydrated && (
-							<Button
-								type="button"
-								variant="outline"
-								size="sm"
-								onClick={useCachedPostId}
-							>
-								Use last post ID
-							</Button>
+							<div className="flex flex-wrap gap-2">
+								<Button
+									type="button"
+									variant="outline"
+									size="sm"
+									onClick={useCachedPostId}
+								>
+									Use last successful post ID
+								</Button>
+								<Button
+									type="button"
+									variant="outline"
+									size="sm"
+									onClick={() =>
+										setReplyToId(readCachedPostId() || suggestedLatestReplyId)
+									}
+								>
+									Refresh latest target
+								</Button>
+							</div>
 						)}
 					</div>
 
