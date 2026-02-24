@@ -1,3 +1,4 @@
+import { getCampaignByYear } from "@/app/ramadhan/_lib/queries";
 import { AdminLayout } from "@/components/admin-layout";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -10,6 +11,13 @@ type ThreadsRecentPost = {
 	id: string;
 	text?: string;
 	timestamp?: string;
+};
+
+type CampaignDayLookup = {
+	dayNumber: number;
+	institutionName: string;
+	institutionSlug: string;
+	institutionCategory: string;
 };
 
 async function getRecentPosts(
@@ -78,7 +86,15 @@ export default async function AdminThreadsPage() {
 	const userId = process.env.THREADS_USER_ID;
 	const accessToken = process.env.THREADS_ACCESS_TOKEN;
 	const isConfigured = Boolean(userId && accessToken);
+	const campaignYear = new Date().getFullYear();
 	const recentPosts = await getRecentPosts(userId, accessToken);
+	const campaign = await getCampaignByYear(campaignYear);
+	const campaignDays: CampaignDayLookup[] = campaign.map((day) => ({
+		dayNumber: day.dayNumber,
+		institutionName: day.institutionName,
+		institutionSlug: day.institutionSlug,
+		institutionCategory: day.institutionCategory,
+	}));
 	const campaignLatestReplyId = await getLatestCampaignReplyId(
 		userId,
 		accessToken,
@@ -97,6 +113,7 @@ export default async function AdminThreadsPage() {
 					]}
 				>
 					<ThreadsPostForm
+						campaignDays={campaignDays}
 						isConfigured={isConfigured}
 						campaignLatestReplyId={campaignLatestReplyId}
 						latestRecentPostId={recentPosts[0]?.id}

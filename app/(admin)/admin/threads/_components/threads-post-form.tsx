@@ -16,6 +16,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { createThreadsPostAction } from "../_lib/actions";
 
 type Props = {
+	campaignDays: Array<{
+		dayNumber: number;
+		institutionName: string;
+		institutionSlug: string;
+		institutionCategory: string;
+	}>;
 	isConfigured: boolean;
 	campaignLatestReplyId?: string;
 	latestRecentPostId?: string;
@@ -67,6 +73,7 @@ function readCachedPostId(): string | null {
 }
 
 export function ThreadsPostForm({
+	campaignDays,
 	campaignLatestReplyId,
 	isConfigured,
 	latestRecentPostId,
@@ -85,6 +92,7 @@ export function ThreadsPostForm({
 	const [mosqueName, setMosqueName] = useState("");
 	const [mosqueUrl, setMosqueUrl] = useState("");
 	const [includeHashtag, setIncludeHashtag] = useState(false);
+	const [campaignLookupMessage, setCampaignLookupMessage] = useState("");
 	const [selectedImageName, setSelectedImageName] = useState("");
 	const [hydrated, setHydrated] = useState(false);
 	const imageInputRef = useRef<HTMLInputElement | null>(null);
@@ -95,6 +103,10 @@ export function ThreadsPostForm({
 			latestRecentPostId ||
 			CAMPAIGN_THREAD_PARENT_POST_ID,
 		[campaignLatestReplyId, latestRecentPostId],
+	);
+	const campaignDayMap = useMemo(
+		() => new Map(campaignDays.map((entry) => [entry.dayNumber, entry])),
+		[campaignDays],
 	);
 
 	useEffect(() => {
@@ -163,6 +175,38 @@ export function ThreadsPostForm({
 		dataTransfer.items.add(file);
 		imageInputRef.current.files = dataTransfer.files;
 		handleImageFile(file);
+	};
+
+	const autofillFromDay = () => {
+		const dayNum = Number.parseInt(day.trim(), 10);
+		if (Number.isNaN(dayNum) || dayNum < 1 || dayNum > 30) {
+			setCampaignLookupMessage("Day must be between 1 and 30.");
+			return;
+		}
+
+		const selectedDay = campaignDayMap.get(dayNum);
+		if (!selectedDay) {
+			setCampaignLookupMessage(
+				`No campaign record found for day ${dayNum} in current year data.`,
+			);
+			return;
+		}
+
+		const resolvedMosqueName = selectedDay.institutionName;
+		const resolvedMosqueUrl = `https://sedekah.je/${selectedDay.institutionCategory}/${selectedDay.institutionSlug}`;
+		setMosqueName(resolvedMosqueName);
+		setMosqueUrl(resolvedMosqueUrl);
+		setText(
+			buildCampaignTemplate({
+				day: String(dayNum),
+				mosqueName: resolvedMosqueName,
+				mosqueUrl: resolvedMosqueUrl,
+				includeHashtag,
+			}),
+		);
+		setCampaignLookupMessage(
+			`Autofilled day ${dayNum}: ${resolvedMosqueName} (${selectedDay.institutionCategory}/${selectedDay.institutionSlug}).`,
+		);
 	};
 
 	return (
@@ -248,12 +292,31 @@ export function ThreadsPostForm({
 						<div className="grid gap-3 md:grid-cols-2">
 							<div className="space-y-2">
 								<Label htmlFor="campaign-day">Day</Label>
-								<Input
-									id="campaign-day"
-									value={day}
-									onChange={(event) => setDay(event.target.value)}
-									placeholder="2"
-								/>
+								<div className="flex gap-2">
+									<Input
+										id="campaign-day"
+										value={day}
+										onChange={(event) => {
+											setDay(event.target.value);
+											setCampaignLookupMessage("");
+										}}
+										onBlur={autofillFromDay}
+										onKeyDown={(event) => {
+											if (event.key !== "Enter") return;
+											event.preventDefault();
+											autofillFromDay();
+										}}
+										placeholder="2"
+									/>
+									<Button
+										type="button"
+										variant="outline"
+										size="sm"
+										onClick={autofillFromDay}
+									>
+										Autofill
+									</Button>
+								</div>
 							</div>
 							<div className="space-y-2">
 								<Label htmlFor="campaign-mosque-name">Mosque name</Label>
@@ -299,6 +362,11 @@ export function ThreadsPostForm({
 						>
 							Generate template into post text
 						</Button>
+						{campaignLookupMessage && (
+							<p className="text-muted-foreground text-xs">
+								{campaignLookupMessage}
+							</p>
+						)}
 					</div>
 
 					<div className="space-y-2">
