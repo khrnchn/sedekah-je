@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import {
 	SidebarGroup,
 	SidebarGroupContent,
+	SidebarGroupLabel,
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
@@ -48,6 +49,7 @@ export function NavMain({
 		url: string;
 		icon?: string;
 		external?: boolean;
+		group?: string;
 		items?: {
 			title: string;
 			url: string;
@@ -70,6 +72,78 @@ export function NavMain({
 	}[];
 }) {
 	const pathname = usePathname();
+	const topLevelItems = items.filter((item) => !item.group);
+	const groupedItems = items.reduce<Record<string, (typeof items)[number][]>>(
+		(acc, item) => {
+			if (!item.group) return acc;
+			if (!acc[item.group]) {
+				acc[item.group] = [];
+			}
+			acc[item.group].push(item);
+			return acc;
+		},
+		{},
+	);
+
+	const renderItems = (menuItems: typeof items) => (
+		<SidebarMenu>
+			{menuItems.map((item) => {
+				const IconComponent = item.icon ? iconMap[item.icon] : null;
+				const isActive = !item.external && isPathActive(pathname, item.url);
+				return (
+					<SidebarMenuItem key={item.title}>
+						<SidebarMenuButton asChild tooltip={item.title} isActive={isActive}>
+							{item.external ? (
+								<a href={item.url} target="_blank" rel="noopener noreferrer">
+									{IconComponent && <IconComponent />}
+									<span>{item.title}</span>
+									{item.badgeComponent ||
+										(item.badge && item.badge > 0 && (
+											<Badge
+												variant={
+													item.badgeVariant === "success"
+														? "default"
+														: item.badgeVariant || "destructive"
+												}
+												className={
+													item.badgeVariant === "success"
+														? "bg-primary text-primary-foreground hover:bg-primary/90 duration-200 ease-linear"
+														: ""
+												}
+											>
+												{item.badge}
+											</Badge>
+										))}
+								</a>
+							) : (
+								<Link href={item.url}>
+									{IconComponent && <IconComponent />}
+									<span>{item.title}</span>
+									{item.badgeComponent ||
+										(item.badge && item.badge > 0 && (
+											<Badge
+												variant={
+													item.badgeVariant === "success"
+														? "default"
+														: item.badgeVariant || "destructive"
+												}
+												className={
+													item.badgeVariant === "success"
+														? "bg-primary text-primary-foreground hover:bg-primary/90 duration-200 ease-linear"
+														: ""
+												}
+											>
+												{item.badge}
+											</Badge>
+										))}
+								</Link>
+							)}
+						</SidebarMenuButton>
+					</SidebarMenuItem>
+				);
+			})}
+		</SidebarMenu>
+	);
 
 	return (
 		<SidebarGroup>
@@ -108,71 +182,13 @@ export function NavMain({
 						</Button>
 					</SidebarMenuItem>
 				</SidebarMenu>
-				<SidebarMenu>
-					{items.map((item) => {
-						const IconComponent = item.icon ? iconMap[item.icon] : null;
-						const isActive = !item.external && isPathActive(pathname, item.url);
-						return (
-							<SidebarMenuItem key={item.title}>
-								<SidebarMenuButton
-									asChild
-									tooltip={item.title}
-									isActive={isActive}
-								>
-									{item.external ? (
-										<a
-											href={item.url}
-											target="_blank"
-											rel="noopener noreferrer"
-										>
-											{IconComponent && <IconComponent />}
-											<span>{item.title}</span>
-											{item.badgeComponent ||
-												(item.badge && item.badge > 0 && (
-													<Badge
-														variant={
-															item.badgeVariant === "success"
-																? "default"
-																: item.badgeVariant || "destructive"
-														}
-														className={
-															item.badgeVariant === "success"
-																? "bg-primary text-primary-foreground hover:bg-primary/90 duration-200 ease-linear"
-																: ""
-														}
-													>
-														{item.badge}
-													</Badge>
-												))}
-										</a>
-									) : (
-										<Link href={item.url}>
-											{IconComponent && <IconComponent />}
-											<span>{item.title}</span>
-											{item.badgeComponent ||
-												(item.badge && item.badge > 0 && (
-													<Badge
-														variant={
-															item.badgeVariant === "success"
-																? "default"
-																: item.badgeVariant || "destructive"
-														}
-														className={
-															item.badgeVariant === "success"
-																? "bg-primary text-primary-foreground hover:bg-primary/90 duration-200 ease-linear"
-																: ""
-														}
-													>
-														{item.badge}
-													</Badge>
-												))}
-										</Link>
-									)}
-								</SidebarMenuButton>
-							</SidebarMenuItem>
-						);
-					})}
-				</SidebarMenu>
+				{renderItems(topLevelItems)}
+				{Object.entries(groupedItems).map(([groupName, groupMenuItems]) => (
+					<div key={groupName} className="space-y-1">
+						<SidebarGroupLabel>{groupName}</SidebarGroupLabel>
+						{renderItems(groupMenuItems)}
+					</div>
+				))}
 			</SidebarGroupContent>
 		</SidebarGroup>
 	);

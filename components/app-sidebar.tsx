@@ -13,7 +13,6 @@ import {
 	AsyncRejectedBadge,
 	AsyncUsersBadge,
 } from "@/components/sidebar-badges";
-import { SidebarSettingsItem } from "@/components/sidebar-settings-item";
 import { SidebarThemeToggle } from "@/components/sidebar-theme-toggle";
 import {
 	Sidebar,
@@ -30,7 +29,7 @@ import {
 const data = {
 	navMain: [
 		{
-			title: "Laman Utama",
+			title: "Home",
 			url: "/",
 			icon: "Home",
 		},
@@ -43,6 +42,7 @@ const data = {
 			title: "Users",
 			url: "/admin/users",
 			icon: "Users",
+			group: "Manage",
 			items: [
 				{
 					title: "Directory",
@@ -63,16 +63,19 @@ const data = {
 			url: "https://umami-production-8fc8.up.railway.app/share/WE1UDYzx8hipoZC7",
 			icon: "BarChart",
 			external: true,
+			group: "Campaign",
 		},
 		{
-			title: "Ramadan",
+			title: "Ramadhan",
 			url: "/admin/ramadhan",
 			icon: "Moon",
+			group: "Campaign",
 		},
 		{
 			title: "Threads",
 			url: "/admin/threads",
 			icon: "MessageCircle",
+			group: "Campaign",
 		},
 	],
 	institutions: [
@@ -173,7 +176,6 @@ export async function AppSidebar({
 				<SidebarGroup className="mt-auto">
 					<SidebarGroupContent>
 						<SidebarMenu>
-							<SidebarSettingsItem />
 							<SidebarThemeToggle />
 						</SidebarMenu>
 					</SidebarGroupContent>
