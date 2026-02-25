@@ -20,66 +20,43 @@ type CampaignDayLookup = {
 	institutionCategory: string;
 };
 
-async function getRecentPosts(
+type CampaignThreadRepliesResult = {
+	replies: ThreadsRecentPost[];
+	campaignLatestReplyId: string | undefined;
+};
+
+async function getCampaignThreadReplies(
 	userId?: string,
 	accessToken?: string,
-): Promise<ThreadsRecentPost[]> {
+	limit = 5,
+): Promise<CampaignThreadRepliesResult> {
 	if (!userId || !accessToken) {
-		return [];
+		return { replies: [], campaignLatestReplyId: undefined };
 	}
 
 	const params = new URLSearchParams({
 		fields: "id,text,timestamp",
-		limit: "5",
+		limit: String(limit),
 		access_token: accessToken,
 	});
 
-	const res = await fetch(`${THREADS_API_BASE}/${userId}/threads?${params}`, {
-		cache: "no-store",
-	});
-
-	if (!res.ok) {
-		return [];
-	}
-
-	const payload = (await res.json().catch(() => null)) as {
-		data?: ThreadsRecentPost[];
-	} | null;
-
-	return payload?.data ?? [];
-}
-
-async function getLatestCampaignReplyId(
-	userId?: string,
-	accessToken?: string,
-): Promise<string | undefined> {
-	if (!userId || !accessToken) {
-		return undefined;
-	}
-
-	const params = new URLSearchParams({
-		fields: "id,text,timestamp",
-		limit: "5",
-		access_token: accessToken,
-	});
-
-	// If unavailable for the app/token, this fails gracefully and we fallback.
 	const res = await fetch(
 		`${THREADS_API_BASE}/${CAMPAIGN_THREAD_PARENT_POST_ID}/replies?${params}`,
-		{
-			cache: "no-store",
-		},
+		{ cache: "no-store" },
 	);
 
 	if (!res.ok) {
-		return undefined;
+		return { replies: [], campaignLatestReplyId: undefined };
 	}
 
 	const payload = (await res.json().catch(() => null)) as {
 		data?: ThreadsRecentPost[];
 	} | null;
 
-	return payload?.data?.[0]?.id;
+	const replies = payload?.data ?? [];
+	const campaignLatestReplyId = replies[0]?.id;
+
+	return { replies, campaignLatestReplyId };
 }
 
 export default async function AdminThreadsPage() {
@@ -87,7 +64,8 @@ export default async function AdminThreadsPage() {
 	const accessToken = process.env.THREADS_ACCESS_TOKEN;
 	const isConfigured = Boolean(userId && accessToken);
 	const campaignYear = new Date().getFullYear();
-	const recentPosts = await getRecentPosts(userId, accessToken);
+	const { replies: campaignReplies, campaignLatestReplyId } =
+		await getCampaignThreadReplies(userId, accessToken, 5);
 	const campaign = await getCampaignByYear(campaignYear);
 	const campaignDays: CampaignDayLookup[] = campaign.map((day) => ({
 		dayNumber: day.dayNumber,
@@ -95,10 +73,6 @@ export default async function AdminThreadsPage() {
 		institutionSlug: day.institutionSlug,
 		institutionCategory: day.institutionCategory,
 	}));
-	const campaignLatestReplyId = await getLatestCampaignReplyId(
-		userId,
-		accessToken,
-	);
 
 	return (
 		<SidebarProvider>
@@ -119,8 +93,7 @@ export default async function AdminThreadsPage() {
 						campaignDays={campaignDays}
 						isConfigured={isConfigured}
 						campaignLatestReplyId={campaignLatestReplyId}
-						latestRecentPostId={recentPosts[0]?.id}
-						recentPosts={recentPosts}
+						recentPosts={campaignReplies}
 					/>
 				</AdminLayout>
 			</SidebarInset>
