@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 		title: "30 Hari 30 QR — Kempen Ramadan | Sedekah Je",
 		description:
 			"Ikuti kempen #SedekahJe 30 Hari 30 QR — satu institusi, satu kod QR setiap hari sepanjang Ramadan. Imbas dan sedekah dengan mudah.",
-		images: [`${BASE_URL}/sedekahje-og-compressed.png`],
+		images: [`${BASE_URL}/sedekahje-og-ramadhan.png`],
 	},
 };
 
