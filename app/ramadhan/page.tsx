@@ -1,6 +1,6 @@
+import type { Metadata } from "next";
 import { Header } from "@/components/ui/header";
 import { getIslamicDateMYT, toDateString } from "@/lib/ramadhan";
-import type { Metadata } from "next";
 import { RamadhanCalendar } from "./_components/ramadhan-calendar";
 import { RamadhanTodayCard } from "./_components/ramadhan-today-card";
 import { getCampaignByYear, getTodaysFeatured } from "./_lib/queries";
@@ -9,17 +9,20 @@ const BASE_URL = "https://sedekah.je";
 
 export async function generateMetadata(): Promise<Metadata> {
 	const featured = await getTodaysFeatured();
-	const dayNum = featured?.dayNumber ?? 1;
+
+	const ogImage = featured
+		? `${BASE_URL}/api/og/ramadhan/${featured.dayNumber}`
+		: `${BASE_URL}/sedekahje-og-compressed.png`;
 
 	return {
 		title: "30 Hari 30 QR — Kempen Ramadan | SedekahJe",
 		description:
-			"Ikuti kempen #SedekahJe 30 Hari 30 QR — satu institusi, satu kod QR setiap hari sepanjang Ramadan.",
+			"Ikuti kempen #SedekahJe 30 Hari 30 QR — satu institusi, satu kod QR setiap hari sepanjang Ramadan. Imbas kod QR dan tunaikan sedekah anda dengan mudah.",
 		openGraph: {
-			title: "30 Hari 30 QR — Kempen Ramadan",
+			title: "30 Hari 30 QR — Kempen Ramadan | Sedekah Je",
 			description:
-				"Satu QR sehari sepanjang Ramadan. Kongsi sedekah dengan komuniti.",
-			images: [`${BASE_URL}/api/og/ramadhan/${dayNum}`],
+				"Ikuti kempen #SedekahJe 30 Hari 30 QR — satu institusi, satu kod QR setiap hari sepanjang Ramadan. Imbas dan sedekah dengan mudah.",
+			images: [ogImage],
 		},
 	};
 }
