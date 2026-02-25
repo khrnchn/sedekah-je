@@ -1,6 +1,6 @@
-import { cn } from "@/lib/utils";
 import type React from "react";
 import { type ComponentProps, type ForwardedRef, forwardRef } from "react";
+import { cn } from "@/lib/utils";
 
 type Props = ComponentProps<"section"> & {
 	children: React.ReactNode;
@@ -14,8 +14,8 @@ const PageSection = forwardRef(
 			<section
 				ref={ref}
 				className={cn(
-					"max-w-5xl mx-auto px-4 lg:px-6 flex flex-col gap-4 sm:gap-6 lg:gap-8",
-					"py-8 sm:py-12 lg:py-16", // Add both top and bottom padding
+					"max-w-5xl mx-auto px-4 lg:px-6 flex flex-col sm:gap-2 lg:gap-4",
+					"pt-2 sm:pt-4 lg:pt-6 pb-8 sm:pb-12 lg:pb-16",
 					className,
 				)}
 				{...rest}

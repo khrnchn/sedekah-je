@@ -70,7 +70,7 @@ export const Header = () => {
 
 	return (
 		<>
-			<header className="flex flex-col md:flex-row items-center justify-center py-8 gap-5 relative">
+			<header className="flex flex-col md:flex-row items-center justify-center py-4 md:py-6 gap-2 relative">
 				<Link href="/">
 					<Image src="/masjid.svg" alt="Masjid" width={100} height={100} />
 				</Link>
