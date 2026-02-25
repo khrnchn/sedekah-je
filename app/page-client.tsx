@@ -261,7 +261,7 @@ export function PageClient({
 	return (
 		<PageSection>
 			{/* Desktop (sm+): keep current stacked filter UI */}
-			<div className="hidden sm:block sticky top-0 z-40 pt-2 pb-2 space-y-4 bg-background border-b shadow-sm">
+			<div className="hidden sm:block sticky top-0 z-40 pt-2 pb-2 space-y-4">
 				<FilterCategory
 					onCategoryChange={handleCategoryChange}
 					selectedState={selectedState}
@@ -295,7 +295,7 @@ export function PageClient({
 			</div>
 
 			{/* Mobile (<sm): compact sticky row + filter drawer */}
-			<div className="sm:hidden sticky top-0 z-40 pt-4 pb-4 bg-background border-b shadow-sm">
+			<div className="sm:hidden sticky top-0 z-40 pt-4 pb-4">
 				<div className="flex items-center gap-2 w-full">
 					<div className="flex-1 min-w-0">
 						<Search
