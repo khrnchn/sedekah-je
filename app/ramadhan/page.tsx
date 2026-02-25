@@ -7,25 +7,17 @@ import { getCampaignByYear, getTodaysFeatured } from "./_lib/queries";
 
 const BASE_URL = "https://sedekah.je";
 
-export async function generateMetadata(): Promise<Metadata> {
-	const featured = await getTodaysFeatured();
-
-	const ogImage = featured
-		? `${BASE_URL}/api/og/ramadhan/${featured.dayNumber}`
-		: `${BASE_URL}/sedekahje-og-compressed.png`;
-
-	return {
-		title: "30 Hari 30 QR — Kempen Ramadan | SedekahJe",
+export const metadata: Metadata = {
+	title: "30 Hari 30 QR — Kempen Ramadan | SedekahJe",
+	description:
+		"Ikuti kempen #SedekahJe 30 Hari 30 QR — satu institusi, satu kod QR setiap hari sepanjang Ramadan. Imbas kod QR dan tunaikan sedekah anda dengan mudah.",
+	openGraph: {
+		title: "30 Hari 30 QR — Kempen Ramadan | Sedekah Je",
 		description:
-			"Ikuti kempen #SedekahJe 30 Hari 30 QR — satu institusi, satu kod QR setiap hari sepanjang Ramadan. Imbas kod QR dan tunaikan sedekah anda dengan mudah.",
-		openGraph: {
-			title: "30 Hari 30 QR — Kempen Ramadan | Sedekah Je",
-			description:
-				"Ikuti kempen #SedekahJe 30 Hari 30 QR — satu institusi, satu kod QR setiap hari sepanjang Ramadan. Imbas dan sedekah dengan mudah.",
-			images: [ogImage],
-		},
-	};
-}
+			"Ikuti kempen #SedekahJe 30 Hari 30 QR — satu institusi, satu kod QR setiap hari sepanjang Ramadan. Imbas dan sedekah dengan mudah.",
+		images: [`${BASE_URL}/sedekahje-og-compressed.png`],
+	},
+};
 
 export default async function RamadhanPage() {
 	const year = new Date().getFullYear();
