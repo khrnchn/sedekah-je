@@ -1,7 +1,23 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import { ExternalLink, Loader2, MapPin, SaveIcon, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { Institution } from "@/db/institutions";
@@ -11,15 +27,10 @@ import {
 	supportedPayments as PAYMENT_OPTIONS,
 	states as STATE_OPTIONS,
 } from "@/lib/institution-constants";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
-import { ExternalLink, Loader2, SaveIcon, Search } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
-import { updateInstitutionByAdmin } from "../../_lib/queries";
+import {
+	reverseGeocodeInstitutionByAdmin,
+	updateInstitutionByAdmin,
+} from "../../_lib/queries";
 
 type Props = {
 	institution: Partial<Institution> & {
@@ -74,6 +85,36 @@ const lonString = coordString.refine(
 	{ message: "Longitude must be between -180 and 180" },
 );
 
+/** Parse "lat, lon" paste from Google Maps etc. Returns null if not two valid coords. */
+function parseCoordPaste(text: string): { lat: number; lon: number } | null {
+	const numbers = text.match(/-?\d+\.?\d*/g);
+	if (!numbers || numbers.length < 2) return null;
+
+	const a = Number.parseFloat(numbers[0]);
+	const b = Number.parseFloat(numbers[1]);
+	if (Number.isNaN(a) || Number.isNaN(b)) return null;
+
+	// Malaysia: lat 1–7, lon 99–120. Google Maps format is "lat, lon".
+	let lat: number;
+	let lon: number;
+	if (a >= 1 && a <= 7 && b >= 99 && b <= 120) {
+		lat = a;
+		lon = b;
+	} else if (b >= 1 && b <= 7 && a >= 99 && a <= 120) {
+		lat = b;
+		lon = a;
+	} else {
+		// Assume first is lat, second is lon (Google Maps default)
+		lat = Math.abs(a) <= 90 ? a : b;
+		lon = Math.abs(a) <= 90 ? b : a;
+	}
+
+	if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+		return null;
+	}
+	return { lat, lon };
+}
+
 const formSchema = z.object({
 	name: z.string().min(1, "Name is required"),
 	category: z.enum(CATEGORY_OPTIONS),
@@ -100,6 +141,11 @@ export default function ApprovedInstitutionForm({
 	const router = useRouter();
 	const [isPending, startTransition] = useTransition();
 	const [isRecalibrating, setIsRecalibrating] = useState(false);
+	const [isFillingAddress, setIsFillingAddress] = useState(false);
+	const [replaceAddressDialog, setReplaceAddressDialog] = useState<{
+		open: boolean;
+		newAddress: string;
+	}>({ open: false, newAddress: "" });
 
 	const formattedSubmissionDate = institution.createdAt
 		? format(new Date(institution.createdAt), "d MMMM yyyy")
@@ -151,6 +197,21 @@ export default function ApprovedInstitutionForm({
 	const facebookUrl = watch("facebook");
 	const instagramUrl = watch("instagram");
 	const websiteUrl = watch("website");
+	const latVal = watch("lat");
+	const lonVal = watch("lon");
+	const latNum = Number.parseFloat(latVal ?? "");
+	const lonNum = Number.parseFloat(lonVal ?? "");
+	const hasValidCoords =
+		latVal != null &&
+		lonVal != null &&
+		latVal.trim() !== "" &&
+		lonVal.trim() !== "" &&
+		!Number.isNaN(latNum) &&
+		!Number.isNaN(lonNum) &&
+		latNum >= -90 &&
+		latNum <= 90 &&
+		lonNum >= -180 &&
+		lonNum <= 180;
 
 	const generateGoogleSearchUrl = (
 		platform: string,
@@ -317,18 +378,196 @@ export default function ApprovedInstitutionForm({
 						</div>
 					</div>
 
+					{isEditing && (
+						<div className="space-y-2">
+							<div className="font-medium text-muted-foreground">
+								Quick Lookup
+							</div>
+							<div className="flex flex-wrap gap-2">
+								{(() => {
+									const name = getValues("name")?.trim() ?? "";
+									const city = getValues("city")?.trim() ?? "";
+									const stateVal = getValues("state") ?? "";
+									const lookupQuery = `${name}, ${city}, ${stateVal}`;
+									const searchQuery = `${name} ${city} ${stateVal}`;
+									const hasLookupFields =
+										Boolean(name) && Boolean(city) && Boolean(stateVal);
+
+									return (
+										<>
+											<Button
+												type="button"
+												variant="outline"
+												size="sm"
+												disabled={!hasLookupFields}
+												onClick={() =>
+													window.open(
+														`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(lookupQuery)}`,
+														"_blank",
+													)
+												}
+											>
+												<MapPin className="mr-2 h-4 w-4" />
+												Google Maps
+											</Button>
+											<Button
+												type="button"
+												variant="outline"
+												size="sm"
+												disabled={!hasLookupFields}
+												onClick={() =>
+													window.open(
+														`https://www.openstreetmap.org/search?query=${encodeURIComponent(lookupQuery)}`,
+														"_blank",
+													)
+												}
+											>
+												<MapPin className="mr-2 h-4 w-4" />
+												OSM
+											</Button>
+											<Button
+												type="button"
+												variant="outline"
+												size="sm"
+												disabled={!hasLookupFields}
+												onClick={() =>
+													window.open(
+														`https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`,
+														"_blank",
+													)
+												}
+											>
+												<Search className="mr-2 h-4 w-4" />
+												Google Search
+											</Button>
+											{institution.sourceUrl && (
+												<Button
+													type="button"
+													variant="outline"
+													size="sm"
+													onClick={() =>
+														window.open(institution.sourceUrl, "_blank")
+													}
+												>
+													<ExternalLink className="mr-2 h-4 w-4" />
+													Source URL
+												</Button>
+											)}
+										</>
+									);
+								})()}
+							</div>
+						</div>
+					)}
+
 					<div className="space-y-2">
 						<label htmlFor="address" className="font-medium">
 							Address
 						</label>
 						{isEditing ? (
-							<Textarea id="address" rows={3} {...register("address")} />
+							<div className="flex items-start gap-2">
+								<Textarea
+									id="address"
+									rows={3}
+									className="flex-1"
+									{...register("address")}
+								/>
+								<Button
+									type="button"
+									variant="outline"
+									size="sm"
+									className="shrink-0 mt-8"
+									disabled={isFillingAddress || !hasValidCoords}
+									onClick={async () => {
+										const latStr = getValues("lat")?.trim() ?? "";
+										const lonStr = getValues("lon")?.trim() ?? "";
+										const lat = Number.parseFloat(latStr);
+										const lon = Number.parseFloat(lonStr);
+										const currentAddress = getValues("address")?.trim() ?? "";
+
+										setIsFillingAddress(true);
+										try {
+											const result = await reverseGeocodeInstitutionByAdmin(
+												lat,
+												lon,
+											);
+											if (result) {
+												const newAddr = result.addressLine;
+												if (currentAddress && currentAddress !== newAddr) {
+													setReplaceAddressDialog({
+														open: true,
+														newAddress: newAddr,
+													});
+												} else {
+													setValue("address", newAddr);
+													toast.success("Address filled from coordinates");
+												}
+											} else {
+												toast.error("No address found for these coordinates");
+											}
+										} catch {
+											toast.error("Failed to fetch address");
+										} finally {
+											setIsFillingAddress(false);
+										}
+									}}
+								>
+									{isFillingAddress ? (
+										<Loader2 className="h-4 w-4 animate-spin" />
+									) : (
+										"Fill Address from Coords"
+									)}
+								</Button>
+							</div>
 						) : (
 							<div className="p-3 bg-muted rounded-md border min-h-[84px]">
 								{institution.address || "No address provided"}
 							</div>
 						)}
 					</div>
+
+					{/* Replace address confirmation dialog */}
+					<Dialog
+						open={replaceAddressDialog.open}
+						onOpenChange={(open) =>
+							!open && setReplaceAddressDialog({ open: false, newAddress: "" })
+						}
+					>
+						<DialogContent>
+							<DialogHeader>
+								<DialogTitle>Replace address?</DialogTitle>
+								<DialogDescription>
+									Address field already has content. Replace with the
+									reverse-geocoded result?
+								</DialogDescription>
+							</DialogHeader>
+							<DialogFooter>
+								<Button
+									variant="outline"
+									onClick={() =>
+										setReplaceAddressDialog({
+											open: false,
+											newAddress: "",
+										})
+									}
+								>
+									Cancel
+								</Button>
+								<Button
+									onClick={() => {
+										setValue("address", replaceAddressDialog.newAddress);
+										setReplaceAddressDialog({
+											open: false,
+											newAddress: "",
+										});
+										toast.success("Address replaced");
+									}}
+								>
+									Replace
+								</Button>
+							</DialogFooter>
+						</DialogContent>
+					</Dialog>
 
 					<div className="space-y-2">
 						<div className="font-medium">Coordinates</div>
@@ -346,6 +585,16 @@ export default function ApprovedInstitutionForm({
 											id="lat"
 											placeholder="-90 to 90"
 											{...register("lat")}
+											onPaste={(e) => {
+												const text = e.clipboardData?.getData("text") ?? "";
+												const parsed = parseCoordPaste(text);
+												if (parsed) {
+													e.preventDefault();
+													setValue("lat", String(parsed.lat));
+													setValue("lon", String(parsed.lon));
+													toast.success("Coordinates pasted");
+												}
+											}}
 										/>
 										{errors.lat && (
 											<p className="text-sm text-red-500">
@@ -364,6 +613,16 @@ export default function ApprovedInstitutionForm({
 											id="lon"
 											placeholder="-180 to 180"
 											{...register("lon")}
+											onPaste={(e) => {
+												const text = e.clipboardData?.getData("text") ?? "";
+												const parsed = parseCoordPaste(text);
+												if (parsed) {
+													e.preventDefault();
+													setValue("lat", String(parsed.lat));
+													setValue("lon", String(parsed.lon));
+													toast.success("Coordinates pasted");
+												}
+											}}
 										/>
 										{errors.lon && (
 											<p className="text-sm text-red-500">
