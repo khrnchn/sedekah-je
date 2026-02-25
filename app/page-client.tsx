@@ -261,7 +261,7 @@ export function PageClient({
 	return (
 		<PageSection>
 			{/* Desktop (sm+): keep current stacked filter UI */}
-			<div className="hidden sm:block sticky top-0 z-40 pt-4 pb-4 space-y-4 bg-background border-b shadow-sm">
+			<div className="hidden sm:block sticky top-0 z-40 pt-2 pb-2 space-y-4 bg-background border-b shadow-sm">
 				<FilterCategory
 					onCategoryChange={handleCategoryChange}
 					selectedState={selectedState}
@@ -350,7 +350,7 @@ export function PageClient({
 				</div>
 			</div>
 
-			<div className="flex justify-end gap-2 mt-4">
+			<div className="flex justify-end gap-2 mt-0 pb-4">
 				<Button
 					onClick={toggleMap}
 					variant="outline"

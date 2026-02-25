@@ -1,9 +1,9 @@
+import { Suspense } from "react";
 import { RamadhanBanner } from "@/components/ramadhan-banner";
 import { Card } from "@/components/ui/card";
 import { Header } from "@/components/ui/header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getInstitutions } from "@/lib/queries/institutions";
-import { Suspense } from "react";
 import { PageClient } from "./page-client";
 
 type SearchParams = {
@@ -27,7 +27,7 @@ export default async function Home(props: Props) {
 		<>
 			<Header />
 			<Suspense fallback={null}>
-				<div className="max-w-5xl mx-auto px-4 lg:px-6 pt-4">
+				<div className="max-w-5xl mx-auto px-4 lg:px-6 pt-0">
 					<RamadhanBanner />
 				</div>
 			</Suspense>
