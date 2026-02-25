@@ -67,7 +67,9 @@ export async function getThreadsCredentials(): Promise<ThreadsCredentials> {
 	const oauthAccessToken = normalizeEnvVar(storedPayload?.access_token);
 
 	return {
-		userId: oauthUserId || envUserId,
+		// THREADS_USER_ID from env is the canonical publisher ID for /{userId}/threads.
+		// OAuth payload user_id can differ in shape and break publish requests.
+		userId: envUserId || oauthUserId,
 		accessToken: oauthAccessToken || envAccessToken,
 	};
 }
