@@ -26,10 +26,38 @@ type CampaignThreadRepliesResult = {
 	campaignLatestReplyId: string | undefined;
 };
 
+const MAX_REPLY_TRAVERSAL_POSTS = 200;
+
 function getTimestampMillis(value?: string): number {
 	if (!value) return Number.NEGATIVE_INFINITY;
 	const parsed = Date.parse(value);
 	return Number.isNaN(parsed) ? Number.NEGATIVE_INFINITY : parsed;
+}
+
+async function getRepliesForPost(
+	postId: string,
+	accessToken: string,
+): Promise<ThreadsRecentPost[]> {
+	const params = new URLSearchParams({
+		fields: "id,text,timestamp",
+		limit: "50",
+		access_token: accessToken,
+	});
+
+	try {
+		const res = await fetch(`${THREADS_API_BASE}/${postId}/replies?${params}`, {
+			cache: "no-store",
+		});
+		if (!res.ok) return [];
+
+		const payload = (await res.json().catch(() => null)) as {
+			data?: ThreadsRecentPost[];
+		} | null;
+
+		return payload?.data ?? [];
+	} catch {
+		return [];
+	}
 }
 
 async function getCampaignThreadReplies(
@@ -41,33 +69,34 @@ async function getCampaignThreadReplies(
 		return { replies: [], campaignLatestReplyId: undefined };
 	}
 
-	const params = new URLSearchParams({
-		fields: "id,text,timestamp",
-		limit: String(limit),
-		access_token: accessToken,
-	});
-
 	try {
-		const res = await fetch(
-			`${THREADS_API_BASE}/${CAMPAIGN_THREAD_PARENT_POST_ID}/replies?${params}`,
-			{ cache: "no-store" },
-		);
+		const queue: string[] = [CAMPAIGN_THREAD_PARENT_POST_ID];
+		const seen = new Set<string>([CAMPAIGN_THREAD_PARENT_POST_ID]);
+		const descendants: ThreadsRecentPost[] = [];
 
-		if (!res.ok) {
-			return { replies: [], campaignLatestReplyId: undefined };
+		while (queue.length > 0 && seen.size < MAX_REPLY_TRAVERSAL_POSTS) {
+			const currentPostId = queue.shift();
+			if (!currentPostId) break;
+
+			const directReplies = await getRepliesForPost(currentPostId, accessToken);
+			for (const reply of directReplies) {
+				if (seen.has(reply.id)) continue;
+				seen.add(reply.id);
+				descendants.push(reply);
+				queue.push(reply.id);
+			}
 		}
 
-		const payload = (await res.json().catch(() => null)) as {
-			data?: ThreadsRecentPost[];
-		} | null;
-
-		const replies = [...(payload?.data ?? [])].sort(
+		const sortedReplies = descendants.sort(
 			(a, b) =>
 				getTimestampMillis(b.timestamp) - getTimestampMillis(a.timestamp),
 		);
-		const campaignLatestReplyId = replies[0]?.id;
+		const campaignLatestReplyId = sortedReplies[0]?.id;
 
-		return { replies, campaignLatestReplyId };
+		return {
+			replies: sortedReplies.slice(0, limit),
+			campaignLatestReplyId,
+		};
 	} catch {
 		return { replies: [], campaignLatestReplyId: undefined };
 	}
