@@ -3,6 +3,7 @@ import { AdminLayout } from "@/components/admin-layout";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { ThreadsPostForm } from "./_components/threads-post-form";
+import { getThreadsCredentials } from "./_lib/threads-credentials";
 
 const THREADS_API_BASE = "https://graph.threads.net/v1.0";
 const CAMPAIGN_THREAD_PARENT_POST_ID = "18106182523855087";
@@ -40,28 +41,31 @@ async function getCampaignThreadReplies(
 		access_token: accessToken,
 	});
 
-	const res = await fetch(
-		`${THREADS_API_BASE}/${CAMPAIGN_THREAD_PARENT_POST_ID}/replies?${params}`,
-		{ cache: "no-store" },
-	);
+	try {
+		const res = await fetch(
+			`${THREADS_API_BASE}/${CAMPAIGN_THREAD_PARENT_POST_ID}/replies?${params}`,
+			{ cache: "no-store" },
+		);
 
-	if (!res.ok) {
+		if (!res.ok) {
+			return { replies: [], campaignLatestReplyId: undefined };
+		}
+
+		const payload = (await res.json().catch(() => null)) as {
+			data?: ThreadsRecentPost[];
+		} | null;
+
+		const replies = payload?.data ?? [];
+		const campaignLatestReplyId = replies[0]?.id;
+
+		return { replies, campaignLatestReplyId };
+	} catch {
 		return { replies: [], campaignLatestReplyId: undefined };
 	}
-
-	const payload = (await res.json().catch(() => null)) as {
-		data?: ThreadsRecentPost[];
-	} | null;
-
-	const replies = payload?.data ?? [];
-	const campaignLatestReplyId = replies[0]?.id;
-
-	return { replies, campaignLatestReplyId };
 }
 
 export default async function AdminThreadsPage() {
-	const userId = process.env.THREADS_USER_ID;
-	const accessToken = process.env.THREADS_ACCESS_TOKEN;
+	const { userId, accessToken } = await getThreadsCredentials();
 	const isConfigured = Boolean(userId && accessToken);
 	const campaignYear = new Date().getFullYear();
 	const { replies: campaignReplies, campaignLatestReplyId } =

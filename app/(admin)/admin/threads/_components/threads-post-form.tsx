@@ -206,8 +206,8 @@ export function ThreadsPostForm({
 			<CardContent className="space-y-4">
 				{!isConfigured && (
 					<div className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
-						Missing configuration. Set <code>THREADS_USER_ID</code> and{" "}
-						<code>THREADS_ACCESS_TOKEN</code> in your environment first.
+						Missing Threads credentials. Set <code>THREADS_USER_ID</code> and{" "}
+						<code>THREADS_ACCESS_TOKEN</code> or reconnect Meta OAuth first.
 					</div>
 				)}
 
@@ -234,11 +234,7 @@ export function ThreadsPostForm({
 					</div>
 				)}
 
-				<form
-					action={formAction}
-					className="space-y-4"
-					encType="multipart/form-data"
-				>
+				<form action={formAction} className="space-y-4">
 					<div className="space-y-2 rounded-md border p-3">
 						<Label>Thread target</Label>
 						<div className="flex flex-wrap gap-2">
