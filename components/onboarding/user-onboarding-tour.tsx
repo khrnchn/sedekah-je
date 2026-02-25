@@ -17,6 +17,7 @@ import {
 } from "@/lib/onboarding-tour/steps";
 import type { TourSnapshot } from "@/lib/onboarding-tour/types";
 import "driver.js/dist/driver.css";
+import "./onboarding-tour.css";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -76,6 +77,9 @@ export function UserOnboardingTour() {
 
 			const driverObj = driver({
 				showProgress: true,
+				popoverClass: "sedekah-tour",
+				stagePadding: 8,
+				stageRadius: 8,
 				steps,
 				nextBtnText: "Seterusnya",
 				prevBtnText: "Kembali",
