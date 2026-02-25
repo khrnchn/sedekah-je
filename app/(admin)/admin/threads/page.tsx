@@ -26,6 +26,12 @@ type CampaignThreadRepliesResult = {
 	campaignLatestReplyId: string | undefined;
 };
 
+function getTimestampMillis(value?: string): number {
+	if (!value) return Number.NEGATIVE_INFINITY;
+	const parsed = Date.parse(value);
+	return Number.isNaN(parsed) ? Number.NEGATIVE_INFINITY : parsed;
+}
+
 async function getCampaignThreadReplies(
 	userId?: string,
 	accessToken?: string,
@@ -55,7 +61,10 @@ async function getCampaignThreadReplies(
 			data?: ThreadsRecentPost[];
 		} | null;
 
-		const replies = payload?.data ?? [];
+		const replies = [...(payload?.data ?? [])].sort(
+			(a, b) =>
+				getTimestampMillis(b.timestamp) - getTimestampMillis(a.timestamp),
+		);
 		const campaignLatestReplyId = replies[0]?.id;
 
 		return { replies, campaignLatestReplyId };
