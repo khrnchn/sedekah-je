@@ -24,7 +24,6 @@ type Props = {
 	}>;
 	isConfigured: boolean;
 	campaignLatestReplyId?: string;
-	latestRecentPostId?: string;
 	recentPosts: Array<{
 		id: string;
 		text?: string;
@@ -76,7 +75,6 @@ export function ThreadsPostForm({
 	campaignDays,
 	campaignLatestReplyId,
 	isConfigured,
-	latestRecentPostId,
 	recentPosts,
 }: Props) {
 	const initialState = { status: "idle" } as const;
@@ -98,11 +96,8 @@ export function ThreadsPostForm({
 	const imageInputRef = useRef<HTMLInputElement | null>(null);
 
 	const suggestedLatestReplyId = useMemo(
-		() =>
-			campaignLatestReplyId ||
-			latestRecentPostId ||
-			CAMPAIGN_THREAD_PARENT_POST_ID,
-		[campaignLatestReplyId, latestRecentPostId],
+		() => campaignLatestReplyId || CAMPAIGN_THREAD_PARENT_POST_ID,
+		[campaignLatestReplyId],
 	);
 	const campaignDayMap = useMemo(
 		() => new Map(campaignDays.map((entry) => [entry.dayNumber, entry])),
@@ -111,11 +106,6 @@ export function ThreadsPostForm({
 
 	useEffect(() => {
 		setHydrated(true);
-		const cachedPostId = readCachedPostId();
-		if (cachedPostId) {
-			setReplyToId(cachedPostId);
-			return;
-		}
 		setReplyToId(suggestedLatestReplyId);
 	}, [suggestedLatestReplyId]);
 
@@ -149,8 +139,7 @@ export function ThreadsPostForm({
 			return;
 		}
 		if (mode === "campaign-latest") {
-			const cachedPostId = readCachedPostId();
-			setReplyToId(cachedPostId || suggestedLatestReplyId);
+			setReplyToId(suggestedLatestReplyId);
 		}
 	};
 
@@ -217,8 +206,8 @@ export function ThreadsPostForm({
 			<CardContent className="space-y-4">
 				{!isConfigured && (
 					<div className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
-						Missing configuration. Set <code>THREADS_USER_ID</code> and{" "}
-						<code>THREADS_ACCESS_TOKEN</code> in your environment first.
+						Missing Threads credentials. Set <code>THREADS_USER_ID</code> and{" "}
+						<code>THREADS_ACCESS_TOKEN</code> or reconnect Meta OAuth first.
 					</div>
 				)}
 
@@ -245,11 +234,7 @@ export function ThreadsPostForm({
 					</div>
 				)}
 
-				<form
-					action={formAction}
-					className="space-y-4"
-					encType="multipart/form-data"
-				>
+				<form action={formAction} className="space-y-4">
 					<div className="space-y-2 rounded-md border p-3">
 						<Label>Thread target</Label>
 						<div className="flex flex-wrap gap-2">
@@ -261,7 +246,7 @@ export function ThreadsPostForm({
 								size="sm"
 								onClick={() => applyThreadTargetMode("campaign-latest")}
 							>
-								1 day 1 QR: Continue latest
+								1 day 1 QR: Continue latest (Ramadhan thread)
 							</Button>
 							<Button
 								type="button"
@@ -460,9 +445,7 @@ export function ThreadsPostForm({
 									type="button"
 									variant="outline"
 									size="sm"
-									onClick={() =>
-										setReplyToId(readCachedPostId() || suggestedLatestReplyId)
-									}
+									onClick={() => setReplyToId(suggestedLatestReplyId)}
 								>
 									Refresh latest target
 								</Button>
@@ -472,7 +455,7 @@ export function ThreadsPostForm({
 
 					{recentPosts.length > 0 && (
 						<div className="space-y-2">
-							<Label>Recent posts</Label>
+							<Label>Recent Ramadhan thread replies</Label>
 							<div className="space-y-2">
 								{recentPosts.map((post) => (
 									<div

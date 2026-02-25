@@ -2,6 +2,7 @@
 
 import { requireAdminSession } from "@/lib/auth-helpers";
 import { r2Storage } from "@/lib/r2-client";
+import { getThreadsCredentials } from "./threads-credentials";
 
 const THREADS_API_BASE = "https://graph.threads.net/v1.0";
 const MAX_POST_LENGTH = 500;
@@ -56,8 +57,7 @@ export async function createThreadsPostAction(
 ): Promise<ThreadsPostActionState> {
 	await requireAdminSession();
 
-	const userId = process.env.THREADS_USER_ID;
-	const accessToken = process.env.THREADS_ACCESS_TOKEN;
+	const { userId, accessToken } = await getThreadsCredentials();
 	const rawText = String(formData.get("text") ?? "");
 	const rawReplyToId = String(formData.get("reply_to_id") ?? "");
 	const imageFile = formData.get("image");
@@ -66,7 +66,7 @@ export async function createThreadsPostAction(
 		return {
 			status: "error",
 			message:
-				"Missing THREADS_USER_ID or THREADS_ACCESS_TOKEN in environment variables.",
+				"Missing Threads credentials. Set THREADS_USER_ID/THREADS_ACCESS_TOKEN or reconnect Meta OAuth.",
 		};
 	}
 

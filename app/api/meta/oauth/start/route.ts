@@ -6,6 +6,7 @@ const THREADS_OAUTH_AUTHORIZE_ENDPOINT = "https://threads.net/oauth/authorize";
 const DEFAULT_SCOPE = [
 	"threads_basic",
 	"threads_content_publish",
+	"threads_read_replies",
 	"threads_manage_replies",
 ].join(",");
 
