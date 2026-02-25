@@ -1,5 +1,7 @@
 "use client";
 
+import { CheckCircle2, Clock, Pencil, XCircle } from "lucide-react";
+import { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,8 +13,6 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { CheckCircle2, Clock, Pencil, XCircle } from "lucide-react";
-import { useMemo } from "react";
 
 interface Contribution {
 	id: string;
@@ -101,6 +101,7 @@ function ContributionItem({
 						className="h-8 w-8 shrink-0"
 						onClick={() => onEditRejected(contribution.id)}
 						aria-label="Edit sumbangan ditolak"
+						data-tour="mycontrib-edit-rejected"
 					>
 						<Pencil className="h-4 w-4" />
 					</Button>
@@ -143,11 +144,13 @@ export function ContributionList({
 			</CardHeader>
 			<CardContent>
 				<Tabs defaultValue="all" className="w-full">
-					<TabsList>
+					<TabsList data-tour="mycontrib-status-tabs">
 						<TabsTrigger value="all">All</TabsTrigger>
 						<TabsTrigger value="approved">Approved</TabsTrigger>
 						<TabsTrigger value="pending">Pending</TabsTrigger>
-						<TabsTrigger value="rejected">Rejected</TabsTrigger>
+						<TabsTrigger value="rejected" data-tour="mycontrib-tab-rejected">
+							Rejected
+						</TabsTrigger>
 					</TabsList>
 					<TabsContent value="all" className="mt-4">
 						<div className="space-y-4">

@@ -18,7 +18,6 @@ import {
 } from "@/app/(user)/contribute/_lib/validations";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-import { FormField } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
 	Select,
@@ -667,13 +666,15 @@ export default function InstitutionFormOptimized() {
 					)}
 				</div>
 
-				<SubmitButton
-					isSubmitting={isSubmitting}
-					qrExtracting={qrStatus.qrExtracting}
-					qrExtractionFailed={qrStatus.qrExtractionFailed}
-					hasFile={qrStatus.hasFile}
-					isAuthenticated={!!user?.id}
-				/>
+				<div data-tour="contribute-submit">
+					<SubmitButton
+						isSubmitting={isSubmitting}
+						qrExtracting={qrStatus.qrExtracting}
+						qrExtractionFailed={qrStatus.qrExtractionFailed}
+						hasFile={qrStatus.hasFile}
+						isAuthenticated={!!user?.id}
+					/>
+				</div>
 			</fieldset>
 
 			{errors.root?.general && (

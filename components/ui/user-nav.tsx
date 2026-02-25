@@ -1,19 +1,30 @@
 "use client";
 
+import type { LucideIcon } from "lucide-react";
+import {
+	BarChart3,
+	Home,
+	LogOut,
+	Menu,
+	Plus,
+	Settings,
+	Trophy,
+	User,
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { OnboardingSambungButton } from "@/components/onboarding/onboarding-sambung-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
-import { BarChart3, Home, LogOut, Menu, Plus, Settings, Trophy, User } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 
 type NavItem = {
 	title: string;
 	href: string;
-	icon: any;
+	icon: LucideIcon;
 	description: string;
 	badge?: string;
 };
@@ -23,26 +34,26 @@ const userNavItems: NavItem[] = [
 		title: "Laman Utama",
 		href: "/",
 		icon: Home,
-		description: "Kembali ke laman utama"
+		description: "Kembali ke laman utama",
 	},
 	{
 		title: "Tambah Institusi",
 		href: "/contribute",
 		icon: Plus,
-		description: "Tambah institusi baru"
+		description: "Tambah institusi baru",
 	},
 	{
 		title: "Carta Penyumbang",
 		href: "/leaderboard",
 		icon: Trophy,
-		description: "Lihat carta"
+		description: "Lihat carta",
 	},
 	{
 		title: "Sumbangan Saya",
 		href: "/my-contributions",
 		icon: BarChart3,
-		description: "Lihat sumbangan anda"
-	}
+		description: "Lihat sumbangan anda",
+	},
 ];
 
 const secondaryNavItems: NavItem[] = [
@@ -50,8 +61,8 @@ const secondaryNavItems: NavItem[] = [
 		title: "Tetapan",
 		href: "/settings",
 		icon: Settings,
-		description: "Tukar tetapan akaun"
-	}
+		description: "Tukar tetapan akaun",
+	},
 ];
 
 export function UserNav() {
@@ -111,7 +122,7 @@ export function UserNav() {
 										<div
 											className={cn(
 												"flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground",
-												isActive && "bg-accent text-accent-foreground"
+												isActive && "bg-accent text-accent-foreground",
 											)}
 										>
 											<Icon className="h-4 w-4" />
@@ -135,7 +146,8 @@ export function UserNav() {
 									<div
 										className={cn(
 											"flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground",
-											pathname === "/admin/dashboard" && "bg-accent text-accent-foreground"
+											pathname === "/admin/dashboard" &&
+												"bg-accent text-accent-foreground",
 										)}
 									>
 										<Settings className="h-4 w-4" />
@@ -162,7 +174,7 @@ export function UserNav() {
 										<div
 											className={cn(
 												"flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground",
-												isActive && "bg-accent text-accent-foreground"
+												isActive && "bg-accent text-accent-foreground",
 											)}
 										>
 											<Icon className="h-4 w-4" />
@@ -206,9 +218,8 @@ export function UserNavDesktop() {
 
 	return (
 		<div className="hidden md:flex items-center gap-6">
-			<div className="font-semibold text-sm">
-				{user?.name || "User"}
-			</div>
+			<div className="font-semibold text-sm">{user?.name || "User"}</div>
+			<OnboardingSambungButton variant="outline" size="sm" />
 			{userNavItems.slice(1).map((item) => {
 				const Icon = item.icon;
 				const isActive = pathname === item.href;
@@ -218,7 +229,7 @@ export function UserNavDesktop() {
 						<div
 							className={cn(
 								"flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
-								isActive && "bg-accent text-accent-foreground"
+								isActive && "bg-accent text-accent-foreground",
 							)}
 						>
 							<Icon className="h-4 w-4" />
@@ -238,7 +249,8 @@ export function UserNavDesktop() {
 					<div
 						className={cn(
 							"flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
-							pathname === "/admin/dashboard" && "bg-accent text-accent-foreground"
+							pathname === "/admin/dashboard" &&
+								"bg-accent text-accent-foreground",
 						)}
 					>
 						<Settings className="h-4 w-4" />

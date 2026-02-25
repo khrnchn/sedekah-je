@@ -50,6 +50,13 @@
 			"when": 1771997983394,
 			"tag": "0006_motionless_senator_kelly",
 			"breakpoints": true
+		},
+		{
+			"idx": 7,
+			"version": "7",
+			"when": 1772010174257,
+			"tag": "0007_woozy_roland_deschain",
+			"breakpoints": true
 		}
 	]
 }

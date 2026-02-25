@@ -1,8 +1,8 @@
 "use client";
 
-import { Spinner } from "@/components/ui/spinner";
-import { Suspense, lazy, useCallback, useState } from "react";
+import { lazy, Suspense, useCallback, useState } from "react";
 import type { UseFormSetValue } from "react-hook-form";
+import { Spinner } from "@/components/ui/spinner";
 import type { InstitutionFormData } from "../_lib/validations";
 
 // Lazy load the location services functionality
@@ -71,7 +71,7 @@ export default function LocationServicesFeature({
 	}, []);
 
 	return (
-		<div className="space-y-2">
+		<div className="space-y-2" data-tour="contribute-location">
 			<div className="flex items-center space-x-2">
 				<input
 					type="checkbox"

@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 import { admin } from "better-auth/plugins";
+import { eq } from "drizzle-orm";
 import { db } from "./db";
 import * as schema from "./db/schema";
 import { logNewUser } from "./lib/telegram";
@@ -57,6 +58,20 @@ export const auth = betterAuth({
 						});
 					} catch (error) {
 						console.error("Failed to log new user to Telegram:", error);
+					}
+					// Mark new users for onboarding tour (first login only)
+					try {
+						await db
+							.update(schema.users)
+							.set({
+								onboardingTourState: "not_started",
+							})
+							.where(eq(schema.users.id, user.id));
+					} catch (error) {
+						console.error(
+							"Failed to set onboarding state for new user:",
+							error,
+						);
 					}
 				},
 			},

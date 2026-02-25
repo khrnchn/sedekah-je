@@ -1,3 +1,4 @@
+import { Award, Medal, Trophy } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
 	Card,
@@ -6,7 +7,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { Award, Medal, Trophy } from "lucide-react";
 import { getTopContributors } from "../_lib/queries";
 
 function getRankIcon(rank: number) {
@@ -41,7 +41,7 @@ export async function AsyncTopContributors() {
 	}
 
 	return (
-		<div className="space-y-8">
+		<div className="space-y-8" data-tour="leaderboard-top5">
 			<div className="flex items-end justify-center gap-2 md:gap-4">
 				{/* Second Place */}
 				{topContributors[1] && (
