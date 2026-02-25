@@ -77,6 +77,12 @@ const data = {
 			icon: "MessageCircle",
 			group: "Campaign",
 		},
+		{
+			title: "Blog",
+			url: "/admin/blog",
+			icon: "MessageCircle",
+			group: "Campaign",
+		},
 	],
 	institutions: [
 		{
