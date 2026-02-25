@@ -15,24 +15,37 @@ type ThreadsCredentials = {
 	accessToken?: string;
 };
 
-function normalizeEnvVar(value?: string): string | undefined {
-	const trimmed = value?.trim();
-	return trimmed ? trimmed : undefined;
+function normalizeEnvVar(value: unknown): string | undefined {
+	if (typeof value === "string") {
+		const trimmed = value.trim();
+		return trimmed ? trimmed : undefined;
+	}
+
+	if (typeof value === "number") {
+		return String(value);
+	}
+
+	return undefined;
 }
 
 async function getStoredOAuthPayload(): Promise<ThreadsOAuthTokenPayload | null> {
-	const result = await db
-		.select({
-			value: verifications.value,
-		})
-		.from(verifications)
-		.where(
-			and(
-				eq(verifications.id, THREADS_OAUTH_TOKEN_ID),
-				eq(verifications.identifier, THREADS_OAUTH_IDENTIFIER),
-			),
-		)
-		.limit(1);
+	let result: Array<{ value: string }> = [];
+	try {
+		result = await db
+			.select({
+				value: verifications.value,
+			})
+			.from(verifications)
+			.where(
+				and(
+					eq(verifications.id, THREADS_OAUTH_TOKEN_ID),
+					eq(verifications.identifier, THREADS_OAUTH_IDENTIFIER),
+				),
+			)
+			.limit(1);
+	} catch {
+		return null;
+	}
 
 	const raw = result[0]?.value;
 	if (!raw) {
