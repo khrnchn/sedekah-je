@@ -197,6 +197,9 @@ export default function ApprovedInstitutionForm({
 	const facebookUrl = watch("facebook");
 	const instagramUrl = watch("instagram");
 	const websiteUrl = watch("website");
+	const nameVal = watch("name");
+	const cityVal = watch("city");
+	const stateVal = watch("state");
 	const latVal = watch("lat");
 	const lonVal = watch("lon");
 	const latNum = Number.parseFloat(latVal ?? "");
@@ -385,13 +388,13 @@ export default function ApprovedInstitutionForm({
 							</div>
 							<div className="flex flex-wrap gap-2">
 								{(() => {
-									const name = getValues("name")?.trim() ?? "";
-									const city = getValues("city")?.trim() ?? "";
-									const stateVal = getValues("state") ?? "";
-									const lookupQuery = `${name}, ${city}, ${stateVal}`;
-									const searchQuery = `${name} ${city} ${stateVal}`;
+									const name = nameVal?.trim() ?? "";
+									const city = cityVal?.trim() ?? "";
+									const state = stateVal ?? "";
+									const lookupQuery = `${name}, ${city}, ${state}`;
+									const searchQuery = `${name} ${city} ${state}`;
 									const hasLookupFields =
-										Boolean(name) && Boolean(city) && Boolean(stateVal);
+										Boolean(name) && Boolean(city) && Boolean(state);
 
 									return (
 										<>
