@@ -1,9 +1,9 @@
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
 import { Search as SearchIcon } from "lucide-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import { Kbd } from "./kbd";
 
 type SearchProps = {
@@ -32,7 +32,8 @@ const Search = ({ onSearchChange, className, initialValue }: SearchProps) => {
 
 	const inputRef = useRef<HTMLInputElement>(null);
 
-	useHotkeys(["ctrl+k", "cmd+k"], (e) => {
+	// mod = Cmd on Mac, Ctrl on Windows/Linux (react-hotkeys-hook doesn't parse "cmd")
+	useHotkeys("mod+k", (e) => {
 		e.preventDefault();
 		inputRef.current?.focus();
 	});
