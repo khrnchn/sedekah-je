@@ -1,6 +1,7 @@
 import { relations } from "drizzle-orm";
 import {
 	boolean,
+	integer,
 	pgTable,
 	text,
 	timestamp,
@@ -11,6 +12,19 @@ import { timestamps } from "./helpers";
 import { institutions } from "./institutions";
 
 export const userRoles = ["user", "admin"] as const;
+
+export const onboardingTourStates = [
+	"not_started",
+	"in_progress",
+	"skipped",
+	"completed",
+] as const;
+
+export const onboardingTourRoutes = [
+	"/contribute",
+	"/my-contributions",
+	"/leaderboard",
+] as const;
 
 export const users = pgTable("users", {
 	id: text("id").primaryKey(),
@@ -29,6 +43,18 @@ export const users = pgTable("users", {
 	banReason: text("ban_reason"),
 	banExpires: timestamp("ban_expires"),
 	...timestamps,
+	// Onboarding tour (new users only)
+	onboardingTourState: varchar("onboarding_tour_state", { length: 50 })
+		.default("completed")
+		.notNull()
+		.$type<(typeof onboardingTourStates)[number]>(),
+	onboardingTourCurrentRoute: varchar("onboarding_tour_current_route", {
+		length: 100,
+	}),
+	onboardingTourCurrentStep: integer("onboarding_tour_current_step"),
+	onboardingTourStartedAt: timestamp("onboarding_tour_started_at"),
+	onboardingTourCompletedAt: timestamp("onboarding_tour_completed_at"),
+	onboardingTourSkippedAt: timestamp("onboarding_tour_skipped_at"),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({

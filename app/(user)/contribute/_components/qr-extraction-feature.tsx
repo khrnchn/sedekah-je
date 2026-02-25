@@ -202,7 +202,7 @@ export default function QRExtractionFeature({
 	};
 
 	return (
-		<div className="space-y-2">
+		<div className="space-y-2" data-tour="contribute-qr-upload">
 			<label htmlFor={inputId} className="font-medium">
 				Gambar Kod QR {!optional && <span className="text-red-500">*</span>}
 			</label>

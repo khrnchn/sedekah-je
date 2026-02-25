@@ -1,3 +1,4 @@
+import { UserOnboardingTour } from "@/components/onboarding/user-onboarding-tour";
 import { PWAInstallPrompt } from "@/components/pwa-touch-enhancements";
 import { Header } from "@/components/ui/header";
 import PageSection from "@/components/ui/pageSection";
@@ -54,6 +55,7 @@ export function UserLayout({
 	return (
 		<>
 			<Header />
+			<UserOnboardingTour />
 			<main className="flex-1">
 				{pageSection ? (
 					<PageSection className={fullWidth ? "max-w-none" : ""}>
