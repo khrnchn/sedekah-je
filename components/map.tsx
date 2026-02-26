@@ -18,7 +18,6 @@ import {
 	Tooltip,
 	useMap,
 } from "react-leaflet";
-import { institutions } from "@/app/data/institutions";
 import { CategoryColor, type Institution } from "@/app/types/institutions";
 import { slugify } from "@/lib/utils";
 
@@ -147,7 +146,8 @@ export default function MapLocation({
 
 	const markerClickHandler = useCallback(
 		(institution: Institution) => {
-			router.push(`/${institution.category}/${slugify(institution.name)}`);
+			const slug = institution.slug ?? slugify(institution.name);
+			router.push(`/${institution.category}/${slug}`);
 		},
 		[router],
 	);

@@ -1,5 +1,7 @@
-import { institutions } from "@/app/data/institutions";
+import { eq, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import { db } from "@/db";
+import { institutions } from "@/db/schema";
 
 // by default, Next.js caches route handlers for better performance.
 // 'force-dynamic' tells Next.js to skip static optimization and always run the code dynamically.
@@ -25,15 +27,29 @@ export async function OPTIONS() {
 
 export async function GET() {
 	try {
-		if (institutions.length === 0) {
+		const [randomInstitution] = await db
+			.select({
+				id: institutions.id,
+				name: institutions.name,
+				category: institutions.category,
+				state: institutions.state,
+				city: institutions.city,
+				qrImage: institutions.qrImage,
+				qrContent: institutions.qrContent,
+				supportedPayment: institutions.supportedPayment,
+				coords: institutions.coords,
+			})
+			.from(institutions)
+			.where(eq(institutions.status, "approved"))
+			.orderBy(sql`RANDOM()`)
+			.limit(1);
+
+		if (!randomInstitution) {
 			return NextResponse.json(
 				{ message: "No institutions found" },
 				{ status: 404, headers: corsHeaders },
 			);
 		}
-
-		const randomIndex = Math.floor(Math.random() * institutions.length);
-		const randomInstitution = institutions[randomIndex];
 
 		return NextResponse.json(randomInstitution, {
 			headers: {

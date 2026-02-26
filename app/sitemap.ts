@@ -1,19 +1,17 @@
 import { eq } from "drizzle-orm";
 import type { MetadataRoute } from "next";
-import { institutions } from "@/app/data/institutions";
 import { db } from "@/db";
 import { blogPosts } from "@/db/schema";
-import { slugify } from "@/lib/utils";
+import { getInstitutions } from "@/lib/queries/institutions";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-	const institutionPages = institutions.map((institution) => {
-		return {
-			url: `https://sedekah.je/${institution.category}/${slugify(institution.name)}`,
-			lastModified: new Date(),
-			changeFrequency: "monthly",
-			priority: 0.8,
-		};
-	});
+	const institutions = await getInstitutions();
+	const institutionPages = institutions.map((inst) => ({
+		url: `https://sedekah.je/${inst.category}/${inst.slug}`,
+		lastModified: inst.updatedAt ?? new Date(),
+		changeFrequency: "monthly" as const,
+		priority: 0.8,
+	}));
 
 	const publishedBlogPosts = await db
 		.select({

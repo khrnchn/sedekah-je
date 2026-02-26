@@ -1,20 +1,21 @@
-import { institutions } from "@/app/data/institutions";
-import { slugify } from "@/lib/utils";
 import { ImageResponse } from "@vercel/og";
 import type { NextRequest } from "next/server";
+import { getInstitutionBySlug } from "@/lib/queries/institutions";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 
 export async function GET(
 	_req: NextRequest,
 	props: { params: Promise<{ slug: string }> },
 ) {
 	const params = await props.params;
-	const institution = institutions.find(
-		(inst) => slugify(inst.name) === params.slug,
-	);
+	const institution = await getInstitutionBySlug(params.slug);
 
-	if (!institution?.qrContent || !institution?.supportedPayment) {
+	if (
+		!institution?.qrContent ||
+		!institution?.supportedPayment ||
+		institution.supportedPayment.length === 0
+	) {
 		return new Response("Not found", { status: 404 });
 	}
 
