@@ -68,8 +68,9 @@ function createServer() {
 				.number()
 				.int()
 				.min(1)
+				.max(1000)
 				.optional()
-				.describe("Page number (default: 1)"),
+				.describe("Page number (default: 1, max: 1000)"),
 			limit: z
 				.number()
 				.int()
@@ -79,7 +80,8 @@ function createServer() {
 				.describe("Results per page (default: 20, max: 100)"),
 		},
 		async ({ search, category, state, payment_method, page, limit }) => {
-			const pageNum = page ?? 1;
+			const MAX_PAGE = 1000;
+			const pageNum = Math.min(page ?? 1, MAX_PAGE);
 			const limitNum = limit ?? 20;
 			const offset = (pageNum - 1) * limitNum;
 
@@ -280,9 +282,9 @@ async function handleMcpRequest(req: Request): Promise<Response> {
 	});
 
 	const server = createServer();
-	await server.connect(transport);
 
 	try {
+		await server.connect(transport);
 		return await transport.handleRequest(req);
 	} finally {
 		await server.close();
