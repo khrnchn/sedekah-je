@@ -145,7 +145,7 @@ export default async function RootLayout({
 					id="sidegent-position"
 					// biome-ignore lint/security/noDangerouslySetInnerHtml: Required to reposition third-party widget above fixed footer
 					dangerouslySetInnerHTML={{
-						__html: `(function(){var t=setInterval(function(){var l=document.getElementById("da-embed-launcher");var c=document.getElementById("da-embed-container");if(l){l.style.setProperty("bottom","72px","important");clearInterval(t)}if(c){c.style.setProperty("bottom","140px","important")}},500);setTimeout(function(){clearInterval(t)},10000)})()`,
+						__html: `(function(){function r(n){n.style.setProperty("bottom","72px","important")}function rc(n){n.style.setProperty("bottom","140px","important")}var o=new MutationObserver(function(){var l=document.getElementById("da-embed-launcher");var c=document.getElementById("da-embed-container");if(l)r(l);if(c)rc(c)});o.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["style"]})})()`,
 					}}
 				/>
 			</head>
