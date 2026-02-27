@@ -141,6 +141,13 @@ export default async function RootLayout({
 					src="https://app.sidegent.com/embed-launcher.js"
 					data-embed-id="yr9BG6Xgts6pZIzlOKo2kw"
 				/>
+				<Script
+					id="sidegent-position"
+					// biome-ignore lint/security/noDangerouslySetInnerHtml: Required to reposition third-party widget above fixed footer
+					dangerouslySetInnerHTML={{
+						__html: `(function(){var t=setInterval(function(){var l=document.getElementById("da-embed-launcher");var c=document.getElementById("da-embed-container");if(l){l.style.setProperty("bottom","72px","important");clearInterval(t)}if(c){c.style.setProperty("bottom","140px","important")}},500);setTimeout(function(){clearInterval(t)},10000)})()`,
+					}}
+				/>
 			</head>
 			<body
 				className={cn(
