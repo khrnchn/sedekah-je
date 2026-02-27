@@ -2,15 +2,13 @@ import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
 import { headers } from "next/headers";
 import Script from "next/script";
-
+import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { DisclaimerModal } from "@/components/disclaimer";
+import { QueryProvider } from "@/components/providers/query-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeScript } from "@/components/theme-script";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
-
-import { DisclaimerModal } from "@/components/disclaimer";
-import { QueryProvider } from "@/components/providers/query-provider";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
 
 const poppins = Poppins({ weight: ["400", "700", "900"], subsets: ["latin"] });
@@ -138,6 +136,10 @@ export default async function RootLayout({
 					defer
 					src="https://umami-production-8fc8.up.railway.app/script.js"
 					data-website-id="fc2662e6-e375-416a-9ff2-44d7f8e2b343"
+				/>
+				<Script
+					src="https://app.sidegent.com/embed-launcher.js"
+					data-embed-id="yr9BG6Xgts6pZIzlOKo2kw"
 				/>
 			</head>
 			<body
