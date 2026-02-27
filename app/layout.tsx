@@ -2,15 +2,13 @@ import type { Metadata, Viewport } from "next";
 import { Poppins } from "next/font/google";
 import { headers } from "next/headers";
 import Script from "next/script";
-
+import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { DisclaimerModal } from "@/components/disclaimer";
+import { QueryProvider } from "@/components/providers/query-provider";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeScript } from "@/components/theme-script";
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
-
-import { DisclaimerModal } from "@/components/disclaimer";
-import { QueryProvider } from "@/components/providers/query-provider";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
 import "./globals.css";
 
 const poppins = Poppins({ weight: ["400", "700", "900"], subsets: ["latin"] });
@@ -138,6 +136,17 @@ export default async function RootLayout({
 					defer
 					src="https://umami-production-8fc8.up.railway.app/script.js"
 					data-website-id="fc2662e6-e375-416a-9ff2-44d7f8e2b343"
+				/>
+				<Script
+					src="https://app.sidegent.com/embed-launcher.js"
+					data-embed-id="yr9BG6Xgts6pZIzlOKo2kw"
+				/>
+				<Script
+					id="sidegent-position"
+					// biome-ignore lint/security/noDangerouslySetInnerHtml: Required to reposition third-party widget above fixed footer
+					dangerouslySetInnerHTML={{
+						__html: `(function(){function r(n){n.style.setProperty("bottom","72px","important")}function rc(n){n.style.setProperty("bottom","140px","important")}var o=new MutationObserver(function(){var l=document.getElementById("da-embed-launcher");var c=document.getElementById("da-embed-container");if(l)r(l);if(c)rc(c)});o.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["style"]})})()`,
+					}}
 				/>
 			</head>
 			<body
