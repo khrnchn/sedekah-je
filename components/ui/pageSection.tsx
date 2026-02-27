@@ -14,7 +14,7 @@ const PageSection = forwardRef(
 			<section
 				ref={ref}
 				className={cn(
-					"max-w-5xl mx-auto px-4 lg:px-6 flex flex-col sm:gap-2 lg:gap-4",
+					"max-w-5xl mx-auto px-4 lg:px-6 flex flex-col gap-2 lg:gap-4",
 					"pt-2 sm:pt-4 lg:pt-6 pb-8 sm:pb-12 lg:pb-16",
 					className,
 				)}
