@@ -2,7 +2,14 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import html2canvas from "html2canvas";
-import { Clipboard, Download, Loader2, MapPin, QrCode } from "lucide-react";
+import {
+	Clipboard,
+	Download,
+	Filter,
+	Loader2,
+	MapPin,
+	QrCode,
+} from "lucide-react";
 import Image from "next/image";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -13,8 +20,17 @@ import FilteredCount from "@/components/filtered-count";
 import GetdoaFooter from "@/components/getdoa-footer";
 import PageFooter from "@/components/page-footer";
 import PageHeader from "@/components/page-header";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+	Drawer,
+	DrawerContent,
+	DrawerFooter,
+	DrawerHeader,
+	DrawerTitle,
+	DrawerTrigger,
+} from "@/components/ui/drawer";
 import { Header } from "@/components/ui/header";
 import PageSection from "@/components/ui/pageSection";
 import QrCodeDisplay from "@/components/ui/qrCodeDisplay";
@@ -48,6 +64,9 @@ export function RawakClient({ initialInstitutions }: Props) {
 		})) as OldInstitution[];
 		return removeDuplicateInstitutions(adapted);
 	}, [initialInstitutions]);
+
+	const activeFilterCount =
+		selectedCategories.length + (selectedState !== "" ? 1 : 0);
 
 	const filteredInstitutions = useMemo(() => {
 		return institutions.filter((institution) => {
@@ -125,38 +144,100 @@ export function RawakClient({ initialInstitutions }: Props) {
 			<PageSection className="bg-background transition-colors duration-200 ease-in-out">
 				<PageHeader pageTitle="Sedekah Rawak" showHeader={false} />
 
-				<FilterCategory
-					onCategoryChange={(categories) => {
-						setSelectedCategories(categories);
-						setRandomInstitution(null);
-					}}
-					selectedState={selectedState}
-					institutions={institutions}
-				/>
-				<div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 w-full">
-					<div className="w-full sm:w-2/5">
-						<FilterState
-							onStateChange={(state) => {
-								setSelectedState(state);
-								setRandomInstitution(null);
-							}}
-						/>
+				{/* Desktop (sm+): inline filter UI */}
+				<div className="hidden sm:block space-y-4">
+					<FilterCategory
+						onCategoryChange={(categories) => {
+							setSelectedCategories(categories);
+							setRandomInstitution(null);
+						}}
+						selectedState={selectedState}
+						institutions={institutions}
+					/>
+					<div className="flex flex-row items-center gap-4 w-full">
+						<div className="w-2/5">
+							<FilterState
+								onStateChange={(state) => {
+									setSelectedState(state);
+									setRandomInstitution(null);
+								}}
+							/>
+						</div>
+						<div className="w-3/5">
+							<Button
+								onClick={generateRandomNumber}
+								className="w-full bg-green-500 text-white px-6 py-3 hover:bg-green-600 transition-colors duration-300 shadow-md focus:outline-none"
+								disabled={isDownloading}
+							>
+								🎲 Jana QR Secara Rawak
+							</Button>
+						</div>
 					</div>
-					<div className="w-full sm:w-3/5">
-						<Button
-							onClick={generateRandomNumber}
-							className="w-full bg-green-500 text-white px-6 py-3 hover:bg-green-600 transition-colors duration-300 shadow-md focus:outline-none"
-							disabled={isDownloading}
-						>
-							🎲 Jana QR Secara Rawak
-						</Button>
-					</div>
+					{(selectedState !== "" || selectedCategories.length > 0) && (
+						<FilteredCount count={filteredInstitutions.length} />
+					)}
 				</div>
 
-				{/* Rendered only when there are filters applied */}
-				{(selectedState !== "" || selectedCategories.length > 0) && (
-					<FilteredCount count={filteredInstitutions.length} />
-				)}
+				{/* Mobile (<sm): compact row + filter drawer */}
+				<div className="sm:hidden space-y-2">
+					<div className="flex items-center gap-2 w-full">
+						<div className="flex-1 min-w-0">
+							<Button
+								onClick={generateRandomNumber}
+								className="w-full bg-green-500 text-white px-6 py-3 hover:bg-green-600 transition-colors duration-300 shadow-md focus:outline-none"
+								disabled={isDownloading}
+							>
+								🎲 Jana QR Secara Rawak
+							</Button>
+						</div>
+						<Drawer>
+							<DrawerTrigger asChild>
+								<Button
+									variant="outline"
+									size="default"
+									className="shrink-0 flex items-center gap-2"
+								>
+									<Filter className="h-4 w-4" />
+									<span>Filter</span>
+									{activeFilterCount > 0 && (
+										<Badge
+											variant="secondary"
+											className="ml-0.5 h-5 min-w-5 px-1.5"
+										>
+											{activeFilterCount}
+										</Badge>
+									)}
+								</Button>
+							</DrawerTrigger>
+							<DrawerContent className="max-h-[85vh] flex flex-col">
+								<DrawerHeader>
+									<DrawerTitle>Filter</DrawerTitle>
+								</DrawerHeader>
+								<div className="flex-1 overflow-y-auto px-4 pb-4 space-y-4">
+									<FilterState
+										onStateChange={(state) => {
+											setSelectedState(state);
+											setRandomInstitution(null);
+										}}
+									/>
+									<FilterCategory
+										onCategoryChange={(categories) => {
+											setSelectedCategories(categories);
+											setRandomInstitution(null);
+										}}
+										selectedState={selectedState}
+										institutions={institutions}
+									/>
+								</div>
+								{(selectedState !== "" || selectedCategories.length > 0) && (
+									<DrawerFooter>
+										<FilteredCount count={filteredInstitutions.length} />
+									</DrawerFooter>
+								)}
+							</DrawerContent>
+						</Drawer>
+					</div>
+				</div>
 
 				<div className="flex flex-col md:flex-row gap-8 pb-4">
 					<Card className="w-full">
