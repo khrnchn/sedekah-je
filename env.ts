@@ -37,13 +37,21 @@ export const env = createEnv({
 		// Supabase public configuration
 		NEXT_PUBLIC_SUPABASE_URL: z.string().url().optional(),
 		NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().optional(),
+		// Google Maps (optional, for admin approval workflow)
+		NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: z.string().min(1).optional(),
 	},
 
 	/**
 	 * What object holds the environment variables at runtime. This is usually
 	 * `process.env` or `import.meta.env`.
 	 */
-	runtimeEnv: process.env,
+	runtimeEnv: {
+		...process.env,
+		NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+		NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+		NEXT_PUBLIC_GOOGLE_MAPS_API_KEY:
+			process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+	},
 
 	/**
 	 * By default, this library will feed the environment variables directly to

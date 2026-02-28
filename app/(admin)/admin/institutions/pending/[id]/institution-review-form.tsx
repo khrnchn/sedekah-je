@@ -20,6 +20,7 @@ import {
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { AdminLocationMap } from "@/app/(admin)/admin/institutions/pending/[id]/_components/admin-location-map";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -51,6 +52,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type { Institution } from "@/db/institutions";
+import { env } from "@/env";
 import { geocodeInstitution } from "@/lib/geocode";
 import {
 	categories as CATEGORY_OPTIONS,
@@ -603,85 +605,148 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 							</FieldGroup>
 						</div>
 
-						{/* Lookup Toolbar */}
+						{/* Location Map or Quick Lookup */}
 						<FieldGroup>
 							<FieldLabel className="text-muted-foreground font-medium">
-								Quick Lookup
+								{env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+									? "Location Map"
+									: "Quick Lookup"}
 							</FieldLabel>
-							<div className="flex flex-wrap gap-2">
-								{(() => {
-									const name = getValues("name")?.trim() ?? "";
-									const city = getValues("city")?.trim() ?? "";
-									const stateVal = getValues("state") ?? "";
-									const lookupQuery = `${name}, ${city}, ${stateVal}`;
-									const searchQuery = `${name} ${city} ${stateVal}`;
-									const hasLookupFields =
-										Boolean(name) && Boolean(city) && Boolean(stateVal);
+							{env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ? (
+								<div className="space-y-2">
+									<AdminLocationMap
+										lat={hasValidCoords ? latNum : null}
+										lon={hasValidCoords ? lonNum : null}
+										institutionName={institution.name ?? ""}
+										onCoordsChange={(lat, lon) => {
+											setValue("lat", String(lat));
+											setValue("lon", String(lon));
+										}}
+										onPlaceSelect={(place) => {
+											setValue("lat", String(place.lat));
+											setValue("lon", String(place.lon));
+											if (place.address != null)
+												setValue("address", place.address);
+											if (place.city != null) setValue("city", place.city);
+											if (place.state != null) setValue("state", place.state);
+											if (place.name != null) setValue("name", place.name);
+										}}
+									/>
+									<div className="flex flex-wrap gap-2">
+										{institution.sourceUrl && (
+											<Button
+												type="button"
+												variant="outline"
+												size="sm"
+												onClick={() =>
+													window.open(institution.sourceUrl, "_blank")
+												}
+											>
+												<ExternalLink className="mr-2 h-4 w-4" />
+												Source URL
+											</Button>
+										)}
+										<Button
+											type="button"
+											variant="outline"
+											size="sm"
+											disabled={
+												!(
+													getValues("name")?.trim() &&
+													getValues("city")?.trim() &&
+													getValues("state")
+												)
+											}
+											onClick={() =>
+												window.open(
+													`https://www.google.com/search?q=${encodeURIComponent(
+														`${getValues("name")} ${getValues("city")} ${getValues("state")}`,
+													)}`,
+													"_blank",
+												)
+											}
+										>
+											<Search className="mr-2 h-4 w-4" />
+											Google Search
+										</Button>
+									</div>
+								</div>
+							) : (
+								<div className="flex flex-wrap gap-2">
+									{(() => {
+										const name = getValues("name")?.trim() ?? "";
+										const city = getValues("city")?.trim() ?? "";
+										const stateVal = getValues("state") ?? "";
+										const lookupQuery = `${name}, ${city}, ${stateVal}`;
+										const searchQuery = `${name} ${city} ${stateVal}`;
+										const hasLookupFields =
+											Boolean(name) && Boolean(city) && Boolean(stateVal);
 
-									return (
-										<>
-											<Button
-												type="button"
-												variant="outline"
-												size="sm"
-												disabled={!hasLookupFields}
-												onClick={() =>
-													window.open(
-														`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(lookupQuery)}`,
-														"_blank",
-													)
-												}
-											>
-												<MapPin className="mr-2 h-4 w-4" />
-												Google Maps
-											</Button>
-											<Button
-												type="button"
-												variant="outline"
-												size="sm"
-												disabled={!hasLookupFields}
-												onClick={() =>
-													window.open(
-														`https://www.openstreetmap.org/search?query=${encodeURIComponent(lookupQuery)}`,
-														"_blank",
-													)
-												}
-											>
-												<MapPin className="mr-2 h-4 w-4" />
-												OSM
-											</Button>
-											<Button
-												type="button"
-												variant="outline"
-												size="sm"
-												disabled={!hasLookupFields}
-												onClick={() =>
-													window.open(
-														`https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`,
-														"_blank",
-													)
-												}
-											>
-												<Search className="mr-2 h-4 w-4" />
-												Google Search
-											</Button>
-											{institution.sourceUrl && (
+										return (
+											<>
 												<Button
 													type="button"
 													variant="outline"
 													size="sm"
+													disabled={!hasLookupFields}
 													onClick={() =>
-														window.open(institution.sourceUrl, "_blank")
+														window.open(
+															`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(lookupQuery)}`,
+															"_blank",
+														)
 													}
 												>
-													<ExternalLink className="mr-2 h-4 w-4" />
-													Source URL
+													<MapPin className="mr-2 h-4 w-4" />
+													Google Maps
 												</Button>
-											)}
-										</>
-									);
-								})()}
-							</div>
+												<Button
+													type="button"
+													variant="outline"
+													size="sm"
+													disabled={!hasLookupFields}
+													onClick={() =>
+														window.open(
+															`https://www.openstreetmap.org/search?query=${encodeURIComponent(lookupQuery)}`,
+															"_blank",
+														)
+													}
+												>
+													<MapPin className="mr-2 h-4 w-4" />
+													OSM
+												</Button>
+												<Button
+													type="button"
+													variant="outline"
+													size="sm"
+													disabled={!hasLookupFields}
+													onClick={() =>
+														window.open(
+															`https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`,
+															"_blank",
+														)
+													}
+												>
+													<Search className="mr-2 h-4 w-4" />
+													Google Search
+												</Button>
+												{institution.sourceUrl && (
+													<Button
+														type="button"
+														variant="outline"
+														size="sm"
+														onClick={() =>
+															window.open(institution.sourceUrl, "_blank")
+														}
+													>
+														<ExternalLink className="mr-2 h-4 w-4" />
+														Source URL
+													</Button>
+												)}
+											</>
+										);
+									})()}
+								</div>
+							)}
 						</FieldGroup>
 
 						<FieldGroup>
