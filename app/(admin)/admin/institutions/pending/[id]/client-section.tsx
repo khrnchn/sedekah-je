@@ -3,8 +3,10 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useRef } from "react";
+import { GoogleMapsProvider } from "@/components/google-maps-provider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import QrCodeDisplay from "@/components/ui/qrCodeDisplay";
+import { env } from "@/env";
 import type { supportedPayments } from "@/lib/institution-constants";
 import InstitutionReviewForm, {
 	type ReviewFormHandle,
@@ -38,7 +40,8 @@ export default function ClientSection({ institution }: Props) {
 		router.refresh();
 	};
 
-	return (
+	const apiKey = env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+	const content = (
 		<>
 			{/* Sticky Action Bar */}
 			<div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b py-4 mb-6">
@@ -140,5 +143,11 @@ export default function ClientSection({ institution }: Props) {
 				</div>
 			</div>
 		</>
+	);
+
+	return apiKey ? (
+		<GoogleMapsProvider apiKey={apiKey}>{content}</GoogleMapsProvider>
+	) : (
+		content
 	);
 }
