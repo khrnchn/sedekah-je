@@ -1,5 +1,11 @@
 "use client";
 
+import { Loader2, PencilIcon, SaveIcon, Undo2Icon, XIcon } from "lucide-react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useRef, useState, useTransition } from "react";
+import { toast } from "sonner";
+import { GoogleMapsProvider } from "@/components/google-maps-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -12,14 +18,12 @@ import {
 } from "@/components/ui/dialog";
 import QrCodeDisplay from "@/components/ui/qrCodeDisplay";
 import { Textarea } from "@/components/ui/textarea";
+import { env } from "@/env";
 import type { supportedPayments } from "@/lib/institution-constants";
-import { Loader2, PencilIcon, Undo2Icon, XIcon } from "lucide-react";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
-import { toast } from "sonner";
 import { undoApproval } from "../../_lib/queries";
-import ApprovedInstitutionForm from "./institution-form";
+import ApprovedInstitutionForm, {
+	type ApprovedFormHandle,
+} from "./institution-form";
 
 type Props = {
 	institution: {
@@ -46,6 +50,7 @@ export default function ClientSection({ institution }: Props) {
 	const [undoNotes, setUndoNotes] = useState("Duplicate entry");
 	const [isPending, startTransition] = useTransition();
 	const router = useRouter();
+	const formRef = useRef<ApprovedFormHandle | null>(null);
 
 	const handleEditToggle = () => {
 		setIsEditing(!isEditing);
@@ -66,7 +71,8 @@ export default function ClientSection({ institution }: Props) {
 		});
 	}
 
-	return (
+	const apiKey = env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+	const content = (
 		<>
 			{/* Sticky Action Bar */}
 			<div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b py-4 mb-6">
@@ -77,6 +83,16 @@ export default function ClientSection({ institution }: Props) {
 						</span>
 					</div>
 					<div className="flex items-center gap-2">
+						{isEditing && (
+							<Button
+								size="sm"
+								onClick={() => formRef.current?.save()}
+								className="gap-2"
+							>
+								<SaveIcon className="h-4 w-4" />
+								Save Changes
+							</Button>
+						)}
 						<Button
 							variant="destructive"
 							size="sm"
@@ -160,6 +176,7 @@ export default function ClientSection({ institution }: Props) {
 			<div className="grid lg:grid-cols-3 gap-6">
 				<div className="lg:col-span-2">
 					<ApprovedInstitutionForm
+						ref={formRef}
 						institution={{
 							...institution,
 							sourceUrl: institution.sourceUrl ?? undefined,
@@ -237,5 +254,11 @@ export default function ClientSection({ institution }: Props) {
 				</div>
 			</div>
 		</>
+	);
+
+	return apiKey ? (
+		<GoogleMapsProvider apiKey={apiKey}>{content}</GoogleMapsProvider>
+	) : (
+		content
 	);
 }
