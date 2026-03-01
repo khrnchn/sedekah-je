@@ -151,8 +151,17 @@ function MapContent({
 					options={{
 						streetViewControl: false,
 						mapTypeControl: true,
+						mapTypeControlOptions: {
+							position: google.maps.ControlPosition.BOTTOM_LEFT,
+						},
 						fullscreenControl: true,
+						fullscreenControlOptions: {
+							position: google.maps.ControlPosition.BOTTOM_RIGHT,
+						},
 						zoomControl: true,
+						zoomControlOptions: {
+							position: google.maps.ControlPosition.RIGHT_BOTTOM,
+						},
 					}}
 				>
 					{/* Autocomplete must be inside GoogleMap for MapContext */}
