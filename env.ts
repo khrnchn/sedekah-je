@@ -19,6 +19,9 @@ export const env = createEnv({
 		MAILERSEND_FROM_NAME: z.string().optional(),
 		MAILERSEND_APPROVAL_TEMPLATE_ID: z.string().min(1).optional(),
 
+		// Google Geocoding (optional, for backfill scripts)
+		GOOGLE_GEOCODING_API_KEY: z.string().min(1).optional(),
+
 		// Cloudflare R2 Storage
 		R2_ENDPOINT: z.string().url(),
 		R2_ACCESS_KEY_ID: z.string(),
@@ -47,6 +50,7 @@ export const env = createEnv({
 	 */
 	runtimeEnv: {
 		...process.env,
+		GOOGLE_GEOCODING_API_KEY: process.env.GOOGLE_GEOCODING_API_KEY,
 		NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
 		NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
 		NEXT_PUBLIC_GOOGLE_MAPS_API_KEY:

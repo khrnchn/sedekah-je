@@ -104,3 +104,69 @@ export async function geocodeInstitution(
 		return null;
 	}
 }
+
+/**
+ * Geocode an institution using Google Geocoding API.
+ * Returns [latitude, longitude] or null if geocoding fails.
+ * Requires GOOGLE_GEOCODING_API_KEY env var.
+ */
+export async function geocodeWithGoogle(
+	name: string,
+	city: string,
+	state: string,
+): Promise<[number, number] | null> {
+	const apiKey = process.env.GOOGLE_GEOCODING_API_KEY;
+	if (!apiKey) return null;
+
+	try {
+		const query = `${name}, ${city}, ${state}, Malaysia`;
+		const url = new URL("https://maps.googleapis.com/maps/api/geocode/json");
+		url.searchParams.set("address", query);
+		url.searchParams.set("key", apiKey);
+		url.searchParams.set("region", "my");
+		url.searchParams.set("language", "ms");
+
+		const controller = new AbortController();
+		const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+		const res = await fetch(url.toString(), {
+			headers: { Accept: "application/json" },
+			signal: controller.signal,
+		});
+
+		clearTimeout(timeoutId);
+
+		if (!res.ok) return null;
+
+		const data = (await res.json()) as {
+			status: string;
+			results?: Array<{
+				geometry?: { location?: { lat?: number; lng?: number } };
+			}>;
+		};
+
+		if (data.status !== "OK" || !data.results?.length) return null;
+
+		const loc = data.results[0].geometry?.location;
+		if (typeof loc?.lat !== "number" || typeof loc?.lng !== "number")
+			return null;
+
+		return [loc.lat, loc.lng];
+	} catch {
+		return null;
+	}
+}
+
+/**
+ * Geocode with Google Maps first, fallback to Nominatim.
+ */
+export async function geocodeInstitutionWithFallback(
+	name: string,
+	city: string,
+	state: string,
+): Promise<[number, number] | null> {
+	const google = await geocodeWithGoogle(name, city, state);
+	if (google) return google;
+
+	return geocodeInstitution(name, city, state);
+}
