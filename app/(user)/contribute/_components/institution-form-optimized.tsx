@@ -100,8 +100,8 @@ function QRUploadSkeleton() {
 function BasicLocationInput() {
 	return (
 		<div className="space-y-2">
-			<p className="text-sm text-gray-600">
-				Sila isi koordinat secara manual jika diperlukan
+			<p className="text-sm text-muted-foreground">
+				Memuatkan perkhidmatan lokasi...
 			</p>
 		</div>
 	);
@@ -123,7 +123,7 @@ export default function InstitutionFormOptimized() {
 		clearQrContentRef.current = fn;
 	}, []);
 
-	const [socialMediaExpanded, setSocialMediaExpanded] = useState(false);
+	const [additionalInfoExpanded, setAdditionalInfoExpanded] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [enableAdvancedFeatures, setEnableAdvancedFeatures] = useState(false);
 	const [cooldownEndsAt, setCooldownEndsAt] = useState<string | null>(null);
@@ -237,12 +237,17 @@ export default function InstitutionFormOptimized() {
 				formData.append("qrContent", qrContent);
 			}
 
-			// Add QR image file
+			// Add QR image file (from camera or gallery input)
 			const qrImageInput = document.getElementById(
 				"qrImage",
-			) as HTMLInputElement;
-			if (qrImageInput?.files?.[0]) {
-				formData.append("qrImage", qrImageInput.files[0]);
+			) as HTMLInputElement | null;
+			const qrImageGalleryInput = document.getElementById(
+				"qrImage-gallery",
+			) as HTMLInputElement | null;
+			const qrFile =
+				qrImageInput?.files?.[0] ?? qrImageGalleryInput?.files?.[0];
+			if (qrFile) {
+				formData.append("qrImage", qrFile);
 			}
 
 			const result = await submitInstitution(undefined, formData);
@@ -314,17 +319,18 @@ export default function InstitutionFormOptimized() {
 					{...register("contributorId")}
 					value={user?.id ?? ""}
 				/>
+				<Controller
+					name="lat"
+					control={control}
+					render={({ field }) => <input type="hidden" {...field} />}
+				/>
+				<Controller
+					name="lon"
+					control={control}
+					render={({ field }) => <input type="hidden" {...field} />}
+				/>
 
-				{/* Progressive location services */}
-				{enableAdvancedFeatures ? (
-					<Suspense fallback={<BasicLocationInput />}>
-						<LocationServicesFeature setValue={setValue} />
-					</Suspense>
-				) : (
-					<BasicLocationInput />
-				)}
-
-				{/* Progressive QR extraction */}
+				{/* 1. QR upload */}
 				<div className="space-y-4">
 					<Suspense fallback={<QRUploadSkeleton />}>
 						<QRExtractionFeature
@@ -336,253 +342,129 @@ export default function InstitutionFormOptimized() {
 					</Suspense>
 				</div>
 
-				{/* Institution name - mobile optimized */}
-				<Controller
-					control={control}
-					name="name"
-					render={({ field, fieldState }) => (
-						<Field className="space-y-2" {...field}>
-							<FieldLabel htmlFor="name" className="font-medium text-base">
-								Nama Institusi <span className="text-red-500">*</span>
-							</FieldLabel>
-							<Input
-								id="name"
-								{...register("name")}
-								placeholder="Contoh: Masjid Al-Falah"
-								className={`h-12 text-base ${fieldState.invalid ? "border-red-500" : ""}`}
-								autoComplete="organization"
-							/>
-							{errors.name && (
-								<p className="text-sm text-red-500">{errors.name.message}</p>
-							)}
-						</Field>
-					)}
-				/>
-
-				{/* Category - mobile optimized */}
-				<Controller
-					name="category"
-					control={control}
-					render={({ field, fieldState }) => (
-						<Field className="space-y-2" {...field}>
-							<FieldLabel className="font-medium text-base">
-								Kategory <span className="text-red-500">*</span>
-							</FieldLabel>
-							<Select value={field.value ?? ""} onValueChange={field.onChange}>
-								<SelectTrigger
-									id="category"
-									className={cn("w-full h-12 text-base")}
-									aria-invalid={fieldState.invalid}
-								>
-									<SelectValue placeholder="Pilih kategori" />
-								</SelectTrigger>
-								<SelectContent>
-									{CATEGORY_OPTIONS.map((c) => (
-										<SelectItem key={c} value={c} className="capitalize">
-											{toTitleCase(c)}
-										</SelectItem>
-									))}
-								</SelectContent>
-								{fieldState.invalid && (
-									<FieldError errors={[fieldState.error]} />
-								)}
-							</Select>
-						</Field>
-					)}
-				/>
-
-				{/* Location - mobile optimized grid */}
-				<div className="grid grid-cols-1 gap-4">
+				{/* 2. Maklumat institusi utama */}
+				<div className="space-y-4">
+					<h3 className="text-sm font-semibold text-foreground">
+						Maklumat Institusi
+					</h3>
+					{/* Institution name - mobile optimized */}
 					<Controller
-						name="state"
+						control={control}
+						name="name"
+						render={({ field, fieldState }) => (
+							<Field className="space-y-2">
+								<FieldLabel htmlFor="name" className="font-medium text-base">
+									Nama Institusi <span className="text-red-500">*</span>
+								</FieldLabel>
+								<Input
+									id="name"
+									{...field}
+									placeholder="Contoh: Masjid Al-Falah"
+									className={`h-12 text-base ${fieldState.invalid ? "border-red-500" : ""}`}
+									autoComplete="organization"
+								/>
+								{fieldState.error && <FieldError errors={[fieldState.error]} />}
+							</Field>
+						)}
+					/>
+
+					{/* Category - mobile optimized */}
+					<Controller
+						name="category"
 						control={control}
 						render={({ field, fieldState }) => (
 							<Field className="space-y-2">
-								<FieldLabel htmlFor="state" className="font-medium text-base">
-									Negeri <span className="text-red-500">*</span>
+								<FieldLabel className="font-medium text-base">
+									Kategori <span className="text-red-500">*</span>
 								</FieldLabel>
 								<Select
 									value={field.value ?? ""}
 									onValueChange={field.onChange}
 								>
 									<SelectTrigger
-										id="state"
+										id="category"
 										className={cn("w-full h-12 text-base")}
 										aria-invalid={fieldState.invalid}
 									>
-										<SelectValue placeholder="Pilih negeri" />
+										<SelectValue placeholder="Pilih kategori" />
 									</SelectTrigger>
 									<SelectContent>
-										{STATE_OPTIONS.map((s) => (
-											<SelectItem key={s} value={s} className="capitalize">
-												{s}
+										{CATEGORY_OPTIONS.map((c) => (
+											<SelectItem key={c} value={c} className="capitalize">
+												{toTitleCase(c)}
 											</SelectItem>
 										))}
 									</SelectContent>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
 								</Select>
-								{fieldState.invalid && (
-									<FieldError errors={[fieldState.error]} />
-								)}
-							</Field>
-						)}
-					/>
-					<Controller
-						name="city"
-						control={control}
-						render={({ field, fieldState }) => (
-							<Field className="space-y-2">
-								<FieldLabel htmlFor="city" className="font-medium text-base">
-									Bandar <span className="text-red-500">*</span>
-								</FieldLabel>
-								<Input
-									id="city"
-									{...field}
-									placeholder="Contoh: Shah Alam"
-									className={cn(
-										"h-12 text-base",
-										fieldState.invalid && "border-red-500",
-									)}
-									autoComplete="address-level2"
-								/>
-								{fieldState.invalid && (
-									<FieldError errors={[fieldState.error]} />
-								)}
 							</Field>
 						)}
 					/>
 				</div>
 
-				{/* Coordinates - mobile optimized grid */}
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-					<Controller
-						name="lat"
-						control={control}
-						render={({ field, fieldState }) => (
-							<Field className="space-y-2">
-								<FieldLabel htmlFor="lat" className="font-medium text-base">
-									Latitud
-								</FieldLabel>
-								<Input
-									id="lat"
-									type="number"
-									step="any"
-									{...field}
-									placeholder="Contoh: 3.1390"
-									className={cn(
-										"h-12 text-base",
-										fieldState.invalid && "border-red-500",
-									)}
-								/>
-								{fieldState.invalid && (
-									<FieldError errors={[fieldState.error]} />
-								)}
-							</Field>
-						)}
-					/>
-					<Controller
-						name="lon"
-						control={control}
-						render={({ field, fieldState }) => (
-							<Field className="space-y-2">
-								<FieldLabel htmlFor="lon" className="font-medium text-base">
-									Longitud
-								</FieldLabel>
-								<Input
-									id="lon"
-									type="number"
-									step="any"
-									{...field}
-									placeholder="Contoh: 101.6869"
-									className={cn(
-										"h-12 text-base",
-										fieldState.invalid && "border-red-500",
-									)}
-								/>
-								{fieldState.invalid && (
-									<FieldError errors={[fieldState.error]} />
-								)}
-							</Field>
-						)}
-					/>
-				</div>
-				<p className="text-sm text-muted-foreground">
-					Koordinat adalah pilihan. Jika tidak diisi, sistem akan cuba mencari
-					koordinat secara automatik.
-				</p>
-
-				{/* Additional info */}
-				<Controller
-					name="contributorRemarks"
-					control={control}
-					render={({ field, fieldState }) => (
-						<Field className="space-y-2">
-							<FieldLabel
-								htmlFor="contributorRemarks"
-								className="font-medium text-base"
-							>
-								Info Tambahan
-							</FieldLabel>
-							<textarea
-								id="contributorRemarks"
-								{...field}
-								placeholder="Info tambahan berkenaan institusi ini"
-								className={cn(
-									"w-full min-h-[100px] px-3 py-2 text-base border rounded-md bg-background resize-vertical",
-									fieldState.invalid && "border-red-500",
-								)}
-							/>
-							{fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-						</Field>
+				{/* 3. Lokasi */}
+				<div className="space-y-4">
+					<h3 className="text-sm font-semibold text-foreground">Lokasi</h3>
+					{enableAdvancedFeatures ? (
+						<Suspense fallback={<BasicLocationInput />}>
+							<LocationServicesFeature setValue={setValue} />
+						</Suspense>
+					) : (
+						<BasicLocationInput />
 					)}
-				/>
-
-				{/* Social media source */}
-				<Field className="space-y-2">
-					<Controller
-						name="fromSocialMedia"
-						control={control}
-						render={({ field }) => (
-							<div className="flex items-center space-x-3">
-								<input
-									type="checkbox"
-									id="fromSocialMedia"
-									checked={field.value}
-									onChange={field.onChange}
-									onBlur={field.onBlur}
-									name={field.name}
-									ref={field.ref}
-									className="rounded w-4 h-4"
-								/>
-								<FieldLabel
-									htmlFor="fromSocialMedia"
-									className="font-medium text-base"
-								>
-									Saya dapat maklumat QR ini dari media sosial
-								</FieldLabel>
-							</div>
-						)}
-					/>
-					{fromSocialMedia && (
+					<div className="grid grid-cols-1 gap-4">
 						<Controller
-							name="sourceUrl"
+							name="state"
 							control={control}
 							render={({ field, fieldState }) => (
-								<Field className="space-y-2 pl-6">
-									<FieldLabel
-										htmlFor="sourceUrl"
-										className="font-medium text-sm"
+								<Field className="space-y-2">
+									<FieldLabel htmlFor="state" className="font-medium text-base">
+										Negeri <span className="text-red-500">*</span>
+									</FieldLabel>
+									<Select
+										value={field.value ?? ""}
+										onValueChange={field.onChange}
 									>
-										Alamat Web
+										<SelectTrigger
+											id="state"
+											className={cn("w-full h-12 text-base")}
+											aria-invalid={fieldState.invalid}
+										>
+											<SelectValue placeholder="Pilih negeri" />
+										</SelectTrigger>
+										<SelectContent>
+											{STATE_OPTIONS.map((s) => (
+												<SelectItem key={s} value={s} className="capitalize">
+													{s}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
+							)}
+						/>
+						<Controller
+							name="city"
+							control={control}
+							render={({ field, fieldState }) => (
+								<Field className="space-y-2">
+									<FieldLabel htmlFor="city" className="font-medium text-base">
+										Bandar <span className="text-red-500">*</span>
 									</FieldLabel>
 									<Input
-										id="sourceUrl"
+										id="city"
 										{...field}
-										placeholder="https://facebook.com/post/123 atau URL Instagram"
+										placeholder="Contoh: Shah Alam"
 										className={cn(
 											"h-12 text-base",
 											fieldState.invalid && "border-red-500",
 										)}
-										type="url"
+										autoComplete="address-level2"
 									/>
 									{fieldState.invalid && (
 										<FieldError errors={[fieldState.error]} />
@@ -590,46 +472,45 @@ export default function InstitutionFormOptimized() {
 								</Field>
 							)}
 						/>
-					)}
-				</Field>
+					</div>
+				</div>
 
-				{/* Collapsible social media section */}
+				{/* 4. Maklumat tambahan (optional) */}
 				<div className="space-y-2">
 					<Button
 						type="button"
 						variant="ghost"
-						onClick={() => setSocialMediaExpanded(!socialMediaExpanded)}
+						onClick={() => setAdditionalInfoExpanded(!additionalInfoExpanded)}
 						className="flex items-center space-x-2 font-medium p-0 h-auto hover:bg-transparent text-base"
 					>
-						<span>Social Media (Optional)</span>
-						{socialMediaExpanded ? (
+						<span>Maklumat Tambahan (Opsional)</span>
+						{additionalInfoExpanded ? (
 							<ChevronUp className="w-4 h-4" />
 						) : (
 							<ChevronDown className="w-4 h-4" />
 						)}
 					</Button>
-					{socialMediaExpanded && (
-						<div className="space-y-3 pl-4 border-l-2 border-gray-200">
+					{additionalInfoExpanded && (
+						<div className="space-y-4 pl-4 border-l-2 border-muted">
 							<Controller
-								name="facebook"
+								name="contributorRemarks"
 								control={control}
 								render={({ field, fieldState }) => (
 									<Field className="space-y-2">
 										<FieldLabel
-											htmlFor="facebook"
-											className="font-medium text-sm"
+											htmlFor="contributorRemarks"
+											className="font-medium text-base"
 										>
-											Facebook
+											Info Tambahan
 										</FieldLabel>
-										<Input
-											id="facebook"
+										<textarea
+											id="contributorRemarks"
 											{...field}
-											placeholder="Facebook URL"
+											placeholder="Info tambahan berkenaan institusi ini"
 											className={cn(
-												"h-12 text-base",
+												"w-full min-h-[100px] px-3 py-2 text-base border rounded-md bg-background resize-vertical",
 												fieldState.invalid && "border-red-500",
 											)}
-											type="url"
 										/>
 										{fieldState.invalid && (
 											<FieldError errors={[fieldState.error]} />
@@ -637,60 +518,147 @@ export default function InstitutionFormOptimized() {
 									</Field>
 								)}
 							/>
-							<Controller
-								name="instagram"
-								control={control}
-								render={({ field, fieldState }) => (
-									<Field className="space-y-2">
-										<FieldLabel
-											htmlFor="instagram"
-											className="font-medium text-sm"
-										>
-											Instagram
-										</FieldLabel>
-										<Input
-											id="instagram"
-											{...field}
-											placeholder="Instagram URL"
-											className={cn(
-												"h-12 text-base",
-												fieldState.invalid && "border-red-500",
-											)}
-											type="url"
-										/>
-										{fieldState.invalid && (
-											<FieldError errors={[fieldState.error]} />
+
+							<Field className="space-y-2">
+								<Controller
+									name="fromSocialMedia"
+									control={control}
+									render={({ field }) => (
+										<div className="flex items-center space-x-3">
+											<input
+												type="checkbox"
+												id="fromSocialMedia"
+												checked={field.value}
+												onChange={field.onChange}
+												onBlur={field.onBlur}
+												name={field.name}
+												ref={field.ref}
+												className="rounded w-4 h-4"
+											/>
+											<FieldLabel
+												htmlFor="fromSocialMedia"
+												className="font-medium text-base"
+											>
+												Saya dapat maklumat QR ini dari media sosial
+											</FieldLabel>
+										</div>
+									)}
+								/>
+								{fromSocialMedia && (
+									<Controller
+										name="sourceUrl"
+										control={control}
+										render={({ field, fieldState }) => (
+											<Field className="space-y-2 pl-6">
+												<FieldLabel
+													htmlFor="sourceUrl"
+													className="font-medium text-sm"
+												>
+													Alamat Web
+												</FieldLabel>
+												<Input
+													id="sourceUrl"
+													{...field}
+													placeholder="https://facebook.com/post/123 atau URL Instagram"
+													className={cn(
+														"h-12 text-base",
+														fieldState.invalid && "border-red-500",
+													)}
+													type="url"
+												/>
+												{fieldState.invalid && (
+													<FieldError errors={[fieldState.error]} />
+												)}
+											</Field>
 										)}
-									</Field>
+									/>
 								)}
-							/>
-							<Controller
-								name="website"
-								control={control}
-								render={({ field, fieldState }) => (
-									<Field className="space-y-2">
-										<FieldLabel
-											htmlFor="website"
-											className="font-medium text-sm"
-										>
-											Website
-										</FieldLabel>
-										<Input
-											id="website"
-											{...field}
-											placeholder="Website URL"
-											className={cn(
-												"h-12 text-base",
-												fieldState.invalid && "border-red-500",
+							</Field>
+
+							<div className="space-y-3">
+								<p className="text-sm font-medium">Media Sosial</p>
+								<Controller
+									name="facebook"
+									control={control}
+									render={({ field, fieldState }) => (
+										<Field className="space-y-2">
+											<FieldLabel
+												htmlFor="facebook"
+												className="font-medium text-sm"
+											>
+												Facebook
+											</FieldLabel>
+											<Input
+												id="facebook"
+												{...field}
+												placeholder="Pautan Facebook"
+												className={cn(
+													"h-12 text-base",
+													fieldState.invalid && "border-red-500",
+												)}
+												type="url"
+											/>
+											{fieldState.invalid && (
+												<FieldError errors={[fieldState.error]} />
 											)}
-											type="url"
-										/>
-										{fieldState.invalid && (
-											<FieldError errors={[fieldState.error]} />
-										)}
-									</Field>
-								)}
-							/>
+										</Field>
+									)}
+								/>
+								<Controller
+									name="instagram"
+									control={control}
+									render={({ field, fieldState }) => (
+										<Field className="space-y-2">
+											<FieldLabel
+												htmlFor="instagram"
+												className="font-medium text-sm"
+											>
+												Instagram
+											</FieldLabel>
+											<Input
+												id="instagram"
+												{...field}
+												placeholder="Pautan Instagram"
+												className={cn(
+													"h-12 text-base",
+													fieldState.invalid && "border-red-500",
+												)}
+												type="url"
+											/>
+											{fieldState.invalid && (
+												<FieldError errors={[fieldState.error]} />
+											)}
+										</Field>
+									)}
+								/>
+								<Controller
+									name="website"
+									control={control}
+									render={({ field, fieldState }) => (
+										<Field className="space-y-2">
+											<FieldLabel
+												htmlFor="website"
+												className="font-medium text-sm"
+											>
+												Website
+											</FieldLabel>
+											<Input
+												id="website"
+												{...field}
+												placeholder="Pautan laman web"
+												className={cn(
+													"h-12 text-base",
+													fieldState.invalid && "border-red-500",
+												)}
+												type="url"
+											/>
+											{fieldState.invalid && (
+												<FieldError errors={[fieldState.error]} />
+											)}
+										</Field>
+									)}
+								/>
+							</div>
 						</div>
 					)}
 				</div>

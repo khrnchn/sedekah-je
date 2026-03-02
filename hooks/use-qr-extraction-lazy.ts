@@ -1,8 +1,8 @@
 "use client";
 
-import { formatFileSize, validateAndCompressImage } from "@/lib/image-utils";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
+import { validateAndCompressImage } from "@/lib/image-utils";
 
 /**
  * Provides QR-code image upload & extraction utilities for InstitutionForm with lazy loading.
@@ -54,16 +54,13 @@ export function useQrExtractionLazy() {
 					return;
 				}
 
-				const processedFile = validation.compressedFile || file;
-
-				// Show compression info if file was compressed
-				if (validation.compressedFile && validation.originalSize) {
-					const originalSize = formatFileSize(validation.originalSize);
-					const compressedSize = formatFileSize(validation.compressedFile.size);
-					toast("Imej telah dimampatkan", {
-						description: `Saiz asal: ${originalSize} → Saiz baru: ${compressedSize}`,
-					});
-				}
+				// Only use compressed file when it's actually smaller (canvas re-encode can bloat PNGs/some JPEGs)
+				const processedFile =
+					validation.compressedFile &&
+					validation.originalSize &&
+					validation.compressedFile.size < validation.originalSize
+						? validation.compressedFile
+						: file;
 
 				// Dynamically import @zxing/browser only when needed
 				const { BrowserQRCodeReader } = await import("@zxing/browser");
@@ -121,10 +118,10 @@ export function useQrExtractionLazy() {
 
 				img.src = URL.createObjectURL(processedFile);
 
-				// Update the file input with the compressed file
-				if (validation.compressedFile) {
+				// Update the file input only when we're using the compressed (smaller) file
+				if (processedFile !== file) {
 					const dataTransfer = new DataTransfer();
-					dataTransfer.items.add(validation.compressedFile);
+					dataTransfer.items.add(processedFile);
 					event.target.files = dataTransfer.files;
 				}
 			} catch (error) {

@@ -1,7 +1,7 @@
 "use client";
 
-import { useQrExtractionLazy } from "@/hooks/use-qr-extraction-lazy";
 import { useEffect, useRef } from "react";
+import { useQrExtractionLazy } from "@/hooks/use-qr-extraction-lazy";
 
 interface QRProcessorProps {
 	onQrContentChange: (content: string | null) => void;

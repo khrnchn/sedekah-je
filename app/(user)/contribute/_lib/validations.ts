@@ -1,7 +1,7 @@
-import { institutions } from "@/db/institutions";
-import { categories, states } from "@/lib/institution-constants";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { institutions } from "@/db/institutions";
+import { categories, states } from "@/lib/institution-constants";
 
 const socialUrl = z
 	.string()

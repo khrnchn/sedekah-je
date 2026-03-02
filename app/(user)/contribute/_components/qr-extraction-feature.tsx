@@ -39,8 +39,8 @@ function QRUploadFallback() {
 				accept="image/*"
 				disabled
 			/>
-			<div className="p-3 bg-blue-50 border border-blue-200 rounded-md">
-				<p className="text-sm text-blue-800">Memuatkan ciri QR...</p>
+			<div className="p-3 bg-muted border border-border rounded-md">
+				<p className="text-sm text-muted-foreground">Memuatkan ciri QR...</p>
 			</div>
 		</div>
 	);
@@ -90,6 +90,15 @@ export default function QRExtractionFeature({
 		[onStatusChange],
 	);
 
+	const clearInputs = useCallback(() => {
+		const cameraInput = document.getElementById(inputId) as HTMLInputElement;
+		const galleryInput = document.getElementById(
+			`${inputId}-gallery`,
+		) as HTMLInputElement;
+		if (cameraInput) cameraInput.value = "";
+		if (galleryInput) galleryInput.value = "";
+	}, [inputId]);
+
 	const masterClear = useCallback(
 		(clearHook: (() => void) | null) => {
 			if (clearHook) {
@@ -111,13 +120,10 @@ export default function QRExtractionFeature({
 			setQrStatus(newStatus);
 			onStatusChange(newStatus);
 
-			const input = document.getElementById(inputId) as HTMLInputElement;
-			if (input) {
-				input.value = "";
-			}
+			clearInputs();
 		},
 		[
-			inputId,
+			clearInputs,
 			onQrContentChange,
 			onStatusChange,
 			qrStatus.qrExtractionFailed,
@@ -143,11 +149,8 @@ export default function QRExtractionFeature({
 		setQrStatus(resetStatus);
 		onStatusChange(resetStatus);
 
-		const input = document.getElementById(inputId) as HTMLInputElement;
-		if (input) {
-			input.value = "";
-		}
-	}, [clearQrContentFromHook, inputId, onQrContentChange, onStatusChange]);
+		clearInputs();
+	}, [clearQrContentFromHook, clearInputs, onQrContentChange, onStatusChange]);
 
 	const handleFileChangeCallback = useCallback(
 		(handler: (event: React.ChangeEvent<HTMLInputElement>) => void) => {
@@ -271,10 +274,12 @@ export default function QRExtractionFeature({
 					</div>
 				</div>
 			)}
-			<p className="text-xs text-gray-600">
+			<p className="text-xs text-muted-foreground">
 				Saiz maksimum: 5MB • Format yang disokong: JPG, PNG, WebP
 			</p>
-			<p className="text-xs text-muted-foreground">Atau tampal imej (Ctrl+V)</p>
+			<p className="text-xs text-muted-foreground">
+				Atau tampal imej (Ctrl+V / Cmd+V)
+			</p>
 
 			<Suspense fallback={<QRUploadFallback />}>
 				<LazyQRProcessor
@@ -284,10 +289,20 @@ export default function QRExtractionFeature({
 					onHandleFileChange={handleFileChangeCallback}
 					onClearQrContent={handleClearQrContentCallback}
 				/>
-				{/* Standard file input */}
+				{/* Camera input (mobile-first) and gallery input */}
 				<div className="space-y-2">
 					<Input
 						id={inputId}
+						type="file"
+						name="qrImage"
+						accept="image/*"
+						capture="environment"
+						onChange={handleFileChangeWrapper}
+						disabled={isSubmitting || qrStatus.qrExtracting}
+						className="hidden"
+					/>
+					<Input
+						id={`${inputId}-gallery`}
 						type="file"
 						name="qrImage"
 						accept="image/*"
@@ -295,25 +310,41 @@ export default function QRExtractionFeature({
 						disabled={isSubmitting || qrStatus.qrExtracting}
 						className="hidden"
 					/>
-					<Button
-						type="button"
-						asChild
-						disabled={isSubmitting || qrStatus.qrExtracting}
-						className="w-full h-12 text-base"
-					>
-						<label
-							htmlFor={inputId}
-							className="cursor-pointer flex items-center justify-center w-full h-12"
+					<div className="flex flex-col sm:flex-row gap-2">
+						<Button
+							type="button"
+							asChild
+							disabled={isSubmitting || qrStatus.qrExtracting}
+							className="h-12 text-base flex-1"
 						>
-							{qrStatus.qrExtracting
-								? "Memproses..."
-								: selectedFile
-									? "Tukar Fail"
-									: initialImageUrl
-										? "Ganti Gambar"
-										: "Pilih Fail"}
-						</label>
-					</Button>
+							<label
+								htmlFor={inputId}
+								className="cursor-pointer flex items-center justify-center w-full h-12"
+							>
+								{qrStatus.qrExtracting
+									? "Memproses..."
+									: selectedFile
+										? "Tukar Fail"
+										: initialImageUrl
+											? "Ganti Gambar"
+											: "Ambil Gambar"}
+							</label>
+						</Button>
+						<Button
+							type="button"
+							variant="outline"
+							asChild
+							disabled={isSubmitting || qrStatus.qrExtracting}
+							className="h-12 text-base flex-1"
+						>
+							<label
+								htmlFor={`${inputId}-gallery`}
+								className="cursor-pointer flex items-center justify-center w-full h-12"
+							>
+								Pilih dari Galeri
+							</label>
+						</Button>
+					</div>
 					{selectedFile && (
 						<div className="flex items-center gap-2 text-sm">
 							<div className="flex flex-col min-w-0">
@@ -351,13 +382,15 @@ export default function QRExtractionFeature({
 			</Suspense>
 
 			{qrStatus.qrExtracting && (
-				<p className="text-sm text-blue-600">Mengekstrak kandungan QR...</p>
+				<p className="text-sm text-muted-foreground">
+					Mengekstrak kandungan QR...
+				</p>
 			)}
 			{qrContent && (
 				<div className="p-3 bg-green-50 border border-green-200 rounded-md">
 					<p className="text-sm font-medium text-green-800">
-						Success! We read the QR code. This will help our team approve your
-						submission faster.
+						Kod QR berjaya dibaca. Ini akan mempercepatkan semakan sumbangan
+						anda.
 					</p>
 					<p className="text-sm text-green-700 break-all">{qrContent}</p>
 				</div>
@@ -369,8 +402,8 @@ export default function QRExtractionFeature({
 						<div className="flex items-start justify-between gap-3">
 							<div className="flex-1">
 								<p className="text-sm font-medium text-yellow-800">
-									Couldn't read the QR code automatically. No problem—please
-									continue. Our team will review the image manually.
+									Kod QR tidak dapat dibaca secara automatik. Tiada masalah—sila
+									teruskan. Pasukan kami akan semak imej secara manual.
 								</p>
 							</div>
 							<Button
@@ -381,7 +414,7 @@ export default function QRExtractionFeature({
 								className="flex-shrink-0 text-xs"
 								disabled={isSubmitting}
 							>
-								Reset
+								Set Semula
 							</Button>
 						</div>
 					</div>

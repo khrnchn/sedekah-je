@@ -34,7 +34,7 @@ function LocationFallback() {
 			</div>
 			<div className="flex items-center space-x-2 pl-6">
 				<Spinner size="small" />
-				<p className="text-sm text-blue-600">
+				<p className="text-sm text-muted-foreground">
 					Memuatkan perkhidmatan lokasi...
 				</p>
 			</div>
@@ -85,8 +85,11 @@ export default function LocationServicesFeature({
 					Saya berada di lokasi ini sekarang
 				</label>
 			</div>
+			<p className="text-xs text-muted-foreground pl-6">
+				Lokasi hanya digunakan untuk titik peta institusi ini.
+			</p>
 			{loadingLocation && (
-				<p className="text-sm text-blue-600 pl-6">Mengesan lokasi…</p>
+				<p className="text-sm text-muted-foreground pl-6">Mengesan lokasi…</p>
 			)}
 
 			<Suspense fallback={<LocationFallback />}>
