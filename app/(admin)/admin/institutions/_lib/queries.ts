@@ -820,6 +820,50 @@ export async function undoApproval(id: number, adminNotes?: string) {
 }
 
 /**
+ * Undo rejection of an institution. Moves it from "rejected" back to "pending"
+ * so it can be reviewed again.
+ */
+export async function undoRejection(id: number, adminNotes?: string) {
+	await requireAdminSession();
+
+	const [institution] = await db
+		.select({ id: institutions.id, status: institutions.status })
+		.from(institutions)
+		.where(eq(institutions.id, id))
+		.limit(1);
+
+	if (!institution) {
+		throw new Error("Institution not found");
+	}
+
+	if (institution.status !== "rejected") {
+		throw new Error("Can only undo rejection for rejected institutions");
+	}
+
+	const result = await db
+		.update(institutions)
+		.set({
+			status: "pending",
+			reviewedBy: null,
+			reviewedAt: null,
+			adminNotes: adminNotes ?? null,
+		})
+		.where(eq(institutions.id, id))
+		.returning();
+
+	revalidatePath("/admin/institutions/rejected", "page");
+	revalidatePath("/admin/institutions/pending", "page");
+	revalidatePath("/admin/dashboard", "page");
+
+	revalidateTag("rejected-institutions");
+	revalidateTag("pending-institutions");
+	revalidateTag("institutions-count");
+	revalidateTag("institutions-data");
+
+	return result;
+}
+
+/**
  * Batch undo approval for multiple institutions (e.g. duplicates).
  * Moves them from "approved" to "rejected".
  */

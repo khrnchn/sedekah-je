@@ -1,11 +1,12 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import type { categories, states } from "@/lib/institution-constants";
 import type { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { ArrowUpDownIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import type { categories, states } from "@/lib/institution-constants";
+import { UndoRejectionDialog } from "./undo-rejection-dialog";
 
 type RejectedInstitution = {
 	id: number;
@@ -114,5 +115,14 @@ export const columns: ColumnDef<RejectedInstitution>[] = [
 			const date = row.getValue("reviewedAt") as Date | null;
 			return <div>{date ? format(new Date(date), "d MMM yyyy") : "-"}</div>;
 		},
+	},
+	{
+		id: "actions",
+		cell: ({ row }) => (
+			<UndoRejectionDialog
+				institutionId={row.original.id}
+				institutionName={row.original.name}
+			/>
+		),
 	},
 ];
