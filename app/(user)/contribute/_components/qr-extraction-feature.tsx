@@ -171,6 +171,58 @@ export default function QRExtractionFeature({
 		};
 	}, [clearQrContentFromHook, masterClear, onClearQrContent]);
 
+	// Paste image support for desktop (Ctrl+V / Cmd+V)
+	useEffect(() => {
+		const handlePaste = (e: ClipboardEvent) => {
+			if (isSubmitting || qrStatus.qrExtracting) return;
+
+			const target = e.target as Node;
+			if (
+				target instanceof HTMLInputElement ||
+				target instanceof HTMLTextAreaElement ||
+				(target instanceof HTMLElement && target.isContentEditable)
+			) {
+				return;
+			}
+
+			const items = e.clipboardData?.items;
+			if (!items) return;
+
+			for (const item of items) {
+				if (!item.type.startsWith("image/")) continue;
+				const blob = item.getAsFile();
+				if (!blob) continue;
+
+				e.preventDefault();
+
+				const ext =
+					blob.type === "image/png"
+						? "png"
+						: blob.type === "image/webp"
+							? "webp"
+							: "jpg";
+				const file =
+					blob instanceof File && blob.name
+						? blob
+						: new File([blob], `pasted-image.${ext}`, { type: blob.type });
+
+				const input = document.getElementById(
+					inputId,
+				) as HTMLInputElement | null;
+				if (!input) return;
+
+				const dataTransfer = new DataTransfer();
+				dataTransfer.items.add(file);
+				input.files = dataTransfer.files;
+				input.dispatchEvent(new Event("change", { bubbles: true }));
+				break;
+			}
+		};
+
+		document.addEventListener("paste", handlePaste);
+		return () => document.removeEventListener("paste", handlePaste);
+	}, [inputId, isSubmitting, qrStatus.qrExtracting]);
+
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
 	const handleFileChangeWrapper = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (handleFileChange) {
@@ -222,6 +274,7 @@ export default function QRExtractionFeature({
 			<p className="text-xs text-gray-600">
 				Saiz maksimum: 5MB • Format yang disokong: JPG, PNG, WebP
 			</p>
+			<p className="text-xs text-muted-foreground">Atau tampal imej (Ctrl+V)</p>
 
 			<Suspense fallback={<QRUploadFallback />}>
 				<LazyQRProcessor
