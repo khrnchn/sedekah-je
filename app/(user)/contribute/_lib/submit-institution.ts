@@ -1,5 +1,9 @@
 "use server";
 
+import { and, count, desc, eq, gte } from "drizzle-orm";
+import { revalidatePath, revalidateTag } from "next/cache";
+import { headers } from "next/headers";
+import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions } from "@/db/institutions";
 import { geocodeInstitution } from "@/lib/geocode";
@@ -11,14 +15,19 @@ import {
 	logNewInstitution,
 } from "@/lib/telegram";
 import { slugify } from "@/lib/utils";
-import { and, count, eq, gte } from "drizzle-orm";
-import { revalidatePath, revalidateTag } from "next/cache";
 import { institutionFormServerSchema } from "./validations";
+
+const COOLDOWN_HOURS = 12;
+const SUBMISSIONS_PER_DAY = 3;
 
 export type SubmitInstitutionFormState =
 	| { status: "idle" }
 	| { status: "success" }
-	| { status: "error"; errors: Record<string, string[]> };
+	| {
+			status: "error";
+			errors: Record<string, string[]>;
+			cooldownEndsAt?: string;
+	  };
 
 // Helper function to generate a unique slug
 async function generateUniqueSlug(name: string): Promise<string> {
@@ -105,7 +114,34 @@ export async function submitInstitution(
 				),
 			);
 
-		if (value >= 3) {
+		if (value >= SUBMISSIONS_PER_DAY) {
+			// Fetch the 3 most recent submissions to compute cooldown
+			const recentSubmissions = await db
+				.select({ createdAt: institutions.createdAt })
+				.from(institutions)
+				.where(
+					and(
+						eq(institutions.contributorId, contributorId),
+						gte(institutions.createdAt, oneDayAgo),
+					),
+				)
+				.orderBy(desc(institutions.createdAt))
+				.limit(SUBMISSIONS_PER_DAY);
+
+			const thirdSubmissionAt = recentSubmissions[0]?.createdAt; // Most recent
+			const firstSubmissionAt =
+				recentSubmissions[recentSubmissions.length - 1]?.createdAt; // Oldest
+
+			const cooldownEndsAt =
+				thirdSubmissionAt && firstSubmissionAt
+					? new Date(
+							Math.max(
+								thirdSubmissionAt.getTime() + COOLDOWN_HOURS * 60 * 60 * 1000,
+								firstSubmissionAt.getTime() + 24 * 60 * 60 * 1000,
+							),
+						)
+					: new Date(Date.now() + COOLDOWN_HOURS * 60 * 60 * 1000);
+
 			return {
 				status: "error",
 				errors: {
@@ -113,6 +149,7 @@ export async function submitInstitution(
 						"Anda telah mencapai had 3 sumbangan sehari. Sila cuba lagi esok. Terima kasih!",
 					],
 				},
+				cooldownEndsAt: cooldownEndsAt.toISOString(),
 			};
 		}
 	}
@@ -396,4 +433,71 @@ export async function submitInstitution(
 			},
 		};
 	}
+}
+
+export type ContributionCooldownResult =
+	| { inCooldown: false }
+	| { inCooldown: true; cooldownEndsAt: string };
+
+export async function getContributionCooldown(): Promise<ContributionCooldownResult | null> {
+	const hdrs = await headers();
+	const session = await auth.api.getSession({ headers: hdrs });
+
+	if (!session?.user?.id) {
+		return null;
+	}
+
+	const userId = session.user.id;
+	const user = await getUserById(userId);
+	if (!user || user.role === "admin") {
+		return { inCooldown: false };
+	}
+
+	const oneDayAgo = new Date();
+	oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+
+	const [{ value }] = await db
+		.select({ value: count() })
+		.from(institutions)
+		.where(
+			and(
+				eq(institutions.contributorId, userId),
+				gte(institutions.createdAt, oneDayAgo),
+			),
+		);
+
+	if (value < SUBMISSIONS_PER_DAY) {
+		return { inCooldown: false };
+	}
+
+	const recentSubmissions = await db
+		.select({ createdAt: institutions.createdAt })
+		.from(institutions)
+		.where(
+			and(
+				eq(institutions.contributorId, userId),
+				gte(institutions.createdAt, oneDayAgo),
+			),
+		)
+		.orderBy(desc(institutions.createdAt))
+		.limit(SUBMISSIONS_PER_DAY);
+
+	const thirdSubmissionAt = recentSubmissions[0]?.createdAt;
+	const firstSubmissionAt =
+		recentSubmissions[recentSubmissions.length - 1]?.createdAt;
+
+	const cooldownEndsAt =
+		thirdSubmissionAt && firstSubmissionAt
+			? new Date(
+					Math.max(
+						thirdSubmissionAt.getTime() + COOLDOWN_HOURS * 60 * 60 * 1000,
+						firstSubmissionAt.getTime() + 24 * 60 * 60 * 1000,
+					),
+				)
+			: new Date(Date.now() + COOLDOWN_HOURS * 60 * 60 * 1000);
+
+	return {
+		inCooldown: true,
+		cooldownEndsAt: cooldownEndsAt.toISOString(),
+	};
 }

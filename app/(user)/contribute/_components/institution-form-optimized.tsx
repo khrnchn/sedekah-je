@@ -34,7 +34,11 @@ import {
 	states as STATE_OPTIONS,
 } from "@/lib/institution-constants";
 import { cn, toTitleCase } from "@/lib/utils";
-import { submitInstitution } from "../_lib/submit-institution";
+import {
+	getContributionCooldown,
+	submitInstitution,
+} from "../_lib/submit-institution";
+import { CooldownTimer } from "./cooldown-timer";
 
 // Lazy load heavy features for better mobile performance
 const QRExtractionFeature = lazy(() => import("./qr-extraction-feature"));
@@ -47,15 +51,21 @@ function SubmitButton({
 	qrExtracting,
 	hasFile,
 	isAuthenticated,
+	isInCooldown,
 }: {
 	isSubmitting: boolean;
 	qrExtracting: boolean;
 	qrExtractionFailed: boolean;
 	hasFile: boolean;
 	isAuthenticated: boolean;
+	isInCooldown: boolean;
 }) {
 	const isDisabled =
-		isSubmitting || qrExtracting || !hasFile || !isAuthenticated;
+		isSubmitting ||
+		qrExtracting ||
+		!hasFile ||
+		!isAuthenticated ||
+		isInCooldown;
 
 	return (
 		<Button
@@ -116,6 +126,7 @@ export default function InstitutionFormOptimized() {
 	const [socialMediaExpanded, setSocialMediaExpanded] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [enableAdvancedFeatures, setEnableAdvancedFeatures] = useState(false);
+	const [cooldownEndsAt, setCooldownEndsAt] = useState<string | null>(null);
 
 	/* React Hook Form */
 	const form = useForm<InstitutionFormData>({
@@ -185,6 +196,17 @@ export default function InstitutionFormOptimized() {
 		}
 	}, [user?.id, setValue]);
 
+	/* Proactive cooldown check on mount */
+	useEffect(() => {
+		if (!user?.id) return;
+
+		getContributionCooldown().then((result) => {
+			if (result?.inCooldown && result.cooldownEndsAt) {
+				setCooldownEndsAt(result.cooldownEndsAt);
+			}
+		});
+	}, [user?.id]);
+
 	/* Form submission handler */
 	const onSubmit = async (data: InstitutionFormData) => {
 		// Authentication check
@@ -230,10 +252,17 @@ export default function InstitutionFormOptimized() {
 					description: "Sumbangan anda sedang disemak.",
 				});
 				reset();
+				setCooldownEndsAt(null);
 				if (clearQrContentRef.current) {
 					clearQrContentRef.current();
 				}
 			} else if (result.status === "error") {
+				// Handle rate limit with cooldown: show timer, don't set form error
+				if (result.cooldownEndsAt) {
+					setCooldownEndsAt(result.cooldownEndsAt);
+					return;
+				}
+
 				// Handle specific field errors
 				if (result.errors) {
 					for (const [key, messages] of Object.entries(result.errors)) {
@@ -673,16 +702,24 @@ export default function InstitutionFormOptimized() {
 						qrExtractionFailed={qrStatus.qrExtractionFailed}
 						hasFile={qrStatus.hasFile}
 						isAuthenticated={!!user?.id}
+						isInCooldown={!!cooldownEndsAt}
 					/>
 				</div>
 			</fieldset>
 
-			{errors.root?.general && (
-				<div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md text-center">
-					<p className="text-sm font-medium text-red-800">
-						{errors.root.general.message}
-					</p>
-				</div>
+			{cooldownEndsAt ? (
+				<CooldownTimer
+					cooldownEndsAt={cooldownEndsAt}
+					onCooldownEnd={() => setCooldownEndsAt(null)}
+				/>
+			) : (
+				errors.root?.general && (
+					<div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md text-center">
+						<p className="text-sm font-medium text-red-800">
+							{errors.root.general.message}
+						</p>
+					</div>
+				)
 			)}
 		</form>
 	);
