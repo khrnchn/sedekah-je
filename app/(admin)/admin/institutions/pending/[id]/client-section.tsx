@@ -1,9 +1,12 @@
 "use client";
 
-import Image from "next/image";
+import { Loader2, ScanQrCode } from "lucide-react";
+import NextImage from "next/image";
 import { useRouter } from "next/navigation";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { toast } from "sonner";
 import { GoogleMapsProvider } from "@/components/google-maps-provider";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import QrCodeDisplay from "@/components/ui/qrCodeDisplay";
 import { env } from "@/env";
@@ -35,9 +38,63 @@ type Props = {
 export default function ClientSection({ institution }: Props) {
 	const router = useRouter();
 	const formRef = useRef<ReviewFormHandle | null>(null);
+	const [isExtractingQr, setIsExtractingQr] = useState(false);
 
 	const handleQrReplacementSuccess = () => {
 		router.refresh();
+	};
+
+	const handleExtractQrFromOriginalImage = async () => {
+		if (!institution.qrImage) {
+			toast.error("No original QR image found");
+			return;
+		}
+
+		setIsExtractingQr(true);
+		try {
+			const response = await fetch(institution.qrImage);
+			if (!response.ok) {
+				throw new Error(`Image fetch failed with status ${response.status}`);
+			}
+
+			const imageBlob = await response.blob();
+			const objectUrl = URL.createObjectURL(imageBlob);
+
+			try {
+				const { BrowserQRCodeReader } = await import("@zxing/browser");
+				const reader = new BrowserQRCodeReader();
+				const image = new window.Image();
+
+				await new Promise<void>((resolve, reject) => {
+					image.onload = () => resolve();
+					image.onerror = () => reject(new Error("Failed to load image"));
+					image.src = objectUrl;
+				});
+
+				const canvas = document.createElement("canvas");
+				const context = canvas.getContext("2d");
+				canvas.width = image.width;
+				canvas.height = image.height;
+				context?.drawImage(image, 0, 0);
+
+				const result = await reader.decodeFromCanvas(canvas);
+				const extractedQrContent = result.getText()?.trim();
+
+				if (!extractedQrContent) {
+					throw new Error("No QR content extracted");
+				}
+
+				formRef.current?.setQrContent(extractedQrContent);
+				toast.success("QR content extracted and filled into form");
+			} finally {
+				URL.revokeObjectURL(objectUrl);
+			}
+		} catch (error) {
+			console.warn("QR extraction from original image failed:", error);
+			toast.error("Could not extract QR content from original image");
+		} finally {
+			setIsExtractingQr(false);
+		}
 	};
 
 	const apiKey = env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -100,7 +157,7 @@ export default function ClientSection({ institution }: Props) {
 												Original Uploaded Image:
 											</div>
 											<div className="flex justify-center">
-												<Image
+												<NextImage
 													src={institution.qrImage}
 													alt="Original QR Code Upload"
 													width={200}
@@ -119,7 +176,7 @@ export default function ClientSection({ institution }: Props) {
 										string, or upload a new QR code image.
 									</div>
 									<div className="flex justify-center">
-										<Image
+										<NextImage
 											src={institution.qrImage ?? "/placeholder.svg"}
 											alt="QR Code"
 											width={280}
@@ -127,6 +184,25 @@ export default function ClientSection({ institution }: Props) {
 											className="rounded-lg border"
 										/>
 									</div>
+									<Button
+										type="button"
+										variant="outline"
+										className="w-full"
+										disabled={isExtractingQr || !institution.qrImage}
+										onClick={handleExtractQrFromOriginalImage}
+									>
+										{isExtractingQr ? (
+											<>
+												<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+												Extracting QR...
+											</>
+										) : (
+											<>
+												<ScanQrCode className="mr-2 h-4 w-4" />
+												Extract QR from Original Image
+											</>
+										)}
+									</Button>
 									<QrImageToolbar imageUrl={institution.qrImage || ""} />
 
 									{/* QR Replacement Upload */}

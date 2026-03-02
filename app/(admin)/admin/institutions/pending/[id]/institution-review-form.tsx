@@ -82,6 +82,7 @@ type Props = {
 
 export type ReviewFormHandle = {
 	save: () => Promise<boolean>;
+	setQrContent: (qrContent: string) => void;
 };
 
 // Coordinate validation (lat -90 to 90, lon -180 to 180, both optional)
@@ -345,6 +346,12 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 					toast.error("Failed to save changes");
 					return false;
 				}
+			},
+			setQrContent: (qrContent: string) => {
+				setValue("qrContent", qrContent, {
+					shouldDirty: true,
+					shouldValidate: true,
+				});
 			},
 		}));
 
