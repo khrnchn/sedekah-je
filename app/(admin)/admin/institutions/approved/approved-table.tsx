@@ -1,5 +1,9 @@
 "use client";
 
+import { Undo2Icon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { ReusableDataTable } from "@/components/reusable-data-table";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,10 +23,6 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { categories, states } from "@/lib/institution-constants";
-import { Undo2Icon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { batchUndoApproval } from "../_lib/queries";
 import { createColumns } from "./columns";
 
@@ -61,6 +61,7 @@ export default function ApprovedInstitutionsTable({
 	const [selectedIds, setSelectedIds] = useState<number[]>([]);
 	const [category, setCategory] = useState<CategoryFilter>(ALL);
 	const [state, setState] = useState<StateFilter>(ALL);
+	const [search, setSearch] = useState("");
 	const [undoDialogOpen, setUndoDialogOpen] = useState(false);
 	const [undoNotes, setUndoNotes] = useState("Duplicate entry");
 	const router = useRouter();
@@ -72,6 +73,8 @@ export default function ApprovedInstitutionsTable({
 	const columns = createColumns(users);
 
 	const filteredData = institutions.filter((inst) => {
+		if (search && !inst.name.toLowerCase().includes(search.toLowerCase()))
+			return false;
 		if (category !== ALL && inst.category !== category) return false;
 		if (state !== ALL && inst.state !== state) return false;
 		return true;
@@ -158,6 +161,8 @@ export default function ApprovedInstitutionsTable({
 				data={filteredData}
 				searchKey="name"
 				searchPlaceholder="Search institutions..."
+				searchValue={search}
+				onSearchChange={setSearch}
 				emptyStateMessage="No approved institutions found."
 				enableRowSelection
 				onSelectionChange={(rows: ApprovedInstitution[]) =>
