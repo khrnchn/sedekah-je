@@ -29,9 +29,15 @@ function UserPageHeader({
 
 	return (
 		<div className="text-center space-y-2">
-			{title && <h1 className="text-3xl font-bold tracking-tight">{title}</h1>}
+			{title && (
+				<h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+					{title}
+				</h1>
+			)}
 			{description && (
-				<p className="text-muted-foreground max-w-2xl mx-auto">{description}</p>
+				<p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
+					{description}
+				</p>
 			)}
 		</div>
 	);
@@ -54,7 +60,7 @@ export function UserLayout({
 
 	return (
 		<>
-			<Header />
+			<Header compactMobileBrand={Boolean(title || description)} />
 			<UserOnboardingTour />
 			<main className="flex-1">
 				{pageSection ? (

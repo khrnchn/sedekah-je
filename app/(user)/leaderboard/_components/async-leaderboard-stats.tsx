@@ -11,22 +11,22 @@ export async function AsyncLeaderboardStats() {
 				<StatCard
 					icon={Users}
 					value={stats.totalContributors}
-					label="Contributors"
+					label="Penyumbang"
 				/>
 				<StatCard
 					icon={Star}
 					value={stats.totalContributions}
-					label="Contributions"
+					label="Sumbangan"
 				/>
 				<StatCard
 					icon={Trophy}
 					value={stats.mostActiveContributions}
-					label="Most Active"
+					label="Paling Aktif"
 				/>
 				<StatCard
 					icon={Award}
-					value={`${stats.verificationRate}%`}
-					label="Verified"
+					value={`${stats.approvalRate}%`}
+					label="Kadar Lulus"
 				/>
 			</StatsGrid>
 		</div>

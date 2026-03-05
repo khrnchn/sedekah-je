@@ -38,13 +38,13 @@ export default async function RamadhanPage() {
 
 	return (
 		<>
-			<Header />
+			<Header compactMobileBrand />
 			<main className="container mx-auto px-4 py-8 max-w-4xl lg:max-w-6xl">
 				<header className="mb-8">
-					<h1 className="text-3xl font-bold">
+					<h1 className="text-2xl md:text-3xl font-bold">
 						30 Hari 30 QR — Kempen Ramadan {year}
 					</h1>
-					<p className="mt-2 text-muted-foreground">
+					<p className="mt-2 text-sm md:text-base text-muted-foreground">
 						Satu institusi, satu kod QR setiap hari sepanjang Ramadan. Jom
 						bersedekah!
 					</p>

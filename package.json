@@ -100,6 +100,7 @@
 		"nuqs": "^2.2.3",
 		"plop": "^4.0.1",
 		"postgres": "^3.4.7",
+		"qr-scanner": "^1.4.2",
 		"qrcode.react": "^3.1.0",
 		"radix-ui": "^1.4.3",
 		"react": "19.2.4",

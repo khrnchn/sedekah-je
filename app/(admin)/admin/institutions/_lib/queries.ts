@@ -271,6 +271,7 @@ export async function approveInstitution(
 	revalidateTag("approved-institutions");
 	revalidateTag("institutions-count");
 	revalidateTag("institutions"); // Homepage cache
+	revalidateTag("leaderboard");
 
 	// Schedule approval email after response is sent (avoids serverless killing the request)
 	const row = result[0];
@@ -707,6 +708,7 @@ export async function batchApproveInstitutions(
 	// Revalidate cached data tables
 	revalidateTag("institutions-data");
 	revalidateTag("institutions"); // Homepage cache
+	revalidateTag("leaderboard");
 
 	// Schedule approval emails after response is sent (avoids serverless killing the request)
 	const rows = result.map((r) => ({

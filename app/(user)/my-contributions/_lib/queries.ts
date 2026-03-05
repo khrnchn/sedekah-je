@@ -1,11 +1,11 @@
 "use server";
 
-import { auth } from "@/auth";
-import { db } from "@/db";
-import { institutions } from "@/db/schema";
 import { and, count, desc, eq, sql } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
+import { auth } from "@/auth";
+import { db } from "@/db";
+import { institutions } from "@/db/schema";
 
 export interface MyContributionsStats {
 	totalContributions: number;
@@ -20,6 +20,7 @@ export interface ContributionItem {
 	status: "pending" | "approved" | "rejected";
 	date: string; // ISO string
 	type: string;
+	slug: string;
 	adminNotes: string | null;
 }
 
@@ -80,6 +81,7 @@ export async function getMyContributions(
 						status: institutions.status,
 						createdAt: institutions.createdAt,
 						category: institutions.category,
+						slug: institutions.slug,
 						adminNotes: institutions.adminNotes,
 					})
 					.from(institutions)
@@ -92,6 +94,7 @@ export async function getMyContributions(
 					status: inst.status as ContributionItem["status"],
 					date: inst.createdAt?.toISOString() ?? "",
 					type: inst.category,
+					slug: inst.slug,
 					adminNotes: inst.adminNotes ?? null,
 				}));
 			}

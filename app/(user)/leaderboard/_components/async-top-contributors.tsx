@@ -31,9 +31,9 @@ export async function AsyncTopContributors() {
 		return (
 			<Card>
 				<CardHeader>
-					<CardTitle>No Contributors Yet</CardTitle>
+					<CardTitle>Belum Ada Penyumbang</CardTitle>
 					<CardDescription>
-						Be the first to contribute and appear on the leaderboard!
+						Jadilah yang pertama menyumbang dan muncul di carta penyumbang!
 					</CardDescription>
 				</CardHeader>
 			</Card>
@@ -41,7 +41,7 @@ export async function AsyncTopContributors() {
 	}
 
 	return (
-		<div className="space-y-8" data-tour="leaderboard-top5">
+		<div className="space-y-8" data-tour="leaderboard-top20">
 			<div className="flex items-end justify-center gap-2 md:gap-4">
 				{/* Second Place */}
 				{topContributors[1] && (
@@ -57,7 +57,7 @@ export async function AsyncTopContributors() {
 								{topContributors[1].name}
 							</div>
 							<div className="text-xs md:text-sm text-muted-foreground">
-								{topContributors[1].contributions} submissions
+								{topContributors[1].contributions} sumbangan
 							</div>
 						</div>
 						<div className="w-full h-16 md:h-24 bg-slate-300/50 rounded-t-lg flex items-center justify-center mt-2">
@@ -82,7 +82,7 @@ export async function AsyncTopContributors() {
 								{topContributors[0].name}
 							</div>
 							<div className="text-xs md:text-sm text-muted-foreground">
-								{topContributors[0].contributions} submissions
+								{topContributors[0].contributions} sumbangan
 							</div>
 						</div>
 						<div className="w-full h-20 md:h-32 bg-yellow-400/50 rounded-t-lg flex items-center justify-center mt-2">
@@ -107,7 +107,7 @@ export async function AsyncTopContributors() {
 								{topContributors[2].name}
 							</div>
 							<div className="text-xs md:text-sm text-muted-foreground">
-								{topContributors[2].contributions} submissions
+								{topContributors[2].contributions} sumbangan
 							</div>
 						</div>
 						<div className="w-full h-12 md:h-20 bg-amber-500/50 rounded-t-lg flex items-center justify-center mt-2">
@@ -121,9 +121,9 @@ export async function AsyncTopContributors() {
 
 			<Card>
 				<CardHeader>
-					<CardTitle>Top 5 Penyumbang</CardTitle>
+					<CardTitle>Top 20 Penyumbang</CardTitle>
 					<CardDescription>
-						5 penyumbang dengan submission terbanyak dalam komuniti sedekah.je
+						20 penyumbang dengan sumbangan terbanyak dalam komuniti sedekah.je
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
@@ -145,7 +145,7 @@ export async function AsyncTopContributors() {
 										{contributor.name}
 									</div>
 									<div className="text-xs md:text-sm text-muted-foreground">
-										{contributor.contributions} submissions
+										{contributor.contributions} sumbangan
 									</div>
 								</div>
 							</div>
