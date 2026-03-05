@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { useRouter } from "next/navigation";
 import {
 	lazy,
 	Suspense,
@@ -108,6 +109,7 @@ function BasicLocationInput() {
 }
 
 export default function InstitutionFormOptimized() {
+	const router = useRouter();
 	const { user } = useAuth();
 
 	/* QR and location state */
@@ -154,7 +156,6 @@ export default function InstitutionFormOptimized() {
 		handleSubmit,
 		formState: { errors },
 		setValue,
-		reset,
 		watch,
 	} = form;
 
@@ -256,11 +257,8 @@ export default function InstitutionFormOptimized() {
 				toast.success("Jazakallahu khair!", {
 					description: "Sumbangan anda sedang disemak.",
 				});
-				reset();
-				setCooldownEndsAt(null);
-				if (clearQrContentRef.current) {
-					clearQrContentRef.current();
-				}
+				router.push("/my-contributions");
+				return;
 			} else if (result.status === "error") {
 				// Handle rate limit with cooldown: show timer, don't set form error
 				if (result.cooldownEndsAt) {
