@@ -142,9 +142,9 @@ export default async function RootLayout({
 				/>
 				<Script
 					id="sidegent-position"
-					// biome-ignore lint/security/noDangerouslySetInnerHtml: Required to reposition third-party widget above fixed footer
+					// biome-ignore lint/security/noDangerouslySetInnerHtml: Required to reposition and resize third-party widget above fixed footer
 					dangerouslySetInnerHTML={{
-						__html: `(function(){function r(n){n.style.setProperty("bottom","72px","important")}function rc(n){n.style.setProperty("bottom","140px","important")}var o=new MutationObserver(function(){var l=document.getElementById("da-embed-launcher");var c=document.getElementById("da-embed-container");if(l)r(l);if(c)rc(c)});o.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["style"]})})()`,
+						__html: `(function(){function r(n){n.style.setProperty("bottom","72px","important");n.style.setProperty("transform","scale(0.8)","important");n.style.setProperty("transform-origin","bottom right","important")}function rc(n){n.style.setProperty("bottom","140px","important");n.style.setProperty("transform","scale(0.9)","important");n.style.setProperty("transform-origin","bottom right","important")}var o=new MutationObserver(function(){var l=document.getElementById("da-embed-launcher");var c=document.getElementById("da-embed-container");if(l)r(l);if(c)rc(c)});o.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["style"]})})()`,
 					}}
 				/>
 			</head>
