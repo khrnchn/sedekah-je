@@ -1,6 +1,7 @@
 "use client";
 
-import { CheckCircle2, Clock, Pencil, XCircle } from "lucide-react";
+import { CheckCircle2, Clock, Inbox, Pencil, XCircle } from "lucide-react";
+import Link from "next/link";
 import { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { EmptyState } from "@/components/user-page-components";
 import { cn } from "@/lib/utils";
 
 interface Contribution {
@@ -20,6 +22,7 @@ interface Contribution {
 	date: string;
 	status: string;
 	type: string;
+	slug: string;
 	adminNotes?: string | null;
 }
 
@@ -66,6 +69,18 @@ const getStatusColor = (status: string) => {
 	}
 };
 
+const STATUS_LABELS: Record<string, string> = {
+	approved: "Diluluskan",
+	pending: "Menunggu",
+	rejected: "Ditolak",
+};
+
+const TYPE_LABELS: Record<string, string> = {
+	mosque: "Masjid",
+	surau: "Surau",
+	others: "Lain-lain",
+};
+
 function ContributionItem({
 	contribution,
 	onEditRejected,
@@ -73,8 +88,9 @@ function ContributionItem({
 	contribution: Contribution;
 	onEditRejected?: (institutionId: string) => void;
 }) {
-	return (
-		<div className="flex items-center gap-2 md:gap-4 p-2 md:p-3 rounded-lg bg-background hover:bg-muted/50">
+	const isApproved = contribution.status === "approved";
+	const content = (
+		<>
 			<div className="flex items-center justify-center w-8">
 				{getStatusIcon(contribution.status)}
 			</div>
@@ -107,17 +123,33 @@ function ContributionItem({
 					</Button>
 				)}
 				<Badge variant="secondary" className="text-xs">
-					{contribution.type}
+					{TYPE_LABELS[contribution.type] ?? contribution.type}
 				</Badge>
 				<Badge
 					variant="secondary"
 					className={cn("text-xs", getStatusColor(contribution.status))}
 				>
-					{contribution.status}
+					{STATUS_LABELS[contribution.status] ?? contribution.status}
 				</Badge>
 			</div>
-		</div>
+		</>
 	);
+
+	const wrapperClass =
+		"flex items-center gap-2 md:gap-4 p-2 md:p-3 rounded-lg bg-background hover:bg-muted/50";
+
+	if (isApproved && contribution.slug) {
+		return (
+			<Link
+				href={`/${contribution.type}/${contribution.slug}`}
+				className={wrapperClass}
+			>
+				{content}
+			</Link>
+		);
+	}
+
+	return <div className={wrapperClass}>{content}</div>;
 }
 
 export function ContributionList({
@@ -137,63 +169,93 @@ export function ContributionList({
 	return (
 		<Card>
 			<CardHeader>
-				<CardTitle>Contribution History</CardTitle>
-				<CardDescription>
-					Your recent contributions and their status
-				</CardDescription>
+				<CardTitle>Sejarah Sumbangan</CardTitle>
+				<CardDescription>Sumbangan terkini anda dan statusnya</CardDescription>
 			</CardHeader>
 			<CardContent>
 				<Tabs defaultValue="all" className="w-full">
 					<TabsList data-tour="mycontrib-status-tabs">
-						<TabsTrigger value="all">All</TabsTrigger>
-						<TabsTrigger value="approved">Approved</TabsTrigger>
-						<TabsTrigger value="pending">Pending</TabsTrigger>
+						<TabsTrigger value="all">Semua</TabsTrigger>
+						<TabsTrigger value="approved">Diluluskan</TabsTrigger>
+						<TabsTrigger value="pending">Menunggu</TabsTrigger>
 						<TabsTrigger value="rejected" data-tour="mycontrib-tab-rejected">
-							Rejected
+							Ditolak
 						</TabsTrigger>
 					</TabsList>
 					<TabsContent value="all" className="mt-4">
 						<div className="space-y-4">
-							{contributions.map((contribution) => (
-								<ContributionItem
-									key={contribution.id}
-									contribution={contribution}
-									onEditRejected={onEditRejected}
+							{contributions.length === 0 ? (
+								<EmptyState
+									icon={Inbox}
+									title="Tiada sumbangan"
+									description="Anda belum menyumbang sebarang institusi. Mulakan dengan menyumbang masjid atau surau terdekat."
 								/>
-							))}
+							) : (
+								contributions.map((contribution) => (
+									<ContributionItem
+										key={contribution.id}
+										contribution={contribution}
+										onEditRejected={onEditRejected}
+									/>
+								))
+							)}
 						</div>
 					</TabsContent>
-					<TabsContent value="approved">
+					<TabsContent value="approved" className="mt-4">
 						<div className="space-y-4">
-							{filteredContributions.approved.map((contribution) => (
-								<ContributionItem
-									key={contribution.id}
-									contribution={contribution}
-									onEditRejected={onEditRejected}
+							{filteredContributions.approved.length === 0 ? (
+								<EmptyState
+									icon={CheckCircle2}
+									title="Tiada sumbangan diluluskan"
+									description="Sumbangan yang diluluskan akan muncul di sini. Teruskan menyumbang!"
 								/>
-							))}
+							) : (
+								filteredContributions.approved.map((contribution) => (
+									<ContributionItem
+										key={contribution.id}
+										contribution={contribution}
+										onEditRejected={onEditRejected}
+									/>
+								))
+							)}
 						</div>
 					</TabsContent>
-					<TabsContent value="pending">
+					<TabsContent value="pending" className="mt-4">
 						<div className="space-y-4">
-							{filteredContributions.pending.map((contribution) => (
-								<ContributionItem
-									key={contribution.id}
-									contribution={contribution}
-									onEditRejected={onEditRejected}
+							{filteredContributions.pending.length === 0 ? (
+								<EmptyState
+									icon={Clock}
+									title="Tiada sumbangan menunggu"
+									description="Sumbangan yang sedang menunggu semakan admin akan muncul di sini."
 								/>
-							))}
+							) : (
+								filteredContributions.pending.map((contribution) => (
+									<ContributionItem
+										key={contribution.id}
+										contribution={contribution}
+										onEditRejected={onEditRejected}
+									/>
+								))
+							)}
 						</div>
 					</TabsContent>
-					<TabsContent value="rejected">
+					<TabsContent value="rejected" className="mt-4">
 						<div className="space-y-4">
-							{filteredContributions.rejected.map((contribution) => (
-								<ContributionItem
-									key={contribution.id}
-									contribution={contribution}
-									onEditRejected={onEditRejected}
+							{filteredContributions.rejected.length === 0 ? (
+								<EmptyState
+									icon={XCircle}
+									title="Tiada sumbangan ditolak"
+									description="Sumbangan yang ditolak akan muncul di sini. Anda boleh edit dan hantar semula."
 								/>
-							))}
+							) : (
+								filteredContributions.rejected.map((contribution) => (
+									<ContributionItem
+										key={contribution.id}
+										contribution={contribution}
+										onEditRejected={onEditRejected}
+									/>
+								))
+							)}
 						</div>
 					</TabsContent>
 				</Tabs>

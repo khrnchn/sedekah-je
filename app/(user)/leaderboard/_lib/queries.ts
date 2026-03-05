@@ -1,8 +1,5 @@
 "use server";
 
-import { db } from "@/db";
-import { institutions, users } from "@/db/schema";
-import { INSTITUTION_STATUSES } from "@/lib/institution-constants";
 import {
 	and,
 	count,
@@ -14,6 +11,9 @@ import {
 	sql,
 } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
+import { db } from "@/db";
+import { institutions, users } from "@/db/schema";
+import { INSTITUTION_STATUSES } from "@/lib/institution-constants";
 
 export interface LeaderboardStats {
 	totalContributors: number;
@@ -119,7 +119,7 @@ export async function getTopContributors(): Promise<TopContributor[]> {
 				)
 				.groupBy(institutions.contributorId, users.name, users.avatarUrl)
 				.orderBy(desc(count()))
-				.limit(5);
+				.limit(20);
 
 			return topContributorsResult.map((result, index) => ({
 				rank: index + 1,
@@ -130,5 +130,50 @@ export async function getTopContributors(): Promise<TopContributor[]> {
 		},
 		["leaderboard-top-contributors"],
 		{ revalidate: 300, tags: ["leaderboard", "leaderboard-top-contributors"] },
+	)();
+}
+
+export interface UserLeaderboardRank {
+	rank: number;
+	contributions: number;
+}
+
+export async function getCurrentUserLeaderboardRank(
+	userId: string,
+): Promise<UserLeaderboardRank | null> {
+	return unstable_cache(
+		async () => {
+			const ranked = await db
+				.select({
+					contributorId: institutions.contributorId,
+					contributionCount: count().as("contributionCount"),
+				})
+				.from(institutions)
+				.where(
+					and(
+						eq(institutions.isActive, true),
+						eq(institutions.status, INSTITUTION_STATUSES.APPROVED),
+						isNotNull(institutions.contributorId),
+					),
+				)
+				.groupBy(institutions.contributorId)
+				.orderBy(desc(count()));
+
+			const userIndex = ranked.findIndex(
+				(r) => r.contributorId && r.contributorId === userId,
+			);
+			if (userIndex === -1) return null;
+
+			const row = ranked[userIndex];
+			return {
+				rank: userIndex + 1,
+				contributions: Number(row.contributionCount),
+			};
+		},
+		[`leaderboard-user-rank:${userId}`],
+		{
+			revalidate: 300,
+			tags: ["leaderboard", `leaderboard-user-rank:${userId}`],
+		},
 	)();
 }

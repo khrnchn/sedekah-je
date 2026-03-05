@@ -1,8 +1,8 @@
 "use client";
 
+import { lazy, Suspense, useState } from "react";
 import { MobileProgressiveLoader } from "@/components/progressive-loader";
 import { ListItemSkeleton } from "@/components/user-page-components";
-import { Suspense, lazy, useState } from "react";
 import { EditRejectedSheetWrapper } from "./edit-rejected-sheet-wrapper";
 
 const ContributionList = lazy(() =>
@@ -17,6 +17,7 @@ interface Contribution {
 	date: string;
 	status: string;
 	type: string;
+	slug: string;
 }
 
 interface LazyContributionListProps {

@@ -55,8 +55,8 @@ const STEP_COPY: Record<TourRoute, { title: string; description: string }[]> = {
 				"Lihat statistik keseluruhan komuniti penyumbang sedekah.je.",
 		},
 		{
-			title: "Top 5 penyumbang",
-			description: "Lihat 5 penyumbang teratas dalam komuniti.",
+			title: "Top 20 penyumbang",
+			description: "Lihat 20 penyumbang teratas dalam komuniti.",
 		},
 		{
 			title: "Teruskan menyumbang",
@@ -87,7 +87,7 @@ const STEP_SELECTORS: Record<
 	],
 	"/leaderboard": [
 		"[data-tour='leaderboard-stats']",
-		"[data-tour='leaderboard-top5']",
+		"[data-tour='leaderboard-top20']",
 		undefined,
 	],
 };

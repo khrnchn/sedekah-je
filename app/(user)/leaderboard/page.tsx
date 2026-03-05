@@ -1,9 +1,10 @@
-import { UserLayout } from "@/components/user-layout";
-import { StatsGrid } from "@/components/user-page-components";
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { UserLayout } from "@/components/user-layout";
+import { StatsGrid } from "@/components/user-page-components";
 import { AsyncLeaderboardStats } from "./_components/async-leaderboard-stats";
 import { AsyncTopContributors } from "./_components/async-top-contributors";
+import { AsyncYourRank } from "./_components/async-your-rank";
 import { TopContributorsSkeleton } from "./_components/loading-skeletons";
 
 export const metadata: Metadata = {
@@ -35,6 +36,9 @@ export default function LeaderboardPage() {
 			<div className="space-y-8">
 				<Suspense fallback={<StatsGrid cols={4} loading={true} />}>
 					<AsyncLeaderboardStats />
+				</Suspense>
+				<Suspense fallback={null}>
+					<AsyncYourRank />
 				</Suspense>
 				<Suspense fallback={<TopContributorsSkeleton />}>
 					<AsyncTopContributors />
