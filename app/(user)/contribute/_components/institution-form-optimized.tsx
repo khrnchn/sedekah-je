@@ -257,7 +257,7 @@ export default function InstitutionFormOptimized() {
 				toast.success("Jazakallahu khair!", {
 					description: "Sumbangan anda sedang disemak.",
 				});
-				router.push("/my-contributions");
+				router.replace("/my-contributions");
 				return;
 			} else if (result.status === "error") {
 				// Handle rate limit with cooldown: show timer, don't set form error
