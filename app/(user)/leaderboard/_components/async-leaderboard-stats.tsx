@@ -25,8 +25,8 @@ export async function AsyncLeaderboardStats() {
 				/>
 				<StatCard
 					icon={Award}
-					value={`${stats.verificationRate}%`}
-					label="Disahkan"
+					value={`${stats.approvalRate}%`}
+					label="Kadar Lulus"
 				/>
 			</StatsGrid>
 		</div>
