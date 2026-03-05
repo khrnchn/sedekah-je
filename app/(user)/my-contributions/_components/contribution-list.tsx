@@ -135,21 +135,23 @@ function ContributionItem({
 		</>
 	);
 
-	const wrapperClass =
+	const clickableWrapper =
 		"flex items-start gap-2 md:gap-4 p-2 md:p-3 rounded-lg bg-background hover:bg-muted/50";
+	const nonClickableWrapper =
+		"flex items-start gap-2 md:gap-4 p-2 md:p-3 rounded-lg bg-background cursor-default opacity-80";
 
 	if (isApproved && contribution.slug) {
 		return (
 			<Link
 				href={`/${contribution.type}/${contribution.slug}`}
-				className={wrapperClass}
+				className={clickableWrapper}
 			>
 				{content}
 			</Link>
 		);
 	}
 
-	return <div className={wrapperClass}>{content}</div>;
+	return <div className={nonClickableWrapper}>{content}</div>;
 }
 
 export function ContributionList({
