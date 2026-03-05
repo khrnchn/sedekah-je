@@ -91,11 +91,11 @@ function ContributionItem({
 	const isApproved = contribution.status === "approved";
 	const content = (
 		<>
-			<div className="flex items-center justify-center w-8">
+			<div className="flex items-center justify-center w-8 shrink-0">
 				{getStatusIcon(contribution.status)}
 			</div>
 			<div className="flex-1 min-w-0">
-				<div className="font-semibold text-sm md:text-base truncate">
+				<div className="font-semibold text-sm md:text-base break-words">
 					{contribution.name}
 				</div>
 				<div className="text-xs md:text-sm text-muted-foreground">
@@ -103,12 +103,12 @@ function ContributionItem({
 				</div>
 				{contribution.status === "rejected" &&
 					contribution.adminNotes?.trim() && (
-						<p className="text-xs text-muted-foreground italic mt-0.5">
+						<p className="text-xs text-muted-foreground italic mt-0.5 break-words">
 							Catatan: {contribution.adminNotes}
 						</p>
 					)}
 			</div>
-			<div className="flex items-center gap-2">
+			<div className="flex items-center gap-2 shrink-0">
 				{contribution.status === "rejected" && onEditRejected && (
 					<Button
 						type="button"
@@ -136,7 +136,7 @@ function ContributionItem({
 	);
 
 	const wrapperClass =
-		"flex items-center gap-2 md:gap-4 p-2 md:p-3 rounded-lg bg-background hover:bg-muted/50";
+		"flex items-start gap-2 md:gap-4 p-2 md:p-3 rounded-lg bg-background hover:bg-muted/50";
 
 	if (isApproved && contribution.slug) {
 		return (
@@ -174,14 +174,19 @@ export function ContributionList({
 			</CardHeader>
 			<CardContent>
 				<Tabs defaultValue="all" className="w-full">
-					<TabsList data-tour="mycontrib-status-tabs">
-						<TabsTrigger value="all">Semua</TabsTrigger>
-						<TabsTrigger value="approved">Diluluskan</TabsTrigger>
-						<TabsTrigger value="pending">Menunggu</TabsTrigger>
-						<TabsTrigger value="rejected" data-tour="mycontrib-tab-rejected">
-							Ditolak
-						</TabsTrigger>
-					</TabsList>
+					<div className="w-full overflow-x-auto -mx-1 px-1">
+						<TabsList
+							data-tour="mycontrib-status-tabs"
+							className="w-max min-w-full"
+						>
+							<TabsTrigger value="all">Semua</TabsTrigger>
+							<TabsTrigger value="approved">Diluluskan</TabsTrigger>
+							<TabsTrigger value="pending">Menunggu</TabsTrigger>
+							<TabsTrigger value="rejected" data-tour="mycontrib-tab-rejected">
+								Ditolak
+							</TabsTrigger>
+						</TabsList>
+					</div>
 					<TabsContent value="all" className="mt-4">
 						<div className="space-y-4">
 							{contributions.length === 0 ? (
