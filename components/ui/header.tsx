@@ -65,11 +65,17 @@ const publicLinks = [
 	{ name: "Ramadhan", href: "/ramadhan", icon: Moon },
 ];
 
-export const Header = () => {
+interface HeaderProps {
+	compactMobileBrand?: boolean;
+}
+
+export const Header = ({ compactMobileBrand = false }: HeaderProps) => {
 	const isMobile = useIsMobile();
 	const { user, isAuthenticated, isAdmin, signOut } = useAuth();
 	const pathname = usePathname();
 	const [open, setOpen] = useState(false);
+	const showBrandText = !compactMobileBrand || !isMobile;
+	const logoSize = compactMobileBrand && isMobile ? 76 : 100;
 
 	const handleSignOut = async () => {
 		setOpen(false);
@@ -78,20 +84,32 @@ export const Header = () => {
 
 	return (
 		<>
-			<header className="flex flex-col md:flex-row items-center justify-center py-4 md:py-6 gap-2 relative">
+			<header
+				className={cn(
+					"flex flex-col md:flex-row items-center justify-center py-4 md:py-6 gap-2 relative",
+					compactMobileBrand && isMobile && "py-3 gap-1",
+				)}
+			>
 				<Link href="/">
-					<Image src="/masjid.svg" alt="Masjid" width={100} height={100} />
+					<Image
+						src="/masjid.svg"
+						alt="Masjid"
+						width={logoSize}
+						height={logoSize}
+					/>
 				</Link>
-				<div className="flex flex-col items-center md:items-start">
-					<Link href="/">
-						<h1 className="text-2xl md:text-3xl font-bold text-foreground">
-							SedekahJe
-						</h1>
-					</Link>
-					<p className="text-base md:text-lg text-gray-600 dark:text-gray-400 text-center md:text-left">
-						Senarai QR masjid, surau, dan institusi.
-					</p>
-				</div>
+				{showBrandText && (
+					<div className="flex flex-col items-center md:items-start">
+						<Link href="/">
+							<h1 className="text-2xl md:text-3xl font-bold text-foreground">
+								SedekahJe
+							</h1>
+						</Link>
+						<p className="text-base md:text-lg text-gray-600 dark:text-gray-400 text-center md:text-left">
+							Senarai QR masjid, surau, dan institusi.
+						</p>
+					</div>
+				)}
 
 				{/* Mobile Menu - Top Left */}
 				{isMobile && (

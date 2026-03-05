@@ -3,6 +3,7 @@
 import {
 	BarChart,
 	Building,
+	FileText,
 	Home as HomeIcon,
 	LayoutDashboard,
 	type LucideIcon,
@@ -34,6 +35,7 @@ const iconMap: Record<string, LucideIcon> = {
 	Home: HomeIcon,
 	Moon,
 	MessageCircle,
+	FileText,
 };
 
 function isPathActive(pathname: string, url: string) {

@@ -44,6 +44,12 @@ export default function ClientSection({ institution }: Props) {
 		router.refresh();
 	};
 
+	/**
+	 * Extract QR content from the original uploaded image and populate the form.
+	 * Decoder order: qr-scanner (first, better for small/offset QR) -> ZXing (fallback).
+	 * Known edge cases: small QR on left of poster, low contrast; qrcoderaptor.com can
+	 * decode some images that ZXing fails on (correctErrors / decodeBitMatrixParser).
+	 */
 	const handleExtractQrFromOriginalImage = async () => {
 		if (!institution.qrImage) {
 			toast.error("No original QR image found");
@@ -61,24 +67,116 @@ export default function ClientSection({ institution }: Props) {
 			const objectUrl = URL.createObjectURL(imageBlob);
 
 			try {
-				const { BrowserQRCodeReader } = await import("@zxing/browser");
-				const reader = new BrowserQRCodeReader();
-				const image = new window.Image();
+				let extractedQrContent: string | null = null;
 
-				await new Promise<void>((resolve, reject) => {
-					image.onload = () => resolve();
-					image.onerror = () => reject(new Error("Failed to load image"));
-					image.src = objectUrl;
-				});
+				// 1. Try qr-scanner first (better preprocessing for small/offset QR)
+				try {
+					const QrScanner = (await import("qr-scanner")).default;
+					const result = await QrScanner.scanImage(imageBlob, {
+						returnDetailedScanResult: true,
+					});
+					extractedQrContent =
+						(typeof result === "object" && result?.data
+							? result.data
+							: String(result ?? "")
+						).trim() || null;
+				} catch {
+					// Retry with 2x-scaled canvas for small QR codes (aliasing reduction)
+					try {
+						const img = new window.Image();
+						await new Promise<void>((resolve, reject) => {
+							img.onload = () => resolve();
+							img.onerror = () => reject(new Error("Failed to load image"));
+							img.src = objectUrl;
+						});
+						const canvas = document.createElement("canvas");
+						const ctx = canvas.getContext("2d");
+						const scale = 2;
+						canvas.width = img.width * scale;
+						canvas.height = img.height * scale;
+						if (ctx) {
+							ctx.imageSmoothingEnabled = true;
+							ctx.imageSmoothingQuality = "high";
+							ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+						}
+						const QrScanner = (await import("qr-scanner")).default;
+						const result = await QrScanner.scanImage(canvas, {
+							returnDetailedScanResult: true,
+						});
+						extractedQrContent =
+							(typeof result === "object" && result?.data
+								? result.data
+								: String(result ?? "")
+							).trim() || null;
+					} catch {
+						// qr-scanner failed; fall through to ZXing
+					}
+				}
 
-				const canvas = document.createElement("canvas");
-				const context = canvas.getContext("2d");
-				canvas.width = image.width;
-				canvas.height = image.height;
-				context?.drawImage(image, 0, 0);
+				// 2. Fallback: ZXing (original pipeline)
+				if (!extractedQrContent) {
+					const { BrowserQRCodeReader } = await import("@zxing/browser");
+					const reader = new BrowserQRCodeReader();
+					const image = new window.Image();
 
-				const result = await reader.decodeFromCanvas(canvas);
-				const extractedQrContent = result.getText()?.trim();
+					await new Promise<void>((resolve, reject) => {
+						image.onload = () => resolve();
+						image.onerror = () => reject(new Error("Failed to load image"));
+						image.src = objectUrl;
+					});
+
+					const attempts: Array<() => Promise<string | null>> = [
+						async () => {
+							const r = await reader.decodeFromImageElement(image);
+							return r?.getText()?.trim() ?? null;
+						},
+						async () => {
+							const canvas = document.createElement("canvas");
+							const ctx = canvas.getContext("2d", {
+								willReadFrequently: true,
+							});
+							canvas.width = image.width;
+							canvas.height = image.height;
+							ctx?.drawImage(image, 0, 0);
+							const r = await reader.decodeFromCanvas(canvas);
+							return r?.getText()?.trim() ?? null;
+						},
+						async () => {
+							const target = 800;
+							const w = image.width;
+							const h = image.height;
+							const scale =
+								w < target || h < target
+									? Math.max(target / w, target / h)
+									: Math.min(target / w, target / h);
+							const cw = Math.round(w * scale);
+							const ch = Math.round(h * scale);
+
+							const canvas = document.createElement("canvas");
+							const ctx = canvas.getContext("2d", {
+								willReadFrequently: true,
+							});
+							canvas.width = cw;
+							canvas.height = ch;
+							if (ctx) {
+								ctx.imageSmoothingEnabled = true;
+								ctx.imageSmoothingQuality = "high";
+								ctx.drawImage(image, 0, 0, w, h, 0, 0, cw, ch);
+							}
+							const r = await reader.decodeFromCanvas(canvas);
+							return r?.getText()?.trim() ?? null;
+						},
+					];
+
+					for (const attempt of attempts) {
+						try {
+							extractedQrContent = await attempt();
+							if (extractedQrContent) break;
+						} catch {
+							// Try next strategy
+						}
+					}
+				}
 
 				if (!extractedQrContent) {
 					throw new Error("No QR content extracted");
@@ -91,7 +189,9 @@ export default function ClientSection({ institution }: Props) {
 			}
 		} catch (error) {
 			console.warn("QR extraction from original image failed:", error);
-			toast.error("Could not extract QR content from original image");
+			toast.error(
+				"Could not extract QR content. The image may be blurry or low quality—try entering manually or uploading a clearer image.",
+			);
 		} finally {
 			setIsExtractingQr(false);
 		}

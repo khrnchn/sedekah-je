@@ -80,7 +80,7 @@ const data = {
 		{
 			title: "Blog",
 			url: "/admin/blog",
-			icon: "MessageCircle",
+			icon: "FileText",
 			group: "Campaign",
 		},
 	],
