@@ -5,6 +5,7 @@ import {
 	HeartHandshake,
 	Home,
 	LayoutDashboard,
+	Loader2,
 	LogIn,
 	LogOut,
 	Menu,
@@ -26,6 +27,7 @@ import {
 } from "@/components/ui/drawer";
 import { useAuth } from "@/hooks/use-auth";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { signInWithGoogle } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 import { ModeToggle } from "./mode-toggle";
 import { UserNavDesktop } from "./user-nav";
@@ -71,7 +73,7 @@ interface HeaderProps {
 
 export const Header = ({ compactMobileBrand = false }: HeaderProps) => {
 	const isMobile = useIsMobile();
-	const { user, isAuthenticated, isAdmin, signOut } = useAuth();
+	const { user, isAuthenticated, isAdmin, signOut, isLoading } = useAuth();
 	const pathname = usePathname();
 	const [open, setOpen] = useState(false);
 	const showBrandText = !compactMobileBrand || !isMobile;
@@ -80,6 +82,11 @@ export const Header = ({ compactMobileBrand = false }: HeaderProps) => {
 	const handleSignOut = async () => {
 		setOpen(false);
 		await signOut();
+	};
+
+	const handleLogin = async () => {
+		if (isLoading) return;
+		await signInWithGoogle();
 	};
 
 	return (
@@ -242,12 +249,20 @@ export const Header = ({ compactMobileBrand = false }: HeaderProps) => {
 									</Link>
 								);
 							})}
-							<Link href="/auth">
-								<Button variant="outline" size="sm" className="gap-2">
+							<Button
+								variant="outline"
+								size="sm"
+								className="gap-2"
+								onClick={handleLogin}
+								disabled={isLoading}
+							>
+								{isLoading ? (
+									<Loader2 className="h-4 w-4 animate-spin" />
+								) : (
 									<LogIn className="h-4 w-4" />
-									Log Masuk
-								</Button>
-							</Link>
+								)}
+								Log Masuk
+							</Button>
 						</div>
 					)}
 				</div>
