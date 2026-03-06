@@ -1,3 +1,6 @@
+import { format } from "date-fns";
+import { Building2, Eye, User } from "lucide-react";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,9 +12,6 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { formatDistanceToNow } from "date-fns";
-import { Building2, Calendar, Eye, User } from "lucide-react";
-import Link from "next/link";
 
 interface InstitutionTableProps {
 	data: Array<{
@@ -132,17 +132,12 @@ export function InstitutionTable({
 											</div>
 										</TableCell>
 										<TableCell>
-											<div className="flex items-center gap-2">
-												<Calendar className="h-4 w-4 text-muted-foreground" />
-												<span className="text-sm">
-													{formatDistanceToNow(
-														new Date(institution.createdAt),
-														{
-															addSuffix: true,
-														},
-													)}
-												</span>
-											</div>
+											<span className="text-sm">
+												{format(
+													new Date(institution.createdAt),
+													"d MMM yyyy h:mm a",
+												)}
+											</span>
 										</TableCell>
 										<TableCell className="text-right">
 											<Button variant="outline" size="sm" asChild>

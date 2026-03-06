@@ -1,5 +1,12 @@
 "use client";
 
+import type { ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
+import { ArrowUpDownIcon, MoreHorizontalIcon } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -22,13 +29,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/use-auth";
 import type { categories, states } from "@/lib/institution-constants";
-import type { ColumnDef } from "@tanstack/react-table";
-import { format } from "date-fns";
-import { ArrowUpDownIcon, MoreHorizontalIcon } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
 import { approveInstitution, rejectInstitution } from "../_lib/queries";
 
 type PendingInstitution = {
@@ -232,7 +232,9 @@ export const columns: ColumnDef<PendingInstitution>[] = [
 		},
 		cell: ({ row }) => {
 			const date = row.getValue("createdAt") as Date | null;
-			return <div>{date ? format(new Date(date), "d MMM yyyy") : "-"}</div>;
+			return (
+				<div>{date ? format(new Date(date), "d MMM yyyy h:mm a") : "-"}</div>
+			);
 		},
 	},
 	{

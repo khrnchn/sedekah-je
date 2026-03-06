@@ -1,13 +1,13 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import type { categories, states } from "@/lib/institution-constants";
 import type { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 import { ArrowUpDownIcon, EyeIcon } from "lucide-react";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import type { categories, states } from "@/lib/institution-constants";
 import { AssignContributorDialog } from "./assign-contributor-dialog";
 import { UndoApprovalDialog } from "./undo-approval-dialog";
 
@@ -162,7 +162,9 @@ export const createColumns = (
 			},
 			cell: ({ row }) => {
 				const date = row.getValue("reviewedAt") as Date | null;
-				return <div>{date ? format(new Date(date), "d MMM yyyy") : "-"}</div>;
+				return (
+					<div>{date ? format(new Date(date), "d MMM yyyy h:mm a") : "-"}</div>
+				);
 			},
 		},
 		{

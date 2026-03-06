@@ -113,7 +113,9 @@ export const columns: ColumnDef<RejectedInstitution>[] = [
 		},
 		cell: ({ row }) => {
 			const date = row.getValue("reviewedAt") as Date | null;
-			return <div>{date ? format(new Date(date), "d MMM yyyy") : "-"}</div>;
+			return (
+				<div>{date ? format(new Date(date), "d MMM yyyy h:mm a") : "-"}</div>
+			);
 		},
 	},
 	{
