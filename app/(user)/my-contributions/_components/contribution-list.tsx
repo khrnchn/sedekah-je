@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EmptyState } from "@/components/user-page-components";
+import { formatDateOnly } from "@/lib/date-utils";
 import { cn } from "@/lib/utils";
 
 interface Contribution {
@@ -30,18 +31,6 @@ interface ContributionListProps {
 	contributions: Contribution[];
 	onEditRejected?: (institutionId: string) => void;
 }
-
-const formatDate = (date: string) => {
-	try {
-		return new Intl.DateTimeFormat("ms-MY", {
-			day: "numeric",
-			month: "short",
-			year: "numeric",
-		}).format(new Date(date));
-	} catch {
-		return date;
-	}
-};
 
 const getStatusIcon = (status: string) => {
 	switch (status) {
@@ -99,7 +88,7 @@ function ContributionItem({
 					{contribution.name}
 				</div>
 				<div className="text-xs md:text-sm text-muted-foreground">
-					{formatDate(contribution.date)}
+					{formatDateOnly(contribution.date)}
 				</div>
 				{contribution.status === "rejected" &&
 					contribution.adminNotes?.trim() && (

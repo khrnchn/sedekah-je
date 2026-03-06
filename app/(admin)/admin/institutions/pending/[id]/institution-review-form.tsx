@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
 import {
 	Building2,
 	CaseSensitive,
@@ -53,6 +52,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import type { Institution } from "@/db/institutions";
 import { env } from "@/env";
+import { formatFullDate, formatTime } from "@/lib/date-utils";
 import { geocodeInstitution } from "@/lib/geocode";
 import {
 	categories as CATEGORY_OPTIONS,
@@ -208,11 +208,11 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 		}
 
 		const formattedSubmissionDate = institution.createdAt
-			? format(new Date(institution.createdAt), "d MMMM yyyy")
+			? formatFullDate(institution.createdAt)
 			: "N/A";
 
 		const formattedSubmissionTime = institution.createdAt
-			? format(new Date(institution.createdAt), "p")
+			? formatTime(institution.createdAt)
 			: "N/A";
 
 		const dynamicSchema = reviewSchema(institution);

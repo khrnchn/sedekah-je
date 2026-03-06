@@ -1,10 +1,10 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { format } from "date-fns";
 import { ArrowUpDownIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { formatDateTime } from "@/lib/date-utils";
 import type { categories, states } from "@/lib/institution-constants";
 import { UndoRejectionDialog } from "./undo-rejection-dialog";
 
@@ -113,9 +113,7 @@ export const columns: ColumnDef<RejectedInstitution>[] = [
 		},
 		cell: ({ row }) => {
 			const date = row.getValue("reviewedAt") as Date | null;
-			return (
-				<div>{date ? format(new Date(date), "d MMM yyyy h:mm a") : "-"}</div>
-			);
+			return <div>{formatDateTime(date)}</div>;
 		},
 	},
 	{

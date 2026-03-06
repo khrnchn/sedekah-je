@@ -80,6 +80,7 @@
 		"clsx": "^2.1.1",
 		"cmdk": "1.0.0",
 		"date-fns": "^4.1.0",
+		"date-fns-tz": "^3.2.0",
 		"driver.js": "^1.4.0",
 		"drizzle-orm": "^0.38.3",
 		"drizzle-zod": "^0.8.2",

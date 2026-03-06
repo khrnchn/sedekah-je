@@ -1,4 +1,3 @@
-import { format } from "date-fns";
 import { Building2, Eye, User } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +11,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import { formatDateTime } from "@/lib/date-utils";
 
 interface InstitutionTableProps {
 	data: Array<{
@@ -133,10 +133,7 @@ export function InstitutionTable({
 										</TableCell>
 										<TableCell>
 											<span className="text-sm">
-												{format(
-													new Date(institution.createdAt),
-													"d MMM yyyy h:mm a",
-												)}
+												{formatDateTime(institution.createdAt)}
 											</span>
 										</TableCell>
 										<TableCell className="text-right">

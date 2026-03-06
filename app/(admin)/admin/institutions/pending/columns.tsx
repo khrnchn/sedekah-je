@@ -1,7 +1,6 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { format } from "date-fns";
 import { ArrowUpDownIcon, MoreHorizontalIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -28,6 +27,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/use-auth";
+import { formatDateTime } from "@/lib/date-utils";
 import type { categories, states } from "@/lib/institution-constants";
 import { approveInstitution, rejectInstitution } from "../_lib/queries";
 
@@ -232,9 +232,7 @@ export const columns: ColumnDef<PendingInstitution>[] = [
 		},
 		cell: ({ row }) => {
 			const date = row.getValue("createdAt") as Date | null;
-			return (
-				<div>{date ? format(new Date(date), "d MMM yyyy h:mm a") : "-"}</div>
-			);
+			return <div>{formatDateTime(date)}</div>;
 		},
 	},
 	{

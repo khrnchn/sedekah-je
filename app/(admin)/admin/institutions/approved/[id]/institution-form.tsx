@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { format } from "date-fns";
 import { ExternalLink, Loader2, MapPin, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
@@ -28,6 +27,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import type { Institution } from "@/db/institutions";
 import { env } from "@/env";
+import { formatFullDate, formatTime } from "@/lib/date-utils";
 import { geocodeInstitution } from "@/lib/geocode";
 import {
 	categories as CATEGORY_OPTIONS,
@@ -159,19 +159,19 @@ const ApprovedInstitutionForm = forwardRef<ApprovedFormHandle, Props>(
 		}>({ open: false, newAddress: "" });
 
 		const formattedSubmissionDate = institution.createdAt
-			? format(new Date(institution.createdAt), "d MMMM yyyy")
+			? formatFullDate(institution.createdAt)
 			: "N/A";
 
 		const formattedSubmissionTime = institution.createdAt
-			? format(new Date(institution.createdAt), "p")
+			? formatTime(institution.createdAt)
 			: "N/A";
 
 		const formattedReviewDate = institution.reviewedAt
-			? format(new Date(institution.reviewedAt), "d MMMM yyyy")
+			? formatFullDate(institution.reviewedAt)
 			: "N/A";
 
 		const formattedReviewTime = institution.reviewedAt
-			? format(new Date(institution.reviewedAt), "p")
+			? formatTime(institution.reviewedAt)
 			: "N/A";
 
 		const {

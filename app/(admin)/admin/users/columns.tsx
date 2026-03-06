@@ -1,5 +1,9 @@
 "use client";
 
+import type { ColumnDef } from "@tanstack/react-table";
+import { Eye, MoreHorizontal } from "lucide-react";
+import { useTransition } from "react";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,11 +23,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import type { ColumnDef } from "@tanstack/react-table";
-import { format } from "date-fns";
-import { Eye, MoreHorizontal } from "lucide-react";
-import { useTransition } from "react";
-import { toast } from "sonner";
+import { formatDateOnly } from "@/lib/date-utils";
 import { removeAdminRole, setUserRole } from "./_lib/actions";
 
 // Assuming a User type based on better-auth documentation
@@ -119,10 +119,7 @@ export const columns: ColumnDef<User>[] = [
 													<h4 className="font-medium">{institution.name}</h4>
 													<p className="text-sm text-muted-foreground capitalize">
 														{institution.category} •{" "}
-														{format(
-															new Date(institution.createdAt),
-															"d MMM yyyy",
-														)}
+														{formatDateOnly(institution.createdAt)}
 													</p>
 												</div>
 												<Badge
@@ -160,7 +157,7 @@ export const columns: ColumnDef<User>[] = [
 		header: "Created At",
 		cell: ({ row }) => {
 			const date = row.getValue("createdAt") as string | null;
-			return date ? format(new Date(date), "d MMM yyyy") : "-";
+			return <div>{formatDateOnly(date)}</div>;
 		},
 	},
 	{
