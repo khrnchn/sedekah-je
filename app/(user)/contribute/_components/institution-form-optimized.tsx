@@ -17,7 +17,16 @@ import {
 	extendedInstitutionFormClientSchema,
 	type InstitutionFormData,
 } from "@/app/(user)/contribute/_lib/validations";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
@@ -36,7 +45,9 @@ import {
 } from "@/lib/institution-constants";
 import { cn, toTitleCase } from "@/lib/utils";
 import {
+	findSimilarInstitutions,
 	getContributionCooldown,
+	type SimilarInstitution,
 	submitInstitution,
 } from "../_lib/submit-institution";
 import { CooldownTimer } from "./cooldown-timer";
@@ -130,6 +141,14 @@ export default function InstitutionFormOptimized() {
 	const [enableAdvancedFeatures, setEnableAdvancedFeatures] = useState(false);
 	const [cooldownEndsAt, setCooldownEndsAt] = useState<string | null>(null);
 
+	/* Similar institutions duplicate warning */
+	const [similarInstitutions, setSimilarInstitutions] = useState<
+		SimilarInstitution[]
+	>([]);
+	const [showDuplicateModal, setShowDuplicateModal] = useState(false);
+	const [pendingFormData, setPendingFormData] =
+		useState<InstitutionFormData | null>(null);
+
 	/* React Hook Form */
 	const form = useForm<InstitutionFormData>({
 		resolver: zodResolver(extendedInstitutionFormClientSchema),
@@ -208,37 +227,16 @@ export default function InstitutionFormOptimized() {
 		});
 	}, [user?.id]);
 
-	/* Form submission handler */
-	const onSubmit = async (data: InstitutionFormData) => {
-		// Authentication check
-		if (!user?.id) {
-			toast.error("Ralat", {
-				description:
-					"Anda mesti log masuk untuk menyumbang. Sila log masuk dan cuba lagi.",
-			});
-			return;
-		}
-
-		setIsSubmitting(true);
-		// Clear previous general errors
-		form.clearErrors("root.general");
-
-		try {
+	/* Build FormData and submit to server. Returns true on success, false on error. */
+	const performSubmit = useCallback(
+		async (data: InstitutionFormData): Promise<boolean> => {
 			const formData = new FormData();
-
-			// Add form fields
 			for (const [key, value] of Object.entries(data)) {
 				if (value !== undefined && value !== null) {
 					formData.append(key, value.toString());
 				}
 			}
-
-			// Manually append QR content from state
-			if (qrContent) {
-				formData.append("qrContent", qrContent);
-			}
-
-			// Add QR image file (from camera or gallery input)
+			if (qrContent) formData.append("qrContent", qrContent);
 			const qrImageInput = document.getElementById(
 				"qrImage",
 			) as HTMLInputElement | null;
@@ -247,9 +245,7 @@ export default function InstitutionFormOptimized() {
 			) as HTMLInputElement | null;
 			const qrFile =
 				qrImageInput?.files?.[0] ?? qrImageGalleryInput?.files?.[0];
-			if (qrFile) {
-				formData.append("qrImage", qrFile);
-			}
+			if (qrFile) formData.append("qrImage", qrFile);
 
 			const result = await submitInstitution(undefined, formData);
 
@@ -258,15 +254,13 @@ export default function InstitutionFormOptimized() {
 					description: "Sumbangan anda sedang disemak.",
 				});
 				router.replace("/my-contributions");
-				return;
-			} else if (result.status === "error") {
-				// Handle rate limit with cooldown: show timer, don't set form error
+				return true;
+			}
+			if (result.status === "error") {
 				if (result.cooldownEndsAt) {
 					setCooldownEndsAt(result.cooldownEndsAt);
-					return;
+					return false;
 				}
-
-				// Handle specific field errors
 				if (result.errors) {
 					for (const [key, messages] of Object.entries(result.errors)) {
 						if (key !== "general") {
@@ -277,7 +271,6 @@ export default function InstitutionFormOptimized() {
 						}
 					}
 				}
-				// Handle general, non-field-specific errors
 				const generalError = result.errors?.general?.[0];
 				if (generalError) {
 					form.setError("root.general", {
@@ -290,6 +283,62 @@ export default function InstitutionFormOptimized() {
 							"Sila semak borang anda. Terdapat ralat dalam data yang dihantar.",
 					});
 				}
+				return false;
+			}
+			return false;
+		},
+		[qrContent, form, router],
+	);
+
+	/* Form submission handler */
+	const onSubmit = async (data: InstitutionFormData) => {
+		if (!user?.id) {
+			toast.error("Ralat", {
+				description:
+					"Anda mesti log masuk untuk menyumbang. Sila log masuk dan cuba lagi.",
+			});
+			return;
+		}
+
+		setIsSubmitting(true);
+		form.clearErrors("root.general");
+
+		try {
+			// Step 1: Check for similar institutions
+			const similar = await findSimilarInstitutions(
+				data.name,
+				data.state,
+				data.category,
+			);
+			if (similar.length > 0) {
+				setSimilarInstitutions(similar);
+				setPendingFormData(data);
+				setShowDuplicateModal(true);
+				return;
+			}
+
+			// Step 2: No matches, proceed with submit
+			await performSubmit(data);
+		} catch (error) {
+			console.error("Form submission error:", error);
+			toast.error("Ralat", {
+				description: "Sesuatu yang tidak kena berlaku. Sila cuba lagi.",
+			});
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
+
+	/* Modal confirm: user confirmed institution is different, proceed with submit */
+	const handleDuplicateModalConfirm = async () => {
+		if (!pendingFormData) return;
+		setIsSubmitting(true);
+		try {
+			const success = await performSubmit(pendingFormData);
+			if (success) {
+				setShowDuplicateModal(false);
+				setPendingFormData(null);
+				setSimilarInstitutions([]);
 			}
 		} catch (error) {
 			console.error("Form submission error:", error);
@@ -299,6 +348,12 @@ export default function InstitutionFormOptimized() {
 		} finally {
 			setIsSubmitting(false);
 		}
+	};
+
+	const handleDuplicateModalCancel = () => {
+		setShowDuplicateModal(false);
+		setPendingFormData(null);
+		setSimilarInstitutions([]);
 	};
 
 	return (
@@ -687,6 +742,62 @@ export default function InstitutionFormOptimized() {
 					</div>
 				)
 			)}
+
+			{/* Similar institutions duplicate warning modal */}
+			<Dialog
+				open={showDuplicateModal}
+				onOpenChange={(open) => !open && handleDuplicateModalCancel()}
+			>
+				<DialogContent className="sm:max-w-[425px]">
+					<DialogHeader>
+						<DialogTitle>Institusi serupa dijumpai</DialogTitle>
+						<DialogDescription>
+							Kami menjumpai institusi berikut yang mungkin sama. Adakah ini
+							institusi yang berbeza?
+						</DialogDescription>
+					</DialogHeader>
+					<ul className="space-y-3 py-2">
+						{similarInstitutions.map((inst) => (
+							<li
+								key={inst.id}
+								className="flex flex-wrap items-center gap-2 rounded-lg border border-border bg-muted/50 p-3 text-sm"
+							>
+								<span className="font-medium">{inst.name}</span>
+								<Badge variant="secondary" className="text-xs capitalize">
+									{toTitleCase(inst.category)}
+								</Badge>
+								<span className="text-muted-foreground">
+									{inst.city}, {inst.state}
+								</span>
+							</li>
+						))}
+					</ul>
+					<DialogFooter className="gap-2 sm:gap-0">
+						<Button
+							type="button"
+							variant="outline"
+							onClick={handleDuplicateModalCancel}
+							disabled={isSubmitting}
+						>
+							Batal
+						</Button>
+						<Button
+							type="button"
+							onClick={handleDuplicateModalConfirm}
+							disabled={isSubmitting}
+						>
+							{isSubmitting ? (
+								<>
+									<Spinner size="small" className="mr-2" />
+									Menghantar...
+								</>
+							) : (
+								"Ini institusi berbeza, saya mahu teruskan"
+							)}
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
 		</form>
 	);
 }

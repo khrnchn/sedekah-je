@@ -7,7 +7,11 @@ import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions } from "@/db/institutions";
 import { geocodeInstitution } from "@/lib/geocode";
-import type { categories, states } from "@/lib/institution-constants";
+import type {
+	categories,
+	institutionStatuses,
+	states,
+} from "@/lib/institution-constants";
 import { getUserById } from "@/lib/queries/users";
 import { r2Storage } from "@/lib/r2-client";
 import {
@@ -438,6 +442,70 @@ export async function submitInstitution(
 export type ContributionCooldownResult =
 	| { inCooldown: false }
 	| { inCooldown: true; cooldownEndsAt: string };
+
+export type SimilarInstitution = {
+	id: number;
+	name: string;
+	category: string;
+	city: string;
+	state: string;
+	slug: string;
+};
+
+function normalizeName(name: string): string {
+	return name
+		.toLowerCase()
+		.replace(/[\s\-_.,/#!$%^&*;:{}=\-_`~()]/g, "")
+		.replace(/[^\w\u0600-\u06FF]/g, ""); // Keep Arabic chars too
+}
+
+export async function findSimilarInstitutions(
+	name: string,
+	state: string,
+	category: string,
+): Promise<SimilarInstitution[]> {
+	if (!name || !state || !category) return [];
+
+	const normalizedInput = normalizeName(name);
+	const stateVal = state as (typeof states)[number];
+	const categoryVal = category as (typeof categories)[number];
+
+	const allInState = await db
+		.select({
+			id: institutions.id,
+			name: institutions.name,
+			category: institutions.category,
+			city: institutions.city,
+			state: institutions.state,
+			slug: institutions.slug,
+		})
+		.from(institutions)
+		.where(
+			and(
+				eq(institutions.state, stateVal),
+				eq(institutions.category, categoryVal),
+				eq(
+					institutions.status,
+					"approved" as (typeof institutionStatuses)[number],
+				),
+			),
+		)
+		.limit(20);
+
+	const matches = allInState
+		.filter((inst) => normalizeName(inst.name) === normalizedInput)
+		.slice(0, 3)
+		.map((inst) => ({
+			id: inst.id,
+			name: inst.name,
+			category: inst.category,
+			city: inst.city,
+			state: inst.state,
+			slug: inst.slug,
+		}));
+
+	return matches;
+}
 
 export async function getContributionCooldown(): Promise<ContributionCooldownResult | null> {
 	const hdrs = await headers();
