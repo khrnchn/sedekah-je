@@ -3,7 +3,14 @@
 import type { Updater } from "@tanstack/react-table";
 import { Undo2Icon } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+	useTransition,
+} from "react";
 import { toast } from "sonner";
 import { ReusableDataTable } from "@/components/reusable-data-table";
 import { Button } from "@/components/ui/button";
@@ -69,6 +76,7 @@ export default function ApprovedInstitutionsTable({
 	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
+	const [isPending, startTransition] = useTransition();
 
 	const page = Number(searchParams.get("page") ?? 1);
 	const limit = Number(searchParams.get("limit") ?? 10);
@@ -109,7 +117,9 @@ export default function ApprovedInstitutionsTable({
 			const params = new URLSearchParams(searchParams.toString());
 			params.set("page", String(newPagination.pageIndex + 1));
 			params.set("limit", String(newPagination.pageSize));
-			router.push(`${pathname}?${params.toString()}`);
+			startTransition(() => {
+				router.push(`${pathname}?${params.toString()}`);
+			});
 			setSelectedIds([]);
 		},
 		[pagination, router, pathname, searchParams],
@@ -128,7 +138,9 @@ export default function ApprovedInstitutionsTable({
 					params.delete("q");
 				}
 				params.set("page", "1");
-				router.push(`${pathname}?${params.toString()}`);
+				startTransition(() => {
+					router.push(`${pathname}?${params.toString()}`);
+				});
 				setSelectedIds([]);
 			}, 300);
 		},
@@ -144,7 +156,9 @@ export default function ApprovedInstitutionsTable({
 				params.set("category", value);
 			}
 			params.set("page", "1");
-			router.push(`${pathname}?${params.toString()}`);
+			startTransition(() => {
+				router.push(`${pathname}?${params.toString()}`);
+			});
 			setSelectedIds([]);
 		},
 		[router, pathname, searchParams],
@@ -159,7 +173,9 @@ export default function ApprovedInstitutionsTable({
 				params.set("state", value);
 			}
 			params.set("page", "1");
-			router.push(`${pathname}?${params.toString()}`);
+			startTransition(() => {
+				router.push(`${pathname}?${params.toString()}`);
+			});
 			setSelectedIds([]);
 		},
 		[router, pathname, searchParams],
@@ -243,24 +259,30 @@ export default function ApprovedInstitutionsTable({
 
 	return (
 		<>
-			<ReusableDataTable
-				columns={columns}
-				data={data.institutions}
-				searchKey="name"
-				searchPlaceholder="Search institutions..."
-				searchValue={draft}
-				onSearchChange={handleSearchChange}
-				emptyStateMessage="No approved institutions found."
-				enableRowSelection
-				onSelectionChange={(rows: ApprovedInstitution[]) =>
-					setSelectedIds(rows.map((r) => r.id))
+			<div
+				className={
+					isPending ? "opacity-50 pointer-events-none transition-opacity" : ""
 				}
-				pageCount={pageCount}
-				pagination={pagination}
-				onPaginationChange={handlePaginationChange}
-				leftToolbarContent={filterControls}
-				rightToolbarContent={bulkButtons}
-			/>
+			>
+				<ReusableDataTable
+					columns={columns}
+					data={data.institutions}
+					searchKey="name"
+					searchPlaceholder="Search institutions..."
+					searchValue={draft}
+					onSearchChange={handleSearchChange}
+					emptyStateMessage="No approved institutions found."
+					enableRowSelection
+					onSelectionChange={(rows: ApprovedInstitution[]) =>
+						setSelectedIds(rows.map((r) => r.id))
+					}
+					pageCount={pageCount}
+					pagination={pagination}
+					onPaginationChange={handlePaginationChange}
+					leftToolbarContent={filterControls}
+					rightToolbarContent={bulkButtons}
+				/>
+			</div>
 
 			{/* Batch Undo Dialog */}
 			<Dialog open={undoDialogOpen} onOpenChange={setUndoDialogOpen}>
