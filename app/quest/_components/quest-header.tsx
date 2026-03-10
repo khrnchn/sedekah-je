@@ -2,6 +2,7 @@
 
 import type { QuestLeaderboardEntry, QuestStats } from "@/app/quest/_lib/types";
 import { Badge } from "@/components/ui/badge";
+import { ModeToggle } from "@/components/ui/mode-toggle";
 import { Progress } from "@/components/ui/progress";
 import QuestLeaderboard from "./quest-leaderboard";
 
@@ -26,7 +27,10 @@ export default function QuestHeader({ stats, leaderboard }: QuestHeaderProps) {
 					</Badge>
 					<QuestLeaderboard leaderboard={leaderboard} />
 				</div>
-				<div className="flex items-center gap-3 sm:ml-auto sm:min-w-[220px]">
+				<div className="flex items-center gap-3 sm:ml-auto">
+					<ModeToggle className="h-8 w-16" />
+				</div>
+				<div className="flex items-center gap-3 sm:min-w-[220px]">
 					<span className="text-sm text-muted-foreground">
 						{stats.unlocked}/{stats.total} masjid
 					</span>
