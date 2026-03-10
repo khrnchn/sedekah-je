@@ -101,7 +101,7 @@ function ContributeFormContent({
 	if (authLoading) {
 		return (
 			<div className="flex items-center justify-center py-8">
-				<Loader2 className="h-5 w-5 animate-spin text-zinc-400" />
+				<Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
 			</div>
 		);
 	}
@@ -109,13 +109,13 @@ function ContributeFormContent({
 	if (!isAuthenticated) {
 		return (
 			<div className="space-y-3 p-4">
-				<p className="text-center text-sm text-zinc-400">
+				<p className="text-center text-sm text-muted-foreground">
 					Log masuk untuk sumbang QR kod
 				</p>
 				<Button
 					type="button"
 					variant="outline"
-					className="w-full"
+					className="w-full border-border text-foreground hover:bg-accent"
 					onClick={() => signInWithGoogle("/quest")}
 				>
 					<GoogleIcon className="mr-2 h-5 w-5" />
@@ -130,18 +130,18 @@ function ContributeFormContent({
 
 	return (
 		<div className="space-y-4 p-4">
-			<div className="rounded-md bg-zinc-900 px-3 py-2">
-				<p className="text-xs text-zinc-500">Masjid</p>
-				<p className="text-sm font-medium text-zinc-200">{mosque.name}</p>
+			<div className="rounded-md bg-muted px-3 py-2">
+				<p className="text-xs text-muted-foreground">Masjid</p>
+				<p className="text-sm font-medium text-foreground">{mosque.name}</p>
 			</div>
 
 			<div>
 				<label
 					htmlFor="quest-qr-upload"
-					className="flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 border-dashed border-zinc-700 p-6 transition-colors hover:border-zinc-500"
+					className="flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 border-dashed border-border p-6 transition-colors hover:border-muted-foreground"
 				>
-					<ImagePlus className="h-8 w-8 text-zinc-500" />
-					<span className="text-sm text-zinc-400">
+					<ImagePlus className="h-8 w-8 text-muted-foreground" />
+					<span className="text-sm text-muted-foreground">
 						{hasAttemptedExtraction
 							? "Tukar gambar QR"
 							: "Muat naik gambar kod QR"}
@@ -158,21 +158,21 @@ function ContributeFormContent({
 			</div>
 
 			{qrExtracting && (
-				<div className="flex items-center gap-2 text-sm text-zinc-400">
+				<div className="flex items-center gap-2 text-sm text-muted-foreground">
 					<Loader2 className="h-4 w-4 animate-spin" />
 					<span>Mengekstrak kod QR...</span>
 				</div>
 			)}
 
 			{hasAttemptedExtraction && !qrExtracting && qrContent && (
-				<div className="flex items-center gap-2 text-sm text-green-400">
+				<div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
 					<CheckCircle2 className="h-4 w-4" />
 					<span>Kod QR berjaya dikesan</span>
 				</div>
 			)}
 
 			{qrExtractionFailed && !qrExtracting && (
-				<div className="flex items-center gap-2 text-sm text-amber-400">
+				<div className="flex items-center gap-2 text-sm text-amber-600 dark:text-amber-400">
 					<XCircle className="h-4 w-4" />
 					<span>QR tidak dikesan - admin akan semak secara manual</span>
 				</div>
@@ -186,7 +186,7 @@ function ContributeFormContent({
 				/>
 				<label
 					htmlFor="quest-from-online"
-					className="cursor-pointer text-sm text-zinc-400"
+					className="cursor-pointer text-sm text-muted-foreground"
 				>
 					Saya jumpa QR ini dari online
 				</label>
@@ -194,7 +194,10 @@ function ContributeFormContent({
 
 			{fromOnline && (
 				<div className="space-y-1.5">
-					<label htmlFor="quest-source-url" className="text-sm text-zinc-400">
+					<label
+						htmlFor="quest-source-url"
+						className="text-sm text-muted-foreground"
+					>
 						Sumber URL (pilihan)
 					</label>
 					<Input
@@ -209,9 +212,13 @@ function ContributeFormContent({
 								: ""
 						}
 					/>
-					<p className="text-xs text-zinc-500">Bantu admin sahkan sumber QR.</p>
+					<p className="text-xs text-muted-foreground">
+						Bantu admin sahkan sumber QR.
+					</p>
 					{sourceUrlError && (
-						<p className="text-xs text-amber-400">URL tidak sah.</p>
+						<p className="text-xs text-amber-600 dark:text-amber-400">
+							URL tidak sah.
+						</p>
 					)}
 				</div>
 			)}
@@ -247,9 +254,9 @@ export default function QuestContributeForm({
 	// Use Dialog everywhere to avoid nested Drawer when launched from bottom sheet
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className="sm:max-w-md">
+			<DialogContent className="border-border bg-card sm:max-w-md [&>button]:text-muted-foreground [&>button]:hover:text-foreground">
 				<DialogHeader>
-					<DialogTitle>Sumbang QR</DialogTitle>
+					<DialogTitle className="text-foreground">Sumbang QR</DialogTitle>
 				</DialogHeader>
 				<ContributeFormContent mosque={mosque} onSuccess={handleSuccess} />
 			</DialogContent>

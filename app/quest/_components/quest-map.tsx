@@ -8,8 +8,8 @@ const QuestMapLeaflet = dynamic(
 	() => import("@/app/quest/_components/quest-map-leaflet"),
 	{
 		loading: () => (
-			<div className="flex h-full w-full items-center justify-center bg-zinc-900">
-				<Skeleton className="h-full w-full bg-zinc-800" />
+			<div className="flex h-full w-full items-center justify-center bg-muted">
+				<Skeleton className="h-full w-full bg-accent" />
 			</div>
 		),
 		ssr: false,

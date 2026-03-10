@@ -22,8 +22,8 @@ export default function QuestMosqueListItem({
 			className={cn(
 				"flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left transition-colors",
 				isSelected
-					? "bg-zinc-800 ring-1 ring-yellow-500/50"
-					: "hover:bg-zinc-800/50",
+					? "bg-accent ring-1 ring-yellow-500/50"
+					: "hover:bg-accent/50",
 			)}
 		>
 			<div className="mt-0.5 shrink-0">
@@ -32,7 +32,7 @@ export default function QuestMosqueListItem({
 				) : mosque.isPending ? (
 					<Clock className="h-4 w-4 text-amber-500" />
 				) : (
-					<Lock className="h-4 w-4 text-zinc-500" />
+					<Lock className="h-4 w-4 text-muted-foreground" />
 				)}
 			</div>
 			<div className="min-w-0 flex-1">
@@ -40,16 +40,18 @@ export default function QuestMosqueListItem({
 					className={cn(
 						"truncate text-sm font-medium",
 						mosque.isUnlocked
-							? "text-green-400"
+							? "text-green-600 dark:text-green-400"
 							: mosque.isPending
-								? "text-amber-400"
-								: "text-zinc-300",
+								? "text-amber-600 dark:text-amber-400"
+								: "text-foreground/80",
 					)}
 				>
 					{mosque.name}
 				</p>
 				{mosque.address && (
-					<p className="truncate text-xs text-zinc-500">{mosque.address}</p>
+					<p className="truncate text-xs text-muted-foreground">
+						{mosque.address}
+					</p>
 				)}
 			</div>
 		</button>

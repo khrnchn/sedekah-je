@@ -17,15 +17,17 @@ export default function QuestError({
 	}, [error]);
 
 	return (
-		<div className="flex min-h-[50dvh] flex-col items-center justify-center bg-zinc-950 p-6">
+		<div className="flex min-h-[50dvh] flex-col items-center justify-center bg-background p-6">
 			<div className="flex flex-col items-center space-y-4 text-center">
 				<div className="rounded-full bg-red-500/10 p-3">
-					<AlertTriangle className="h-8 w-8 text-red-400" />
+					<AlertTriangle className="h-8 w-8 text-red-500 dark:text-red-400" />
 				</div>
 
 				<div className="space-y-2">
-					<h2 className="text-xl font-semibold text-zinc-100">Ralat berlaku</h2>
-					<p className="max-w-sm text-sm text-zinc-400">
+					<h2 className="text-xl font-semibold text-foreground">
+						Ralat berlaku
+					</h2>
+					<p className="max-w-sm text-sm text-muted-foreground">
 						Kami mengalami masalah sementara. Sila cuba lagi atau kembali ke
 						halaman utama.
 					</p>
@@ -40,17 +42,17 @@ export default function QuestError({
 						<RefreshCw className="h-4 w-4" />
 						Cuba lagi
 					</Button>
-					<Button asChild variant="outline" className="border-zinc-700">
+					<Button asChild variant="outline" className="border-border">
 						<Link href="/">Ke Laman Utama</Link>
 					</Button>
 				</div>
 
 				{process.env.NODE_ENV === "development" && (
 					<details className="mt-4 w-full max-w-lg">
-						<summary className="cursor-pointer text-xs text-zinc-500 hover:text-zinc-400">
+						<summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground">
 							Butiran ralat (Development)
 						</summary>
-						<pre className="mt-2 max-h-32 overflow-auto rounded-md bg-zinc-900 p-3 text-xs text-zinc-400">
+						<pre className="mt-2 max-h-32 overflow-auto rounded-md bg-muted p-3 text-xs text-muted-foreground">
 							{error.message}
 							{error.stack && `\n\n${error.stack}`}
 						</pre>

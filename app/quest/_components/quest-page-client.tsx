@@ -92,7 +92,7 @@ export default function QuestPageClient({
 	);
 
 	return (
-		<div className="flex h-dvh w-full flex-col bg-zinc-950">
+		<div className="flex h-dvh w-full flex-col bg-background">
 			<QuestHeader stats={stats} leaderboard={leaderboard} />
 			<div className="relative flex flex-1 overflow-hidden">
 				{isDesktop && (

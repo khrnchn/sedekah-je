@@ -72,23 +72,23 @@ export default function QuestBottomSheet({
 			<DrawerTrigger asChild>
 				<button
 					type="button"
-					className="fixed bottom-[calc(env(safe-area-inset-bottom)+1rem)] left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full bg-zinc-800 px-4 py-2.5 text-sm font-medium text-zinc-200 shadow-lg ring-1 ring-zinc-700 transition-colors hover:bg-zinc-700"
+					className="fixed bottom-[calc(env(safe-area-inset-bottom)+1rem)] left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 rounded-full bg-accent px-4 py-2.5 text-sm font-medium text-foreground shadow-lg ring-1 ring-border transition-colors hover:bg-accent/80"
 				>
 					<List className="h-4 w-4" />
 					Senarai Masjid
 				</button>
 			</DrawerTrigger>
-			<DrawerContent className="flex h-[72dvh] flex-col overflow-hidden border-zinc-800 bg-zinc-950 pb-[env(safe-area-inset-bottom)] sm:h-[70dvh]">
+			<DrawerContent className="flex h-[72dvh] flex-col overflow-hidden border-border bg-background pb-[env(safe-area-inset-bottom)] sm:h-[70dvh]">
 				{selectedMosque ? (
 					<div className="flex h-full flex-col">
 						<DrawerHeader className="pb-2">
-							<DrawerTitle className="text-zinc-100">
+							<DrawerTitle className="text-foreground">
 								Butiran Masjid
 							</DrawerTitle>
 							<Button
 								type="button"
 								variant="ghost"
-								className="mt-1 h-7 w-fit px-2 text-xs text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200"
+								className="mt-1 h-7 w-fit px-2 text-xs text-muted-foreground hover:bg-accent hover:text-foreground"
 								onClick={onClearSelection}
 							>
 								Kembali ke Senarai
@@ -105,7 +105,7 @@ export default function QuestBottomSheet({
 				) : (
 					<>
 						<DrawerHeader className="pb-2">
-							<DrawerTitle className="text-zinc-100">
+							<DrawerTitle className="text-foreground">
 								Senarai Masjid
 							</DrawerTitle>
 							<div className="mt-2 space-y-2">
@@ -113,9 +113,9 @@ export default function QuestBottomSheet({
 									value={searchQuery}
 									onChange={(event) => onSearchQueryChange(event.target.value)}
 									placeholder="Cari masjid atau alamat..."
-									className="h-8 border-zinc-700 bg-zinc-900 text-xs text-zinc-200 placeholder:text-zinc-500"
+									className="h-8 border-border bg-muted text-xs text-foreground placeholder:text-muted-foreground"
 								/>
-								<div className="flex items-center gap-1 rounded-md bg-zinc-900 p-1">
+								<div className="flex items-center gap-1 rounded-md bg-muted p-1">
 									{statusFilters.map((filter) => (
 										<button
 											key={filter.value}
@@ -125,8 +125,8 @@ export default function QuestBottomSheet({
 											className={cn(
 												"flex-1 rounded px-2 py-1 text-[11px] font-medium transition-colors",
 												statusFilter === filter.value
-													? "bg-zinc-700 text-zinc-100"
-													: "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200",
+													? "bg-accent text-foreground"
+													: "text-muted-foreground hover:bg-accent hover:text-foreground",
 											)}
 										>
 											{filter.label}
@@ -137,25 +137,25 @@ export default function QuestBottomSheet({
 									value={sort}
 									onValueChange={(v) => onSortChange(v as QuestSortOption)}
 								>
-									<SelectTrigger className="h-8 w-full border-zinc-700 bg-zinc-900 text-zinc-300 text-xs">
+									<SelectTrigger className="h-8 w-full border-border bg-muted text-foreground/80 text-xs">
 										<SelectValue />
 									</SelectTrigger>
-									<SelectContent className="border-zinc-700 bg-zinc-900">
+									<SelectContent className="border-border bg-popover">
 										<SelectItem
 											value="alphabetical"
-											className="text-zinc-300 text-xs focus:bg-zinc-800 focus:text-zinc-100"
+											className="text-foreground/80 text-xs focus:bg-accent focus:text-foreground"
 										>
 											A-Z
 										</SelectItem>
 										<SelectItem
 											value="status"
-											className="text-zinc-300 text-xs focus:bg-zinc-800 focus:text-zinc-100"
+											className="text-foreground/80 text-xs focus:bg-accent focus:text-foreground"
 										>
 											Status
 										</SelectItem>
 									</SelectContent>
 								</Select>
-								<p className="text-[11px] text-zinc-500">
+								<p className="text-[11px] text-muted-foreground">
 									{mosques.length}/{totalMosques} masjid
 								</p>
 							</div>
@@ -171,7 +171,7 @@ export default function QuestBottomSheet({
 									/>
 								))}
 								{mosques.length === 0 && (
-									<p className="py-8 text-center text-sm text-zinc-500">
+									<p className="py-8 text-center text-sm text-muted-foreground">
 										Tiada masjid ditemui
 									</p>
 								)}

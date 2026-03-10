@@ -49,15 +49,15 @@ export default function QuestSidebar({
 	];
 
 	return (
-		<div className="relative z-10 flex w-80 flex-col border-r border-zinc-800 bg-zinc-950">
-			<div className="space-y-3 border-b border-zinc-800 px-4 py-3">
+		<div className="relative z-10 flex w-80 flex-col border-r border-border bg-background">
+			<div className="space-y-3 border-b border-border px-4 py-3">
 				<Input
 					value={searchQuery}
 					onChange={(event) => onSearchQueryChange(event.target.value)}
 					placeholder="Cari masjid atau alamat..."
-					className="h-8 border-zinc-700 bg-zinc-900 text-xs text-zinc-200 placeholder:text-zinc-500"
+					className="h-8 border-border bg-muted text-xs text-foreground placeholder:text-muted-foreground"
 				/>
-				<div className="flex items-center gap-1 rounded-md bg-zinc-900 p-1">
+				<div className="flex items-center gap-1 rounded-md bg-muted p-1">
 					{statusFilters.map((filter) => (
 						<button
 							key={filter.value}
@@ -67,8 +67,8 @@ export default function QuestSidebar({
 							className={cn(
 								"flex-1 rounded px-2 py-1 text-[11px] font-medium transition-colors",
 								statusFilter === filter.value
-									? "bg-zinc-700 text-zinc-100"
-									: "text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200",
+									? "bg-accent text-foreground"
+									: "text-muted-foreground hover:bg-accent hover:text-foreground",
 							)}
 						>
 							{filter.label}
@@ -79,25 +79,25 @@ export default function QuestSidebar({
 					value={sort}
 					onValueChange={(v) => onSortChange(v as QuestSortOption)}
 				>
-					<SelectTrigger className="h-8 w-full border-zinc-700 bg-zinc-900 text-zinc-300 text-xs">
+					<SelectTrigger className="h-8 w-full border-border bg-muted text-foreground/80 text-xs">
 						<SelectValue />
 					</SelectTrigger>
-					<SelectContent className="border-zinc-700 bg-zinc-900">
+					<SelectContent className="border-border bg-popover">
 						<SelectItem
 							value="alphabetical"
-							className="text-zinc-300 text-xs focus:bg-zinc-800 focus:text-zinc-100"
+							className="text-foreground/80 text-xs focus:bg-accent focus:text-foreground"
 						>
 							A-Z
 						</SelectItem>
 						<SelectItem
 							value="status"
-							className="text-zinc-300 text-xs focus:bg-zinc-800 focus:text-zinc-100"
+							className="text-foreground/80 text-xs focus:bg-accent focus:text-foreground"
 						>
 							Status
 						</SelectItem>
 					</SelectContent>
 				</Select>
-				<p className="text-[11px] text-zinc-500">
+				<p className="text-[11px] text-muted-foreground">
 					{mosques.length}/{totalMosques} masjid
 				</p>
 			</div>
@@ -112,7 +112,7 @@ export default function QuestSidebar({
 						/>
 					))}
 					{mosques.length === 0 && (
-						<p className="py-8 text-center text-sm text-zinc-500">
+						<p className="py-8 text-center text-sm text-muted-foreground">
 							Tiada masjid ditemui
 						</p>
 					)}

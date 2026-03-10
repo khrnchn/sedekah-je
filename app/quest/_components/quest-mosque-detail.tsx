@@ -27,18 +27,20 @@ export default function QuestMosqueDetail({
 		if (!mosque) return null;
 		return (
 			<div className="space-y-3">
-				<div className="rounded-lg border border-zinc-800 bg-zinc-950/95 p-4 shadow-xl backdrop-blur-sm">
+				<div className="rounded-lg border border-border bg-card p-4 shadow-xl">
 					<div className="flex items-start justify-between gap-2">
 						<div className="min-w-0 flex-1">
-							<h3 className="font-semibold text-zinc-100">{mosque.name}</h3>
+							<h3 className="font-semibold text-foreground">{mosque.name}</h3>
 							{mosque.address && (
-								<p className="mt-1 text-xs text-zinc-400">{mosque.address}</p>
+								<p className="mt-1 text-xs text-muted-foreground">
+									{mosque.address}
+								</p>
 							)}
 						</div>
 						<button
 							type="button"
 							onClick={onClose}
-							className="shrink-0 rounded-md p-1 text-zinc-500 transition-colors hover:bg-zinc-800 hover:text-zinc-300"
+							className="shrink-0 rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
 						>
 							<X className="h-4 w-4" />
 						</button>
@@ -46,7 +48,7 @@ export default function QuestMosqueDetail({
 					<div className="mt-3 flex items-center gap-2">
 						{mosque.isUnlocked ? (
 							<>
-								<Badge className="bg-green-500/10 text-green-400 hover:bg-green-500/20">
+								<Badge className="bg-green-500/10 text-green-600 hover:bg-green-500/20 dark:text-green-400">
 									Tersedia
 								</Badge>
 								{mosque.institutionCategory && mosque.institutionSlug && (
@@ -54,7 +56,7 @@ export default function QuestMosqueDetail({
 										href={`/${mosque.institutionCategory}/${mosque.institutionSlug}`}
 										target="_blank"
 										rel="noreferrer"
-										className="inline-flex items-center gap-1 text-sm font-medium text-green-400 underline-offset-4 hover:underline"
+										className="inline-flex items-center gap-1 text-sm font-medium text-green-600 underline-offset-4 hover:underline dark:text-green-400"
 									>
 										<span className="sr-only">Buka halaman institusi</span>
 										<ExternalLink className="h-4 w-4" />
@@ -62,21 +64,21 @@ export default function QuestMosqueDetail({
 								)}
 							</>
 						) : mosque.isPending ? (
-							<Badge className="bg-amber-500/10 text-amber-400 hover:bg-amber-500/20">
+							<Badge className="bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 dark:text-amber-400">
 								Dalam semakan
 							</Badge>
 						) : (
 							<>
 								<Badge
 									variant="outline"
-									className="border-zinc-700 text-zinc-400"
+									className="border-border text-muted-foreground"
 								>
 									Belum tersedia
 								</Badge>
 								<Button
 									variant="outline"
 									size="sm"
-									className="h-7 gap-1 border-zinc-700 text-xs text-zinc-300 hover:bg-zinc-800"
+									className="h-7 gap-1 border-border text-xs text-foreground/80 hover:bg-accent"
 									onClick={() => setContributeOpen(true)}
 								>
 									<QrCode className="h-3 w-3" />
@@ -116,18 +118,20 @@ export default function QuestMosqueDetail({
 					transition={{ duration: 0.2 }}
 					className="absolute bottom-4 left-4 right-4 z-20 md:left-auto md:right-4 md:w-80"
 				>
-					<div className="rounded-lg border border-zinc-800 bg-zinc-950/95 p-4 shadow-xl backdrop-blur-sm">
+					<div className="rounded-lg border border-border bg-card p-4 shadow-xl backdrop-blur-sm">
 						<div className="flex items-start justify-between gap-2">
 							<div className="min-w-0 flex-1">
-								<h3 className="font-semibold text-zinc-100">{mosque.name}</h3>
+								<h3 className="font-semibold text-foreground">{mosque.name}</h3>
 								{mosque.address && (
-									<p className="mt-1 text-xs text-zinc-400">{mosque.address}</p>
+									<p className="mt-1 text-xs text-muted-foreground">
+										{mosque.address}
+									</p>
 								)}
 							</div>
 							<button
 								type="button"
 								onClick={onClose}
-								className="shrink-0 rounded-md p-1 text-zinc-500 transition-colors hover:bg-zinc-800 hover:text-zinc-300"
+								className="shrink-0 rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
 							>
 								<X className="h-4 w-4" />
 							</button>
@@ -135,7 +139,7 @@ export default function QuestMosqueDetail({
 						<div className="mt-3 flex items-center gap-2">
 							{mosque.isUnlocked ? (
 								<>
-									<Badge className="bg-green-500/10 text-green-400 hover:bg-green-500/20">
+									<Badge className="bg-green-500/10 text-green-600 hover:bg-green-500/20 dark:text-green-400">
 										Tersedia
 									</Badge>
 									{mosque.institutionCategory && mosque.institutionSlug && (
@@ -143,7 +147,7 @@ export default function QuestMosqueDetail({
 											href={`/${mosque.institutionCategory}/${mosque.institutionSlug}`}
 											target="_blank"
 											rel="noreferrer"
-											className="inline-flex items-center gap-1 text-sm font-medium text-green-400 underline-offset-4 hover:underline"
+											className="inline-flex items-center gap-1 text-sm font-medium text-green-600 underline-offset-4 hover:underline dark:text-green-400"
 										>
 											<span className="sr-only">Buka halaman institusi</span>
 											<ExternalLink className="h-4 w-4" />
@@ -151,21 +155,21 @@ export default function QuestMosqueDetail({
 									)}
 								</>
 							) : mosque.isPending ? (
-								<Badge className="bg-amber-500/10 text-amber-400 hover:bg-amber-500/20">
+								<Badge className="bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 dark:text-amber-400">
 									Dalam semakan
 								</Badge>
 							) : (
 								<>
 									<Badge
 										variant="outline"
-										className="border-zinc-700 text-zinc-400"
+										className="border-border text-muted-foreground"
 									>
 										Belum tersedia
 									</Badge>
 									<Button
 										variant="outline"
 										size="sm"
-										className="h-7 gap-1 border-zinc-700 text-xs text-zinc-300 hover:bg-zinc-800"
+										className="h-7 gap-1 border-border text-xs text-foreground/80 hover:bg-accent"
 										onClick={() => setContributeOpen(true)}
 									>
 										<QrCode className="h-3 w-3" />

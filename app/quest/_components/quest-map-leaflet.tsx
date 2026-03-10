@@ -10,6 +10,7 @@ import type { FeatureCollection, Geometry } from "geojson";
 import type { MapOptions } from "leaflet";
 import { divIcon, Map as LeafletMap, latLngBounds } from "leaflet";
 import { LocateFixed } from "lucide-react";
+import { useTheme } from "next-themes";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GeoJSON, Marker, TileLayer, Tooltip, useMap } from "react-leaflet";
@@ -20,7 +21,9 @@ const PETALING_ZOOM = 13;
 
 const DARK_TILE_URL =
 	"https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
-const DARK_TILE_ATTRIBUTION =
+const LIGHT_TILE_URL =
+	"https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
+const TILE_ATTRIBUTION =
 	'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>';
 
 const MARKER_SIZE_DEFAULT: [number, number] = [42, 56];
@@ -292,6 +295,9 @@ export default function QuestMapLeaflet({
 	onMarkerClick,
 	isDesktop,
 }: QuestMapLeafletProps) {
+	const { resolvedTheme } = useTheme();
+	const isDark = resolvedTheme === "dark";
+
 	const unlockedDefaultIcon = useMemo(
 		() =>
 			createMosqueIcon(MARKER_SIZE_DEFAULT, { locked: false, selected: false }),
@@ -313,8 +319,15 @@ export default function QuestMapLeaflet({
 		[],
 	);
 
+	const tileUrl = isDark ? DARK_TILE_URL : LIGHT_TILE_URL;
+	const boundaryColor = isDark ? "#22c55e" : "#16a34a";
+	const boundaryFillOpacity = isDark ? 0.08 : 0.06;
+
 	return (
-		<div className="quest-map-dark h-full w-full">
+		<div
+			className="quest-map-container h-full w-full"
+			data-theme={resolvedTheme}
+		>
 			<SafeMapContainer
 				center={PETALING_CENTER}
 				zoom={PETALING_ZOOM}
@@ -322,15 +335,15 @@ export default function QuestMapLeaflet({
 				className="h-full w-full z-0"
 				zoomControl
 			>
-				<TileLayer attribution={DARK_TILE_ATTRIBUTION} url={DARK_TILE_URL} />
+				<TileLayer key={tileUrl} attribution={TILE_ATTRIBUTION} url={tileUrl} />
 				<GeoJSON
 					data={PETALING_BOUNDARY}
 					style={() => ({
-						color: "#22c55e",
+						color: boundaryColor,
 						weight: 2,
 						opacity: 0.85,
-						fillColor: "#22c55e",
-						fillOpacity: 0.08,
+						fillColor: boundaryColor,
+						fillOpacity: boundaryFillOpacity,
 						dashArray: "8 6",
 					})}
 					interactive={false}
@@ -371,15 +384,15 @@ export default function QuestMapLeaflet({
 				<style>
 					{`
 					.quest-tooltip {
-						background: #18181b !important;
-						color: #fafafa !important;
-						border: 1px solid #3f3f46 !important;
+						background: hsl(var(--popover)) !important;
+						color: hsl(var(--popover-foreground)) !important;
+						border: 1px solid hsl(var(--border)) !important;
 						border-radius: 6px !important;
 						font-size: 12px !important;
 						padding: 4px 8px !important;
 					}
 					.quest-tooltip::before {
-						border-top-color: #3f3f46 !important;
+						border-top-color: hsl(var(--border)) !important;
 					}
 					.quest-marker-icon {
 						background: transparent !important;
@@ -394,26 +407,26 @@ export default function QuestMapLeaflet({
 						50% { transform: scale(1.06); }
 						100% { transform: scale(1); }
 					}
-					.quest-map-dark .leaflet-layer,
-					.quest-map-dark .leaflet-control-zoom-in,
-					.quest-map-dark .leaflet-control-zoom-out,
-					.quest-map-dark .leaflet-control-attribution {
+					.quest-map-container .leaflet-layer,
+					.quest-map-container .leaflet-control-zoom-in,
+					.quest-map-container .leaflet-control-zoom-out,
+					.quest-map-container .leaflet-control-attribution {
 						filter: none !important;
 					}
 					.leaflet-control-zoom a {
-						background: #27272a !important;
-						color: #fafafa !important;
-						border-color: #3f3f46 !important;
+						background: hsl(var(--accent)) !important;
+						color: hsl(var(--foreground)) !important;
+						border-color: hsl(var(--border)) !important;
 					}
 					.leaflet-control-zoom a:hover {
-						background: #3f3f46 !important;
+						background: hsl(var(--muted)) !important;
 					}
 					.quest-recenter-control {
 						margin-top: 8px;
-						border: 1px solid #3f3f46 !important;
+						border: 1px solid hsl(var(--border)) !important;
 						border-radius: 4px !important;
 						overflow: hidden;
-						box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+						box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 					}
 					.quest-recenter-button {
 						display: flex;
@@ -421,20 +434,20 @@ export default function QuestMapLeaflet({
 						justify-content: center;
 						width: 30px;
 						height: 30px;
-						background: #27272a;
-						color: #e4e4e7;
+						background: hsl(var(--accent));
+						color: hsl(var(--foreground));
 						border: 0;
 						cursor: pointer;
 					}
 					.quest-recenter-button:hover {
-						background: #3f3f46;
+						background: hsl(var(--muted));
 					}
 					.leaflet-control-attribution {
-						background: rgba(24, 24, 27, 0.8) !important;
-						color: #71717a !important;
+						background: hsl(var(--background) / 0.8) !important;
+						color: hsl(var(--muted-foreground)) !important;
 					}
 					.leaflet-control-attribution a {
-						color: #a1a1aa !important;
+						color: hsl(var(--muted-foreground)) !important;
 					}
 				`}
 				</style>
