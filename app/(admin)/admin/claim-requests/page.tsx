@@ -1,37 +1,31 @@
-import { AppSidebar } from "@/components/app-sidebar";
-import { SiteHeader } from "@/components/site-header";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Suspense } from "react";
-import { TableSkeleton } from "../dashboard/components/loading-skeletons";
-import { AsyncPendingClaimRequests } from "./async-pending-data";
+import { AdminLayout } from "@/components/admin-layout";
+import { AppSidebar } from "@/components/app-sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import AsyncClaimRequestsData from "./async-claim-requests-data";
+import ClaimRequestsTableLoading from "./table-loading";
 
-export default function ClaimRequestsPage() {
+export default async function ClaimRequestsPage(props: {
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+	const searchParams = await props.searchParams;
+
 	return (
 		<SidebarProvider>
 			<AppSidebar variant="inset" />
 			<SidebarInset>
-				<SiteHeader />
-				<div className="@container/main flex flex-1 flex-col gap-2">
-					<div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-						<div className="px-4 lg:px-6">
-							<div className="flex flex-col gap-4">
-								<div>
-									<h1 className="text-2xl font-bold tracking-tight">
-										Tuntutan Institusi
-									</h1>
-									<p className="text-muted-foreground">
-										Semak dan luluskan tuntutan pemilikan institusi dari
-										pengguna
-									</p>
-								</div>
-
-								<Suspense fallback={<TableSkeleton />}>
-									<AsyncPendingClaimRequests />
-								</Suspense>
-							</div>
-						</div>
-					</div>
-				</div>
+				<AdminLayout
+					title="Tuntutan Institusi"
+					description="Semak dan luluskan tuntutan pemilikan institusi dari pengguna"
+					breadcrumbs={[
+						{ label: "Dashboard", href: "/admin/dashboard" },
+						{ label: "Tuntutan Institusi" },
+					]}
+				>
+					<Suspense fallback={<ClaimRequestsTableLoading />}>
+						<AsyncClaimRequestsData searchParams={searchParams} />
+					</Suspense>
+				</AdminLayout>
 			</SidebarInset>
 		</SidebarProvider>
 	);

@@ -1,8 +1,18 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
+import type { Updater } from "@tanstack/react-table";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import {
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+	useTransition,
+} from "react";
+import { toast } from "sonner";
+import { ReusableDataTable } from "@/components/reusable-data-table";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	Dialog,
 	DialogContent,
@@ -12,46 +22,161 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
 	approveClaimRequest,
 	rejectClaimRequest,
 } from "@/lib/features/claim-institution/admin-actions";
-import { format } from "date-fns";
-import { CheckCircle, ExternalLink, User, XCircle } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
+import { type ClaimRequestRow, createColumns } from "./columns";
 
-type ClaimRequest = {
-	id: number;
-	institutionId: number;
-	institutionName: string;
-	institutionCategory: string;
-	userId: string;
-	userName: string | null;
-	userEmail: string;
-	sourceUrl: string | null;
-	description: string | null;
-	status: string;
-	createdAt: Date;
+const ALL = "all" as const;
+const STATUS_OPTIONS = [
+	{ value: ALL, label: "Semua" },
+	{ value: "pending", label: "Pending" },
+	{ value: "approved", label: "Diluluskan" },
+	{ value: "rejected", label: "Ditolak" },
+] as const;
+
+type StatusFilter = (typeof STATUS_OPTIONS)[number]["value"];
+
+type PaginatedData = {
+	claimRequests: ClaimRequestRow[];
+	total: number;
+	limit: number;
+	offset: number;
 };
 
-interface ClaimRequestsTableProps {
-	data: ClaimRequest[];
-}
+export function ClaimRequestsTable({ data }: { data: PaginatedData }) {
+	const router = useRouter();
+	const pathname = usePathname();
+	const searchParams = useSearchParams();
+	const [isPending, startTransition] = useTransition();
 
-export function ClaimRequestsTable({ data }: ClaimRequestsTableProps) {
-	const [selectedClaim, setSelectedClaim] = useState<ClaimRequest | null>(null);
+	const rawPage = Number.parseInt(searchParams.get("page") ?? "", 10);
+	const rawLimit = Number.parseInt(searchParams.get("limit") ?? "", 10);
+	const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
+	const limit = Number.isFinite(rawLimit)
+		? Math.min(100, Math.max(1, rawLimit))
+		: 10;
+	const q = searchParams.get("q") ?? "";
+	const statusParam = (searchParams.get("status") ?? ALL) as StatusFilter;
+
+	const [selectedClaim, setSelectedClaim] = useState<ClaimRequestRow | null>(
+		null,
+	);
 	const [actionType, setActionType] = useState<"approve" | "reject" | null>(
 		null,
 	);
 	const [adminNotes, setAdminNotes] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
-	const router = useRouter();
+	const [draft, setDraft] = useState(q);
+	const debounceRef = useRef<NodeJS.Timeout | null>(null);
+	const searchParamsRef = useRef(searchParams);
+	searchParamsRef.current = searchParams;
 
-	const handleAction = async () => {
+	useEffect(() => {
+		setDraft(q);
+	}, [q]);
+
+	useEffect(() => {
+		return () => {
+			if (debounceRef.current) clearTimeout(debounceRef.current);
+		};
+	}, []);
+
+	const pagination = useMemo(
+		() => ({
+			pageIndex: page - 1,
+			pageSize: limit,
+		}),
+		[page, limit],
+	);
+
+	const pageCount = Math.ceil(data.total / pagination.pageSize);
+
+	const clearPendingSearch = useCallback(() => {
+		if (debounceRef.current) {
+			clearTimeout(debounceRef.current);
+			debounceRef.current = null;
+		}
+	}, []);
+
+	const handlePaginationChange = useCallback(
+		(updater: Updater<{ pageIndex: number; pageSize: number }>) => {
+			clearPendingSearch();
+			const newPagination =
+				typeof updater === "function" ? updater(pagination) : updater;
+			const params = new URLSearchParams(searchParams.toString());
+			params.set("page", String(newPagination.pageIndex + 1));
+			params.set("limit", String(newPagination.pageSize));
+			startTransition(() => {
+				router.push(`${pathname}?${params.toString()}`);
+			});
+		},
+		[clearPendingSearch, pagination, router, pathname, searchParams],
+	);
+
+	const handleSearchChange = useCallback(
+		(value: string) => {
+			setDraft(value);
+			if (debounceRef.current) clearTimeout(debounceRef.current);
+			debounceRef.current = setTimeout(() => {
+				debounceRef.current = null;
+				const params = new URLSearchParams(searchParamsRef.current.toString());
+				if (value.trim()) {
+					params.set("q", value.trim());
+				} else {
+					params.delete("q");
+				}
+				params.set("page", "1");
+				startTransition(() => {
+					router.push(`${pathname}?${params.toString()}`);
+				});
+			}, 300);
+		},
+		[router, pathname],
+	);
+
+	const handleStatusChange = useCallback(
+		(value: StatusFilter) => {
+			clearPendingSearch();
+			const params = new URLSearchParams(searchParams.toString());
+			if (value === ALL) {
+				params.delete("status");
+			} else {
+				params.set("status", value);
+			}
+			params.set("page", "1");
+			startTransition(() => {
+				router.push(`${pathname}?${params.toString()}`);
+			});
+		},
+		[clearPendingSearch, router, pathname, searchParams],
+	);
+
+	const openDialog = useCallback(
+		(claim: ClaimRequestRow, type: "approve" | "reject") => {
+			setSelectedClaim(claim);
+			setActionType(type);
+			setAdminNotes("");
+		},
+		[],
+	);
+
+	const closeDialog = useCallback(() => {
+		setSelectedClaim(null);
+		setActionType(null);
+		setAdminNotes("");
+	}, []);
+
+	const handleAction = useCallback(async () => {
 		if (!selectedClaim || !actionType) return;
 
 		setIsSubmitting(true);
@@ -67,10 +192,7 @@ export function ClaimRequestsTable({ data }: ClaimRequestsTableProps) {
 
 			if (result.success) {
 				toast.success(result.message);
-				setSelectedClaim(null);
-				setActionType(null);
-				setAdminNotes("");
-				// Refresh the page to show updated data
+				closeDialog();
 				router.refresh();
 			} else {
 				toast.error(result.error);
@@ -81,127 +203,52 @@ export function ClaimRequestsTable({ data }: ClaimRequestsTableProps) {
 		} finally {
 			setIsSubmitting(false);
 		}
-	};
+	}, [selectedClaim, actionType, adminNotes, closeDialog, router]);
 
-	const openDialog = (claim: ClaimRequest, type: "approve" | "reject") => {
-		setSelectedClaim(claim);
-		setActionType(type);
-		setAdminNotes("");
-	};
+	const columns = useMemo(() => createColumns(openDialog), [openDialog]);
 
-	const closeDialog = () => {
-		setSelectedClaim(null);
-		setActionType(null);
-		setAdminNotes("");
-	};
-
-	if (data.length === 0) {
-		return (
-			<Card>
-				<CardContent className="flex flex-col items-center justify-center py-12">
-					<User className="h-12 w-12 text-muted-foreground mb-4" />
-					<h3 className="text-lg font-semibold mb-2">Tiada Tuntutan Pending</h3>
-					<p className="text-muted-foreground text-center">
-						Semua tuntutan institusi telah diproses.
-					</p>
-				</CardContent>
-			</Card>
-		);
-	}
+	const statusFilter = (
+		<Select
+			value={statusParam}
+			onValueChange={(value: StatusFilter) => handleStatusChange(value)}
+		>
+			<SelectTrigger className="w-[180px]">
+				<SelectValue placeholder="Filter by status" />
+			</SelectTrigger>
+			<SelectContent>
+				{STATUS_OPTIONS.map((opt) => (
+					<SelectItem key={opt.value} value={opt.value}>
+						{opt.label}
+					</SelectItem>
+				))}
+			</SelectContent>
+		</Select>
+	);
 
 	return (
 		<>
-			<div className="space-y-4">
-				{data.map((claim) => (
-					<Card key={claim.id}>
-						<CardHeader>
-							<div className="flex items-start justify-between">
-								<div className="space-y-1">
-									<CardTitle className="text-lg">
-										{claim.institutionName}
-									</CardTitle>
-									<div className="flex items-center gap-2">
-										<Badge variant="outline">{claim.institutionCategory}</Badge>
-										<Badge variant="secondary">Pending</Badge>
-									</div>
-								</div>
-								<div className="flex gap-2">
-									<Button
-										size="sm"
-										variant="outline"
-										className="text-green-600 hover:text-green-700"
-										onClick={() => openDialog(claim, "approve")}
-									>
-										<CheckCircle className="h-4 w-4 mr-1" />
-										Luluskan
-									</Button>
-									<Button
-										size="sm"
-										variant="outline"
-										className="text-red-600 hover:text-red-700"
-										onClick={() => openDialog(claim, "reject")}
-									>
-										<XCircle className="h-4 w-4 mr-1" />
-										Tolak
-									</Button>
-								</div>
-							</div>
-						</CardHeader>
-						<CardContent className="space-y-4">
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-								<div>
-									<h4 className="font-medium text-sm text-muted-foreground mb-1">
-										Pemohon
-									</h4>
-									<p className="font-medium">
-										{claim.userName || "Nama tidak tersedia"}
-									</p>
-									<p className="text-sm text-muted-foreground">
-										{claim.userEmail}
-									</p>
-								</div>
-								<div>
-									<h4 className="font-medium text-sm text-muted-foreground mb-1">
-										Tarikh Permohonan
-									</h4>
-									<p>{format(claim.createdAt, "dd/MM/yyyy HH:mm")}</p>
-								</div>
-							</div>
-
-							{claim.sourceUrl && (
-								<div>
-									<h4 className="font-medium text-sm text-muted-foreground mb-1">
-										URL Sumber
-									</h4>
-									<Link
-										href={claim.sourceUrl}
-										target="_blank"
-										rel="noopener noreferrer"
-										className="text-blue-600 hover:text-blue-700 inline-flex items-center gap-1"
-									>
-										{claim.sourceUrl}
-										<ExternalLink className="h-3 w-3" />
-									</Link>
-								</div>
-							)}
-
-							{claim.description && (
-								<div>
-									<h4 className="font-medium text-sm text-muted-foreground mb-1">
-										Keterangan
-									</h4>
-									<p className="text-sm bg-muted p-3 rounded-md">
-										{claim.description}
-									</p>
-								</div>
-							)}
-						</CardContent>
-					</Card>
-				))}
+			<div
+				className={
+					isPending ? "opacity-50 pointer-events-none transition-opacity" : ""
+				}
+			>
+				<ReusableDataTable
+					columns={columns}
+					data={data.claimRequests}
+					searchKey="institutionName"
+					searchPlaceholder="Cari institusi atau pemohon..."
+					searchValue={draft}
+					onSearchChange={handleSearchChange}
+					emptyStateMessage="Tiada tuntutan dijumpai."
+					pageCount={pageCount}
+					pagination={pagination}
+					onPaginationChange={handlePaginationChange}
+					leftToolbarContent={statusFilter}
+				/>
 			</div>
 
 			{/* Action Dialog */}
-			<Dialog open={!!selectedClaim} onOpenChange={closeDialog}>
+			<Dialog open={!!selectedClaim} onOpenChange={() => closeDialog()}>
 				<DialogContent>
 					<DialogHeader>
 						<DialogTitle>
