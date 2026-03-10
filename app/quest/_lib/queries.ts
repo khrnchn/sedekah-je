@@ -1,6 +1,6 @@
 "use server";
 
-import { asc, count, desc, eq, isNotNull, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, isNotNull, sql } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import { db } from "@/db";
 import { institutions, questMosques, users } from "@/db/schema";
@@ -27,27 +27,39 @@ export const getQuestMosques = unstable_cache(
 				institutionCategory: institutions.category,
 				qrContent: institutions.qrContent,
 				supportedPayment: institutions.supportedPayment,
+				institutionStatus: institutions.status,
 			})
 			.from(questMosques)
 			.leftJoin(institutions, eq(questMosques.institutionId, institutions.id))
 			.orderBy(questMosques.name);
 
-		return rows.map((r) => ({
-			id: r.id,
-			name: r.name,
-			address: r.address,
-			district: r.district,
-			jaisId: r.jaisId,
-			coords: r.coords,
-			institutionId: r.institutionId,
-			createdAt: r.createdAt,
-			updatedAt: r.updatedAt,
-			isUnlocked: r.institutionSlug !== null,
-			institutionSlug: r.institutionSlug,
-			institutionCategory: r.institutionCategory,
-			qrContent: r.qrContent,
-			supportedPayment: r.supportedPayment,
-		}));
+		return rows.map((r) => {
+			const status = r.institutionStatus as
+				| "approved"
+				| "pending"
+				| "rejected"
+				| null;
+			const isUnlocked = status === "approved";
+			const isPending = status === "pending";
+			return {
+				id: r.id,
+				name: r.name,
+				address: r.address,
+				district: r.district,
+				jaisId: r.jaisId,
+				coords: r.coords,
+				institutionId: r.institutionId,
+				createdAt: r.createdAt,
+				updatedAt: r.updatedAt,
+				isUnlocked,
+				isPending,
+				institutionStatus: status,
+				institutionSlug: r.institutionSlug,
+				institutionCategory: r.institutionCategory,
+				qrContent: r.qrContent,
+				supportedPayment: r.supportedPayment,
+			};
+		});
 	},
 	["quest-mosques"],
 	{ revalidate: 300, tags: ["quest-mosques"] },
@@ -58,13 +70,18 @@ export const getQuestStats = unstable_cache(
 		const [stats] = await db
 			.select({
 				total: count(),
-				unlocked: count(questMosques.institutionId),
 			})
 			.from(questMosques);
 
+		const [unlockedCount] = await db
+			.select({ count: count() })
+			.from(questMosques)
+			.innerJoin(institutions, eq(questMosques.institutionId, institutions.id))
+			.where(eq(institutions.status, "approved"));
+
 		return {
 			total: Number(stats?.total ?? 0),
-			unlocked: Number(stats?.unlocked ?? 0),
+			unlocked: Number(unlockedCount?.count ?? 0),
 		};
 	},
 	["quest-stats"],
@@ -84,7 +101,12 @@ export const getQuestLeaderboard = unstable_cache(
 			.from(questMosques)
 			.innerJoin(institutions, eq(questMosques.institutionId, institutions.id))
 			.innerJoin(users, eq(institutions.contributorId, users.id))
-			.where(isNotNull(institutions.contributorId))
+			.where(
+				and(
+					isNotNull(institutions.contributorId),
+					eq(institutions.status, "approved"),
+				),
+			)
 			.groupBy(users.id, users.name, users.image, users.avatarUrl)
 			.orderBy(desc(contributionsCount), asc(users.name), asc(users.id))
 			.limit(10);

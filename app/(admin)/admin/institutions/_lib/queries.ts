@@ -17,7 +17,7 @@ import { headers } from "next/headers";
 import { after } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/db";
-import { institutions, users } from "@/db/schema";
+import { institutions, questMosques, users } from "@/db/schema";
 import { requireAdminSession } from "@/lib/auth-helpers";
 import { sendInstitutionApprovalEmail } from "@/lib/email/approval";
 import { buildInstitutionApproveLink } from "@/lib/email/approval-link";
@@ -458,6 +458,12 @@ export async function rejectInstitution(
 		.where(eq(institutions.id, id))
 		.returning();
 
+	// Auto-unlock quest mosque: clear institution_id so quest mosque becomes resubmittable
+	await db
+		.update(questMosques)
+		.set({ institutionId: null })
+		.where(eq(questMosques.institutionId, id));
+
 	// Revalidate relevant pages to update the UI
 	revalidatePath("/admin/institutions/pending", "page");
 	revalidatePath("/admin/institutions/rejected", "page");
@@ -467,6 +473,7 @@ export async function rejectInstitution(
 	revalidateTag("pending-institutions");
 	revalidateTag("rejected-institutions");
 	revalidateTag("institutions-count");
+	revalidateTag("quest-mosques");
 
 	return result;
 }

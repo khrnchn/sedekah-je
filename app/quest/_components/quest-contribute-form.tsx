@@ -1,6 +1,7 @@
 "use client";
 
 import { CheckCircle2, ImagePlus, Loader2, XCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
 import { submitQuestContribution } from "@/app/quest/_lib/actions";
@@ -13,16 +14,9 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import {
-	Drawer,
-	DrawerContent,
-	DrawerHeader,
-	DrawerTitle,
-} from "@/components/ui/drawer";
 import { GoogleIcon } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { useQrExtractionLazy } from "@/hooks/use-qr-extraction-lazy";
 import { signInWithGoogle } from "@/lib/auth-client";
 
@@ -48,6 +42,7 @@ function ContributeFormContent({
 	mosque: QuestMosqueWithStatus;
 	onSuccess: () => void;
 }) {
+	const router = useRouter();
 	const { isAuthenticated, isLoading: authLoading } = useAuth();
 	const {
 		qrContent,
@@ -92,6 +87,7 @@ function ContributeFormContent({
 			if (result.status === "success") {
 				toast("QR berjaya dihantar untuk semakan!");
 				onSuccess();
+				router.refresh();
 			} else if (result.status === "error") {
 				toast(result.message);
 			}
@@ -100,7 +96,7 @@ function ContributeFormContent({
 		} finally {
 			setSubmitting(false);
 		}
-	}, [mosque.id, qrContent, onSuccess, fromOnline, sourceUrl]);
+	}, [mosque.id, qrContent, onSuccess, fromOnline, sourceUrl, router]);
 
 	if (authLoading) {
 		return (
@@ -244,25 +240,11 @@ export default function QuestContributeForm({
 	open,
 	onOpenChange,
 }: QuestContributeFormProps) {
-	const isMobile = useIsMobile();
-
 	const handleSuccess = useCallback(() => {
 		onOpenChange(false);
 	}, [onOpenChange]);
 
-	if (isMobile) {
-		return (
-			<Drawer open={open} onOpenChange={onOpenChange}>
-				<DrawerContent>
-					<DrawerHeader>
-						<DrawerTitle>Sumbang QR</DrawerTitle>
-					</DrawerHeader>
-					<ContributeFormContent mosque={mosque} onSuccess={handleSuccess} />
-				</DrawerContent>
-			</Drawer>
-		);
-	}
-
+	// Use Dialog everywhere to avoid nested Drawer when launched from bottom sheet
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
 			<DialogContent className="sm:max-w-md">

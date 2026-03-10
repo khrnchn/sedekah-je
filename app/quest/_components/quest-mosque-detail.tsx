@@ -61,6 +61,10 @@ export default function QuestMosqueDetail({
 									</Link>
 								)}
 							</>
+						) : mosque.isPending ? (
+							<Badge className="bg-amber-500/10 text-amber-400 hover:bg-amber-500/20">
+								Dalam semakan
+							</Badge>
 						) : (
 							<>
 								<Badge
@@ -91,7 +95,7 @@ export default function QuestMosqueDetail({
 						</div>
 					)}
 				</div>
-				{!mosque.isUnlocked && (
+				{!mosque.isUnlocked && !mosque.isPending && (
 					<QuestContributeForm
 						mosque={mosque}
 						open={contributeOpen}
@@ -146,6 +150,10 @@ export default function QuestMosqueDetail({
 										</Link>
 									)}
 								</>
+							) : mosque.isPending ? (
+								<Badge className="bg-amber-500/10 text-amber-400 hover:bg-amber-500/20">
+									Dalam semakan
+								</Badge>
 							) : (
 								<>
 									<Badge
@@ -176,7 +184,7 @@ export default function QuestMosqueDetail({
 							</div>
 						)}
 					</div>
-					{!mosque.isUnlocked && (
+					{!mosque.isUnlocked && !mosque.isPending && (
 						<QuestContributeForm
 							mosque={mosque}
 							open={contributeOpen}

@@ -1,6 +1,6 @@
 "use server";
 
-import { and, count, eq, gte, isNull } from "drizzle-orm";
+import { and, count, eq, gte } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 import { auth } from "@/auth";
@@ -69,29 +69,53 @@ export async function submitQuestContribution(
 		}
 	}
 
-	// 3. Validate quest mosque
+	// 3. Validate quest mosque and check if already linked
 	const questMosqueId = formData.get("questMosqueId");
 	if (!questMosqueId || typeof questMosqueId !== "string") {
 		return { status: "error", message: "ID masjid tidak sah." };
 	}
 
-	const [questMosque] = await db
-		.select()
+	const qmId = Number.parseInt(questMosqueId, 10);
+	if (!Number.isFinite(qmId)) {
+		return { status: "error", message: "ID masjid tidak sah." };
+	}
+
+	const [questMosqueRow] = await db
+		.select({
+			questMosque: questMosques,
+			institutionStatus: institutions.status,
+		})
 		.from(questMosques)
-		.where(
-			and(
-				eq(questMosques.id, Number.parseInt(questMosqueId, 10)),
-				isNull(questMosques.institutionId),
-			),
-		)
+		.leftJoin(institutions, eq(questMosques.institutionId, institutions.id))
+		.where(eq(questMosques.id, qmId))
 		.limit(1);
 
-	if (!questMosque) {
+	if (!questMosqueRow) {
+		return { status: "error", message: "Masjid tidak ditemui." };
+	}
+
+	const questMosque = questMosqueRow.questMosque;
+	const institutionStatus = questMosqueRow.institutionStatus as
+		| "approved"
+		| "pending"
+		| "rejected"
+		| null;
+
+	if (institutionStatus === "pending") {
 		return {
 			status: "error",
-			message: "Masjid tidak ditemui atau sudah mempunyai QR.",
+			message: "Masjid ini sedang dalam semakan.",
 		};
 	}
+
+	if (institutionStatus === "approved") {
+		return {
+			status: "error",
+			message: "Masjid ini sudah tersedia.",
+		};
+	}
+
+	// rejected or null (no link) → can submit
 
 	// 4. Validate QR image
 	const qrImageFile = formData.get("qrImage") as File | null;
@@ -162,38 +186,103 @@ export async function submitQuestContribution(
 		};
 	}
 
-	// 8. Insert institution
+	// 8. Insert institution and link in a transaction (concurrency-safe)
 	try {
-		const [{ id: newId }] = await db
-			.insert(institutions)
-			.values({
-				name: questMosque.name,
-				slug,
-				category: "masjid",
-				state: "Selangor",
-				city: questMosque.district,
-				address: questMosque.address,
-				coords: questMosque.coords,
-				qrImage: qrImageUrl,
-				qrContent: qrContent?.trim() || null,
-				sourceUrl,
-				supportedPayment: ["duitnow"],
-				status: "pending",
-				contributorId: userId,
-				contributorRemarks: `Quest contribution for mosque ID ${questMosque.id} (JAIS: ${questMosque.jaisId})`,
-			})
-			.returning({ id: institutions.id });
+		const result = await db.transaction(async (tx) => {
+			// Lock the quest mosque row and re-check status (prevents race)
+			const [locked] = await tx
+				.select({
+					institutionId: questMosques.institutionId,
+					institutionStatus: institutions.status,
+				})
+				.from(questMosques)
+				.leftJoin(institutions, eq(questMosques.institutionId, institutions.id))
+				.where(eq(questMosques.id, questMosque.id))
+				.for("update");
 
-		await db
-			.update(questMosques)
-			.set({ institutionId: newId })
-			.where(eq(questMosques.id, questMosque.id));
+			if (!locked) {
+				return { success: false, message: "Masjid tidak ditemui." };
+			}
+
+			const status = locked.institutionStatus as
+				| "approved"
+				| "pending"
+				| "rejected"
+				| null;
+			if (status === "pending") {
+				return {
+					success: false,
+					message: "Masjid ini sedang dalam semakan.",
+				};
+			}
+			if (status === "approved") {
+				return {
+					success: false,
+					message: "Masjid ini sudah tersedia.",
+				};
+			}
+
+			const [{ id: newId }] = await tx
+				.insert(institutions)
+				.values({
+					name: questMosque.name,
+					slug,
+					category: "masjid",
+					state: "Selangor",
+					city: questMosque.district,
+					address: questMosque.address,
+					coords: questMosque.coords,
+					qrImage: qrImageUrl,
+					qrContent: qrContent?.trim() || null,
+					sourceUrl,
+					supportedPayment: ["duitnow"],
+					status: "pending",
+					contributorId: userId,
+					contributorRemarks: `Quest contribution for mosque ID ${questMosque.id} (JAIS: ${questMosque.jaisId})`,
+				})
+				.returning({ id: institutions.id });
+
+			const updateResult = await tx
+				.update(questMosques)
+				.set({ institutionId: newId })
+				.where(eq(questMosques.id, questMosque.id))
+				.returning({ id: questMosques.id });
+
+			if (updateResult.length === 0) {
+				return {
+					success: false,
+					message: "Masjid ini telah diambil. Sila muat semula dan cuba lagi.",
+				};
+			}
+
+			return { success: true, newId };
+		});
+
+		if (!result.success) {
+			// R2 cleanup: we uploaded but transaction failed (e.g. race)
+			try {
+				await r2Storage.deleteFile(qrImageUrl);
+			} catch (cleanupErr) {
+				console.error("R2 cleanup after transaction abort:", cleanupErr);
+			}
+			return {
+				status: "error",
+				message: result.message ?? "Gagal menyimpan sumbangan. Sila cuba lagi.",
+			};
+		}
+
+		const newId = result.newId;
+		if (newId === undefined) {
+			return {
+				status: "error",
+				message: "Gagal menyimpan sumbangan. Sila cuba lagi.",
+			};
+		}
 
 		// 9. Telegram notification
 		try {
-			// Avoid sending raw contributor email to third-party notifications.
 			await logNewInstitution({
-				id: newId.toString(),
+				id: String(newId),
 				name: questMosque.name,
 				category: "masjid",
 				state: "Selangor",
@@ -214,6 +303,12 @@ export async function submitQuestContribution(
 		return { status: "success" };
 	} catch (error) {
 		console.error("Failed to insert institution:", error);
+		// R2 cleanup on unexpected failure
+		try {
+			await r2Storage.deleteFile(qrImageUrl);
+		} catch (cleanupErr) {
+			console.error("R2 cleanup on error:", cleanupErr);
+		}
 		return {
 			status: "error",
 			message: "Gagal menyimpan sumbangan. Sila cuba lagi.",

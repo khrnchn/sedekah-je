@@ -1,6 +1,6 @@
 "use client";
 
-import { Lock, Unlock } from "lucide-react";
+import { Clock, Lock, Unlock } from "lucide-react";
 import type { QuestMosqueWithStatus } from "@/app/quest/_lib/types";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +29,8 @@ export default function QuestMosqueListItem({
 			<div className="mt-0.5 shrink-0">
 				{mosque.isUnlocked ? (
 					<Unlock className="h-4 w-4 text-green-500" />
+				) : mosque.isPending ? (
+					<Clock className="h-4 w-4 text-amber-500" />
 				) : (
 					<Lock className="h-4 w-4 text-zinc-500" />
 				)}
@@ -37,7 +39,11 @@ export default function QuestMosqueListItem({
 				<p
 					className={cn(
 						"truncate text-sm font-medium",
-						mosque.isUnlocked ? "text-green-400" : "text-zinc-300",
+						mosque.isUnlocked
+							? "text-green-400"
+							: mosque.isPending
+								? "text-amber-400"
+								: "text-zinc-300",
 					)}
 				>
 					{mosque.name}
