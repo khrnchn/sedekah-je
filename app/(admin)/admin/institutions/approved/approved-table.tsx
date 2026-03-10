@@ -1,8 +1,16 @@
 "use client";
 
+import type { Updater } from "@tanstack/react-table";
 import { Undo2Icon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import {
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+	useTransition,
+} from "react";
 import { toast } from "sonner";
 import { ReusableDataTable } from "@/components/reusable-data-table";
 import { Button } from "@/components/ui/button";
@@ -37,6 +45,7 @@ export type ApprovedInstitution = {
 	createdAt: Date;
 	reviewedAt: Date | null;
 	reviewedBy: string | null;
+	reviewerName: string | null;
 };
 
 const ALL = "all" as const;
@@ -50,35 +59,145 @@ type User = {
 	username: string | null;
 };
 
+type PaginatedData = {
+	institutions: ApprovedInstitution[];
+	total: number;
+	limit: number;
+	offset: number;
+};
+
 export default function ApprovedInstitutionsTable({
-	initialData,
+	data,
 	users,
 }: {
-	initialData: ApprovedInstitution[];
+	data: PaginatedData;
 	users: User[];
 }) {
-	const [institutions, setInstitutions] = useState(initialData);
+	const router = useRouter();
+	const pathname = usePathname();
+	const searchParams = useSearchParams();
+	const [isPending, startTransition] = useTransition();
+
+	const rawPage = Number.parseInt(searchParams.get("page") ?? "", 10);
+	const rawLimit = Number.parseInt(searchParams.get("limit") ?? "", 10);
+	const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
+	const limit = Number.isFinite(rawLimit)
+		? Math.min(100, Math.max(1, rawLimit))
+		: 10;
+	const q = searchParams.get("q") ?? "";
+	const categoryParam = searchParams.get("category") ?? ALL;
+	const stateParam = searchParams.get("state") ?? ALL;
+
 	const [selectedIds, setSelectedIds] = useState<number[]>([]);
-	const [category, setCategory] = useState<CategoryFilter>(ALL);
-	const [state, setState] = useState<StateFilter>(ALL);
-	const [search, setSearch] = useState("");
+	const [draft, setDraft] = useState(q);
 	const [undoDialogOpen, setUndoDialogOpen] = useState(false);
 	const [undoNotes, setUndoNotes] = useState("Duplicate entry");
-	const router = useRouter();
+	const debounceRef = useRef<NodeJS.Timeout | null>(null);
+	const searchParamsRef = useRef(searchParams);
+	searchParamsRef.current = searchParams;
 
 	useEffect(() => {
-		setInstitutions(initialData);
-	}, [initialData]);
+		setDraft(q);
+	}, [q]);
+
+	useEffect(() => {
+		return () => {
+			if (debounceRef.current) clearTimeout(debounceRef.current);
+		};
+	}, []);
+
+	const pagination = useMemo(
+		() => ({
+			pageIndex: page - 1,
+			pageSize: limit,
+		}),
+		[page, limit],
+	);
+
+	const pageCount = Math.ceil(data.total / pagination.pageSize);
+
+	const clearPendingSearch = useCallback(() => {
+		if (debounceRef.current) {
+			clearTimeout(debounceRef.current);
+			debounceRef.current = null;
+		}
+	}, []);
+
+	const handlePaginationChange = useCallback(
+		(updater: Updater<{ pageIndex: number; pageSize: number }>) => {
+			clearPendingSearch();
+			const newPagination =
+				typeof updater === "function" ? updater(pagination) : updater;
+			const params = new URLSearchParams(searchParams.toString());
+			params.set("page", String(newPagination.pageIndex + 1));
+			params.set("limit", String(newPagination.pageSize));
+			startTransition(() => {
+				router.push(`${pathname}?${params.toString()}`);
+			});
+			setSelectedIds([]);
+		},
+		[clearPendingSearch, pagination, router, pathname, searchParams],
+	);
+
+	const handleSearchChange = useCallback(
+		(value: string) => {
+			setDraft(value);
+			if (debounceRef.current) clearTimeout(debounceRef.current);
+			debounceRef.current = setTimeout(() => {
+				debounceRef.current = null;
+				const params = new URLSearchParams(searchParamsRef.current.toString());
+				if (value.trim()) {
+					params.set("q", value.trim());
+				} else {
+					params.delete("q");
+				}
+				params.set("page", "1");
+				startTransition(() => {
+					router.push(`${pathname}?${params.toString()}`);
+				});
+				setSelectedIds([]);
+			}, 300);
+		},
+		[router, pathname],
+	);
+
+	const handleCategoryChange = useCallback(
+		(value: CategoryFilter) => {
+			clearPendingSearch();
+			const params = new URLSearchParams(searchParams.toString());
+			if (value === ALL) {
+				params.delete("category");
+			} else {
+				params.set("category", value);
+			}
+			params.set("page", "1");
+			startTransition(() => {
+				router.push(`${pathname}?${params.toString()}`);
+			});
+			setSelectedIds([]);
+		},
+		[clearPendingSearch, router, pathname, searchParams],
+	);
+
+	const handleStateChange = useCallback(
+		(value: StateFilter) => {
+			clearPendingSearch();
+			const params = new URLSearchParams(searchParams.toString());
+			if (value === ALL) {
+				params.delete("state");
+			} else {
+				params.set("state", value);
+			}
+			params.set("page", "1");
+			startTransition(() => {
+				router.push(`${pathname}?${params.toString()}`);
+			});
+			setSelectedIds([]);
+		},
+		[clearPendingSearch, router, pathname, searchParams],
+	);
 
 	const columns = createColumns(users);
-
-	const filteredData = institutions.filter((inst) => {
-		if (search && !inst.name.toLowerCase().includes(search.toLowerCase()))
-			return false;
-		if (category !== ALL && inst.category !== category) return false;
-		if (state !== ALL && inst.state !== state) return false;
-		return true;
-	});
 
 	async function handleBatchUndo(notes: string) {
 		try {
@@ -106,8 +225,8 @@ export default function ApprovedInstitutionsTable({
 	const filterControls = (
 		<>
 			<Select
-				value={category}
-				onValueChange={(value: CategoryFilter) => setCategory(value)}
+				value={categoryParam}
+				onValueChange={(value: CategoryFilter) => handleCategoryChange(value)}
 			>
 				<SelectTrigger className="w-[180px]">
 					<SelectValue placeholder="Filter by category" />
@@ -123,8 +242,8 @@ export default function ApprovedInstitutionsTable({
 			</Select>
 
 			<Select
-				value={state}
-				onValueChange={(value: StateFilter) => setState(value)}
+				value={stateParam}
+				onValueChange={(value: StateFilter) => handleStateChange(value)}
 			>
 				<SelectTrigger className="w-[180px]">
 					<SelectValue placeholder="Filter by state" />
@@ -156,21 +275,30 @@ export default function ApprovedInstitutionsTable({
 
 	return (
 		<>
-			<ReusableDataTable
-				columns={columns}
-				data={filteredData}
-				searchKey="name"
-				searchPlaceholder="Search institutions..."
-				searchValue={search}
-				onSearchChange={setSearch}
-				emptyStateMessage="No approved institutions found."
-				enableRowSelection
-				onSelectionChange={(rows: ApprovedInstitution[]) =>
-					setSelectedIds(rows.map((r) => r.id))
+			<div
+				className={
+					isPending ? "opacity-50 pointer-events-none transition-opacity" : ""
 				}
-				leftToolbarContent={filterControls}
-				rightToolbarContent={bulkButtons}
-			/>
+			>
+				<ReusableDataTable
+					columns={columns}
+					data={data.institutions}
+					searchKey="name"
+					searchPlaceholder="Search institutions..."
+					searchValue={draft}
+					onSearchChange={handleSearchChange}
+					emptyStateMessage="No approved institutions found."
+					enableRowSelection
+					onSelectionChange={(rows: ApprovedInstitution[]) =>
+						setSelectedIds(rows.map((r) => r.id))
+					}
+					pageCount={pageCount}
+					pagination={pagination}
+					onPaginationChange={handlePaginationChange}
+					leftToolbarContent={filterControls}
+					rightToolbarContent={bulkButtons}
+				/>
+			</div>
 
 			{/* Batch Undo Dialog */}
 			<Dialog open={undoDialogOpen} onOpenChange={setUndoDialogOpen}>

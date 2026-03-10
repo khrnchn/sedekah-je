@@ -1,16 +1,16 @@
 // page.tsx – server component with streaming
 
+import { Suspense } from "react";
 import { AdminLayout } from "@/components/admin-layout";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { getAllUsers, getApprovedInstitutions } from "../_lib/queries";
-import ApprovedInstitutionsTable from "./approved-table";
+import AsyncApprovedData from "./async-approved-data";
+import ApprovedTableLoading from "./table-loading";
 
-export default async function ApprovedInstitutionsPage() {
-	const [institutions, users] = await Promise.all([
-		getApprovedInstitutions(),
-		getAllUsers(),
-	]);
+export default async function ApprovedInstitutionsPage(props: {
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+	const searchParams = await props.searchParams;
 
 	return (
 		<SidebarProvider>
@@ -25,7 +25,9 @@ export default async function ApprovedInstitutionsPage() {
 						{ label: "Approved" },
 					]}
 				>
-					<ApprovedInstitutionsTable initialData={institutions} users={users} />
+					<Suspense fallback={<ApprovedTableLoading />}>
+						<AsyncApprovedData searchParams={searchParams} />
+					</Suspense>
 				</AdminLayout>
 			</SidebarInset>
 		</SidebarProvider>
