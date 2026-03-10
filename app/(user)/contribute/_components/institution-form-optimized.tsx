@@ -309,6 +309,7 @@ export default function InstitutionFormOptimized() {
 				data.name,
 				data.state,
 				data.category,
+				data.city,
 			);
 			if (similar.length > 0) {
 				setSimilarInstitutions(similar);

@@ -452,23 +452,97 @@ export type SimilarInstitution = {
 	slug: string;
 };
 
+const COMMON_PREFIXES = [
+	"masjid",
+	"surau",
+	"masjid jamek",
+	"masjid kampung",
+	"masjid mukim",
+	"masjid daerah",
+	"masjid kariah",
+	"masjid taman",
+	"masjid sultan",
+	"masjid bandar",
+	"surau taman",
+	"surau kampung",
+	"surau住宅",
+	"tabung masjid",
+];
+
 function normalizeName(name: string): string {
-	return name
+	let normalized = name
 		.toLowerCase()
 		.replace(/[\s\-_.,/#!$%^&*;:{}=\-_`~()]/g, "")
-		.replace(/[^\w\u0600-\u06FF]/g, ""); // Keep Arabic chars too
+		.replace(/[^\w\u0600-\u06FF]/g, "");
+
+	for (const prefix of COMMON_PREFIXES) {
+		const prefixNorm = prefix.replace(/[\s\-_.,/#!$%^&*;:{}=\-_`~()]/g, "");
+		if (normalized.startsWith(prefixNorm)) {
+			normalized = normalized.slice(prefixNorm.length);
+		}
+	}
+
+	return normalized;
+}
+
+function levenshteinDistance(a: string, b: string): number {
+	if (a.length === 0) return b.length;
+	if (b.length === 0) return a.length;
+
+	const matrix: number[][] = [];
+
+	for (let i = 0; i <= b.length; i++) {
+		matrix[i] = [i];
+	}
+	for (let j = 0; j <= a.length; j++) {
+		matrix[0][j] = j;
+	}
+
+	for (let i = 1; i <= b.length; i++) {
+		for (let j = 1; j <= a.length; j++) {
+			if (b.charAt(i - 1) === a.charAt(j - 1)) {
+				matrix[i][j] = matrix[i - 1][j - 1];
+			} else {
+				matrix[i][j] = Math.min(
+					matrix[i - 1][j - 1] + 1,
+					matrix[i][j - 1] + 1,
+					matrix[i - 1][j] + 1,
+				);
+			}
+		}
+	}
+
+	return matrix[b.length][a.length];
+}
+
+function isSimilar(a: string, b: string, threshold = 3): boolean {
+	const distance = levenshteinDistance(a, b);
+	const maxLen = Math.max(a.length, b.length);
+	const similarity = 1 - distance / maxLen;
+	return similarity >= 0.75 || distance <= threshold;
 }
 
 export async function findSimilarInstitutions(
 	name: string,
 	state: string,
 	category: string,
+	city?: string,
 ): Promise<SimilarInstitution[]> {
 	if (!name || !state || !category) return [];
 
 	const normalizedInput = normalizeName(name);
 	const stateVal = state as (typeof states)[number];
 	const categoryVal = category as (typeof categories)[number];
+
+	const conditions = [
+		eq(institutions.state, stateVal),
+		eq(institutions.category, categoryVal),
+		eq(institutions.status, "approved"),
+	];
+
+	if (city) {
+		conditions.push(eq(institutions.city, city));
+	}
 
 	const allInState = await db
 		.select({
@@ -480,20 +554,27 @@ export async function findSimilarInstitutions(
 			slug: institutions.slug,
 		})
 		.from(institutions)
-		.where(
-			and(
-				eq(institutions.state, stateVal),
-				eq(institutions.category, categoryVal),
-				eq(
-					institutions.status,
-					"approved" as (typeof institutionStatuses)[number],
-				),
-			),
-		)
-		.limit(20);
+		.where(and(...conditions))
+		.limit(50);
 
-	const matches = allInState
-		.filter((inst) => normalizeName(inst.name) === normalizedInput)
+	const withExactness = allInState.map((inst) => {
+		const normalized = normalizeName(inst.name);
+		const isExact = normalized === normalizedInput;
+		const distance = isExact
+			? 0
+			: levenshteinDistance(normalized, normalizedInput);
+		return { ...inst, isExact, distance };
+	});
+
+	const matches = withExactness
+		.filter(
+			(inst) =>
+				inst.isExact || isSimilar(normalizeName(inst.name), normalizedInput),
+		)
+		.sort((a, b) => {
+			if (a.isExact !== b.isExact) return a.isExact ? -1 : 1;
+			return a.distance - b.distance;
+		})
 		.slice(0, 3)
 		.map((inst) => ({
 			id: inst.id,
