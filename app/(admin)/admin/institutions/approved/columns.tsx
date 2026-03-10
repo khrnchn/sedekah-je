@@ -22,6 +22,7 @@ type ApprovedInstitution = {
 	createdAt: Date;
 	reviewedAt: Date | null;
 	reviewedBy: string | null;
+	reviewerName: string | null;
 };
 
 type User = {
@@ -34,14 +35,6 @@ type User = {
 export const createColumns = (
 	users: User[],
 ): ColumnDef<ApprovedInstitution>[] => {
-	const reviewerNameById = new Map(
-		users
-			.filter((user) => user.id)
-			.map((user) => [
-				user.id,
-				user.name ?? user.email ?? user.username ?? user.id,
-			]),
-	);
 	return [
 		{
 			id: "select",
@@ -137,14 +130,9 @@ export const createColumns = (
 			accessorKey: "reviewedBy",
 			header: "Approved By",
 			cell: ({ row }) => {
+				const reviewerName = row.original.reviewerName;
 				const reviewerId = row.getValue("reviewedBy") as string | null;
-				return (
-					<div>
-						{(reviewerId && reviewerNameById.get(reviewerId)) ??
-							reviewerId ??
-							"-"}
-					</div>
-				);
+				return <div>{reviewerName ?? reviewerId ?? "-"}</div>;
 			},
 		},
 		{

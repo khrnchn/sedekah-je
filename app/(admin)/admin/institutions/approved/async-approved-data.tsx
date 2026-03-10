@@ -1,11 +1,15 @@
-import { getAllUsers, getApprovedInstitutions } from "../_lib/queries";
+import { getAllUsers, getApprovedInstitutionsPaginated } from "../_lib/queries";
 import ApprovedInstitutionsTable from "./approved-table";
 
 // Async component that fetches data and streams it in
-export default async function AsyncApprovedData() {
-	const [institutions, users] = await Promise.all([
-		getApprovedInstitutions(),
+export default async function AsyncApprovedData({
+	searchParams,
+}: {
+	searchParams: { [key: string]: string | string[] | undefined };
+}) {
+	const [data, users] = await Promise.all([
+		getApprovedInstitutionsPaginated(searchParams),
 		getAllUsers(),
 	]);
-	return <ApprovedInstitutionsTable initialData={institutions} users={users} />;
+	return <ApprovedInstitutionsTable data={data} users={users} />;
 }

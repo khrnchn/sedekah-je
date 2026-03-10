@@ -22,6 +22,7 @@ import { requireAdminSession } from "@/lib/auth-helpers";
 import { sendInstitutionApprovalEmail } from "@/lib/email/approval";
 import { buildInstitutionApproveLink } from "@/lib/email/approval-link";
 import { reverseGeocodeInstitution } from "@/lib/geocode";
+import { categories, states } from "@/lib/institution-constants";
 import { slugify } from "@/lib/utils";
 
 // Helper function to generate a unique slug
@@ -166,6 +167,119 @@ const getApprovedInstitutionsInternal = unstable_cache(
 export async function getApprovedInstitutions() {
 	await requireAdminSession();
 	return getApprovedInstitutionsInternal();
+}
+
+function normalizeParam(v: string | string[] | undefined): string {
+	if (v === undefined || v === null) return "";
+	if (Array.isArray(v)) return (v[0] ?? "").trim();
+	return String(v).trim();
+}
+
+/** Escape %, _, and \ for safe use in SQL LIKE patterns (PostgreSQL default escape: \). */
+function escapeLike(term: string): string {
+	return term.replace(/\\/g, "\\\\").replace(/%/g, "\\%").replace(/_/g, "\\_");
+}
+
+/**
+ * Fetch approved institutions with server-side search, filtering, and pagination.
+ * Queries across the entire database (no 1000-row limit).
+ */
+export async function getApprovedInstitutionsPaginated(searchParams: {
+	[key: string]: string | string[] | undefined;
+}) {
+	await requireAdminSession();
+
+	const qNorm = normalizeParam(searchParams.q);
+	const pageNorm = String(Number(searchParams.page) || 1);
+	const limitNorm = String(Number(searchParams.limit) || 10);
+	const categoryNorm = normalizeParam(searchParams.category);
+	const stateNorm = normalizeParam(searchParams.state);
+
+	return unstable_cache(
+		async () => {
+			const pageNumber = Number(pageNorm) || 1;
+			const pageLimit = Number(limitNorm) || 10;
+			const offset = (pageNumber - 1) * pageLimit;
+
+			const conditions = [eq(institutions.status, "approved")];
+			if (qNorm) {
+				const escaped = escapeLike(qNorm);
+				conditions.push(ilike(institutions.name, `%${escaped}%`));
+			}
+			if (
+				categoryNorm &&
+				categoryNorm !== "all" &&
+				(categories as readonly string[]).includes(categoryNorm)
+			) {
+				conditions.push(
+					eq(
+						institutions.category,
+						categoryNorm as (typeof categories)[number],
+					),
+				);
+			}
+			if (
+				stateNorm &&
+				stateNorm !== "all" &&
+				(states as readonly string[]).includes(stateNorm)
+			) {
+				conditions.push(
+					eq(institutions.state, stateNorm as (typeof states)[number]),
+				);
+			}
+			const whereClause = and(...conditions);
+
+			const [dataQuery, countQuery] = await Promise.all([
+				db
+					.select({
+						id: institutions.id,
+						name: institutions.name,
+						category: institutions.category,
+						state: institutions.state,
+						city: institutions.city,
+						contributorName: users.name,
+						contributorId: users.id,
+						createdAt: institutions.createdAt,
+						reviewedAt: institutions.reviewedAt,
+						reviewedBy: institutions.reviewedBy,
+						reviewerName: sql<string | null>`(
+							select ${users.name}
+							from ${users}
+							where ${users.id} = ${institutions.reviewedBy}
+							limit 1
+						)`,
+					})
+					.from(institutions)
+					.leftJoin(users, eq(institutions.contributorId, users.id))
+					.where(whereClause)
+					.orderBy(desc(institutions.createdAt))
+					.offset(offset)
+					.limit(pageLimit),
+				db.select({ count: count() }).from(institutions).where(whereClause),
+			]);
+
+			const total = countQuery[0]?.count ?? 0;
+
+			return {
+				institutions: dataQuery,
+				total,
+				limit: pageLimit,
+				offset,
+			};
+		},
+		[
+			"approved-institutions-paginated",
+			qNorm,
+			pageNorm,
+			limitNorm,
+			categoryNorm,
+			stateNorm,
+		],
+		{
+			tags: ["institutions-data", "approved-institutions"],
+			revalidate: 60,
+		},
+	)();
 }
 
 /**
@@ -573,7 +687,15 @@ export async function updateInstitutionByAdmin(
  */
 const getAllUsersInternal = unstable_cache(
 	async () => {
-		return db.select().from(users).orderBy(desc(users.createdAt));
+		return db
+			.select({
+				id: users.id,
+				name: users.name,
+				email: users.email,
+				username: users.username,
+			})
+			.from(users)
+			.orderBy(desc(users.createdAt));
 	},
 	["all-users-list"],
 	{
