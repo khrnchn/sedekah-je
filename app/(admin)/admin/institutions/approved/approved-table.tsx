@@ -78,8 +78,12 @@ export default function ApprovedInstitutionsTable({
 	const searchParams = useSearchParams();
 	const [isPending, startTransition] = useTransition();
 
-	const page = Number(searchParams.get("page") ?? 1);
-	const limit = Number(searchParams.get("limit") ?? 10);
+	const rawPage = Number.parseInt(searchParams.get("page") ?? "", 10);
+	const rawLimit = Number.parseInt(searchParams.get("limit") ?? "", 10);
+	const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
+	const limit = Number.isFinite(rawLimit)
+		? Math.min(100, Math.max(1, rawLimit))
+		: 10;
 	const q = searchParams.get("q") ?? "";
 	const categoryParam = searchParams.get("category") ?? ALL;
 	const stateParam = searchParams.get("state") ?? ALL;
@@ -112,8 +116,16 @@ export default function ApprovedInstitutionsTable({
 
 	const pageCount = Math.ceil(data.total / pagination.pageSize);
 
+	const clearPendingSearch = useCallback(() => {
+		if (debounceRef.current) {
+			clearTimeout(debounceRef.current);
+			debounceRef.current = null;
+		}
+	}, []);
+
 	const handlePaginationChange = useCallback(
 		(updater: Updater<{ pageIndex: number; pageSize: number }>) => {
+			clearPendingSearch();
 			const newPagination =
 				typeof updater === "function" ? updater(pagination) : updater;
 			const params = new URLSearchParams(searchParams.toString());
@@ -124,7 +136,7 @@ export default function ApprovedInstitutionsTable({
 			});
 			setSelectedIds([]);
 		},
-		[pagination, router, pathname, searchParams],
+		[clearPendingSearch, pagination, router, pathname, searchParams],
 	);
 
 	const handleSearchChange = useCallback(
@@ -151,6 +163,7 @@ export default function ApprovedInstitutionsTable({
 
 	const handleCategoryChange = useCallback(
 		(value: CategoryFilter) => {
+			clearPendingSearch();
 			const params = new URLSearchParams(searchParams.toString());
 			if (value === ALL) {
 				params.delete("category");
@@ -163,11 +176,12 @@ export default function ApprovedInstitutionsTable({
 			});
 			setSelectedIds([]);
 		},
-		[router, pathname, searchParams],
+		[clearPendingSearch, router, pathname, searchParams],
 	);
 
 	const handleStateChange = useCallback(
 		(value: StateFilter) => {
+			clearPendingSearch();
 			const params = new URLSearchParams(searchParams.toString());
 			if (value === ALL) {
 				params.delete("state");
@@ -180,7 +194,7 @@ export default function ApprovedInstitutionsTable({
 			});
 			setSelectedIds([]);
 		},
-		[router, pathname, searchParams],
+		[clearPendingSearch, router, pathname, searchParams],
 	);
 
 	const columns = createColumns(users);

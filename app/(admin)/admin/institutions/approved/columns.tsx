@@ -1,7 +1,7 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDownIcon, EyeIcon } from "lucide-react";
+import { EyeIcon } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -64,23 +64,15 @@ export const createColumns = (
 			cell: ({ row }) => (
 				<div className="font-mono text-sm">{row.getValue("id")}</div>
 			),
+			enableSorting: false,
 		},
 		{
 			accessorKey: "name",
-			header: ({ column }) => {
-				return (
-					<Button
-						variant="ghost"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						Name
-						<ArrowUpDownIcon className="ml-2 h-4 w-4" />
-					</Button>
-				);
-			},
+			header: "Name",
 			cell: ({ row }) => (
 				<div className="font-medium">{row.getValue("name")}</div>
 			),
+			enableSorting: false,
 		},
 		{
 			accessorKey: "category",
@@ -96,26 +88,19 @@ export const createColumns = (
 			filterFn: (row, id, value) => {
 				return value.includes(row.getValue(id));
 			},
+			enableSorting: false,
 		},
 		{
 			accessorKey: "state",
-			header: ({ column }) => {
-				return (
-					<Button
-						variant="ghost"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						State
-						<ArrowUpDownIcon className="ml-2 h-4 w-4" />
-					</Button>
-				);
-			},
+			header: "State",
 			cell: ({ row }) => <div>{row.getValue("state")}</div>,
+			enableSorting: false,
 		},
 		{
 			accessorKey: "city",
 			header: "City",
 			cell: ({ row }) => <div>{row.getValue("city")}</div>,
+			enableSorting: false,
 		},
 		{
 			accessorKey: "contributorName",
@@ -125,6 +110,7 @@ export const createColumns = (
 				const id = row.original.contributorId;
 				return <div>{name ?? id ?? "-"}</div>;
 			},
+			enableSorting: false,
 		},
 		{
 			accessorKey: "reviewedBy",
@@ -134,24 +120,16 @@ export const createColumns = (
 				const reviewerId = row.getValue("reviewedBy") as string | null;
 				return <div>{reviewerName ?? reviewerId ?? "-"}</div>;
 			},
+			enableSorting: false,
 		},
 		{
 			accessorKey: "reviewedAt",
-			header: ({ column }) => {
-				return (
-					<Button
-						variant="ghost"
-						onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					>
-						Date Approved
-						<ArrowUpDownIcon className="ml-2 h-4 w-4" />
-					</Button>
-				);
-			},
+			header: "Date Approved",
 			cell: ({ row }) => {
 				const date = row.getValue("reviewedAt") as Date | null;
 				return <div>{formatDateTime(date)}</div>;
 			},
+			enableSorting: false,
 		},
 		{
 			id: "actions",
@@ -177,6 +155,7 @@ export const createColumns = (
 					</div>
 				);
 			},
+			enableSorting: false,
 		},
 	];
 };

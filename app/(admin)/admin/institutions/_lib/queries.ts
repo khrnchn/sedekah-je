@@ -190,15 +190,19 @@ export async function getApprovedInstitutionsPaginated(searchParams: {
 	await requireAdminSession();
 
 	const qNorm = normalizeParam(searchParams.q);
-	const pageNorm = String(Number(searchParams.page) || 1);
-	const limitNorm = String(Number(searchParams.limit) || 10);
+	const rawPage = Number.parseInt(normalizeParam(searchParams.page), 10);
+	const rawLimit = Number.parseInt(normalizeParam(searchParams.limit), 10);
+	const pageNumber = Number.isFinite(rawPage) ? Math.max(1, rawPage) : 1;
+	const pageLimit = Number.isFinite(rawLimit)
+		? Math.min(100, Math.max(1, rawLimit))
+		: 10;
+	const pageNorm = String(pageNumber);
+	const limitNorm = String(pageLimit);
 	const categoryNorm = normalizeParam(searchParams.category);
 	const stateNorm = normalizeParam(searchParams.state);
 
 	return unstable_cache(
 		async () => {
-			const pageNumber = Number(pageNorm) || 1;
-			const pageLimit = Number(limitNorm) || 10;
 			const offset = (pageNumber - 1) * pageLimit;
 
 			const conditions = [eq(institutions.status, "approved")];
@@ -252,7 +256,7 @@ export async function getApprovedInstitutionsPaginated(searchParams: {
 					.from(institutions)
 					.leftJoin(users, eq(institutions.contributorId, users.id))
 					.where(whereClause)
-					.orderBy(desc(institutions.createdAt))
+					.orderBy(desc(institutions.createdAt), desc(institutions.id))
 					.offset(offset)
 					.limit(pageLimit),
 				db.select({ count: count() }).from(institutions).where(whereClause),
