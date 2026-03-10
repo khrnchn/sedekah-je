@@ -49,6 +49,7 @@
 		"@radix-ui/react-toggle-group": "^1.1.10",
 		"@radix-ui/react-tooltip": "^1.2.7",
 		"@react-google-maps/api": "^2.20.5",
+		"@scalar/nextjs-api-reference": "^0.10.1",
 		"@svgr/webpack": "^8.1.0",
 		"@t3-oss/env-core": "^0.11.1",
 		"@tanstack/react-query": "^5.62.8",

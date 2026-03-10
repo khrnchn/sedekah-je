@@ -1,0 +1,281 @@
+openapi: 3.1.0
+info:
+  title: sedekah.je API
+  description: |
+    Public API for sedekah.je — a community-driven directory of QR codes for mosques, suraus, and other religious institutions in Malaysia.
+
+    These endpoints are open and do not require authentication or API keys. Please be respectful with usage.
+  version: 1.0.0
+  contact:
+    name: sedekah.je
+    url: https://sedekah.je
+
+servers:
+  - url: https://sedekah.je
+    description: Production
+
+paths:
+  /api/institutions:
+    get:
+      operationId: listInstitutions
+      summary: List institutions
+      description: |
+        Returns a paginated, filtered list of approved institutions. Results are cached for up to 5 minutes.
+      tags:
+        - Institutions
+      parameters:
+        - name: search
+          in: query
+          description: Search by name, description, or city (case-insensitive)
+          schema:
+            type: string
+            example: "masjid negara"
+        - name: category
+          in: query
+          description: Filter by category. Supports comma-separated values.
+          schema:
+            type: string
+            enum:
+              - masjid
+              - surau
+              - tahfiz
+              - kebajikan
+              - lain-lain
+            example: "masjid,surau"
+        - name: state
+          in: query
+          description: Filter by Malaysian state
+          schema:
+            type: string
+            enum:
+              - Johor
+              - Kedah
+              - Kelantan
+              - Melaka
+              - Negeri Sembilan
+              - Pahang
+              - Perak
+              - Perlis
+              - Pulau Pinang
+              - Sabah
+              - Sarawak
+              - Selangor
+              - Terengganu
+              - W.P. Kuala Lumpur
+              - W.P. Labuan
+              - W.P. Putrajaya
+            example: "Selangor"
+        - name: page
+          in: query
+          description: Page number (starts at 1)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          description: Results per page (max 50)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 15
+      responses:
+        "200":
+          description: Paginated list of institutions
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: "public, s-maxage=300, stale-while-revalidate=86400"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  institutions:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Institution"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+              example:
+                institutions:
+                  - id: 1
+                    name: "Masjid Negara"
+                    slug: "masjid-negara"
+                    description: "Masjid kebangsaan Malaysia"
+                    category: "masjid"
+                    state: "W.P. Kuala Lumpur"
+                    city: "Kuala Lumpur"
+                    qrImage: "https://example.com/qr.png"
+                    qrContent: "00020101021126..."
+                    supportedPayment: ["duitnow"]
+                    coords: [3.1412, 101.6865]
+                pagination:
+                  page: 1
+                  limit: 15
+                  total: 120
+                  hasMore: true
+                  totalPages: 8
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "Failed to fetch institutions"
+
+  /api/random:
+    get:
+      operationId: getRandomInstitution
+      summary: Get a random institution
+      description: |
+        Returns one randomly selected approved institution. Never cached — each request returns a fresh result. Open CORS.
+      tags:
+        - Institutions
+      responses:
+        "200":
+          description: A random institution
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+                example: "no-cache, no-store, must-revalidate"
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: "*"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InstitutionCompact"
+              example:
+                id: 42
+                name: "Surau Al-Hidayah"
+                category: "surau"
+                state: "Selangor"
+                city: "Shah Alam"
+                qrImage: "https://example.com/qr.png"
+                qrContent: "00020101021126..."
+                supportedPayment: ["duitnow", "tng"]
+                coords: [3.0733, 101.5185]
+        "404":
+          description: No institutions found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: "No institutions found"
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: "Internal server error"
+
+components:
+  schemas:
+    Institution:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+          nullable: true
+        category:
+          type: string
+          enum: [masjid, surau, tahfiz, kebajikan, lain-lain]
+        state:
+          type: string
+        city:
+          type: string
+        qrImage:
+          type: string
+          nullable: true
+          description: URL to the QR code image
+        qrContent:
+          type: string
+          nullable: true
+          description: Raw QR code payload
+        supportedPayment:
+          type: array
+          nullable: true
+          items:
+            type: string
+            enum: [duitnow, tng, boost]
+        coords:
+          type: array
+          nullable: true
+          description: "[latitude, longitude]"
+          items:
+            type: number
+          minItems: 2
+          maxItems: 2
+
+    InstitutionCompact:
+      type: object
+      description: Same as Institution but without slug and description
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        category:
+          type: string
+          enum: [masjid, surau, tahfiz, kebajikan, lain-lain]
+        state:
+          type: string
+        city:
+          type: string
+        qrImage:
+          type: string
+          nullable: true
+        qrContent:
+          type: string
+          nullable: true
+        supportedPayment:
+          type: array
+          nullable: true
+          items:
+            type: string
+            enum: [duitnow, tng, boost]
+        coords:
+          type: array
+          nullable: true
+          items:
+            type: number
+          minItems: 2
+          maxItems: 2
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+        limit:
+          type: integer
+        total:
+          type: integer
+        hasMore:
+          type: boolean
+        totalPages:
+          type: integer

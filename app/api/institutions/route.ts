@@ -1,12 +1,12 @@
+import { and, count, eq, ilike, inArray, or } from "drizzle-orm";
+import { unstable_cache } from "next/cache";
+import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { institutions } from "@/db/schema";
 import type {
 	categories as categoryOptions,
 	states as stateOptions,
 } from "@/lib/institution-constants";
-import { and, count, eq, ilike, inArray, or } from "drizzle-orm";
-import { unstable_cache } from "next/cache";
-import { type NextRequest, NextResponse } from "next/server";
 
 type Category = (typeof categoryOptions)[number];
 type State = (typeof stateOptions)[number];
@@ -62,9 +62,21 @@ const getInstitutionsWithFiltersInternal = unstable_cache(
 			.from(institutions)
 			.where(and(...conditions));
 
-		// Get filtered institutions
+		// Get filtered institutions (only public-safe fields)
 		const institutionsQuery = db
-			.select()
+			.select({
+				id: institutions.id,
+				name: institutions.name,
+				slug: institutions.slug,
+				description: institutions.description,
+				category: institutions.category,
+				state: institutions.state,
+				city: institutions.city,
+				qrImage: institutions.qrImage,
+				qrContent: institutions.qrContent,
+				supportedPayment: institutions.supportedPayment,
+				coords: institutions.coords,
+			})
 			.from(institutions)
 			.where(and(...conditions))
 			.orderBy(institutions.name)
@@ -103,8 +115,11 @@ export async function GET(request: NextRequest) {
 	const search = searchParams.get("search") || "";
 	const category = searchParams.get("category") || "";
 	const state = searchParams.get("state") || "";
-	const page = Number.parseInt(searchParams.get("page") || "1");
-	const limit = Number.parseInt(searchParams.get("limit") || "15");
+	const page = Number.parseInt(searchParams.get("page") || "1", 10);
+	const limit = Math.min(
+		Number.parseInt(searchParams.get("limit") || "15", 10),
+		50,
+	);
 
 	try {
 		const result = await getInstitutionsWithFiltersInternal({
