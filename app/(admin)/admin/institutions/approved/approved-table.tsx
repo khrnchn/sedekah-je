@@ -89,6 +89,8 @@ export default function ApprovedInstitutionsTable({
 	const [undoDialogOpen, setUndoDialogOpen] = useState(false);
 	const [undoNotes, setUndoNotes] = useState("Duplicate entry");
 	const debounceRef = useRef<NodeJS.Timeout | null>(null);
+	const searchParamsRef = useRef(searchParams);
+	searchParamsRef.current = searchParams;
 
 	useEffect(() => {
 		setDraft(q);
@@ -131,7 +133,7 @@ export default function ApprovedInstitutionsTable({
 			if (debounceRef.current) clearTimeout(debounceRef.current);
 			debounceRef.current = setTimeout(() => {
 				debounceRef.current = null;
-				const params = new URLSearchParams(searchParams.toString());
+				const params = new URLSearchParams(searchParamsRef.current.toString());
 				if (value.trim()) {
 					params.set("q", value.trim());
 				} else {
@@ -144,7 +146,7 @@ export default function ApprovedInstitutionsTable({
 				setSelectedIds([]);
 			}, 300);
 		},
-		[router, pathname, searchParams],
+		[router, pathname],
 	);
 
 	const handleCategoryChange = useCallback(
