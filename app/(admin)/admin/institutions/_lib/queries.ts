@@ -574,7 +574,13 @@ export async function getNextPendingInstitutionId(
 	const [next] = await db
 		.select({ id: institutions.id })
 		.from(institutions)
-		.where(and(eq(institutions.status, "pending"), nextCondition))
+		.where(
+			and(
+				eq(institutions.status, "pending"),
+				ne(institutions.id, currentId),
+				nextCondition,
+			),
+		)
 		.orderBy(desc(institutions.createdAt), desc(institutions.id))
 		.limit(1);
 
@@ -612,7 +618,13 @@ export async function getPrevPendingInstitutionId(
 	const [prev] = await db
 		.select({ id: institutions.id })
 		.from(institutions)
-		.where(and(eq(institutions.status, "pending"), prevCondition))
+		.where(
+			and(
+				eq(institutions.status, "pending"),
+				ne(institutions.id, currentId),
+				prevCondition,
+			),
+		)
 		.orderBy(asc(institutions.createdAt), asc(institutions.id))
 		.limit(1);
 
@@ -652,7 +664,13 @@ export async function getPendingInstitutionPosition(
 		db
 			.select({ count: count() })
 			.from(institutions)
-			.where(and(eq(institutions.status, "pending"), prevCondition)),
+			.where(
+				and(
+					eq(institutions.status, "pending"),
+					ne(institutions.id, currentId),
+					prevCondition,
+				),
+			),
 		db
 			.select({ count: count() })
 			.from(institutions)
