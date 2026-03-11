@@ -6,7 +6,7 @@ import { headers } from "next/headers";
 import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions } from "@/db/institutions";
-import { geocodeInstitution } from "@/lib/geocode";
+import { geocodeInstitution, reverseGeocodeWithGoogle } from "@/lib/geocode";
 import type { categories, states } from "@/lib/institution-constants";
 import { getUserById } from "@/lib/queries/users";
 import { r2Storage } from "@/lib/r2-client";
@@ -355,11 +355,19 @@ export async function submitInstitution(
 		else console.error("Geocoding failed");
 	}
 
+	// Reverse geocode address from coords when address is not provided
+	let address = parsed.data.address;
+	if (!address && coords) {
+		const reverseAddress = await reverseGeocodeWithGoogle(coords[0], coords[1]);
+		if (reverseAddress) address = reverseAddress;
+	}
+
 	try {
 		const [{ id: newId }] = await db
 			.insert(institutions)
 			.values({
 				...parsed.data,
+				address,
 				// We can safely cast here because client-side validation ensures
 				// these are valid enum values. The server-side schema is intentionally
 				// loose as per project rules (no pgEnum).
