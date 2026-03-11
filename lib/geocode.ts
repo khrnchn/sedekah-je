@@ -158,6 +158,49 @@ export async function geocodeWithGoogle(
 }
 
 /**
+ * Reverse geocode coordinates using Google Geocoding API.
+ * Returns a formatted address string or null if lookup fails.
+ * Requires GOOGLE_GEOCODING_API_KEY env var.
+ */
+export async function reverseGeocodeWithGoogle(
+	lat: number,
+	lon: number,
+): Promise<string | null> {
+	const apiKey = process.env.GOOGLE_GEOCODING_API_KEY;
+	if (!apiKey) return null;
+
+	try {
+		const url = new URL("https://maps.googleapis.com/maps/api/geocode/json");
+		url.searchParams.set("latlng", `${lat},${lon}`);
+		url.searchParams.set("key", apiKey);
+		url.searchParams.set("language", "ms");
+
+		const controller = new AbortController();
+		const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+		const res = await fetch(url.toString(), {
+			headers: { Accept: "application/json" },
+			signal: controller.signal,
+		});
+
+		clearTimeout(timeoutId);
+
+		if (!res.ok) return null;
+
+		const data = (await res.json()) as {
+			status: string;
+			results?: Array<{ formatted_address?: string }>;
+		};
+
+		if (data.status !== "OK" || !data.results?.length) return null;
+
+		return data.results[0].formatted_address ?? null;
+	} catch {
+		return null;
+	}
+}
+
+/**
  * Geocode with Google Maps first, fallback to Nominatim.
  */
 export async function geocodeInstitutionWithFallback(
