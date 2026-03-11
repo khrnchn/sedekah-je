@@ -42,6 +42,23 @@ type Props = {
 	formRef: React.RefObject<ReviewFormHandle | null>;
 };
 
+const REJECTION_TEMPLATES = [
+	{
+		label: "Tidak jelas",
+		value:
+			"Harap maaf, kandungan kod QR kurang jelas dan tidak dapat dibaca. Sila hantar semula kod QR yang lebih jelas, kedudukan tegak selari dengan kamera, atau dapatkan dari sumber lain",
+	},
+	{
+		label: "Individu",
+		value: "QR code tidak dibenarkan atas nama individu",
+	},
+	{
+		label: "Duplicate",
+		value:
+			"Harap maaf, QR untuk masjid ini telah ada di website kami. Pautan - https://sedekah.je/...",
+	},
+] as const;
+
 export default function ReviewActions({
 	institutionId,
 	institutionName,
@@ -322,7 +339,22 @@ export default function ReviewActions({
 										{institutionName}.
 									</DialogDescription>
 								</DialogHeader>
-								<div className="py-4">
+								<div className="py-4 space-y-3">
+									{dialog === "reject" && (
+										<div className="flex flex-wrap gap-2">
+											{REJECTION_TEMPLATES.map((template) => (
+												<Button
+													key={template.label}
+													type="button"
+													variant="outline"
+													size="sm"
+													onClick={() => setNotes(template.value)}
+												>
+													{template.label}
+												</Button>
+											))}
+										</div>
+									)}
 									<Textarea
 										value={notes}
 										onChange={(e) => setNotes(e.target.value)}
