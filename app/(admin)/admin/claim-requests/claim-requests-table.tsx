@@ -30,6 +30,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { CLAIM_REJECTION_TEMPLATES } from "@/lib/admin-templates";
 import {
 	approveClaimRequest,
 	rejectClaimRequest,
@@ -268,6 +269,21 @@ export function ClaimRequestsTable({ data }: { data: PaginatedData }) {
 									? "Nota Admin (Optional)"
 									: "Sebab Penolakan"}
 							</Label>
+							{actionType === "reject" && (
+								<div className="flex flex-wrap gap-2 mb-2">
+									{CLAIM_REJECTION_TEMPLATES.map((template) => (
+										<Button
+											key={template.label}
+											type="button"
+											variant="outline"
+											size="sm"
+											onClick={() => setAdminNotes(template.value)}
+										>
+											{template.label}
+										</Button>
+									))}
+								</div>
+							)}
 							<Textarea
 								id="adminNotes"
 								placeholder={

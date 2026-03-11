@@ -30,6 +30,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { REJECTION_TEMPLATES } from "@/lib/admin-templates";
 import { categories, states } from "@/lib/institution-constants";
 import { batchUndoApproval } from "../_lib/queries";
 import { createColumns } from "./columns";
@@ -311,7 +312,20 @@ export default function ApprovedInstitutionsTable({
 							directory. This is typically used for duplicate entries.
 						</DialogDescription>
 					</DialogHeader>
-					<div className="py-4">
+					<div className="py-4 space-y-3">
+						<div className="flex flex-wrap gap-2">
+							{REJECTION_TEMPLATES.map((template) => (
+								<Button
+									key={template.label}
+									type="button"
+									variant="outline"
+									size="sm"
+									onClick={() => setUndoNotes(template.value)}
+								>
+									{template.label}
+								</Button>
+							))}
+						</div>
 						<Textarea
 							value={undoNotes}
 							onChange={(e) => setUndoNotes(e.target.value)}

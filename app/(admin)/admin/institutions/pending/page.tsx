@@ -1,11 +1,18 @@
 // page.tsx – server component with streaming
 
+import type { Metadata } from "next";
+import { Suspense } from "react";
 import { AdminLayout } from "@/components/admin-layout";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { Suspense } from "react";
+import { getPendingInstitutionsCount } from "../_lib/queries";
 import AsyncPendingData from "./async-pending-data";
 import PendingTableLoading from "./table-loading";
+
+export async function generateMetadata(): Promise<Metadata> {
+	const count = await getPendingInstitutionsCount();
+	return { title: `(${count}) Pending Review` };
+}
 
 export default function PendingInstitutionsPage() {
 	return (

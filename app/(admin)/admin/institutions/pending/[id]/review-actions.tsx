@@ -1,8 +1,15 @@
 "use client";
 
-import { ChevronDown, ChevronRight, Loader2, Mail } from "lucide-react";
+import {
+	ChevronDown,
+	ChevronLeft,
+	ChevronRight,
+	Loader2,
+	Mail,
+} from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,6 +35,7 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/use-auth";
+import { REJECTION_TEMPLATES } from "@/lib/admin-templates";
 import {
 	approveInstitution,
 	getNextPendingInstitutionId,
@@ -40,30 +48,21 @@ type Props = {
 	institutionName: string;
 	contributorEmail?: string | null;
 	formRef: React.RefObject<ReviewFormHandle | null>;
+	prevId: number | null;
+	nextId: number | null;
+	position: number;
+	total: number;
 };
-
-const REJECTION_TEMPLATES = [
-	{
-		label: "Tidak jelas",
-		value:
-			"Harap maaf, kandungan kod QR kurang jelas dan tidak dapat dibaca. Sila hantar semula kod QR yang lebih jelas, kedudukan tegak selari dengan kamera, atau dapatkan dari sumber lain",
-	},
-	{
-		label: "Individu",
-		value: "QR code tidak dibenarkan atas nama individu",
-	},
-	{
-		label: "Duplicate",
-		value:
-			"Harap maaf, QR untuk masjid ini telah ada di website kami. Pautan - https://sedekah.je/...",
-	},
-] as const;
 
 export default function ReviewActions({
 	institutionId,
 	institutionName,
 	contributorEmail,
 	formRef,
+	prevId,
+	nextId,
+	position,
+	total,
 }: Props) {
 	const { user } = useAuth();
 	const router = useRouter();
@@ -108,9 +107,89 @@ export default function ReviewActions({
 		}
 	}
 
+	const handleSaveApproveAndNext = useCallback(async () => {
+		if (!user?.id) {
+			toast.error("User not authenticated");
+			return;
+		}
+		setIsSaving(true);
+		const ok = await formRef.current?.save();
+		if (!ok) {
+			setIsSaving(false);
+			return;
+		}
+		let nextId: number | null = null;
+		try {
+			nextId = await getNextPendingInstitutionId(institutionId);
+		} catch (e) {
+			console.error("[next-navigation]", e);
+		}
+		try {
+			await approveInstitution(institutionId, user.id);
+			if (nextId != null) {
+				router.push(`/admin/institutions/pending/${nextId}`);
+			} else {
+				router.push("/admin/institutions/pending");
+				toast.success("Approved. No more pending institutions");
+			}
+		} catch (e) {
+			console.error("[approve-and-next]", e);
+			toast.error("Failed to approve institution");
+		} finally {
+			setIsSaving(false);
+		}
+	}, [user?.id, institutionId, router, formRef]);
+
+	useEffect(() => {
+		const down = (e: KeyboardEvent) => {
+			if (isPending || isSaving) return;
+			const target = e.target as HTMLElement;
+			const tag = target?.tagName?.toUpperCase();
+			if (tag === "TEXTAREA" || tag === "INPUT" || tag === "SELECT") return;
+			if (e.key === "Enter" && e.ctrlKey) {
+				if (e.shiftKey) {
+					e.preventDefault();
+					handleSaveApproveAndNext();
+				} else {
+					e.preventDefault();
+					setDialog("approve");
+				}
+			}
+		};
+		document.addEventListener("keydown", down);
+		return () => document.removeEventListener("keydown", down);
+	}, [isPending, isSaving, handleSaveApproveAndNext]);
+
 	return (
 		<TooltipProvider>
-			<div className="flex items-center gap-2">
+			<div className="flex items-center gap-2 flex-wrap">
+				<div className="flex items-center gap-1 mr-2">
+					<span className="text-sm text-muted-foreground tabular-nums">
+						{position} of {total}
+					</span>
+					{prevId != null ? (
+						<Button variant="outline" size="icon" asChild>
+							<Link href={`/admin/institutions/pending/${prevId}`}>
+								<ChevronLeft className="h-4 w-4" />
+							</Link>
+						</Button>
+					) : (
+						<Button variant="outline" size="icon" disabled>
+							<ChevronLeft className="h-4 w-4" />
+						</Button>
+					)}
+					{nextId != null ? (
+						<Button variant="outline" size="icon" asChild>
+							<Link href={`/admin/institutions/pending/${nextId}`}>
+								<ChevronRight className="h-4 w-4" />
+							</Link>
+						</Button>
+					) : (
+						<Button variant="outline" size="icon" disabled>
+							<ChevronRight className="h-4 w-4" />
+						</Button>
+					)}
+				</div>
 				<Tooltip>
 					<TooltipTrigger asChild>
 						<Button
@@ -179,42 +258,7 @@ export default function ReviewActions({
 						</DropdownMenuItem>
 						<DropdownMenuItem
 							disabled={isSaving}
-							onSelect={async () => {
-								if (!user?.id) {
-									toast.error("User not authenticated");
-									return;
-								}
-
-								setIsSaving(true);
-								const ok = await formRef.current?.save();
-								if (!ok) {
-									setIsSaving(false);
-									return;
-								}
-
-								// Compute next while current is still pending to preserve list order
-								let nextId: number | null = null;
-								try {
-									nextId = await getNextPendingInstitutionId(institutionId);
-								} catch (e) {
-									console.error("[next-navigation]", e);
-								}
-
-								try {
-									await approveInstitution(institutionId, user.id);
-									if (nextId != null) {
-										router.push(`/admin/institutions/pending/${nextId}`);
-									} else {
-										router.push("/admin/institutions/pending");
-										toast.success("Approved. No more pending institutions");
-									}
-								} catch (e) {
-									console.error("[approve-and-next]", e);
-									toast.error("Failed to approve institution");
-								} finally {
-									setIsSaving(false);
-								}
-							}}
+							onSelect={handleSaveApproveAndNext}
 						>
 							{isSaving ? (
 								<Loader2 className="mr-2 h-4 w-4 animate-spin" />

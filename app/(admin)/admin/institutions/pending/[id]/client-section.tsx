@@ -33,9 +33,19 @@ type Props = {
 		createdAt?: Date;
 		[key: string]: unknown;
 	};
+	prevId: number | null;
+	nextId: number | null;
+	position: number;
+	total: number;
 };
 
-export default function ClientSection({ institution }: Props) {
+export default function ClientSection({
+	institution,
+	prevId,
+	nextId,
+	position,
+	total,
+}: Props) {
 	const router = useRouter();
 	const formRef = useRef<ReviewFormHandle | null>(null);
 	const [isExtractingQr, setIsExtractingQr] = useState(false);
@@ -207,6 +217,10 @@ export default function ClientSection({ institution }: Props) {
 					institutionName={institution.name}
 					contributorEmail={institution.contributorEmail ?? null}
 					formRef={formRef}
+					prevId={prevId}
+					nextId={nextId}
+					position={position}
+					total={total}
 				/>
 			</div>
 
