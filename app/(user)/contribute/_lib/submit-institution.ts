@@ -6,7 +6,11 @@ import { headers } from "next/headers";
 import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions } from "@/db/institutions";
-import { geocodeInstitution, reverseGeocodeWithGoogle } from "@/lib/geocode";
+import {
+	geocodeInstitution,
+	reverseGeocodeInstitution,
+	reverseGeocodeWithGoogle,
+} from "@/lib/geocode";
 import type { categories, states } from "@/lib/institution-constants";
 import { getUserById } from "@/lib/queries/users";
 import { r2Storage } from "@/lib/r2-client";
@@ -359,7 +363,16 @@ export async function submitInstitution(
 	let address = parsed.data.address;
 	if (!address && coords) {
 		const reverseAddress = await reverseGeocodeWithGoogle(coords[0], coords[1]);
-		if (reverseAddress) address = reverseAddress;
+		if (reverseAddress) {
+			address = reverseAddress;
+		} else {
+			// Fallback to Nominatim when Google API key is missing or fails
+			const nominatimResult = await reverseGeocodeInstitution(
+				coords[0],
+				coords[1],
+			);
+			if (nominatimResult) address = nominatimResult.addressLine;
+		}
 	}
 
 	try {
