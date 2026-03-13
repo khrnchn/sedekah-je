@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { getPendingClaimRequestsCount } from "@/app/(admin)/admin/claim-requests/_lib/queries";
 import {
 	getApprovedInstitutionsCount,
@@ -6,7 +7,6 @@ import {
 } from "@/app/(admin)/admin/institutions/_lib/queries";
 import { Badge } from "@/components/ui/badge";
 import { getTotalUsersCount } from "@/lib/queries/users";
-import { Suspense } from "react";
 
 // Async badge components that stream in
 async function PendingBadge() {
@@ -23,7 +23,7 @@ async function ApprovedBadge() {
 	try {
 		const count = await getApprovedInstitutionsCount();
 		if (count === 0) return <></>;
-		return <Badge variant="default">{count}</Badge>;
+		return <Badge variant="success">{count}</Badge>;
 	} catch {
 		return <></>;
 	}
@@ -53,7 +53,7 @@ async function UsersBadge() {
 	try {
 		const count = await getTotalUsersCount();
 		if (count === 0) return <></>;
-		return <Badge variant="default">{count}</Badge>;
+		return <Badge variant="success">{count}</Badge>;
 	} catch {
 		return <></>;
 	}

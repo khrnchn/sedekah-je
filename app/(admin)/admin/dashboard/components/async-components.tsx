@@ -18,7 +18,6 @@ import {
 	StatsSkeleton,
 	TableSkeleton,
 } from "./loading-skeletons";
-import { RealTimeMetrics } from "./real-time-metrics";
 import { TopContributors } from "./top-contributors";
 
 export async function AsyncDashboardStats() {
@@ -59,11 +58,6 @@ export async function AsyncTopContributors() {
 export async function AsyncActivityFeed() {
 	const latestActivities = await getLatestActivities();
 	return <ActivityFeed data={latestActivities} />;
-}
-
-export async function AsyncRealTimeMetrics() {
-	const stats = await getDashboardStats();
-	return <RealTimeMetrics data={stats} />;
 }
 
 export async function AsyncInstitutionTable() {

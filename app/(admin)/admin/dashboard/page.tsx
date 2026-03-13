@@ -1,14 +1,13 @@
+import { Suspense } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { Suspense } from "react";
 import {
 	AsyncActivityFeed,
 	AsyncDashboardCharts,
 	AsyncDashboardMap,
 	AsyncDashboardStats,
 	AsyncInstitutionTable,
-	AsyncRealTimeMetrics,
 	AsyncTopContributors,
 } from "./components/async-components";
 import {
@@ -68,9 +67,6 @@ export default function DashboardPage() {
 									}
 								>
 									<AsyncActivityFeed />
-								</Suspense>
-								<Suspense fallback={<StatsSkeleton />}>
-									<AsyncRealTimeMetrics />
 								</Suspense>
 							</div>
 						</div>

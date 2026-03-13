@@ -159,7 +159,7 @@ export function NavMain({
 						>
 							<Link
 								href="/contribute"
-								className="flex items-center gap-2"
+								className="flex items-center gap-2 text-primary-foreground hover:text-primary-foreground"
 								target="_blank"
 								rel="noopener noreferrer"
 							>
