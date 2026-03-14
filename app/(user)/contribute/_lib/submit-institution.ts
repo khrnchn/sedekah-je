@@ -7,7 +7,7 @@ import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions } from "@/db/institutions";
 import {
-	geocodeInstitution,
+	geocodeInstitutionWithFallback,
 	reverseGeocodeInstitution,
 	reverseGeocodeWithGoogle,
 } from "@/lib/geocode";
@@ -350,7 +350,7 @@ export async function submitInstitution(
 
 	// Geocode if coords not provided
 	if (!coords) {
-		const geocoded = await geocodeInstitution(
+		const geocoded = await geocodeInstitutionWithFallback(
 			parsed.data.name,
 			parsed.data.city,
 			parsed.data.state,
