@@ -114,7 +114,7 @@ export async function GET(
 					>
 						{/* @ts-ignore – Satori supports SVG elements */}
 						<img
-							src={`https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${institution.qrContent}`}
+							src={`https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(institution.qrContent)}`}
 							alt="QR Code"
 							width={280}
 							height={280}
