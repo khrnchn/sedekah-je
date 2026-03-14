@@ -12,6 +12,7 @@ import {
 	reverseGeocodeWithGoogle,
 } from "@/lib/geocode";
 import type { categories, states } from "@/lib/institution-constants";
+import { isToyyibpay } from "@/lib/qr-utils";
 import { getUserById } from "@/lib/queries/users";
 import { r2Storage } from "@/lib/r2-client";
 import {
@@ -390,7 +391,7 @@ export async function submitInstitution(
 				qrImage: qrImageUrl,
 				contributorId: contributorId, // Include the contributor ID
 				status: "pending", // Always pending for new submissions
-				supportedPayment: ["duitnow"], // Default to DuitNow for new submissions
+				supportedPayment: [isToyyibpay(qrContent) ? "toyyibpay" : "duitnow"],
 			})
 			.returning({ id: institutions.id });
 

@@ -19,7 +19,11 @@ export async function GET(
 		return new Response("Not found", { status: 404 });
 	}
 
-	const type = institution.supportedPayment[0] as "duitnow" | "boost" | "tng";
+	const type = institution.supportedPayment[0] as
+		| "duitnow"
+		| "boost"
+		| "tng"
+		| "toyyibpay";
 
 	const map = {
 		duitnow: {
@@ -33,6 +37,10 @@ export async function GET(
 		tng: {
 			color: "#015ABF",
 			logo: "https://sedekah.je/icons/square-tng.png",
+		},
+		toyyibpay: {
+			color: "#00847F",
+			logo: "https://sedekah.je/icons/toyyibpay-wordmark.png",
 		},
 	};
 
@@ -106,7 +114,7 @@ export async function GET(
 					>
 						{/* @ts-ignore – Satori supports SVG elements */}
 						<img
-							src={`https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${institution.qrContent}`}
+							src={`https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(institution.qrContent)}`}
 							alt="QR Code"
 							width={280}
 							height={280}

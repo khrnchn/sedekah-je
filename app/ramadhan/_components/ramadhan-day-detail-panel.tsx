@@ -1,13 +1,13 @@
 "use client";
 
+import Image from "next/image";
+import Link from "next/link";
 import Share from "@/components/share";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import QrCodeDisplay from "@/components/ui/qrCodeDisplay";
 import { formatDateBM } from "@/lib/ramadhan";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
-import Link from "next/link";
 import type { RamadhanCampaignDay } from "../_lib/queries";
 
 type RamadhanDayDetailPanelProps = {
@@ -48,7 +48,7 @@ export function RamadhanDayDetailPanel({
 									qrContent={day.qrContent}
 									supportedPayment={
 										(day.supportedPayment ?? undefined) as
-											| ("duitnow" | "tng" | "boost")[]
+											| ("duitnow" | "tng" | "boost" | "toyyibpay")[]
 											| undefined
 									}
 									size={110}

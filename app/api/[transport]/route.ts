@@ -19,7 +19,7 @@ function createServer() {
 	// Tool 1: List available filter options
 	server.tool(
 		"list_filter_options",
-		"Returns all available filter values for querying institutions: categories (masjid, surau, tahfiz, kebajikan, lain-lain), Malaysian states (16 states), and supported payment methods (duitnow, tng, boost).",
+		"Returns all available filter values for querying institutions: categories (masjid, surau, tahfiz, kebajikan, lain-lain), Malaysian states (16 states), and supported payment methods (duitnow, tng, boost, toyyibpay).",
 		async () => ({
 			content: [
 				{
@@ -63,7 +63,9 @@ function createServer() {
 			payment_method: z
 				.string()
 				.optional()
-				.describe("Filter by supported payment method: duitnow, tng, or boost"),
+				.describe(
+					"Filter by supported payment method: duitnow, tng, boost, or toyyibpay",
+				),
 			page: z
 				.number()
 				.int()

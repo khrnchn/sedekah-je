@@ -1,8 +1,8 @@
-import { db } from "@/db";
-import { institutions, ramadhanCampaigns } from "@/db/schema";
 import { ImageResponse } from "@vercel/og";
 import { and, eq } from "drizzle-orm";
 import type { NextRequest } from "next/server";
+import { db } from "@/db";
+import { institutions, ramadhanCampaigns } from "@/db/schema";
 
 export const runtime = "nodejs";
 
@@ -10,6 +10,7 @@ const PAYMENT_COLORS: Record<string, string> = {
 	duitnow: "#ED2C66",
 	boost: "#EE2E24",
 	tng: "#015ABF",
+	toyyibpay: "#00847F",
 };
 
 export async function GET(
