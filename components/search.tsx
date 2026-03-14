@@ -10,9 +10,15 @@ type SearchProps = {
 	onSearchChange: (query: string) => void;
 	className?: string;
 	initialValue?: string;
+	hideShortcut?: boolean;
 };
 
-const Search = ({ onSearchChange, className, initialValue }: SearchProps) => {
+const Search = ({
+	onSearchChange,
+	className,
+	initialValue,
+	hideShortcut = false,
+}: SearchProps) => {
 	const [searchValue, setSearchValue] = useState(initialValue || "");
 	const [isMac, setIsMac] = useState(false);
 
@@ -45,14 +51,19 @@ const Search = ({ onSearchChange, className, initialValue }: SearchProps) => {
 				startIcon={SearchIcon}
 				type="search"
 				placeholder="Cari masjid/surau/institusi..."
-				className="w-full rounded-lg bg-background text-sm border pr-16 shadow-md"
+				className={cn(
+					"w-full rounded-lg bg-background text-sm border shadow-md",
+					hideShortcut ? "pr-3" : "pr-16",
+				)}
 				value={searchValue}
 				onChange={handleSearchChange}
 			/>
-			<div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 pointer-events-none">
-				<Kbd variant="outline">{isMac ? "⌘" : "Ctrl"}</Kbd>
-				<Kbd variant="outline">K</Kbd>
-			</div>
+			{!hideShortcut && (
+				<div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 pointer-events-none">
+					<Kbd variant="outline">{isMac ? "⌘" : "Ctrl"}</Kbd>
+					<Kbd variant="outline">K</Kbd>
+				</div>
+			)}
 		</div>
 	);
 };

@@ -77,13 +77,14 @@ const InstitutionCard = forwardRef<
 		ref,
 	) => {
 		const [active, setActive] = useState<boolean | null>(false);
+		const [hasMounted, setHasMounted] = useState(false);
 		const [isDownloading, setIsDownloading] = useState(false);
 		const [downloadStage, setDownloadStage] = useState<string>("");
 		const [showClaimModal, setShowClaimModal] = useState(false);
 		const innerRef = useRef<HTMLDivElement>(null);
 		const printRef = useRef<HTMLButtonElement>(null);
 
-		const { user, isAuthenticated } = useAuth();
+		const { user, isAuthenticated, isLoading } = useAuth();
 
 		const capitalizedName = capitalizeWords(name);
 		const capitalizedState = capitalizeWords(state);
@@ -94,6 +95,8 @@ const InstitutionCard = forwardRef<
 		// 2. Institution's contributorId must be null, OR
 		// 3. Institution's contributor email must be khairin13chan@gmail.com
 		const canClaim =
+			hasMounted &&
+			!isLoading &&
 			isAuthenticated &&
 			(contributorId === null ||
 				contributorEmail === "khairin13chan@gmail.com");
@@ -101,6 +104,10 @@ const InstitutionCard = forwardRef<
 		const router = useRouter();
 		const resolvedSlug = slug ?? slugify(name);
 		const href = `/${category}/${resolvedSlug}`;
+
+		useEffect(() => {
+			setHasMounted(true);
+		}, []);
 
 		useEffect(() => {
 			function onKeyDown(event: KeyboardEvent) {

@@ -8,16 +8,11 @@ import "leaflet.locatecontrol/dist/L.Control.Locate.min.css";
 import "leaflet.locatecontrol";
 import "leaflet.fullscreen/Control.FullScreen.css";
 import "leaflet.fullscreen";
+import { createLeafletContext, LeafletProvider } from "@react-leaflet/core";
 import L, { Icon, type LatLngExpression } from "leaflet";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef } from "react";
-import {
-	MapContainer,
-	Marker,
-	TileLayer,
-	Tooltip,
-	useMap,
-} from "react-leaflet";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Marker, TileLayer, Tooltip, useMap } from "react-leaflet";
 import { CategoryColor, type Institution } from "@/app/types/institutions";
 import { slugify } from "@/lib/utils";
 
@@ -143,6 +138,13 @@ export default function MapLocation({
 	filteredInstitutions,
 }: MapLocationProps) {
 	const router = useRouter();
+	const mapRef = useRef<L.Map | null>(null);
+	const contextRef = useRef<ReturnType<typeof createLeafletContext> | null>(
+		null,
+	);
+	const [context, setContext] = useState<ReturnType<
+		typeof createLeafletContext
+	> | null>(null);
 
 	const markerClickHandler = useCallback(
 		(institution: Institution) => {
@@ -185,21 +187,72 @@ export default function MapLocation({
 		});
 	}, [marker, filteredInstitutions, markerClickHandler]);
 
+	const mapOptions = useMemo(
+		() => ({
+			scrollWheelZoom: true,
+		}),
+		[],
+	);
+
+	const handleMapRef = useCallback(
+		(node: HTMLDivElement | null) => {
+			if (!node || contextRef.current) return;
+
+			// Clean leftover Leaflet state from Strict Mode/HMR reattach.
+			const leafletKey = Object.keys(node).find((key) =>
+				key.startsWith("_leaflet_id"),
+			);
+			if (leafletKey) {
+				Reflect.deleteProperty(node, leafletKey);
+			}
+			node.innerHTML = "";
+
+			const map = new L.Map(node, mapOptions);
+			map.setView(marker ? marker.coords : center, marker ? 13 : zoom);
+			mapRef.current = map;
+			const nextContext = createLeafletContext(map);
+			contextRef.current = nextContext;
+			setContext(nextContext);
+		},
+		[center, zoom, marker, mapOptions],
+	);
+
+	useEffect(() => {
+		return () => {
+			const map = mapRef.current;
+			if (map) {
+				const container = map.getContainer();
+				map.remove();
+				const leafletKey = Object.keys(container).find((key) =>
+					key.startsWith("_leaflet_id"),
+				);
+				if (leafletKey) {
+					Reflect.deleteProperty(container, leafletKey);
+				}
+			}
+			mapRef.current = null;
+			contextRef.current = null;
+			setContext(null);
+		};
+	}, []);
+
 	return (
-		<MapContainer
-			center={marker ? marker.coords : center}
-			zoom={marker ? 13 : zoom}
-			scrollWheelZoom={true}
+		<div
+			ref={handleMapRef}
 			className="w-full h-auto z-0 min-h-[240px] min-w-full rounded-md overflow-clip"
 		>
-			<TileLayer
-				attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-				url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-			/>
-			{renderMarkers}
-			<AddControls />
-			<SyncMapSize />
-			<FlyToMarker marker={marker} center={center} zoom={zoom} />
-		</MapContainer>
+			{context ? (
+				<LeafletProvider value={context}>
+					<TileLayer
+						attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+						url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+					/>
+					{renderMarkers}
+					<AddControls />
+					<SyncMapSize />
+					<FlyToMarker marker={marker} center={center} zoom={zoom} />
+				</LeafletProvider>
+			) : null}
+		</div>
 	);
 }

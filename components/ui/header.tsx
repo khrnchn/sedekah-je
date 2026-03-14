@@ -3,6 +3,7 @@
 import {
 	BarChart,
 	HeartHandshake,
+	HelpCircle,
 	Home,
 	LayoutDashboard,
 	Loader2,
@@ -172,6 +173,19 @@ export const Header = ({ compactMobileBrand = false }: HeaderProps) => {
 											</span>
 										</Link>
 									))}
+									<Link
+										href="/faq"
+										onClick={() => setOpen(false)}
+										className={cn(
+											"flex flex-col items-center justify-center rounded-lg p-3 hover:bg-accent",
+											pathname === "/faq" && "bg-accent text-accent-foreground",
+										)}
+									>
+										<HelpCircle className="size-5" />
+										<span className="mt-1 text-xs font-medium">
+											Soalan Lazim
+										</span>
+									</Link>
 									{isAuthenticated && isAdmin && (
 										<Link
 											href="/admin/dashboard"

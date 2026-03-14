@@ -302,21 +302,22 @@ export function PageClient({
 							onSearchChange={handleSearch}
 							className="w-full"
 							initialValue={query}
+							hideShortcut
 						/>
 					</div>
 					<Drawer>
 						<DrawerTrigger asChild>
 							<Button
 								variant="outline"
-								size="default"
-								className="shrink-0 flex items-center gap-2"
+								size="icon"
+								className="shrink-0"
+								aria-label="Tapis"
 							>
 								<Filter className="h-4 w-4" />
-								<span>Filter</span>
 								{activeFilterCount > 0 && (
 									<Badge
 										variant="secondary"
-										className="ml-0.5 h-5 min-w-5 px-1.5"
+										className="absolute -top-1 -right-1 h-4 min-w-4 px-1 text-[10px]"
 									>
 										{activeFilterCount}
 									</Badge>
@@ -347,10 +348,19 @@ export function PageClient({
 							)}
 						</DrawerContent>
 					</Drawer>
+					<Button
+						onClick={toggleMap}
+						variant="outline"
+						size="icon"
+						className="shrink-0"
+						aria-label="Peta"
+					>
+						<MapIcon className="h-4 w-4" />
+					</Button>
 				</div>
 			</div>
 
-			<div className="flex justify-end gap-2 mt-0 pb-4">
+			<div className="hidden sm:flex justify-end gap-2 mt-0 pb-4">
 				<Button
 					onClick={toggleMap}
 					variant="outline"

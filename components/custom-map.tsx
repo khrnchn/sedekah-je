@@ -1,12 +1,12 @@
 "use client";
 
+import { motion } from "framer-motion";
+import dynamic from "next/dynamic";
+import { useEffect, useMemo, useState } from "react";
 import type { Institution } from "@/app/types/institutions";
 import type { MapMarker } from "@/components/map";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AnimatePresence, motion } from "framer-motion";
-import dynamic from "next/dynamic";
-import { useMemo } from "react";
 
 interface CollapsibleCustomMapProps {
 	marker?: MapMarker;
@@ -21,6 +21,8 @@ const CollapsibleCustomMap = ({
 	isVisible,
 	filteredInstitutions,
 }: CollapsibleCustomMapProps) => {
+	const [hasMounted, setHasMounted] = useState(false);
+
 	const LeafletMap = useMemo(
 		() =>
 			dynamic(() => import("@/components/map"), {
@@ -38,24 +40,29 @@ const CollapsibleCustomMap = ({
 		[],
 	);
 
+	useEffect(() => {
+		if (isVisible) {
+			setHasMounted(true);
+		}
+	}, [isVisible]);
+
 	return (
-		<AnimatePresence>
-			{isVisible && (
-				<motion.div
-					className="w-full"
-					initial={{ opacity: 0, height: 0 }}
-					animate={{ opacity: 1, height: "auto" }}
-					exit={{ opacity: 0, height: 0 }}
-					transition={{ duration: 0.3, ease: "easeInOut" }}
-				>
-					{showAll ? (
-						<LeafletMap filteredInstitutions={filteredInstitutions} />
-					) : marker ? (
-						<LeafletMap marker={marker} />
-					) : null}
-				</motion.div>
-			)}
-		</AnimatePresence>
+		<motion.div
+			className="w-full overflow-hidden"
+			initial={false}
+			animate={
+				isVisible ? { opacity: 1, height: "auto" } : { opacity: 0, height: 0 }
+			}
+			transition={{ duration: 0.3, ease: "easeInOut" }}
+		>
+			{hasMounted ? (
+				showAll ? (
+					<LeafletMap filteredInstitutions={filteredInstitutions} />
+				) : marker ? (
+					<LeafletMap marker={marker} />
+				) : null
+			) : null}
+		</motion.div>
 	);
 };
 
