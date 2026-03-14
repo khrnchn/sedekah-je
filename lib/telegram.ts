@@ -115,14 +115,9 @@ export async function logNewUser(user: {
 }): Promise<void> {
 	await logToTelegram({
 		level: "success",
-		title: "New User Registered",
-		description: "Welcome to sedekah.je! 🇲🇾",
+		title: "🆕 New User",
+		description: `${user.name} (${user.email})`,
 		emoji: "🆕",
-		data: {
-			name: user.name,
-			email: user.email,
-			role: user.role,
-		},
 	});
 }
 
