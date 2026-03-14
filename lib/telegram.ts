@@ -139,13 +139,10 @@ export async function logNewInstitution(institution: {
 
 	await logToTelegram({
 		level: "info",
-		title: "New Institution Submitted",
-		description: "Awaiting admin review... ⏳",
+		title: `${categoryEmoji} New Institution`,
+		description: `${institution.name} - ${institution.city}, ${institution.state}`,
 		emoji: categoryEmoji,
 		data: {
-			name: institution.name,
-			category: institution.category,
-			location: `${institution.city}, ${institution.state}`,
 			contributor: institution.contributorName,
 			email: institution.contributorEmail,
 		},
