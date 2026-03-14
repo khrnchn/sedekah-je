@@ -1,9 +1,9 @@
-import type { Institution } from "@/app/types/institutions";
-import { cn } from "@/lib/utils";
 import { cva } from "class-variance-authority";
 import Image from "next/image";
 import { QRCodeSVG } from "qrcode.react";
 import { type ButtonHTMLAttributes, forwardRef } from "react";
+import type { Institution } from "@/app/types/institutions";
+import { cn } from "@/lib/utils";
 
 const labelVariants = cva(
 	"relative flex flex-col items-center justify-center rounded-lg",
@@ -13,6 +13,7 @@ const labelVariants = cva(
 				duitnow: "bg-[#ED2C67]",
 				tng: "bg-[#015ABF]",
 				boost: "bg-[#FF3333]",
+				toyyibpay: "bg-[#00847F]",
 			},
 		},
 	},
@@ -43,6 +44,7 @@ const QrCodeDisplay = forwardRef<HTMLButtonElement, Props>((props, ref) => {
 						| "duitnow"
 						| "tng"
 						| "boost"
+						| "toyyibpay"
 						| undefined,
 				}),
 			)}
@@ -95,6 +97,22 @@ const QrCodeDisplay = forwardRef<HTMLButtonElement, Props>((props, ref) => {
 							fill
 							alt="Boost"
 							className="object-contain rounded-full"
+						/>
+					</div>
+				)}
+				{props.supportedPayment?.[0] === "toyyibpay" && (
+					<div
+						style={{
+							width: (props.size || 160) * 0.34,
+							height: (props.size || 160) * 0.2,
+						}}
+						className="absolute top-0 flex items-center justify-center"
+					>
+						<Image
+							src="/icons/toyyibpay-wordmark.png"
+							fill
+							alt="ToyyibPay"
+							className="object-contain"
 						/>
 					</div>
 				)}

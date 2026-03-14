@@ -55,7 +55,7 @@ async function migrateInstitutions() {
 				qrImage: institution.qrImage,
 				qrContent: institution.qrContent,
 				supportedPayment: institution.supportedPayment as
-					| ("duitnow" | "tng" | "boost")[]
+					| ("duitnow" | "tng" | "boost" | "toyyibpay")[]
 					| undefined,
 				coords: institution.coords,
 				// Set all migrated institutions as approved since they're existing data

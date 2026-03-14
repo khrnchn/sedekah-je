@@ -19,7 +19,11 @@ export async function GET(
 		return new Response("Not found", { status: 404 });
 	}
 
-	const type = institution.supportedPayment[0] as "duitnow" | "boost" | "tng";
+	const type = institution.supportedPayment[0] as
+		| "duitnow"
+		| "boost"
+		| "tng"
+		| "toyyibpay";
 
 	const map = {
 		duitnow: {
@@ -33,6 +37,10 @@ export async function GET(
 		tng: {
 			color: "#015ABF",
 			logo: "https://sedekah.je/icons/square-tng.png",
+		},
+		toyyibpay: {
+			color: "#00847F",
+			logo: "https://sedekah.je/icons/toyyibpay-wordmark.png",
 		},
 	};
 

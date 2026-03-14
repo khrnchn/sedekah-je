@@ -235,7 +235,9 @@ export async function submitQuestContribution(
 					qrImage: qrImageUrl,
 					qrContent: qrContent?.trim() || null,
 					sourceUrl,
-					supportedPayment: ["duitnow"],
+					supportedPayment: [
+						qrContent?.includes("toyyibpay.com") ? "toyyibpay" : "duitnow",
+					],
 					status: "pending",
 					contributorId: userId,
 					contributorRemarks: `Quest contribution for mosque ID ${questMosque.id} (JAIS: ${questMosque.jaisId})`,

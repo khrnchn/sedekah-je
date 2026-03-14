@@ -25,7 +25,12 @@ export const states = [
 	"W.P. Putrajaya",
 ] as const;
 
-export const supportedPayments = ["duitnow", "tng", "boost"] as const;
+export const supportedPayments = [
+	"duitnow",
+	"tng",
+	"boost",
+	"toyyibpay",
+] as const;
 
 export const institutionStatuses = ["pending", "approved", "rejected"] as const;
 

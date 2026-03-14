@@ -1,11 +1,11 @@
 "use client";
 
+import Image from "next/image";
+import Link from "next/link";
 import Share from "@/components/share";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import QrCodeDisplay from "@/components/ui/qrCodeDisplay";
-import Image from "next/image";
-import Link from "next/link";
 import { getCategoryIconPath } from "../_lib/category-icon";
 import type { RamadhanCampaignDay } from "../_lib/queries";
 
@@ -80,7 +80,7 @@ export function RamadhanTodayCard({
 							qrContent={featured.qrContent}
 							supportedPayment={
 								(featured.supportedPayment ?? undefined) as
-									| ("duitnow" | "tng" | "boost")[]
+									| ("duitnow" | "tng" | "boost" | "toyyibpay")[]
 									| undefined
 							}
 							size={200}

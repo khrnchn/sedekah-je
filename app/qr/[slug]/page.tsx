@@ -15,6 +15,7 @@ async function QRSlug(props: { params: Promise<{ slug: string }> }) {
 			| "duitnow"
 			| "boost"
 			| "tng"
+			| "toyyibpay"
 			| undefined) ?? "duitnow";
 
 	const map = {
@@ -32,6 +33,11 @@ async function QRSlug(props: { params: Promise<{ slug: string }> }) {
 			color: "#015ABF",
 			bgColor: "bg-[#015ABF]",
 			logo: "/icons/square-tng.png",
+		},
+		toyyibpay: {
+			color: "#00847F",
+			bgColor: "bg-[#00847F]",
+			logo: "/icons/toyyibpay-wordmark.png",
 		},
 	};
 

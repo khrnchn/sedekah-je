@@ -390,7 +390,9 @@ export async function submitInstitution(
 				qrImage: qrImageUrl,
 				contributorId: contributorId, // Include the contributor ID
 				status: "pending", // Always pending for new submissions
-				supportedPayment: ["duitnow"], // Default to DuitNow for new submissions
+				supportedPayment: [
+					qrContent?.includes("toyyibpay.com") ? "toyyibpay" : "duitnow",
+				],
 			})
 			.returning({ id: institutions.id });
 
