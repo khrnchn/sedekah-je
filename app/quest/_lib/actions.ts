@@ -6,6 +6,7 @@ import { headers } from "next/headers";
 import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions, questMosques } from "@/db/schema";
+import { isToyyibpay } from "@/lib/qr-utils";
 import { r2Storage } from "@/lib/r2-client";
 import { logNewInstitution } from "@/lib/telegram";
 import { slugify } from "@/lib/utils";
@@ -235,9 +236,7 @@ export async function submitQuestContribution(
 					qrImage: qrImageUrl,
 					qrContent: qrContent?.trim() || null,
 					sourceUrl,
-					supportedPayment: [
-						qrContent?.includes("toyyibpay.com") ? "toyyibpay" : "duitnow",
-					],
+					supportedPayment: [isToyyibpay(qrContent) ? "toyyibpay" : "duitnow"],
 					status: "pending",
 					contributorId: userId,
 					contributorRemarks: `Quest contribution for mosque ID ${questMosque.id} (JAIS: ${questMosque.jaisId})`,

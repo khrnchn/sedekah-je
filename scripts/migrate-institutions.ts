@@ -2,7 +2,11 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import { institutions } from "../app/data/institutions";
 import { institutions as institutionsTable } from "../db/institutions";
-import type { categories, states } from "../lib/institution-constants";
+import type {
+	categories,
+	states,
+	supportedPayments,
+} from "../lib/institution-constants";
 import { slugify } from "../lib/utils";
 
 // Database connection
@@ -55,7 +59,7 @@ async function migrateInstitutions() {
 				qrImage: institution.qrImage,
 				qrContent: institution.qrContent,
 				supportedPayment: institution.supportedPayment as
-					| ("duitnow" | "tng" | "boost" | "toyyibpay")[]
+					| (typeof supportedPayments)[number][]
 					| undefined,
 				coords: institution.coords,
 				// Set all migrated institutions as approved since they're existing data

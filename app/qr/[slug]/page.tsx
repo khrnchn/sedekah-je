@@ -1,6 +1,7 @@
 // import SedekahjeLogo from "./masjid.svg";
 
 import { QRCodeSVG } from "qrcode.react";
+import type { PaymentOption } from "@/app/types/institutions";
 import SedekahjeLogo from "@/components/sedekahje-logo";
 import { getInstitutionBySlug } from "@/lib/queries/institutions";
 
@@ -11,12 +12,7 @@ async function QRSlug(props: { params: Promise<{ slug: string }> }) {
 	// make typescript happy
 	if (!selected?.qrContent) return null;
 	const type =
-		(selected.supportedPayment?.[0] as
-			| "duitnow"
-			| "boost"
-			| "tng"
-			| "toyyibpay"
-			| undefined) ?? "duitnow";
+		(selected.supportedPayment?.[0] as PaymentOption | undefined) ?? "duitnow";
 
 	const map = {
 		duitnow: {

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import type { PaymentOption } from "@/app/types/institutions";
 import Share from "@/components/share";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -80,7 +81,7 @@ export function RamadhanTodayCard({
 							qrContent={featured.qrContent}
 							supportedPayment={
 								(featured.supportedPayment ?? undefined) as
-									| ("duitnow" | "tng" | "boost" | "toyyibpay")[]
+									| PaymentOption[]
 									| undefined
 							}
 							size={200}
