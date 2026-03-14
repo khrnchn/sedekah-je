@@ -359,7 +359,7 @@ components:
           nullable: true
           items:
             type: string
-            enum: [duitnow, tng, boost]
+            enum: [duitnow, tng, boost, toyyibpay]
         coords:
           type: array
           nullable: true
@@ -395,7 +395,7 @@ components:
           nullable: true
           items:
             type: string
-            enum: [duitnow, tng, boost]
+            enum: [duitnow, tng, boost, toyyibpay]
         coords:
           type: array
           nullable: true

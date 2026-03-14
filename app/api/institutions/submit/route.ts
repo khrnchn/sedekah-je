@@ -10,6 +10,7 @@ import {
 	categories as validCategories,
 	states as validStates,
 } from "@/lib/institution-constants";
+import { isToyyibpay } from "@/lib/qr-utils";
 import { r2Storage } from "@/lib/r2-client";
 import { logNewInstitution } from "@/lib/telegram";
 import { slugify } from "@/lib/utils";
@@ -229,7 +230,7 @@ export async function POST(request: NextRequest) {
 				sourceUrl: sourceUrl || undefined,
 				contributorId,
 				status: "pending",
-				supportedPayment: ["duitnow"],
+				supportedPayment: [isToyyibpay(qrContent) ? "toyyibpay" : "duitnow"],
 			})
 			.returning({ id: institutions.id });
 
