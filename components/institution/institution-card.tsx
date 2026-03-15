@@ -104,6 +104,11 @@ const InstitutionCard = forwardRef<
 		const router = useRouter();
 		const resolvedSlug = slug ?? slugify(name);
 		const href = `/${category}/${resolvedSlug}`;
+		const formattedDistance = distanceToCurrentUserInMeter
+			? distanceToCurrentUserInMeter > 1000
+				? `${(distanceToCurrentUserInMeter / 1000).toFixed(1)} km`
+				: `${Math.round(distanceToCurrentUserInMeter)} m`
+			: null;
 
 		useEffect(() => {
 			setHasMounted(true);
@@ -328,36 +333,12 @@ const InstitutionCard = forwardRef<
 							className={cn(
 								"relative group border-4 border-transparent shadow-lg dark:shadow-muted/50 cursor-pointer hover:shadow-xl transition-all duration-200 ease-in-out",
 								"hover:bg-gray-100 dark:hover:bg-zinc-800",
-								isClosest
-									? "border-[hsl(var(--primary))] animate-pulse-subtle"
-									: "",
+								isClosest ? "border-[hsl(var(--primary)/0.35)]" : "",
 							)}
 							onMouseEnter={() => router.prefetch(href)}
 							onClick={() => router.push(href)}
 						>
 							<CardContent className="flex flex-col items-center gap-2 p-4 h-full">
-								{isClosest && (
-									<div className="absolute -top-3 left-4 shadow-lg">
-										<div className="relative">
-											<div className="absolute inset-0 blur-sm bg-[hsl(var(--primary)/0.9)] rounded-full" />
-											<div className="relative bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] py-1 px-3 rounded-full text-xs font-semibold flex items-center gap-1.5 text-white">
-												<span className="animate-ping absolute h-2 w-2 rounded-full bg-[hsl(var(--primary)/0.7)] opacity-75" />
-												<span className="relative h-2 w-2 rounded-full bg-[hsl(var(--primary)/0.9)]" />
-												Yang terdekat
-												{distanceToCurrentUserInMeter && (
-													<span className="font-medium">
-														•{" "}
-														{distanceToCurrentUserInMeter > 1000
-															? `${(
-																	distanceToCurrentUserInMeter / 1000
-																).toFixed(1)}km`
-															: `${Math.round(distanceToCurrentUserInMeter)}m`}
-													</span>
-												)}
-											</div>
-										</div>
-									</div>
-								)}
 								<div className="flex flex-col items-center gap-1 mb-2 w-full">
 									<motion.div>
 										<Image
@@ -373,6 +354,19 @@ const InstitutionCard = forwardRef<
 											height={50}
 										/>
 									</motion.div>
+									{isClosest && (
+										<div className="inline-flex items-center gap-2 rounded-full border border-[hsl(var(--primary)/0.18)] bg-[hsl(var(--card)/0.96)] px-2.5 py-1 text-xs font-medium text-foreground shadow-sm backdrop-blur">
+											<span className="h-2 w-2 rounded-full bg-[hsl(var(--primary))]" />
+											<span className="text-[hsl(var(--primary))]">
+												Yang terdekat
+											</span>
+											{formattedDistance && (
+												<span className="tabular-nums text-muted-foreground">
+													{formattedDistance}
+												</span>
+											)}
+										</div>
+									)}
 									<Tooltip>
 										<TooltipTrigger asChild>
 											<motion.h3

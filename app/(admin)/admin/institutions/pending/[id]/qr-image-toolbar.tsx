@@ -17,7 +17,6 @@ export default function QrImageToolbar({ imageUrl }: Props) {
 			setCopying(true);
 			const res = await fetch(imageUrl);
 			const blob = await res.blob();
-			// @ts-expect-error - ClipboardItem is still experimental typings
 			await navigator.clipboard.write([
 				new ClipboardItem({ [blob.type]: blob }),
 			]);
