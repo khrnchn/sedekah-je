@@ -1,5 +1,8 @@
 "use client";
 
+import { HelpCircle, MessageCircle, Shield, Users, Zap } from "lucide-react";
+import Link from "next/link";
+import React from "react";
 import PageFooter from "@/components/page-footer";
 import PageHeader from "@/components/page-header";
 import {
@@ -18,9 +21,6 @@ import {
 } from "@/components/ui/card";
 import { Header } from "@/components/ui/header";
 import PageSection from "@/components/ui/pageSection";
-import { HelpCircle, MessageCircle, Shield, Users, Zap } from "lucide-react";
-import Link from "next/link";
-import React from "react";
 
 const faqCategories = [
 	{
@@ -35,14 +35,14 @@ const faqCategories = [
 					"Saya ada beberapa gambar kod QR yang diambil dari masjid. Bagaimanakah cara untuk saya menyumbang?",
 				answer: (
 					<>
-						Anda boleh klik butang "Log Masuk" untuk menyumbang kod QR baru.
-						Sila semak terlebih dahulu jika masjid tersebut telah tersenarai di
-						laman web kami. Anda perlu{" "}
+						Anda boleh klik butang "Log Masuk" untuk submit kod QR baru. Sila
+						semak terlebih dahulu jika masjid tersebut telah tersenarai di laman
+						web kami. Anda perlu{" "}
 						<Link
 							href="/contribute"
 							className="text-blue-500 dark:text-blue-400 hover:underline font-medium"
 						>
-							log masuk untuk menyumbang
+							log masuk untuk submit
 						</Link>
 						.
 					</>
