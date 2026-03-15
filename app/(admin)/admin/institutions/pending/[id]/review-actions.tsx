@@ -125,6 +125,9 @@ export default function ReviewActions({
 			await approveInstitution(institutionId, user.id);
 			if (nextId != null) {
 				router.push(`/admin/institutions/pending/${nextId}`);
+			} else if (prevId != null) {
+				// At end of list; go to previous to continue reviewing remaining pending
+				router.push(`/admin/institutions/pending/${prevId}`);
 			} else {
 				router.push("/admin/institutions/pending");
 				toast.success("Approved. No more pending institutions");
@@ -135,7 +138,7 @@ export default function ReviewActions({
 		} finally {
 			setIsSaving(false);
 		}
-	}, [user?.id, institutionId, router, formRef]);
+	}, [user?.id, institutionId, prevId, router, formRef]);
 
 	useEffect(() => {
 		const down = (e: KeyboardEvent) => {

@@ -1,5 +1,30 @@
 "use client";
 
+import {
+	type ColumnDef,
+	type ColumnFiltersState,
+	flexRender,
+	getCoreRowModel,
+	getFacetedRowModel,
+	getFacetedUniqueValues,
+	getFilteredRowModel,
+	getPaginationRowModel,
+	getSortedRowModel,
+	type PaginationState,
+	type SortingState,
+	type Updater,
+	useReactTable,
+	type VisibilityState,
+} from "@tanstack/react-table";
+import {
+	ChevronDownIcon,
+	ChevronLeftIcon,
+	ChevronRightIcon,
+	ChevronsLeftIcon,
+	ChevronsRightIcon,
+	ColumnsIcon,
+} from "lucide-react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -24,31 +49,6 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import {
-	type ColumnDef,
-	type ColumnFiltersState,
-	type PaginationState,
-	type SortingState,
-	type Updater,
-	type VisibilityState,
-	flexRender,
-	getCoreRowModel,
-	getFacetedRowModel,
-	getFacetedUniqueValues,
-	getFilteredRowModel,
-	getPaginationRowModel,
-	getSortedRowModel,
-	useReactTable,
-} from "@tanstack/react-table";
-import {
-	ChevronDownIcon,
-	ChevronLeftIcon,
-	ChevronRightIcon,
-	ChevronsLeftIcon,
-	ChevronsRightIcon,
-	ColumnsIcon,
-} from "lucide-react";
-import { useEffect, useState } from "react";
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -71,6 +71,8 @@ interface DataTableProps<TData, TValue> {
 	pageCount?: number;
 	pagination?: PaginationState;
 	onPaginationChange?: (updater: Updater<PaginationState>) => void;
+	/** Initial sorting state. E.g. [{ id: "createdAt", desc: false }] for earliest first */
+	initialSorting?: SortingState;
 }
 
 export function ReusableDataTable<TData, TValue>({
@@ -93,8 +95,9 @@ export function ReusableDataTable<TData, TValue>({
 	pageCount,
 	pagination: controlledPagination,
 	onPaginationChange,
+	initialSorting = [],
 }: DataTableProps<TData, TValue>) {
-	const [sorting, setSorting] = useState<SortingState>([]);
+	const [sorting, setSorting] = useState<SortingState>(initialSorting);
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
 	const [rowSelection, setRowSelection] = useState({});

@@ -240,6 +240,7 @@ export default function PendingInstitutionsTable({
 				}
 				leftToolbarContent={filterControls}
 				rightToolbarContent={bulkButtons}
+				initialSorting={[{ id: "createdAt", desc: false }]}
 			/>
 
 			{/* Dialogs */}
