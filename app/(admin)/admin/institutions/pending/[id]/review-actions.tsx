@@ -37,7 +37,10 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { REJECTION_TEMPLATES } from "@/lib/admin-templates";
 import { approveInstitution, rejectInstitution } from "../../_lib/actions";
-import { getNextPendingInstitutionId } from "../../_lib/navigation";
+import {
+	getNextPendingInstitutionId,
+	getNextToReviewAfterApproving,
+} from "../../_lib/navigation";
 import type { ReviewFormHandle } from "./institution-review-form";
 
 type Props = {
@@ -125,12 +128,14 @@ export default function ReviewActions({
 			await approveInstitution(institutionId, user.id);
 			if (nextId != null) {
 				router.push(`/admin/institutions/pending/${nextId}`);
-			} else if (prevId != null) {
-				// At end of list; go to previous to continue reviewing remaining pending
-				router.push(`/admin/institutions/pending/${prevId}`);
 			} else {
-				router.push("/admin/institutions/pending");
-				toast.success("Approved. No more pending institutions");
+				const nextToReview = await getNextToReviewAfterApproving(institutionId);
+				if (nextToReview != null) {
+					router.push(`/admin/institutions/pending/${nextToReview}`);
+				} else {
+					router.push("/admin/institutions/pending");
+					toast.success("Approved. No more pending institutions");
+				}
 			}
 		} catch (e) {
 			console.error("[approve-and-next]", e);
@@ -138,7 +143,7 @@ export default function ReviewActions({
 		} finally {
 			setIsSaving(false);
 		}
-	}, [user?.id, institutionId, prevId, router, formRef]);
+	}, [user?.id, institutionId, router, formRef]);
 
 	useEffect(() => {
 		const down = (e: KeyboardEvent) => {

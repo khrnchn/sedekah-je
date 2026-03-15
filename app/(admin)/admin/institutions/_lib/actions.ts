@@ -60,8 +60,12 @@ export async function approveInstitution(
 			reviewedAt: new Date(),
 			adminNotes,
 		})
-		.where(eq(institutions.id, id))
+		.where(and(eq(institutions.id, id), eq(institutions.status, "pending")))
 		.returning();
+
+	if (!result[0]) {
+		throw new Error("Institution not found or not pending");
+	}
 
 	// Revalidate relevant pages to update the UI
 	revalidatePath("/admin/institutions/pending", "page");
@@ -131,22 +135,30 @@ export async function rejectInstitution(
 ) {
 	const { session } = await requireAdminSession();
 	const reviewerId = session.user.id;
-	const result = await db
-		.update(institutions)
-		.set({
-			status: "rejected",
-			reviewedBy: reviewerId,
-			reviewedAt: new Date(),
-			adminNotes,
-		})
-		.where(eq(institutions.id, id))
-		.returning();
+	const result = await db.transaction(async (tx) => {
+		const updated = await tx
+			.update(institutions)
+			.set({
+				status: "rejected",
+				reviewedBy: reviewerId,
+				reviewedAt: new Date(),
+				adminNotes,
+			})
+			.where(and(eq(institutions.id, id), eq(institutions.status, "pending")))
+			.returning();
 
-	// Auto-unlock quest mosque: clear institution_id so quest mosque becomes resubmittable
-	await db
-		.update(questMosques)
-		.set({ institutionId: null })
-		.where(eq(questMosques.institutionId, id));
+		if (!updated[0]) {
+			throw new Error("Institution not found or not pending");
+		}
+
+		// Auto-unlock quest mosque: clear institution_id so quest mosque becomes resubmittable
+		await tx
+			.update(questMosques)
+			.set({ institutionId: null })
+			.where(eq(questMosques.institutionId, id));
+
+		return updated;
+	});
 
 	// Revalidate relevant pages to update the UI
 	revalidatePath("/admin/institutions/pending", "page");

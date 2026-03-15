@@ -94,6 +94,43 @@ export async function getPrevPendingInstitutionId(
 }
 
 /**
+ * Get the next pending institution to review after approving the given ID.
+ * Used when approving the last item (nextId was null) - returns the "previous"
+ * in display order using fresh DB state.
+ */
+export async function getNextToReviewAfterApproving(
+	approvedId: number,
+): Promise<number | null> {
+	await requireAdminSession();
+
+	const [approved] = await db
+		.select({ createdAt: institutions.createdAt, id: institutions.id })
+		.from(institutions)
+		.where(eq(institutions.id, approvedId))
+		.limit(1);
+
+	if (!approved) return null;
+
+	// Prev in display order (createdAt DESC): larger createdAt or same + larger id
+	const prevCondition = or(
+		gt(institutions.createdAt, approved.createdAt),
+		and(
+			eq(institutions.createdAt, approved.createdAt),
+			gt(institutions.id, approved.id),
+		),
+	);
+
+	const [prev] = await db
+		.select({ id: institutions.id })
+		.from(institutions)
+		.where(and(eq(institutions.status, "pending"), prevCondition))
+		.orderBy(asc(institutions.createdAt), asc(institutions.id))
+		.limit(1);
+
+	return prev?.id ?? null;
+}
+
+/**
  * Get the position and total count of pending institutions in canonical order.
  */
 export async function getPendingInstitutionPosition(

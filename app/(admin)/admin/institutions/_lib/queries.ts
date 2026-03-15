@@ -354,7 +354,7 @@ export async function searchApprovedInstitutionsForDuplicateCheck(
 		.where(
 			and(
 				eq(institutions.status, "approved"),
-				ilike(institutions.name, `%${trimmed}%`),
+				ilike(institutions.name, `%${escapeLike(trimmed)}%`),
 			),
 		)
 		.orderBy(institutions.name)

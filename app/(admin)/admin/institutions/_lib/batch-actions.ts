@@ -268,8 +268,5 @@ export async function batchRejectInstitutions(
 	revalidateTag("rejected-institutions");
 	revalidateTag("institutions-count");
 
-	return {
-		success: true,
-		message: "Institutions rejected successfully",
-	};
+	return result;
 }
