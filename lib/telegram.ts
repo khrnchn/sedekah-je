@@ -115,14 +115,9 @@ export async function logNewUser(user: {
 }): Promise<void> {
 	await logToTelegram({
 		level: "success",
-		title: "New User Registered",
-		description: "Welcome to sedekah.je! 🇲🇾",
+		title: "🆕 New User",
+		description: `${user.name} (${user.email})`,
 		emoji: "🆕",
-		data: {
-			name: user.name,
-			email: user.email,
-			role: user.role,
-		},
 	});
 }
 
@@ -144,13 +139,10 @@ export async function logNewInstitution(institution: {
 
 	await logToTelegram({
 		level: "info",
-		title: "New Institution Submitted",
-		description: "Awaiting admin review... ⏳",
+		title: `${categoryEmoji} New Institution`,
+		description: `${institution.name} - ${institution.city}, ${institution.state}`,
 		emoji: categoryEmoji,
 		data: {
-			name: institution.name,
-			category: institution.category,
-			location: `${institution.city}, ${institution.state}`,
 			contributor: institution.contributorName,
 			email: institution.contributorEmail,
 		},
