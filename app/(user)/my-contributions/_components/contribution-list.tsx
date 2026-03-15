@@ -3,6 +3,7 @@
 import { CheckCircle2, Clock, Inbox, Pencil, XCircle } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
+import { EmptyState } from "@/components/layout/user-page-components";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,7 +14,6 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { EmptyState } from "@/components/user-page-components";
 import { formatDateOnly } from "@/lib/date-utils";
 import { cn } from "@/lib/utils";
 

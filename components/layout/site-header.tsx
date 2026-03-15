@@ -1,3 +1,5 @@
+import { Home } from "lucide-react";
+import Link from "next/link";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -8,8 +10,6 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Home } from "lucide-react";
-import Link from "next/link";
 
 export function SiteHeader() {
 	return (

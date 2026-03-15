@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { RamadhanBanner } from "@/components/ramadhan-banner";
+import { Header } from "@/components/shared/header";
 import { Card } from "@/components/ui/card";
-import { Header } from "@/components/ui/header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getInstitutions } from "@/lib/queries/institutions";
 import { PageClient } from "./page-client";

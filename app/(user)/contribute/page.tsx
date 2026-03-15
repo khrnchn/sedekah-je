@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import InstitutionFormOptimized from "@/app/(user)/contribute/_components/institution-form-optimized";
-import { UserLayout } from "@/components/user-layout";
+import { UserLayout } from "@/components/layout/user-layout";
 
 export const metadata: Metadata = {
 	title: "Tambah Institusi",

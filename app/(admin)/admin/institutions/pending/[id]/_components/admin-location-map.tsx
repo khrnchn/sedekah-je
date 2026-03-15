@@ -2,7 +2,7 @@
 
 import { Autocomplete, GoogleMap, Marker } from "@react-google-maps/api";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useGoogleMaps } from "@/components/google-maps-provider";
+import { useGoogleMaps } from "@/components/map/google-maps-provider";
 import { Input } from "@/components/ui/input";
 import { states as STATE_OPTIONS } from "@/lib/institution-constants";
 

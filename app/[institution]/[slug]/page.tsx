@@ -1,17 +1,17 @@
-import { CategoryColor } from "@/app/types/institutions";
-import CollapsibleCustomMap from "@/components/custom-map";
-import GetdoaFooter from "@/components/getdoa-footer";
-import PageFooter from "@/components/page-footer";
-import PageHeader from "@/components/page-header";
-import { Button } from "@/components/ui/button";
-import { Header } from "@/components/ui/header";
-import InstitutionCard from "@/components/ui/institution-card";
-import PageSection from "@/components/ui/pageSection";
-import { getInstitutionBySlug } from "@/lib/queries/institutions";
 import { MapIcon } from "lucide-react";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 import type React from "react";
+import { Suspense } from "react";
+import { CategoryColor } from "@/app/types/institutions";
+import GetdoaFooter from "@/components/getdoa-footer";
+import InstitutionCard from "@/components/institution/institution-card";
+import PageFooter from "@/components/layout/page-footer";
+import PageHeader from "@/components/layout/page-header";
+import CollapsibleCustomMap from "@/components/map/custom-map";
+import { Header } from "@/components/shared/header";
+import PageSection from "@/components/shared/page-section";
+import { Button } from "@/components/ui/button";
+import { getInstitutionBySlug } from "@/lib/queries/institutions";
 import { InstitutionPageClient } from "./page-client";
 
 type Props = {

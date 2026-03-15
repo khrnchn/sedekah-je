@@ -1,5 +1,8 @@
 "use client";
 
+import * as PopoverPrimitive from "@radix-ui/react-popover";
+import { Check, ChevronsUpDown, UserPlusIcon, X } from "lucide-react";
+import { useRef, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Command,
@@ -20,10 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { Popover, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import * as PopoverPrimitive from "@radix-ui/react-popover";
-import { Check, ChevronsUpDown, UserPlusIcon, X } from "lucide-react";
-import { useRef, useState, useTransition } from "react";
-import { assignContributorToInstitution } from "../_lib/queries";
+import { assignContributorToInstitution } from "../_lib/actions";
 
 type User = {
 	id: string;

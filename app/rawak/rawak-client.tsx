@@ -18,8 +18,11 @@ import FilterCategory from "@/components/filter-category";
 import FilterState from "@/components/filter-state";
 import FilteredCount from "@/components/filtered-count";
 import GetdoaFooter from "@/components/getdoa-footer";
-import PageFooter from "@/components/page-footer";
-import PageHeader from "@/components/page-header";
+import QrCodeDisplay from "@/components/institution/qr-code-display";
+import PageFooter from "@/components/layout/page-footer";
+import PageHeader from "@/components/layout/page-header";
+import { Header } from "@/components/shared/header";
+import PageSection from "@/components/shared/page-section";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -31,9 +34,6 @@ import {
 	DrawerTitle,
 	DrawerTrigger,
 } from "@/components/ui/drawer";
-import { Header } from "@/components/ui/header";
-import PageSection from "@/components/ui/pageSection";
-import QrCodeDisplay from "@/components/ui/qrCodeDisplay";
 import type { Institution } from "@/db/schema";
 import useClientDimensions from "@/hooks/use-client-dimensions";
 import { getBaseUrl, removeDuplicateInstitutions, slugify } from "@/lib/utils";

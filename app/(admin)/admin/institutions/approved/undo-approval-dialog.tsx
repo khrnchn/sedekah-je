@@ -1,5 +1,9 @@
 "use client";
 
+import { Loader2, Undo2Icon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -11,11 +15,7 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Undo2Icon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
-import { toast } from "sonner";
-import { undoApproval } from "../_lib/queries";
+import { undoApproval } from "../_lib/actions";
 
 type Props = {
 	institutionId: number;

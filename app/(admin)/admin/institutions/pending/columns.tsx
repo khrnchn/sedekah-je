@@ -29,7 +29,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/use-auth";
 import { formatDateTime } from "@/lib/date-utils";
 import type { categories, states } from "@/lib/institution-constants";
-import { approveInstitution, rejectInstitution } from "../_lib/queries";
+import { approveInstitution, rejectInstitution } from "../_lib/actions";
 
 type PendingInstitution = {
 	id: number;

@@ -1,9 +1,9 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { CopyIcon, DownloadIcon } from "@/components/ui/icons";
 import { useState } from "react";
 import { toast } from "sonner";
+import { CopyIcon, DownloadIcon } from "@/components/shared/icons";
+import { Button } from "@/components/ui/button";
 
 interface Props {
 	imageUrl: string;
@@ -17,7 +17,6 @@ export default function QrImageToolbar({ imageUrl }: Props) {
 			setCopying(true);
 			const res = await fetch(imageUrl);
 			const blob = await res.blob();
-			// @ts-ignore - ClipboardItem is still experimental typings
 			await navigator.clipboard.write([
 				new ClipboardItem({ [blob.type]: blob }),
 			]);

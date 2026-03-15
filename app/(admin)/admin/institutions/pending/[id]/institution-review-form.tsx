@@ -20,6 +20,12 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { AdminLocationMap } from "@/app/(admin)/admin/institutions/pending/[id]/_components/admin-location-map";
+import {
+	Field,
+	FieldError,
+	FieldGroup,
+	FieldLabel,
+} from "@/components/shared/field";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -30,12 +36,6 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import {
-	Field,
-	FieldError,
-	FieldGroup,
-	FieldLabel,
-} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
 	Popover,
@@ -53,18 +53,18 @@ import { Textarea } from "@/components/ui/textarea";
 import type { Institution } from "@/db/institutions";
 import { env } from "@/env";
 import { formatFullDate, formatTime } from "@/lib/date-utils";
-import { geocodeInstitution } from "@/lib/geocode";
 import {
 	categories as CATEGORY_OPTIONS,
 	supportedPayments as PAYMENT_OPTIONS,
 	states as STATE_OPTIONS,
 } from "@/lib/institution-constants";
+import { geocodeInstitution } from "@/lib/integrations/geocode";
 import { toTitleCase } from "@/lib/utils";
 import {
 	reverseGeocodeInstitutionByAdmin,
-	searchApprovedInstitutionsForDuplicateCheck,
 	updateInstitutionByAdmin,
-} from "../../_lib/queries";
+} from "../../_lib/actions";
+import { searchApprovedInstitutionsForDuplicateCheck } from "../../_lib/queries";
 
 type PartialInstitution = Partial<Institution> & {
 	id: number;

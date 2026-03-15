@@ -7,7 +7,7 @@ import { db } from "@/db";
 import { blogAssets, blogPosts } from "@/db/schema";
 import { requireAdminSession } from "@/lib/auth-helpers";
 import { EMPTY_BLOG_DOC, isValidBlogDocument, sanitizeSlug } from "@/lib/blog";
-import { r2Storage } from "@/lib/r2-client";
+import { r2Storage } from "@/lib/integrations/r2-client";
 import { blogFormSchema } from "./validations";
 
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;

@@ -1,9 +1,9 @@
 // page.tsx – server component for viewing a single approved institution
 
-import { AdminLayout } from "@/components/admin-layout";
-import { AppSidebar } from "@/components/app-sidebar";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { notFound } from "next/navigation";
+import { AdminLayout } from "@/components/layout/admin-layout";
+import { AppSidebar } from "@/components/layout/app-sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { getApprovedInstitutionById } from "../../_lib/queries";
 import ClientSection from "./client-section";
 

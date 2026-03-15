@@ -1,8 +1,8 @@
 "use client";
 
 import type { QuestLeaderboardEntry, QuestStats } from "@/app/quest/_lib/types";
+import { ModeToggle } from "@/components/shared/mode-toggle";
 import { Badge } from "@/components/ui/badge";
-import { ModeToggle } from "@/components/ui/mode-toggle";
 import { Progress } from "@/components/ui/progress";
 import QuestLeaderboard from "./quest-leaderboard";
 

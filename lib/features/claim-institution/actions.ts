@@ -1,13 +1,13 @@
 "use server";
 
-import { auth } from "@/auth";
-import { db } from "@/db";
-import { claimRequests, institutions, users } from "@/db/schema";
-import { logInstitutionClaim } from "@/lib/telegram";
 import { and, count, eq, gte } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { auth } from "@/auth";
+import { db } from "@/db";
+import { claimRequests, institutions, users } from "@/db/schema";
+import { logInstitutionClaim } from "@/lib/integrations/telegram";
 import { claimRequestSchema } from "./validations";
 
 export async function submitClaimRequest(formData: FormData) {

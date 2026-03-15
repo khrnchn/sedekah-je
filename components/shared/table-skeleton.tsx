@@ -7,11 +7,11 @@ interface TableSkeletonProps {
 	showToolbar?: boolean;
 }
 
-export function TableSkeleton({ 
-	columns, 
-	rows, 
-	showHeader = true, 
-	showToolbar = true 
+export function TableSkeleton({
+	columns,
+	rows,
+	showHeader = true,
+	showToolbar = true,
 }: TableSkeletonProps) {
 	return (
 		<div className="space-y-4">

@@ -2,8 +2,8 @@
 
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { AdminLayout } from "@/components/admin-layout";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AdminLayout } from "@/components/layout/admin-layout";
+import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { getPendingInstitutionsCount } from "../_lib/queries";
 import AsyncPendingData from "./async-pending-data";

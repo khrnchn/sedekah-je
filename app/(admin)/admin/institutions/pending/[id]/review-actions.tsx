@@ -36,11 +36,11 @@ import {
 } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/use-auth";
 import { REJECTION_TEMPLATES } from "@/lib/admin-templates";
+import { approveInstitution, rejectInstitution } from "../../_lib/actions";
 import {
-	approveInstitution,
 	getNextPendingInstitutionId,
-	rejectInstitution,
-} from "../../_lib/queries";
+	getNextToReviewAfterApproving,
+} from "../../_lib/navigation";
 import type { ReviewFormHandle } from "./institution-review-form";
 
 type Props = {
@@ -129,8 +129,13 @@ export default function ReviewActions({
 			if (nextId != null) {
 				router.push(`/admin/institutions/pending/${nextId}`);
 			} else {
-				router.push("/admin/institutions/pending");
-				toast.success("Approved. No more pending institutions");
+				const nextToReview = await getNextToReviewAfterApproving(institutionId);
+				if (nextToReview != null) {
+					router.push(`/admin/institutions/pending/${nextToReview}`);
+				} else {
+					router.push("/admin/institutions/pending");
+					toast.success("Approved. No more pending institutions");
+				}
 			}
 		} catch (e) {
 			console.error("[approve-and-next]", e);

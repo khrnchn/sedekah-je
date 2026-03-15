@@ -1,14 +1,14 @@
 "use server";
 
+import { and, eq, ne } from "drizzle-orm";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions } from "@/db/institutions";
+import { r2Storage } from "@/lib/integrations/r2-client";
+import { logRejectedInstitutionUpdate } from "@/lib/integrations/telegram";
 import { getUserById } from "@/lib/queries/users";
-import { r2Storage } from "@/lib/r2-client";
-import { logRejectedInstitutionUpdate } from "@/lib/telegram";
 import { slugify } from "@/lib/utils";
-import { and, eq, ne } from "drizzle-orm";
-import { revalidatePath, revalidateTag } from "next/cache";
 
 export type UpdateRejectedInstitutionResult =
 	| { status: "success" }

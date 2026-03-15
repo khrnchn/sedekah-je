@@ -28,16 +28,16 @@ import { Textarea } from "@/components/ui/textarea";
 import type { Institution } from "@/db/institutions";
 import { env } from "@/env";
 import { formatFullDate, formatTime } from "@/lib/date-utils";
-import { geocodeInstitution } from "@/lib/geocode";
 import {
 	categories as CATEGORY_OPTIONS,
 	supportedPayments as PAYMENT_OPTIONS,
 	states as STATE_OPTIONS,
 } from "@/lib/institution-constants";
+import { geocodeInstitution } from "@/lib/integrations/geocode";
 import {
 	reverseGeocodeInstitutionByAdmin,
 	updateInstitutionByAdmin,
-} from "../../_lib/queries";
+} from "../../_lib/actions";
 
 type Props = {
 	institution: Partial<Institution> & {

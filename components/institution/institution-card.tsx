@@ -28,7 +28,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 import { cn, slugify } from "@/lib/utils";
 import { ClaimModal } from "./claim-modal";
-import QrCodeDisplay from "./qrCodeDisplay";
+import QrCodeDisplay from "./qr-code-display";
 
 // power do atif
 const capitalizeWords = (str: string): string => {

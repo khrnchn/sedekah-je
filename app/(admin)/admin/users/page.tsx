@@ -1,8 +1,8 @@
-import { AdminLayout } from "@/components/admin-layout";
-import { AppSidebar } from "@/components/app-sidebar";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { TableSkeleton } from "@/components/ui/table-skeleton";
 import { Suspense } from "react";
+import { AdminLayout } from "@/components/layout/admin-layout";
+import { AppSidebar } from "@/components/layout/app-sidebar";
+import { TableSkeleton } from "@/components/shared/table-skeleton";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import AsyncUsersData from "./async-users-data";
 
 export default async function Page(props: {

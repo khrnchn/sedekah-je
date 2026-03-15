@@ -2,10 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import QrCodeDisplay from "@/components/institution/qr-code-display";
 import Share from "@/components/share";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import QrCodeDisplay from "@/components/ui/qrCodeDisplay";
 import { formatDateBM } from "@/lib/ramadhan";
 import { cn } from "@/lib/utils";
 import type { RamadhanCampaignDay } from "../_lib/queries";

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Header } from "@/components/ui/header";
+import { Header } from "@/components/shared/header";
 import { getIslamicDateMYT, toDateString } from "@/lib/ramadhan";
 import { RamadhanCalendar } from "./_components/ramadhan-calendar";
 import { RamadhanTodayCard } from "./_components/ramadhan-today-card";

@@ -1,7 +1,7 @@
 import { UserOnboardingTour } from "@/components/onboarding/user-onboarding-tour";
 import { PWAInstallPrompt } from "@/components/pwa-touch-enhancements";
-import { Header } from "@/components/ui/header";
-import PageSection from "@/components/ui/pageSection";
+import { Header } from "@/components/shared/header";
+import PageSection from "@/components/shared/page-section";
 
 interface UserBreadcrumbItem {
 	label: string;

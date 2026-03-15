@@ -1,7 +1,7 @@
 "use server";
 
 import { requireAdminSession } from "@/lib/auth-helpers";
-import { r2Storage } from "@/lib/r2-client";
+import { r2Storage } from "@/lib/integrations/r2-client";
 import { getThreadsCredentials } from "./threads-credentials";
 
 const THREADS_API_BASE = "https://graph.threads.net/v1.0";

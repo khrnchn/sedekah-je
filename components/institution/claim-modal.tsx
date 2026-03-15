@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,
@@ -13,8 +15,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { submitClaimRequest } from "@/lib/features/claim-institution/actions";
-import { useState } from "react";
-import { toast } from "sonner";
 
 interface ClaimModalProps {
 	open: boolean;

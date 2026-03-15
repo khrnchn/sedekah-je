@@ -3,9 +3,9 @@
 import { Share2 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useState } from "react";
+import { WhatsAppIcon, XIcon } from "@/components/shared/icons";
 import { getBaseUrl, slugify } from "@/lib/utils";
 import { Button } from "./ui/button";
-import { WhatsAppIcon, XIcon } from "./ui/icons";
 
 const SHARE_PLATFORMS = {
 	X: "x",

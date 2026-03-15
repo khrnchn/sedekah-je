@@ -5,9 +5,9 @@ import { ExternalLink, QrCode, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import type { QuestMosqueWithStatus } from "@/app/quest/_lib/types";
+import QrCodeDisplay from "@/components/institution/qr-code-display";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import QrCodeDisplay from "@/components/ui/qrCodeDisplay";
 import QuestContributeForm from "./quest-contribute-form";
 
 type QuestMosqueDetailProps = {

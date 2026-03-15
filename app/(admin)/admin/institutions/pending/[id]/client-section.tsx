@@ -5,10 +5,10 @@ import NextImage from "next/image";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { GoogleMapsProvider } from "@/components/google-maps-provider";
+import QrCodeDisplay from "@/components/institution/qr-code-display";
+import { GoogleMapsProvider } from "@/components/map/google-maps-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import QrCodeDisplay from "@/components/ui/qrCodeDisplay";
 import { env } from "@/env";
 import type { supportedPayments } from "@/lib/institution-constants";
 import InstitutionReviewForm, {

@@ -1,5 +1,5 @@
+import { StatsGrid } from "@/components/layout/user-page-components";
 import { Skeleton } from "@/components/ui/skeleton";
-import { StatsGrid } from "@/components/user-page-components";
 
 export function StatsCardsSkeleton() {
 	return <StatsGrid cols={4} loading={true} />;

@@ -6,6 +6,7 @@ import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
 import { submitQuestContribution } from "@/app/quest/_lib/actions";
 import type { QuestMosqueWithStatus } from "@/app/quest/_lib/types";
+import { GoogleIcon } from "@/components/shared/icons";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -14,7 +15,6 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import { GoogleIcon } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
 import { useQrExtractionLazy } from "@/hooks/use-qr-extraction-lazy";

@@ -1,8 +1,8 @@
 // page.tsx – server component with streaming
 
 import { Suspense } from "react";
-import { AdminLayout } from "@/components/admin-layout";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AdminLayout } from "@/components/layout/admin-layout";
+import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import AsyncApprovedData from "./async-approved-data";
 import ApprovedTableLoading from "./table-loading";

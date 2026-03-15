@@ -1,15 +1,15 @@
 // page.tsx – server component for reviewing a single pending institution
 
 import { notFound } from "next/navigation";
-import { AdminLayout } from "@/components/admin-layout";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AdminLayout } from "@/components/layout/admin-layout";
+import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import {
 	getNextPendingInstitutionId,
-	getPendingInstitutionById,
 	getPendingInstitutionPosition,
 	getPrevPendingInstitutionId,
-} from "../../_lib/queries";
+} from "../../_lib/navigation";
+import { getPendingInstitutionById } from "../../_lib/queries";
 import ClientSection from "./client-section";
 
 interface Props {

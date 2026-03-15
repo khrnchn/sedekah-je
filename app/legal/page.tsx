@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
+import PageFooter from "@/components/layout/page-footer";
 import { LegalContent } from "@/components/legal-content";
-import PageFooter from "@/components/page-footer";
-import { Header } from "@/components/ui/header";
+import { Header } from "@/components/shared/header";
 
 export const metadata: Metadata = {
 	title: "Legal",

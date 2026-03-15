@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { UserLayout } from "@/components/user-layout";
-import { StatsGrid } from "@/components/user-page-components";
+import { UserLayout } from "@/components/layout/user-layout";
+import { StatsGrid } from "@/components/layout/user-page-components";
 import { AsyncLeaderboardStats } from "./_components/async-leaderboard-stats";
 import { AsyncTopContributors } from "./_components/async-top-contributors";
 import { AsyncYourRank } from "./_components/async-your-rank";
