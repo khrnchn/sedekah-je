@@ -4,9 +4,9 @@ import { motion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import type { Institution } from "@/app/types/institutions";
-import type { MapMarker } from "@/components/map";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { MapMarker } from "./map";
 
 interface CollapsibleCustomMapProps {
 	marker?: MapMarker;
@@ -25,7 +25,7 @@ const CollapsibleCustomMap = ({
 
 	const LeafletMap = useMemo(
 		() =>
-			dynamic(() => import("@/components/map"), {
+			dynamic(() => import("@/components/map/map"), {
 				loading: () => (
 					<Card className="min-h-[240px] h-[240px] md:min-h-[240px] w-full">
 						<Skeleton className="min-h-full min-w-full flex items-center justify-center">

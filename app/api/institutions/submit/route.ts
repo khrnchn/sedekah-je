@@ -5,14 +5,14 @@ import { type NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions } from "@/db/institutions";
-import { geocodeInstitutionWithFallback } from "@/lib/geocode";
 import {
 	categories as validCategories,
 	states as validStates,
 } from "@/lib/institution-constants";
+import { geocodeInstitutionWithFallback } from "@/lib/integrations/geocode";
+import { r2Storage } from "@/lib/integrations/r2-client";
+import { logNewInstitution } from "@/lib/integrations/telegram";
 import { isToyyibpay } from "@/lib/qr-utils";
-import { r2Storage } from "@/lib/r2-client";
-import { logNewInstitution } from "@/lib/telegram";
 import { slugify } from "@/lib/utils";
 
 /**

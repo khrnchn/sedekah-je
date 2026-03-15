@@ -1,9 +1,5 @@
 "use server";
 
-import { db } from "@/db";
-import { institutions } from "@/db/institutions";
-import { requireAdminSession } from "@/lib/auth-helpers";
-import { r2Storage } from "@/lib/r2-client";
 import {
 	BinaryBitmap,
 	HybridBinarizer,
@@ -13,6 +9,10 @@ import {
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import sharp from "sharp";
+import { db } from "@/db";
+import { institutions } from "@/db/institutions";
+import { requireAdminSession } from "@/lib/auth-helpers";
+import { r2Storage } from "@/lib/integrations/r2-client";
 
 export type UploadQrReplacementResult = {
 	success: boolean;

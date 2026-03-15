@@ -8,12 +8,14 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Institution as OldInstitution } from "@/app/types/institutions";
-import CollapsibleCustomMap from "@/components/custom-map";
 import FilterCategory from "@/components/filter-category";
 import FilterState from "@/components/filter-state";
 import FilteredCount from "@/components/filtered-count";
+import InstitutionCard from "@/components/institution/institution-card";
+import CollapsibleCustomMap from "@/components/map/custom-map";
 import RawakFooter from "@/components/rawak-footer";
 import Search from "@/components/search";
+import PageSection from "@/components/shared/page-section";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -25,8 +27,6 @@ import {
 	DrawerTitle,
 	DrawerTrigger,
 } from "@/components/ui/drawer";
-import InstitutionCard from "@/components/ui/institution-card";
-import PageSection from "@/components/ui/pageSection";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Institution } from "@/db/schema";
 

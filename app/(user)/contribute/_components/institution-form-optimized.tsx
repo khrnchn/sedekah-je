@@ -17,8 +17,8 @@ import {
 	extendedInstitutionFormClientSchema,
 	type InstitutionFormData,
 } from "@/app/(user)/contribute/_lib/validations";
+import { Field, FieldError, FieldLabel } from "@/components/shared/field";
 import { Button } from "@/components/ui/button";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
 	Select,

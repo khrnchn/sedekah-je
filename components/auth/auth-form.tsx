@@ -1,5 +1,13 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
+// import { Input } from "@/components/ui/input";
+// import { Label } from "@/components/ui/label";
+// import { authClient } from "@/lib/auth-client";
+// import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { GoogleIcon } from "@/components/shared/icons";
 import { Button } from "@/components/ui/button";
 import {
 	Card,
@@ -8,15 +16,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { GoogleIcon } from "@/components/ui/icons";
 import { signInWithGoogle } from "@/lib/auth-client";
-import { useSearchParams } from "next/navigation";
-// import { Input } from "@/components/ui/input";
-// import { Label } from "@/components/ui/label";
-// import { authClient } from "@/lib/auth-client";
-// import { Eye, EyeOff, Lock, Mail, User } from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
 
 export default function AuthForm() {
 	const searchParams = useSearchParams();

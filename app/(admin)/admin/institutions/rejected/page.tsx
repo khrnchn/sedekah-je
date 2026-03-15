@@ -1,9 +1,9 @@
 // page.tsx – server component with streaming
 
-import { AdminLayout } from "@/components/admin-layout";
-import { AppSidebar } from "@/components/app-sidebar";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Suspense } from "react";
+import { AdminLayout } from "@/components/layout/admin-layout";
+import { AppSidebar } from "@/components/layout/app-sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import AsyncRejectedData from "./async-rejected-data";
 import RejectedTableLoading from "./table-loading";
 

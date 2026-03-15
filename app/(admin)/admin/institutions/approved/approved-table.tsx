@@ -32,7 +32,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { REJECTION_TEMPLATES } from "@/lib/admin-templates";
 import { categories, states } from "@/lib/institution-constants";
-import { batchUndoApproval } from "../_lib/queries";
+import { batchUndoApproval } from "../_lib/batch-actions";
 import { createColumns } from "./columns";
 
 export type ApprovedInstitution = {

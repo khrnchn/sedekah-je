@@ -6,19 +6,19 @@ import { headers } from "next/headers";
 import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions } from "@/db/institutions";
+import type { categories, states } from "@/lib/institution-constants";
 import {
 	geocodeInstitutionWithFallback,
 	reverseGeocodeInstitution,
 	reverseGeocodeWithGoogle,
-} from "@/lib/geocode";
-import type { categories, states } from "@/lib/institution-constants";
-import { isToyyibpay } from "@/lib/qr-utils";
-import { getUserById } from "@/lib/queries/users";
-import { r2Storage } from "@/lib/r2-client";
+} from "@/lib/integrations/geocode";
+import { r2Storage } from "@/lib/integrations/r2-client";
 import {
 	logInstitutionSubmissionFailure,
 	logNewInstitution,
-} from "@/lib/telegram";
+} from "@/lib/integrations/telegram";
+import { isToyyibpay } from "@/lib/qr-utils";
+import { getUserById } from "@/lib/queries/users";
 import { slugify } from "@/lib/utils";
 import { institutionFormServerSchema } from "./validations";
 

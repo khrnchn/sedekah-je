@@ -1,6 +1,6 @@
-import { UserLayout } from "@/components/user-layout";
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { UserLayout } from "@/components/layout/user-layout";
 import { AsyncContributionList } from "./_components/async-contribution-list";
 import { AsyncStatsCards } from "./_components/async-stats-cards";
 import {

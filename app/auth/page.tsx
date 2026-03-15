@@ -1,6 +1,6 @@
 import AuthForm from "@/components/auth/auth-form";
-import { Header } from "@/components/ui/header";
-import PageSection from "@/components/ui/pageSection";
+import { Header } from "@/components/shared/header";
+import PageSection from "@/components/shared/page-section";
 
 export default function AuthPage() {
 	return (

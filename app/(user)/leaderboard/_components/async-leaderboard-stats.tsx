@@ -1,5 +1,5 @@
 import { Award, Star, Trophy, Users } from "lucide-react";
-import { StatCard, StatsGrid } from "@/components/user-page-components";
+import { StatCard, StatsGrid } from "@/components/layout/user-page-components";
 import { getLeaderboardStats } from "../_lib/queries";
 
 export async function AsyncLeaderboardStats() {

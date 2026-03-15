@@ -36,11 +36,8 @@ import {
 } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/use-auth";
 import { REJECTION_TEMPLATES } from "@/lib/admin-templates";
-import {
-	approveInstitution,
-	getNextPendingInstitutionId,
-	rejectInstitution,
-} from "../../_lib/queries";
+import { approveInstitution, rejectInstitution } from "../../_lib/actions";
+import { getNextPendingInstitutionId } from "../../_lib/navigation";
 import type { ReviewFormHandle } from "./institution-review-form";
 
 type Props = {

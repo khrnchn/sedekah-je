@@ -5,7 +5,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { GoogleMapsProvider } from "@/components/google-maps-provider";
+import QrCodeDisplay from "@/components/institution/qr-code-display";
+import { GoogleMapsProvider } from "@/components/map/google-maps-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -16,11 +17,10 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import QrCodeDisplay from "@/components/ui/qrCodeDisplay";
 import { Textarea } from "@/components/ui/textarea";
 import { env } from "@/env";
 import type { supportedPayments } from "@/lib/institution-constants";
-import { undoApproval } from "../../_lib/queries";
+import { undoApproval } from "../../_lib/actions";
 import ApprovedInstitutionForm, {
 	type ApprovedFormHandle,
 } from "./institution-form";

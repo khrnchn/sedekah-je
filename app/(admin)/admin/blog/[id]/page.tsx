@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import { AdminLayout } from "@/components/admin-layout";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AdminLayout } from "@/components/layout/admin-layout";
+import { AppSidebar } from "@/components/layout/app-sidebar";
 import { Button } from "@/components/ui/button";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { BlogEditorForm } from "../_components/blog-editor-form";

@@ -1,6 +1,6 @@
+import type { LucideIcon } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { LucideIcon } from "lucide-react";
 
 // Shared stat card component
 interface StatCardProps {

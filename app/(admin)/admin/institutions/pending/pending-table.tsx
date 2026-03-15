@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { ReusableDataTable } from "@/components/reusable-data-table";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,12 +23,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { categories, states } from "@/lib/institution-constants";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import {
 	batchApproveInstitutions,
 	batchRejectInstitutions,
-} from "../_lib/queries";
+} from "../_lib/batch-actions";
 import { columns } from "./columns";
 
 export type PendingInstitution = {

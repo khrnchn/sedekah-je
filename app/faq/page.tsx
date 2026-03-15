@@ -3,8 +3,10 @@
 import { HelpCircle, MessageCircle, Shield, Users, Zap } from "lucide-react";
 import Link from "next/link";
 import React from "react";
-import PageFooter from "@/components/page-footer";
-import PageHeader from "@/components/page-header";
+import PageFooter from "@/components/layout/page-footer";
+import PageHeader from "@/components/layout/page-header";
+import { Header } from "@/components/shared/header";
+import PageSection from "@/components/shared/page-section";
 import {
 	Accordion,
 	AccordionContent,
@@ -19,8 +21,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { Header } from "@/components/ui/header";
-import PageSection from "@/components/ui/pageSection";
 
 const faqCategories = [
 	{

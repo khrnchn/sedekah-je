@@ -1,4 +1,4 @@
-import { StatCard, StatsGrid } from "@/components/user-page-components";
+import { StatCard, StatsGrid } from "@/components/layout/user-page-components";
 
 interface StatsCardsProps {
 	stats: {

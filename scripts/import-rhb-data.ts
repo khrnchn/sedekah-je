@@ -18,10 +18,10 @@ import { Pool } from "pg";
 import sharp from "sharp";
 import { institutions as institutionsTable } from "../db/institutions";
 import { env } from "../env";
-import { geocodeInstitution } from "../lib/geocode";
 import type { categories } from "../lib/institution-constants";
 import { states } from "../lib/institution-constants";
-import { r2Storage } from "../lib/r2-client";
+import { geocodeInstitution } from "../lib/integrations/geocode";
+import { r2Storage } from "../lib/integrations/r2-client";
 import { slugify } from "../lib/utils";
 
 // --- Config ---

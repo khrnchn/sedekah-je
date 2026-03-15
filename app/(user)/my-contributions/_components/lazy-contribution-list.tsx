@@ -1,8 +1,8 @@
 "use client";
 
 import { lazy, Suspense, useState } from "react";
+import { ListItemSkeleton } from "@/components/layout/user-page-components";
 import { MobileProgressiveLoader } from "@/components/progressive-loader";
-import { ListItemSkeleton } from "@/components/user-page-components";
 import { EditRejectedSheetWrapper } from "./edit-rejected-sheet-wrapper";
 
 const ContributionList = lazy(() =>

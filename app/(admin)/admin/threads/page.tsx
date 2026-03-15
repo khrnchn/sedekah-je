@@ -1,6 +1,6 @@
 import { getCampaignByYear } from "@/app/ramadhan/_lib/queries";
-import { AdminLayout } from "@/components/admin-layout";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AdminLayout } from "@/components/layout/admin-layout";
+import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { ThreadsPostForm } from "./_components/threads-post-form";
 import { getThreadsCredentials } from "./_lib/threads-credentials";

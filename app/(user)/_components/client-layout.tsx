@@ -1,6 +1,6 @@
 "use client";
 
-import { Header } from "@/components/ui/header";
+import { Header } from "@/components/shared/header";
 
 interface ClientLayoutProps {
 	children: React.ReactNode;

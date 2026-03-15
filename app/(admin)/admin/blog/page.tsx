@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { AdminLayout } from "@/components/admin-layout";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AdminLayout } from "@/components/layout/admin-layout";
+import { AppSidebar } from "@/components/layout/app-sidebar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

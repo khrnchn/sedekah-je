@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Header } from "@/components/ui/header";
+import { Header } from "@/components/shared/header";
 import { BLOG_PAGE_SIZE } from "@/lib/blog";
 import { getFeaturedBlogPost, getPublishedBlogList } from "@/lib/queries/blog";
 import { formatDate } from "@/lib/utils";

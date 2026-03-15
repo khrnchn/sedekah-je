@@ -3,17 +3,6 @@ import Image from "next/image";
 import type * as React from "react";
 
 import { auth } from "@/auth";
-import { NavInstitutions } from "@/components/nav-institutions";
-import { NavMain } from "@/components/nav-main";
-import { NavUser } from "@/components/nav-user";
-import {
-	AsyncApprovedBadge,
-	AsyncClaimsBadge,
-	AsyncPendingBadge,
-	AsyncRejectedBadge,
-	AsyncUsersBadge,
-} from "@/components/sidebar-badges";
-import { SidebarThemeToggle } from "@/components/sidebar-theme-toggle";
 import {
 	Sidebar,
 	SidebarContent,
@@ -25,6 +14,17 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { NavInstitutions } from "./nav-institutions";
+import { NavMain } from "./nav-main";
+import { NavUser } from "./nav-user";
+import {
+	AsyncApprovedBadge,
+	AsyncClaimsBadge,
+	AsyncPendingBadge,
+	AsyncRejectedBadge,
+	AsyncUsersBadge,
+} from "./sidebar-badges";
+import { SidebarThemeToggle } from "./sidebar-theme-toggle";
 
 const data = {
 	navMain: [

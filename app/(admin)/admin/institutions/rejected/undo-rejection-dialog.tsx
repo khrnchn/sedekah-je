@@ -15,7 +15,7 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { undoRejection } from "../_lib/queries";
+import { undoRejection } from "../_lib/actions";
 
 type Props = {
 	institutionId: number;

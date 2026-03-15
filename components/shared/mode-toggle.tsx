@@ -1,12 +1,11 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { type ComponentProps, forwardRef, useEffect, useState } from "react";
-
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 type Props = ComponentProps<typeof Button>;
 
@@ -41,7 +40,7 @@ export const ModeToggle = forwardRef<HTMLButtonElement, Props>(
 				ref={ref}
 				className={cn(
 					"bg-muted border border-gray-200 dark:border-slate-900 rounded-full w-20 relative",
-					className
+					className,
 				)}
 				{...props}
 			>
@@ -60,7 +59,7 @@ export const ModeToggle = forwardRef<HTMLButtonElement, Props>(
 				<span className="sr-only">Toggle theme</span>
 			</Button>
 		);
-	}
+	},
 );
 
 ModeToggle.displayName = "ModeToggle";

@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BlogRenderer } from "@/components/blog/blog-renderer";
-import { Header } from "@/components/ui/header";
+import { Header } from "@/components/shared/header";
 import { isValidBlogDocument } from "@/lib/blog";
 import {
 	getPublishedBlogBySlug,
