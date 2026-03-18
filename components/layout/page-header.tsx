@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
 	Breadcrumb,
@@ -7,6 +9,7 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { TextReveal } from "@/components/ui/text-reveal";
 
 const PageHeader = ({
 	pageTitle,
@@ -31,7 +34,11 @@ const PageHeader = ({
 				</BreadcrumbList>
 			</Breadcrumb>
 
-			{showHeader && <h2 className="text-lg font-bold pt-4">{pageTitle}</h2>}
+			{showHeader && (
+				<TextReveal>
+					<h2 className="text-lg font-bold pt-4">{pageTitle}</h2>
+				</TextReveal>
+			)}
 		</div>
 	);
 };

@@ -6,4 +6,5 @@ export * from "./claim_requests";
 export * from "./institutions";
 export * from "./quest_mosques";
 export * from "./ramadhan_campaigns";
+export * from "./terawih_sessions";
 export * from "./users";

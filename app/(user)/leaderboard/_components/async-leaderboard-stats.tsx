@@ -1,5 +1,6 @@
 import { Award, Star, Trophy, Users } from "lucide-react";
-import { StatCard, StatsGrid } from "@/components/layout/user-page-components";
+import { StatsGrid } from "@/components/layout/user-page-components";
+import { AnimatedStatCard } from "@/components/ui/animated-stat-card";
 import { getLeaderboardStats } from "../_lib/queries";
 
 export async function AsyncLeaderboardStats() {
@@ -8,24 +9,25 @@ export async function AsyncLeaderboardStats() {
 	return (
 		<div data-tour="leaderboard-stats">
 			<StatsGrid cols={4}>
-				<StatCard
+				<AnimatedStatCard
 					icon={Users}
 					value={stats.totalContributors}
 					label="Penyumbang"
 				/>
-				<StatCard
+				<AnimatedStatCard
 					icon={Star}
 					value={stats.totalContributions}
 					label="Sumbangan"
 				/>
-				<StatCard
+				<AnimatedStatCard
 					icon={Trophy}
 					value={stats.mostActiveContributions}
 					label="Paling Aktif"
 				/>
-				<StatCard
+				<AnimatedStatCard
 					icon={Award}
-					value={`${stats.approvalRate}%`}
+					value={stats.approvalRate}
+					suffix="%"
 					label="Kadar Lulus"
 				/>
 			</StatsGrid>

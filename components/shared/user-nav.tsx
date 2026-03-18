@@ -6,6 +6,7 @@ import {
 	Home,
 	LogOut,
 	Menu,
+	MoonStar,
 	Plus,
 	Settings,
 	Trophy,
@@ -41,6 +42,12 @@ const userNavItems: NavItem[] = [
 		href: "/contribute",
 		icon: Plus,
 		description: "Tambah institusi baru",
+	},
+	{
+		title: "Terawih Tracker",
+		href: "/terawih",
+		icon: MoonStar,
+		description: "Log sesi dan jana kad",
 	},
 	{
 		title: "Carta Penyumbang",

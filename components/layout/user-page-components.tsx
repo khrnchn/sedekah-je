@@ -22,7 +22,9 @@ export function StatCard({
 				{Icon && (
 					<Icon className="h-6 w-6 md:h-8 md:w-8 text-primary mx-auto mb-2" />
 				)}
-				<div className="text-xl md:text-2xl font-bold">{value}</div>
+				<div className="text-xl md:text-2xl font-bold tabular-nums">
+					{value}
+				</div>
 				<p className="text-xs md:text-sm text-muted-foreground">{label}</p>
 			</CardContent>
 		</Card>
@@ -78,22 +80,27 @@ interface EmptyStateProps {
 	title: string;
 	description: string;
 	icon?: LucideIcon;
+	action?: React.ReactNode;
 }
 
 export function EmptyState({
 	title,
 	description,
 	icon: Icon,
+	action,
 }: EmptyStateProps) {
 	return (
-		<div className="text-center py-12">
+		<div className="flex flex-col items-center justify-center py-12">
 			{Icon && (
-				<Icon className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+				<div className="rounded-full bg-muted p-4 mb-4">
+					<Icon className="h-10 w-10 text-muted-foreground" />
+				</div>
 			)}
 			<h3 className="text-lg font-semibold">{title}</h3>
-			<p className="text-muted-foreground mt-2 max-w-md mx-auto">
+			<p className="text-muted-foreground mt-2 max-w-md mx-auto text-center">
 				{description}
 			</p>
+			{action && <div className="mt-4">{action}</div>}
 		</div>
 	);
 }

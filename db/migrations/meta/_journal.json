@@ -57,6 +57,13 @@
 			"when": 1772010174257,
 			"tag": "0007_woozy_roland_deschain",
 			"breakpoints": true
+		},
+		{
+			"idx": 8,
+			"version": "7",
+			"when": 1773827235697,
+			"tag": "0008_terawih_sessions",
+			"breakpoints": true
 		}
 	]
 }

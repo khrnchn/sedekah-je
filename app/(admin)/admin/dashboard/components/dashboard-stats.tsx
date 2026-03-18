@@ -1,6 +1,9 @@
+"use client";
+
+import { Building2, CheckCircle, Clock, XCircle } from "lucide-react";
+import { AnimatedNumber } from "@/components/ui/animated-number";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building2, CheckCircle, Clock, XCircle } from "lucide-react";
 
 interface DashboardStatsProps {
 	data: {
@@ -52,7 +55,9 @@ export function DashboardStats({ data: stats }: DashboardStatsProps) {
 						<stat.icon className="h-4 w-4 text-muted-foreground" />
 					</CardHeader>
 					<CardContent>
-						<div className="text-2xl font-bold">{stat.value}</div>
+						<div className="text-2xl font-bold">
+							<AnimatedNumber value={stat.value} />
+						</div>
 						<p className="text-xs text-muted-foreground">{stat.description}</p>
 						<div className="mt-2">
 							<Badge

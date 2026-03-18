@@ -1,9 +1,3 @@
-import type {
-	categories,
-	institutionStatuses,
-	states,
-	supportedPayments,
-} from "@/lib/institution-constants";
 import { relations } from "drizzle-orm";
 import {
 	boolean,
@@ -14,7 +8,14 @@ import {
 	timestamp,
 	varchar,
 } from "drizzle-orm/pg-core";
+import type {
+	categories,
+	institutionStatuses,
+	states,
+	supportedPayments,
+} from "@/lib/institution-constants";
 import { timestamps } from "./helpers";
+import { terawihSessions } from "./terawih_sessions";
 import { users } from "./users";
 
 export const institutions = pgTable("institutions", {
@@ -71,6 +72,10 @@ export const institutionsRelations = relations(
 			fields: [institutions.reviewedBy],
 			references: [users.id],
 			relationName: "reviewer",
+		}),
+		terawihSessions: many(terawihSessions),
+		pendingTerawihSessions: many(terawihSessions, {
+			relationName: "pendingInstitutionSubmission",
 		}),
 	}),
 );

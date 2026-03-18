@@ -10,6 +10,7 @@ import {
 import { blogAssets, blogPosts } from "./blog";
 import { timestamps } from "./helpers";
 import { institutions } from "./institutions";
+import { terawihSessions } from "./terawih_sessions";
 
 export const userRoles = ["user", "admin"] as const;
 
@@ -62,6 +63,7 @@ export const usersRelations = relations(users, ({ many }) => ({
 	institutionsReviewed: many(institutions, { relationName: "reviewer" }),
 	blogPostsAuthored: many(blogPosts),
 	blogAssetsUploaded: many(blogAssets),
+	terawihSessions: many(terawihSessions),
 }));
 
 export type User = typeof users.$inferSelect;

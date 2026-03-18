@@ -28,6 +28,7 @@ import {
 	DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Skeleton } from "@/components/ui/skeleton";
+import { StaggeredGrid, StaggeredItem } from "@/components/ui/staggered-grid";
 import type { Institution } from "@/db/schema";
 
 type SearchParams = {
@@ -400,20 +401,31 @@ export function PageClient({
 					))}
 				</div>
 			) : displayedInstitutions.length === 0 ? (
-				<div className="flex flex-wrap justify-center">
-					<p className="text-lg text-gray-500">Tiada institusi dijumpai.</p>
+				<div className="flex flex-col items-center justify-center py-16 px-4">
+					<div className="rounded-full bg-muted p-4 mb-4">
+						<Filter className="h-8 w-8 text-muted-foreground" />
+					</div>
+					<p className="text-lg font-medium text-foreground">
+						Tiada institusi dijumpai
+					</p>
+					<p className="text-sm text-muted-foreground mt-1 text-center max-w-sm">
+						Cuba ubah carian atau tapisan anda untuk melihat lebih banyak
+						institusi.
+					</p>
 				</div>
 			) : (
-				<div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+				<StaggeredGrid className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
 					{closestInstitution && filteredInstitutionsContainsClosest && (
-						<InstitutionCard
-							key={closestInstitution.id}
-							{...closestInstitution}
-							ref={
-								displayedInstitutions.length === 1 ? lastPostElementRef : null
-							}
-							isClosest
-						/>
+						<StaggeredItem>
+							<InstitutionCard
+								key={closestInstitution.id}
+								{...closestInstitution}
+								ref={
+									displayedInstitutions.length === 1 ? lastPostElementRef : null
+								}
+								isClosest
+							/>
+						</StaggeredItem>
 					)}
 					{displayedInstitutions
 						.filter((i) =>
@@ -422,17 +434,18 @@ export function PageClient({
 								: true,
 						)
 						.map((institution, i) => (
-							<InstitutionCard
-								key={institution.id}
-								{...institution}
-								ref={
-									displayedInstitutions.length === i + 1
-										? lastPostElementRef
-										: null
-								}
-							/>
+							<StaggeredItem key={institution.id}>
+								<InstitutionCard
+									{...institution}
+									ref={
+										displayedInstitutions.length === i + 1
+											? lastPostElementRef
+											: null
+									}
+								/>
+							</StaggeredItem>
 						))}
-				</div>
+				</StaggeredGrid>
 			)}
 
 			{isLoadingMore && !allItemsLoaded && (
