@@ -51,25 +51,31 @@ export default async function TerawihPage() {
 			title="Terawih Tracker"
 			description="Log sesi, kira avg MPR, dan export kad story ala performance dashboard."
 		>
-			<div className="space-y-8">
-				<div className="flex flex-col gap-4 rounded-3xl border border-orange-500/20 bg-[radial-gradient(circle_at_top,_rgba(249,115,22,0.12),_transparent_40%),linear-gradient(180deg,_rgba(18,14,11,0.98)_0%,_rgba(15,13,12,0.92)_100%)] p-6 text-white md:flex-row md:items-end md:justify-between">
-					<div className="space-y-3">
-						<p className="text-sm uppercase tracking-[0.35em] text-orange-300">
+			<div className="space-y-6">
+				{/* Hero banner - compact on mobile */}
+				<div className="flex flex-col gap-3 rounded-2xl border border-orange-500/20 bg-[radial-gradient(circle_at_top,_rgba(249,115,22,0.12),_transparent_40%),linear-gradient(180deg,_rgba(18,14,11,0.98)_0%,_rgba(15,13,12,0.92)_100%)] p-4 text-white sm:rounded-3xl sm:p-6 md:flex-row md:items-end md:justify-between">
+					<div className="space-y-2">
+						<p className="text-xs uppercase tracking-[0.35em] text-orange-300 sm:text-sm">
 							Terawih Performance Log
 						</p>
-						<h2 className="text-3xl font-black tracking-tight">
+						<h2 className="text-2xl font-black tracking-tight sm:text-3xl">
 							Session-first, not OG-first.
 						</h2>
-						<p className="max-w-2xl text-sm text-white/70">
-							Setiap sesi yang anda log boleh terus dijadikan kad story 9:16
-							untuk dikongsi secara manual ke WhatsApp, IG, atau X.
+						<p className="max-w-2xl text-xs text-white/70 sm:text-sm">
+							Log sesi dan terus jana kad story 9:16 untuk dikongsi ke WhatsApp,
+							IG, atau X.
 						</p>
 					</div>
-					<Button asChild variant="secondary" className="shrink-0">
-						<Link href="/terawih/wrapped">Lihat Ramadan Wrapped</Link>
+					<Button
+						asChild
+						variant="secondary"
+						className="mt-1 shrink-0 self-start md:self-auto"
+					>
+						<Link href="/terawih/wrapped">Ramadan Wrapped</Link>
 					</Button>
 				</div>
 
+				{/* Stats - 2x2 on mobile, 4 cols on desktop */}
 				<StatsGrid cols={4}>
 					<StatCard
 						icon={Sparkles}
@@ -89,19 +95,18 @@ export default async function TerawihPage() {
 					<StatCard value={stats.averageMpr} label="Purata MPR" />
 				</StatsGrid>
 
-				<div className="grid gap-8 lg:grid-cols-[minmax(0,380px)_1fr]">
+				{/* Form + session list - stacked on mobile */}
+				<div className="grid gap-6 lg:grid-cols-[minmax(0,380px)_1fr]">
 					<TerawihSessionForm
 						institutions={institutions}
 						defaultDate={defaultDate}
 					/>
-					<section className="space-y-4">
-						<div className="flex items-center justify-between gap-4">
-							<div>
-								<h2 className="text-xl font-semibold">Sesi Terkini</h2>
-								<p className="text-sm text-muted-foreground">
-									Pilih sesi untuk preview dan export kad story.
-								</p>
-							</div>
+					<section className="space-y-3">
+						<div>
+							<h2 className="text-lg font-semibold sm:text-xl">Sesi Terkini</h2>
+							<p className="text-xs text-muted-foreground sm:text-sm">
+								Pilih sesi untuk preview dan export kad story.
+							</p>
 						</div>
 						<TerawihSessionList sessions={sessions} />
 					</section>
