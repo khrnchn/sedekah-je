@@ -88,6 +88,7 @@
 		"framer-motion": "^11.3.27",
 		"geolib": "^3.3.4",
 		"git-cz": "^4.9.0",
+		"html-to-image": "^1.11.13",
 		"html2canvas": "^1.4.1",
 		"leaflet": "^1.9.4",
 		"leaflet-defaulticon-compatibility": "^0.1.2",

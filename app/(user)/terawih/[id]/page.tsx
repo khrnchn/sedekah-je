@@ -11,8 +11,7 @@ import {
 	formatSessionDateLabel,
 	formatTimeForCard,
 } from "@/lib/terawih";
-import { StoryCardExporter } from "../_components/story-card-exporter";
-import { TerawihSessionStoryCard } from "../_components/terawih-story-card";
+import { SessionStoryCardExporter } from "../_components/story-card-exporter";
 import { getTerawihSessionById } from "../_lib/queries";
 
 export async function generateMetadata({
@@ -58,18 +57,17 @@ export default async function TerawihSessionDetailPage({
 				{/* Mobile: story card first, details below. Desktop: side by side */}
 				<div className="grid gap-6 lg:grid-cols-[minmax(0,380px)_1fr]">
 					<div className="lg:order-last">
-						<StoryCardExporter fileName={`terawih-session-${session.id}`}>
-							<TerawihSessionStoryCard
-								mosqueName={session.mosqueName}
-								sessionDate={session.sessionDate}
-								ramadanStartDate={session.ramadanStartDate}
-								startTime={session.startTime}
-								endTime={session.endTime}
-								durationMinutes={session.durationMinutes}
-								averageMpr={session.averageMpr}
-								rakaat={session.rakaat}
-							/>
-						</StoryCardExporter>
+						<SessionStoryCardExporter
+							fileName={`terawih-session-${session.id}`}
+							mosqueName={session.mosqueName}
+							sessionDate={session.sessionDate}
+							ramadanStartDate={session.ramadanStartDate}
+							startTime={session.startTime}
+							endTime={session.endTime}
+							durationMinutes={session.durationMinutes}
+							averageMpr={session.averageMpr}
+							rakaat={session.rakaat}
+						/>
 					</div>
 
 					<Card className="h-fit">

@@ -7,8 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatDurationForCard } from "@/lib/terawih";
-import { StoryCardExporter } from "../_components/story-card-exporter";
-import { TerawihWrappedStoryCard } from "../_components/terawih-story-card";
+import { WrappedStoryCardExporter } from "../_components/story-card-exporter";
 import { getTerawihWrappedData } from "../_lib/queries";
 
 export const metadata: Metadata = {
@@ -108,17 +107,16 @@ export default async function TerawihWrappedPage() {
 							</CardContent>
 						</Card>
 
-						<StoryCardExporter fileName={`terawih-wrapped-${wrapped.year}`}>
-							<TerawihWrappedStoryCard
-								year={wrapped.year}
-								totalNights={wrapped.summary.totalNights}
-								totalMinutes={wrapped.summary.totalMinutes}
-								totalRakaat={wrapped.summary.totalRakaat}
-								averageMpr={wrapped.summary.averageMpr}
-								bestStreak={wrapped.summary.bestStreak}
-								topMosque={wrapped.summary.topMosque}
-							/>
-						</StoryCardExporter>
+						<WrappedStoryCardExporter
+							fileName={`terawih-wrapped-${wrapped.year}`}
+							year={wrapped.year}
+							totalNights={wrapped.summary.totalNights}
+							totalMinutes={wrapped.summary.totalMinutes}
+							totalRakaat={wrapped.summary.totalRakaat}
+							averageMpr={wrapped.summary.averageMpr}
+							bestStreak={wrapped.summary.bestStreak}
+							topMosque={wrapped.summary.topMosque}
+						/>
 					</div>
 				)}
 			</div>

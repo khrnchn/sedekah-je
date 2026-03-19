@@ -1,5 +1,3 @@
-import { MapPin } from "lucide-react";
-import Image from "next/image";
 import {
 	formatAverageMprForCard,
 	formatDurationForCard,
@@ -7,32 +5,185 @@ import {
 	getRamadanNightLabel,
 } from "@/lib/terawih";
 
-function TelemetryBackground() {
+export type StoryCardTheme = "ember" | "emerald" | "midnight" | "sand";
+
+type ThemeTokens = {
+	bg: string;
+	cardBg: string;
+	cellBg: string;
+	accent: string;
+	accentMuted: string;
+	accentBorder: string;
+	accentBadgeBg: string;
+	accentBadgeBorder: string;
+	accentBadgeText: string;
+	highlightBg: string;
+	highlightBorder: string;
+	highlightLabel: string;
+	highlightValue: string;
+	highlightDivider: string;
+	highlightSecondary: string;
+	gridBorder: string;
+	gridCellBorder: string;
+	text: string;
+	textMuted: string;
+	textDim: string;
+	wave: string;
+	waveDot: string;
+	footer: string;
+	gridLine: string;
+};
+
+const THEMES: Record<StoryCardTheme, ThemeTokens> = {
+	ember: {
+		bg: "radial-gradient(circle at top, rgba(249,115,22,0.20), transparent 40%), linear-gradient(180deg, #0b0908 0%, #14100d 100%)",
+		cardBg: "#0d0a08",
+		cellBg: "rgba(13,10,8,0.9)",
+		accent: "#f97316",
+		accentMuted: "#f97316",
+		accentBorder: "rgba(249,115,22,0.3)",
+		accentBadgeBg: "rgba(249,115,22,0.1)",
+		accentBadgeBorder: "rgba(249,115,22,0.3)",
+		accentBadgeText: "#fdba74",
+		highlightBg: "rgba(249,115,22,0.1)",
+		highlightBorder: "rgba(249,115,22,0.25)",
+		highlightLabel: "rgba(254,215,170,0.7)",
+		highlightValue: "#fb923c",
+		highlightDivider: "rgba(249,115,22,0.15)",
+		highlightSecondary: "rgba(253,186,116,0.6)",
+		gridBorder: "rgba(255,255,255,0.1)",
+		gridCellBorder: "rgba(255,255,255,0.1)",
+		text: "#ffffff",
+		textMuted: "rgba(255,255,255,0.8)",
+		textDim: "rgba(255,255,255,0.4)",
+		wave: "#f97316",
+		waveDot: "#f97316",
+		footer: "rgba(255,255,255,0.3)",
+		gridLine: "rgba(255,255,255,0.04)",
+	},
+	emerald: {
+		bg: "radial-gradient(circle at top, rgba(16,185,129,0.20), transparent 40%), linear-gradient(180deg, #050d0a 0%, #0a1410 100%)",
+		cardBg: "#060d0a",
+		cellBg: "rgba(6,13,10,0.9)",
+		accent: "#10b981",
+		accentMuted: "#10b981",
+		accentBorder: "rgba(16,185,129,0.3)",
+		accentBadgeBg: "rgba(16,185,129,0.1)",
+		accentBadgeBorder: "rgba(16,185,129,0.3)",
+		accentBadgeText: "#6ee7b7",
+		highlightBg: "rgba(16,185,129,0.1)",
+		highlightBorder: "rgba(16,185,129,0.25)",
+		highlightLabel: "rgba(167,243,208,0.7)",
+		highlightValue: "#34d399",
+		highlightDivider: "rgba(16,185,129,0.15)",
+		highlightSecondary: "rgba(110,231,183,0.6)",
+		gridBorder: "rgba(255,255,255,0.1)",
+		gridCellBorder: "rgba(255,255,255,0.1)",
+		text: "#ffffff",
+		textMuted: "rgba(255,255,255,0.8)",
+		textDim: "rgba(255,255,255,0.4)",
+		wave: "#10b981",
+		waveDot: "#10b981",
+		footer: "rgba(255,255,255,0.3)",
+		gridLine: "rgba(255,255,255,0.04)",
+	},
+	midnight: {
+		bg: "radial-gradient(circle at top, rgba(59,130,246,0.20), transparent 40%), linear-gradient(180deg, #06080d 0%, #0a0e14 100%)",
+		cardBg: "#070a0f",
+		cellBg: "rgba(7,10,15,0.9)",
+		accent: "#3b82f6",
+		accentMuted: "#3b82f6",
+		accentBorder: "rgba(59,130,246,0.3)",
+		accentBadgeBg: "rgba(59,130,246,0.1)",
+		accentBadgeBorder: "rgba(59,130,246,0.3)",
+		accentBadgeText: "#93c5fd",
+		highlightBg: "rgba(59,130,246,0.1)",
+		highlightBorder: "rgba(59,130,246,0.25)",
+		highlightLabel: "rgba(191,219,254,0.7)",
+		highlightValue: "#60a5fa",
+		highlightDivider: "rgba(59,130,246,0.15)",
+		highlightSecondary: "rgba(147,197,253,0.6)",
+		gridBorder: "rgba(255,255,255,0.1)",
+		gridCellBorder: "rgba(255,255,255,0.1)",
+		text: "#ffffff",
+		textMuted: "rgba(255,255,255,0.8)",
+		textDim: "rgba(255,255,255,0.4)",
+		wave: "#3b82f6",
+		waveDot: "#3b82f6",
+		footer: "rgba(255,255,255,0.3)",
+		gridLine: "rgba(255,255,255,0.04)",
+	},
+	sand: {
+		bg: "radial-gradient(circle at top, rgba(217,180,130,0.15), transparent 40%), linear-gradient(180deg, #faf6f0 0%, #f0e9df 100%)",
+		cardBg: "#f7f2ea",
+		cellBg: "rgba(255,255,255,0.6)",
+		accent: "#a0774a",
+		accentMuted: "#a0774a",
+		accentBorder: "rgba(160,119,74,0.3)",
+		accentBadgeBg: "rgba(160,119,74,0.1)",
+		accentBadgeBorder: "rgba(160,119,74,0.3)",
+		accentBadgeText: "#92693e",
+		highlightBg: "rgba(160,119,74,0.08)",
+		highlightBorder: "rgba(160,119,74,0.2)",
+		highlightLabel: "rgba(130,90,50,0.6)",
+		highlightValue: "#7c5a30",
+		highlightDivider: "rgba(160,119,74,0.12)",
+		highlightSecondary: "rgba(160,119,74,0.5)",
+		gridBorder: "rgba(0,0,0,0.1)",
+		gridCellBorder: "rgba(0,0,0,0.08)",
+		text: "#2c1e0e",
+		textMuted: "rgba(44,30,14,0.75)",
+		textDim: "rgba(44,30,14,0.35)",
+		wave: "#a0774a",
+		waveDot: "#a0774a",
+		footer: "rgba(44,30,14,0.25)",
+		gridLine: "rgba(0,0,0,0.04)",
+	},
+};
+
+function TelemetryBackground({ theme }: { theme: ThemeTokens }) {
 	return (
 		<>
-			{/* Base gradient */}
-			<div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(249,115,22,0.20),_transparent_40%),linear-gradient(180deg,_#0b0908_0%,_#14100d_100%)]" />
-			{/* Grid overlay */}
-			<div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] bg-[size:40px_40px]" />
-			{/* Wave graphic above bottom section */}
-			<div className="absolute inset-x-6 bottom-[26%] h-28">
+			<div
+				style={{
+					position: "absolute",
+					inset: 0,
+					background: theme.bg,
+				}}
+			/>
+			<div
+				style={{
+					position: "absolute",
+					inset: 0,
+					backgroundImage: `linear-gradient(${theme.gridLine} 1px, transparent 1px), linear-gradient(90deg, ${theme.gridLine} 1px, transparent 1px)`,
+					backgroundSize: "40px 40px",
+				}}
+			/>
+			<div
+				style={{
+					position: "absolute",
+					left: 24,
+					right: 24,
+					bottom: "26%",
+					height: 112,
+				}}
+			>
 				<svg
 					viewBox="0 0 100 24"
 					preserveAspectRatio="none"
-					className="h-full w-full"
+					style={{ width: "100%", height: "100%", display: "block" }}
 				>
 					<path
 						d="M0 16 C8 6, 18 6, 28 16 S48 26, 58 14 S78 0, 88 12 L100 18"
 						fill="none"
-						stroke="#f97316"
+						stroke={theme.wave}
 						strokeWidth="0.5"
 						strokeDasharray="1.2 1.8"
 						opacity="0.4"
 					/>
-					{/* Dots at peaks/valleys */}
-					<circle cx="14" cy="6" r="1.2" fill="#f97316" opacity="0.5" />
-					<circle cx="53" cy="22" r="1.2" fill="#f97316" opacity="0.5" />
-					<circle cx="83" cy="4" r="1.2" fill="#f97316" opacity="0.5" />
+					<circle cx="14" cy="6" r="1.2" fill={theme.waveDot} opacity="0.5" />
+					<circle cx="53" cy="22" r="1.2" fill={theme.waveDot} opacity="0.5" />
+					<circle cx="83" cy="4" r="1.2" fill={theme.waveDot} opacity="0.5" />
 				</svg>
 			</div>
 		</>
@@ -46,10 +197,10 @@ type TerawihStoryCardProps = {
 	highlightLabel: string;
 	highlightValue: string;
 	highlightSecondary?: string;
+	theme?: StoryCardTheme;
 	stats: Array<{
 		label: string;
 		value: string;
-		icon?: string;
 	}>;
 };
 
@@ -60,59 +211,162 @@ export function TerawihStoryCard({
 	highlightLabel,
 	highlightValue,
 	highlightSecondary,
+	theme: themeName = "ember",
 	stats,
 }: TerawihStoryCardProps) {
+	const t = THEMES[themeName];
+
 	return (
-		<div className="relative isolate flex h-full w-full overflow-hidden rounded-[28px] border border-white/10 bg-[#0d0a08] p-6 text-white shadow-2xl">
-			<TelemetryBackground />
-			<div className="relative z-10 flex h-full w-full flex-col">
+		<div
+			style={{
+				position: "relative",
+				display: "flex",
+				height: "100%",
+				width: "100%",
+				overflow: "hidden",
+				borderRadius: 28,
+				border: `1px solid ${t.gridBorder}`,
+				backgroundColor: t.cardBg,
+				padding: 24,
+				color: t.text,
+				fontFamily:
+					'ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif',
+			}}
+		>
+			<TelemetryBackground theme={t} />
+			<div
+				style={{
+					position: "relative",
+					zIndex: 10,
+					display: "flex",
+					flexDirection: "column",
+					height: "100%",
+					width: "100%",
+				}}
+			>
 				{/* Header: badge + branding */}
-				<div className="flex items-start justify-between">
-					<div className="inline-flex rounded-full border border-orange-500/30 bg-orange-500/10 px-3 py-1 text-[10px] font-semibold tracking-[0.3em] text-orange-300">
+				<div
+					style={{
+						display: "flex",
+						alignItems: "flex-start",
+						justifyContent: "space-between",
+					}}
+				>
+					<div
+						style={{
+							display: "inline-flex",
+							borderRadius: 9999,
+							border: `1px solid ${t.accentBadgeBorder}`,
+							backgroundColor: t.accentBadgeBg,
+							padding: "4px 12px",
+							fontSize: 10,
+							fontWeight: 600,
+							letterSpacing: "0.3em",
+							color: t.accentBadgeText,
+						}}
+					>
 						{subtitle}
 					</div>
-					<Image
+					{/* biome-ignore lint/performance/noImgElement: plain img for reliable html-to-image export */}
+					<img
 						src="/masjid.svg"
-						alt="SedekahJe"
+						alt=""
 						width={32}
 						height={32}
-						unoptimized
-						className="h-8 w-8 opacity-80"
+						style={{ width: 32, height: 32, opacity: 0.8 }}
 					/>
 				</div>
 
 				{/* Title */}
-				<div className="mt-5">
-					<h1 className="text-[64px] font-black uppercase leading-[0.85] tracking-[-0.06em]">
-						<span className="text-white">TERA</span>
-						<span className="text-orange-500">WIH</span>
-					</h1>
+				<div style={{ marginTop: 20 }}>
+					<div
+						style={{
+							fontSize: 64,
+							fontWeight: 900,
+							textTransform: "uppercase",
+							lineHeight: 0.85,
+							letterSpacing: "-0.06em",
+						}}
+					>
+						<span style={{ color: t.text }}>TERA</span>
+						<span style={{ color: t.accent }}>WIH</span>
+					</div>
 					{mosqueName && (
-						<div className="mt-3 flex items-center gap-1.5">
-							<MapPin className="h-3.5 w-3.5 text-orange-400" />
-							<p className="text-sm font-medium uppercase tracking-[0.12em] text-white/80">
-								{mosqueName}
-							</p>
-						</div>
+						<p
+							style={{
+								marginTop: 12,
+								fontSize: 14,
+								fontWeight: 500,
+								textTransform: "uppercase",
+								letterSpacing: "0.12em",
+								color: t.textMuted,
+							}}
+						>
+							{mosqueName}
+						</p>
 					)}
 					{!mosqueName && title && (
-						<p className="mt-3 max-w-[15rem] text-xl font-semibold uppercase leading-tight tracking-[0.12em] text-white/90">
+						<p
+							style={{
+								marginTop: 12,
+								maxWidth: 240,
+								fontSize: 20,
+								fontWeight: 600,
+								textTransform: "uppercase",
+								lineHeight: 1.15,
+								letterSpacing: "0.12em",
+								color: t.textMuted,
+							}}
+						>
 							{title}
 						</p>
 					)}
 				</div>
 
+				{/* Spacer */}
+				<div style={{ flex: 1, minHeight: 24 }} />
+
 				{/* Stats grid - 2x2 */}
-				<div className="mt-auto grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10">
+				<div
+					style={{
+						display: "grid",
+						gridTemplateColumns: "1fr 1fr",
+						gap: 1,
+						overflow: "hidden",
+						borderRadius: 16,
+						border: `1px solid ${t.gridCellBorder}`,
+						backgroundColor: t.gridCellBorder,
+					}}
+				>
 					{stats.map((stat) => (
 						<div
 							key={stat.label}
-							className="bg-black/40 px-4 py-5 backdrop-blur-[1px]"
+							style={{
+								backgroundColor: t.cellBg,
+								padding: "20px 16px",
+							}}
 						>
-							<p className="text-[9px] uppercase tracking-[0.3em] text-white/40">
+							<p
+								style={{
+									fontSize: 9,
+									textTransform: "uppercase",
+									letterSpacing: "0.3em",
+									color: t.textDim,
+									margin: 0,
+								}}
+							>
 								{stat.label}
 							</p>
-							<p className="mt-2 text-[28px] font-bold leading-none tracking-[-0.04em]">
+							<p
+								style={{
+									marginTop: 8,
+									fontSize: 28,
+									fontWeight: 700,
+									lineHeight: 1,
+									letterSpacing: "-0.04em",
+									margin: "8px 0 0 0",
+								}}
+							>
 								{stat.value}
 							</p>
 						</div>
@@ -120,28 +374,99 @@ export function TerawihStoryCard({
 				</div>
 
 				{/* Bottom highlight bar */}
-				<div className="mt-3 overflow-hidden rounded-2xl border border-orange-500/25 bg-orange-500/10">
-					<div className="flex items-center justify-between gap-3 px-4 py-4">
-						<div className="min-w-0">
-							<p className="text-[9px] uppercase tracking-[0.3em] text-orange-200/70">
+				<div
+					style={{
+						marginTop: 12,
+						overflow: "hidden",
+						borderRadius: 16,
+						border: `1px solid ${t.highlightBorder}`,
+						backgroundColor: t.highlightBg,
+					}}
+				>
+					<div
+						style={{
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "space-between",
+							gap: 12,
+							padding: 16,
+						}}
+					>
+						<div style={{ minWidth: 0 }}>
+							<p
+								style={{
+									fontSize: 9,
+									textTransform: "uppercase",
+									letterSpacing: "0.3em",
+									color: t.highlightLabel,
+									margin: 0,
+								}}
+							>
 								{highlightLabel}
 							</p>
-							<p className="mt-1.5 truncate text-[26px] font-black uppercase leading-none tracking-[-0.04em] text-orange-400">
+							<p
+								style={{
+									marginTop: 6,
+									fontSize: 26,
+									fontWeight: 900,
+									textTransform: "uppercase",
+									lineHeight: 1,
+									letterSpacing: "-0.04em",
+									color: t.highlightValue,
+									overflow: "hidden",
+									textOverflow: "ellipsis",
+									whiteSpace: "nowrap",
+									margin: "6px 0 0 0",
+								}}
+							>
 								{highlightValue}
 							</p>
 						</div>
-						<div className="shrink-0 text-right">
-							<p className="text-[9px] uppercase tracking-[0.3em] text-white/40">
+						<div style={{ flexShrink: 0, textAlign: "right" }}>
+							<p
+								style={{
+									fontSize: 9,
+									textTransform: "uppercase",
+									letterSpacing: "0.3em",
+									color: t.textDim,
+									margin: 0,
+								}}
+							>
 								Status
 							</p>
-							<p className="mt-1.5 flex items-center gap-1 text-[26px] font-bold leading-none text-orange-400">
-								<span className="text-lg">&#10003;</span> DONE
+							<p
+								style={{
+									marginTop: 6,
+									display: "flex",
+									alignItems: "center",
+									gap: 4,
+									fontSize: 26,
+									fontWeight: 700,
+									lineHeight: 1,
+									color: t.highlightValue,
+									margin: "6px 0 0 0",
+								}}
+							>
+								<span style={{ fontSize: 18 }}>&#10003;</span> DONE
 							</p>
 						</div>
 					</div>
 					{highlightSecondary && (
-						<div className="border-t border-orange-500/15 px-4 py-2.5">
-							<p className="text-right text-sm font-medium text-orange-300/60">
+						<div
+							style={{
+								borderTop: `1px solid ${t.highlightDivider}`,
+								padding: "10px 16px",
+							}}
+						>
+							<p
+								style={{
+									textAlign: "right",
+									fontSize: 14,
+									fontWeight: 500,
+									color: t.highlightSecondary,
+									margin: 0,
+								}}
+							>
 								{highlightSecondary}
 							</p>
 						</div>
@@ -149,8 +474,15 @@ export function TerawihStoryCard({
 				</div>
 
 				{/* Branding footer */}
-				<div className="mt-3 text-center">
-					<p className="text-[9px] tracking-[0.3em] text-white/30">
+				<div style={{ marginTop: 12, textAlign: "center" }}>
+					<p
+						style={{
+							fontSize: 9,
+							letterSpacing: "0.3em",
+							color: t.footer,
+							margin: 0,
+						}}
+					>
 						sedekah.je/terawih
 					</p>
 				</div>
@@ -168,6 +500,7 @@ type TerawihSessionStoryCardProps = {
 	durationMinutes: number;
 	averageMpr: number;
 	rakaat: number;
+	theme?: StoryCardTheme;
 };
 
 export function TerawihSessionStoryCard(props: TerawihSessionStoryCardProps) {
@@ -178,6 +511,7 @@ export function TerawihSessionStoryCard(props: TerawihSessionStoryCardProps) {
 			subtitle={getRamadanNightLabel(props.sessionDate, props.ramadanStartDate)}
 			highlightLabel="Rakaat"
 			highlightValue={`${props.rakaat}`}
+			theme={props.theme}
 			stats={[
 				{
 					label: "Start Time",
@@ -208,6 +542,7 @@ type TerawihWrappedStoryCardProps = {
 	averageMpr: number;
 	bestStreak: number;
 	topMosque: string | null;
+	theme?: StoryCardTheme;
 };
 
 export function TerawihWrappedStoryCard(props: TerawihWrappedStoryCardProps) {
@@ -217,6 +552,7 @@ export function TerawihWrappedStoryCard(props: TerawihWrappedStoryCardProps) {
 			subtitle="PERFORMANCE SUMMARY"
 			highlightLabel="Top Mosque"
 			highlightValue={props.topMosque ?? "N/A"}
+			theme={props.theme}
 			stats={[
 				{
 					label: "Nights",
