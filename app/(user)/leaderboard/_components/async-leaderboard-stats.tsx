@@ -11,12 +11,12 @@ export async function AsyncLeaderboardStats() {
 				<StatCard
 					icon={Users}
 					value={stats.totalContributors}
-					label="Penyumbang"
+					label="Penghantar QR"
 				/>
 				<StatCard
 					icon={Star}
 					value={stats.totalContributions}
-					label="Sumbangan"
+					label="Submission QR"
 				/>
 				<StatCard
 					icon={Trophy}

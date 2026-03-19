@@ -27,7 +27,7 @@ export async function AsyncYourRank() {
 						Kedudukan Anda
 					</p>
 					<p className="text-lg font-semibold">
-						#{rank.rank} · {rank.contributions} sumbangan
+						#{rank.rank} · {rank.contributions} submission
 					</p>
 				</div>
 			</CardContent>

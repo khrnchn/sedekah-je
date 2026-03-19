@@ -31,9 +31,10 @@ export async function AsyncTopContributors() {
 		return (
 			<Card>
 				<CardHeader>
-					<CardTitle>Belum Ada Penyumbang</CardTitle>
+					<CardTitle>Belum Ada Penghantar QR</CardTitle>
 					<CardDescription>
-						Jadilah yang pertama menyumbang dan muncul di carta penyumbang!
+						Jadilah yang pertama hantar QR institusi dan muncul di papan
+						pendahulu!
 					</CardDescription>
 				</CardHeader>
 			</Card>
@@ -57,7 +58,7 @@ export async function AsyncTopContributors() {
 								{topContributors[1].name}
 							</div>
 							<div className="text-xs md:text-sm text-muted-foreground">
-								{topContributors[1].contributions} sumbangan
+								{topContributors[1].contributions} submission
 							</div>
 						</div>
 						<div className="w-full h-16 md:h-24 bg-slate-300/50 rounded-t-lg flex items-center justify-center mt-2">
@@ -82,7 +83,7 @@ export async function AsyncTopContributors() {
 								{topContributors[0].name}
 							</div>
 							<div className="text-xs md:text-sm text-muted-foreground">
-								{topContributors[0].contributions} sumbangan
+								{topContributors[0].contributions} submission
 							</div>
 						</div>
 						<div className="w-full h-20 md:h-32 bg-yellow-400/50 rounded-t-lg flex items-center justify-center mt-2">
@@ -107,7 +108,7 @@ export async function AsyncTopContributors() {
 								{topContributors[2].name}
 							</div>
 							<div className="text-xs md:text-sm text-muted-foreground">
-								{topContributors[2].contributions} sumbangan
+								{topContributors[2].contributions} submission
 							</div>
 						</div>
 						<div className="w-full h-12 md:h-20 bg-amber-500/50 rounded-t-lg flex items-center justify-center mt-2">
@@ -121,9 +122,10 @@ export async function AsyncTopContributors() {
 
 			<Card>
 				<CardHeader>
-					<CardTitle>Top 20 Penyumbang</CardTitle>
+					<CardTitle>Top 20 Penghantar QR</CardTitle>
 					<CardDescription>
-						20 penyumbang dengan sumbangan terbanyak dalam komuniti sedekah.je
+						20 pengguna paling aktif menghantar QR institusi dalam komuniti
+						sedekah.je
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
@@ -145,7 +147,7 @@ export async function AsyncTopContributors() {
 										{contributor.name}
 									</div>
 									<div className="text-xs md:text-sm text-muted-foreground">
-										{contributor.contributions} sumbangan
+										{contributor.contributions} submission
 									</div>
 								</div>
 							</div>
