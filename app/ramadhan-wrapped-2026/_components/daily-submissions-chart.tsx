@@ -13,21 +13,32 @@ export type DailyChartPoint = {
 	submissions: number;
 };
 
-export function DailySubmissionsChart({ data }: { data: DailyChartPoint[] }) {
+type DailySubmissionsChartProps = {
+	data: DailyChartPoint[];
+	/** Use brand primary instead of chart palette (e.g. campaign pages). */
+	seriesColor?: "chart" | "primary";
+};
+
+export function DailySubmissionsChart({
+	data,
+	seriesColor = "chart",
+}: DailySubmissionsChartProps) {
 	const safeId = useId().replace(/:/g, "");
 	const fillId = `wrapped-submissions-${safeId}`;
+	const strokeColor =
+		seriesColor === "primary" ? "hsl(var(--primary))" : "hsl(var(--chart-1))";
 
 	return (
 		<ChartContainer
 			config={{
 				submissions: {
 					label: "Submission",
-					color: "hsl(var(--chart-1))",
+					color: strokeColor,
 				},
 			}}
-			className="aspect-auto h-[260px] w-full md:h-[280px]"
+			className="aspect-auto h-[210px] w-full min-[400px]:h-[240px] sm:h-[260px] md:h-[280px]"
 		>
-			<AreaChart data={data} margin={{ left: 4, right: 8, top: 8, bottom: 4 }}>
+			<AreaChart data={data} margin={{ left: 2, right: 4, top: 8, bottom: 12 }}>
 				<defs>
 					<linearGradient id={fillId} x1="0" y1="0" x2="0" y2="1">
 						<stop
@@ -47,14 +58,19 @@ export function DailySubmissionsChart({ data }: { data: DailyChartPoint[] }) {
 					dataKey="label"
 					tickLine={false}
 					axisLine={false}
-					tickMargin={10}
-					minTickGap={20}
+					tick={{ fontSize: 11 }}
+					tickMargin={6}
+					minTickGap={12}
+					height={48}
+					angle={-32}
+					textAnchor="end"
 					interval="preserveStartEnd"
 				/>
 				<YAxis
 					tickLine={false}
 					axisLine={false}
-					width={40}
+					tick={{ fontSize: 11 }}
+					width={32}
 					allowDecimals={false}
 				/>
 				<ChartTooltip
