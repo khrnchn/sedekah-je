@@ -22,6 +22,7 @@
 		"match:walter-institutions": "bun scripts/match-walter-institutions.ts",
 		"review:walter-medium": "bun scripts/review-walter-medium-matches.ts",
 		"delete:walter-llm-dup-high": "bun scripts/delete-walter-llm-high-confidence-duplicates.ts",
+		"wrapped:ramadhan-2026": "bun scripts/generate-ramadhan-wrapped-2026.ts",
 		"clean": "rm -rf node_modules/ .next/ bun.lock*",
 		"prepare": "husky"
 	},

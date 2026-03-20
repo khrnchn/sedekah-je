@@ -143,3 +143,32 @@ export function formatDateBMShort(dateStr: string): string {
 	const month = BM_MONTHS[(m ?? 1) - 1] ?? "";
 	return `${d ?? 0} ${month}`;
 }
+
+/**
+ * Format a date string (YYYY-MM-DD) for display in English.
+ * Example: "2026-03-19" -> "19 March 2026"
+ */
+export function formatDateEn(dateStr: string): string {
+	const [y, m, d] = dateStr.split("-").map(Number);
+	const date = new Date(y ?? 0, (m ?? 1) - 1, d ?? 1);
+	if (Number.isNaN(date.getTime())) return dateStr;
+	return new Intl.DateTimeFormat("en-GB", {
+		day: "numeric",
+		month: "long",
+		year: "numeric",
+	}).format(date);
+}
+
+/**
+ * Format a date string (YYYY-MM-DD) without year in English.
+ * Example: "2026-03-19" -> "19 Mar"
+ */
+export function formatDateEnShort(dateStr: string): string {
+	const [y, m, d] = dateStr.split("-").map(Number);
+	const date = new Date(y ?? 0, (m ?? 1) - 1, d ?? 1);
+	if (Number.isNaN(date.getTime())) return dateStr;
+	return new Intl.DateTimeFormat("en-GB", {
+		day: "numeric",
+		month: "short",
+	}).format(date);
+}
