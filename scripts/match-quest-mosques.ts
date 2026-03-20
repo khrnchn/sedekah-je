@@ -7,117 +7,7 @@
 import { and, eq, inArray, isNull } from "drizzle-orm";
 import { db } from "@/db";
 import { institutions, questMosques } from "@/db/schema";
-
-// --- Normalization & matching logic (from feature/similar-institutions-warning) ---
-
-const COMMON_PREFIXES = [
-	"masjid jamek",
-	"masjid kampung",
-	"masjid mukim",
-	"masjid daerah",
-	"masjid kariah",
-	"masjid taman",
-	"masjid sultan",
-	"masjid bandar",
-	"masjid",
-	"surau taman",
-	"surau kampung",
-	"surau",
-	"tabung masjid",
-];
-
-// Malaysian abbreviation expansions
-const ABBREVIATIONS: Record<string, string> = {
-	kg: "kampung",
-	"kg.": "kampung",
-	sg: "sungai",
-	"sg.": "sungai",
-	jln: "jalan",
-	sek: "seksyen",
-	"sek.": "seksyen",
-	tmn: "taman",
-	dr: "darul",
-	"bt.": "bukit",
-	bt: "bukit",
-};
-
-function expandAbbreviations(name: string): string {
-	return name
-		.split(/\s+/)
-		.map((word) => ABBREVIATIONS[word.toLowerCase()] || word)
-		.join(" ");
-}
-
-function normalizeName(name: string): string {
-	let normalized = expandAbbreviations(name)
-		.toLowerCase()
-		.replace(/[`'".,/#!$%^&*;:{}=\-_~()]/g, "")
-		.replace(/\s+/g, " ")
-		.trim();
-
-	// Remove common prefixes (longest first — array is ordered that way)
-	for (const prefix of COMMON_PREFIXES) {
-		if (normalized.startsWith(prefix + " ")) {
-			normalized = normalized.slice(prefix.length).trim();
-			break;
-		}
-		if (normalized === prefix) {
-			normalized = "";
-			break;
-		}
-	}
-
-	// Remove all remaining spaces for final comparison
-	return normalized.replace(/\s+/g, "");
-}
-
-function levenshteinDistance(a: string, b: string): number {
-	if (a.length === 0) return b.length;
-	if (b.length === 0) return a.length;
-
-	const matrix: number[][] = [];
-
-	for (let i = 0; i <= b.length; i++) {
-		matrix[i] = [i];
-	}
-	for (let j = 0; j <= a.length; j++) {
-		matrix[0][j] = j;
-	}
-
-	for (let i = 1; i <= b.length; i++) {
-		for (let j = 1; j <= a.length; j++) {
-			if (b.charAt(i - 1) === a.charAt(j - 1)) {
-				matrix[i][j] = matrix[i - 1][j - 1];
-			} else {
-				matrix[i][j] = Math.min(
-					matrix[i - 1][j - 1] + 1,
-					matrix[i][j - 1] + 1,
-					matrix[i - 1][j] + 1,
-				);
-			}
-		}
-	}
-
-	return matrix[b.length][a.length];
-}
-
-function similarityScore(a: string, b: string): number {
-	const distance = levenshteinDistance(a, b);
-	const maxLen = Math.max(a.length, b.length);
-	if (maxLen === 0) return 1;
-	return 1 - distance / maxLen;
-}
-
-// --- Also check if one normalized name contains the other ---
-function containsMatch(a: string, b: string): boolean {
-	if (a.length === 0 || b.length === 0) return false;
-	const shorter = a.length <= b.length ? a : b;
-	const longer = a.length > b.length ? a : b;
-	// If the shorter string is at least 5 chars and is fully contained
-	return shorter.length >= 5 && longer.includes(shorter);
-}
-
-// --- Main ---
+import { findBestNameMatch } from "./_lib/institution-name-similarity";
 
 interface QuestMosque {
 	id: number;
@@ -158,7 +48,9 @@ async function main() {
 
 	console.log(`Found ${unlinked.length} unlinked quest mosques\n`);
 
-	console.log("Fetching approved institutions (mosque/masjid in Selangor)...");
+	console.log(
+		"Fetching approved institutions (masjid/surau in Selangor, schema-aligned categories)...",
+	);
 	const allInstitutions = await db
 		.select({
 			id: institutions.id,
@@ -174,87 +66,43 @@ async function main() {
 			and(
 				eq(institutions.status, "approved"),
 				eq(institutions.state, "Selangor"),
-				inArray(institutions.category, ["mosque", "masjid"]),
+				inArray(institutions.category, ["masjid", "surau"]),
 			),
 		)
 		.orderBy(institutions.name);
 
-	console.log(`Found ${allInstitutions.length} approved Selangor mosques\n`);
+	console.log(
+		`Found ${allInstitutions.length} approved Selangor masjid/surau\n`,
+	);
 
 	const highConfidence: Match[] = [];
 	const mediumConfidence: Match[] = [];
 	const noMatch: QuestMosque[] = [];
 
 	for (const qm of unlinked) {
-		const normQ = normalizeName(qm.name);
-		let bestMatch: Match | null = null;
+		const best = findBestNameMatch(qm.name, allInstitutions, {
+			minLevenshteinSimilarity: 0.7,
+		});
 
-		for (const inst of allInstitutions) {
-			const normI = normalizeName(inst.name);
-
-			// Exact normalized match
-			if (normQ === normI && normQ.length > 0) {
-				const match: Match = {
-					questMosque: qm,
-					institution: inst,
-					similarity: 1.0,
-					normQuest: normQ,
-					normInst: normI,
-					matchType: "exact",
-				};
-				if (!bestMatch || match.similarity > bestMatch.similarity) {
-					bestMatch = match;
-				}
-				continue;
-			}
-
-			// Contains match
-			if (containsMatch(normQ, normI)) {
-				const sim = similarityScore(normQ, normI);
-				const effectiveSim = Math.max(sim, 0.85); // boost contains matches
-				const match: Match = {
-					questMosque: qm,
-					institution: inst,
-					similarity: effectiveSim,
-					normQuest: normQ,
-					normInst: normI,
-					matchType: "contains",
-				};
-				if (!bestMatch || match.similarity > bestMatch.similarity) {
-					bestMatch = match;
-				}
-				continue;
-			}
-
-			// Levenshtein match
-			const sim = similarityScore(normQ, normI);
-			if (sim >= 0.7) {
-				const match: Match = {
-					questMosque: qm,
-					institution: inst,
-					similarity: sim,
-					normQuest: normQ,
-					normInst: normI,
-					matchType: "levenshtein",
-				};
-				if (!bestMatch || match.similarity > bestMatch.similarity) {
-					bestMatch = match;
-				}
-			}
-		}
-
-		if (bestMatch) {
-			if (bestMatch.similarity >= 0.9) {
-				highConfidence.push(bestMatch);
+		if (best) {
+			const m: Match = {
+				questMosque: qm,
+				institution: best.item,
+				similarity: best.similarity,
+				normQuest: best.normSource,
+				normInst: best.normTarget,
+				matchType: best.matchType,
+			};
+			if (best.similarity >= 0.9) {
+				highConfidence.push(m);
 			} else {
-				mediumConfidence.push(bestMatch);
+				mediumConfidence.push(m);
 			}
 		} else {
 			noMatch.push(qm);
 		}
 	}
 
-	// Sort by similarity descending
 	highConfidence.sort((a, b) => b.similarity - a.similarity);
 	mediumConfidence.sort((a, b) => b.similarity - a.similarity);
 
@@ -274,7 +122,7 @@ async function main() {
 		console.log(`  Normalized: "${m.normQuest}" ↔ "${m.normInst}"`);
 	}
 
-	console.log("\n" + "=".repeat(100));
+	console.log(`\n${"=".repeat(100)}`);
 	console.log(
 		`MEDIUM CONFIDENCE (70-89%) — ${mediumConfidence.length} matches — needs human review`,
 	);
@@ -290,7 +138,7 @@ async function main() {
 		console.log(`  Normalized: "${m.normQuest}" ↔ "${m.normInst}"`);
 	}
 
-	console.log("\n" + "=".repeat(100));
+	console.log(`\n${"=".repeat(100)}`);
 	console.log(
 		`NO MATCH — ${noMatch.length} quest mosques with no similar institution`,
 	);
@@ -299,7 +147,7 @@ async function main() {
 		console.log(`  Quest #${qm.id}: ${qm.name} (${qm.district})`);
 	}
 
-	console.log("\n" + "=".repeat(100));
+	console.log(`\n${"=".repeat(100)}`);
 	console.log("SUMMARY");
 	console.log("=".repeat(100));
 	console.log(`  High confidence (>=90%): ${highConfidence.length}`);

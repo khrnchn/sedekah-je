@@ -27,6 +27,8 @@ bun run db:truncate        # Clear database
 # Utilities
 bun run clean              # Remove node_modules, .next, locks
 bun run import:walter-qrs  # Bulk QR import from scripts/data (see script header)
+bun run match:walter-institutions  # Read-only Walter vs existing similarity audit (see script header)
+bun run review:walter-medium       # GPT-4o-mini review of nameMatchesMedium (OPENAI_API_KEY; see script header)
 ```
 
 **Important**: This project uses Bun as the package manager and runtime. Always use `bun` instead of `npm` or `yarn`.

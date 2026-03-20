@@ -19,6 +19,9 @@
 		"db:geocode-quest": "bun scripts/geocode-quest-mosques.ts",
 		"db:backfill-institutions-location": "bun scripts/backfill-institutions-location.ts",
 		"import:walter-qrs": "bun scripts/import-walter-qrs.ts",
+		"match:walter-institutions": "bun scripts/match-walter-institutions.ts",
+		"review:walter-medium": "bun scripts/review-walter-medium-matches.ts",
+		"delete:walter-llm-dup-high": "bun scripts/delete-walter-llm-high-confidence-duplicates.ts",
 		"clean": "rm -rf node_modules/ .next/ bun.lock*",
 		"prepare": "husky"
 	},
