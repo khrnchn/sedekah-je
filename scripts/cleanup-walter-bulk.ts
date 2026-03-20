@@ -1,8 +1,9 @@
 /**
- * After Walter bulk import: remove DB rows + duplicate files, leave only images
- * that need manual review (no-QR + report errors) under to-review/.
+ * After Walter bulk import: tidy folders only — moves no-QR / report outcomes
+ * into to-review/ and _archive/. Does NOT change the database unless you pass
+ * `--delete-db-rows` (destructive; rarely needed).
  *
- * Usage: bun scripts/cleanup-walter-bulk.ts [--dry-run]
+ * Usage: bun scripts/cleanup-walter-bulk.ts [--dry-run] [--delete-db-rows]
  */
 
 import * as fs from "node:fs";
@@ -67,27 +68,35 @@ function removePath(p: string, dryRun: boolean) {
 
 async function main() {
 	const dryRun = process.argv.includes("--dry-run");
+	const deleteDbRows = process.argv.includes("--delete-db-rows");
 	const pool = new Pool({ connectionString: env.DATABASE_URL });
 
 	console.log("Walter bulk cleanup");
 	console.log("===================");
-	console.log(`Dry run: ${dryRun}\n`);
+	console.log(`Dry run: ${dryRun}`);
+	console.log(`Delete DB rows: ${deleteDbRows}\n`);
 
 	const countResult = await pool.query(
 		`SELECT COUNT(*)::int AS c FROM institutions WHERE source_url = $1`,
 		[SOURCE_URL],
 	);
 	const n = countResult.rows[0]?.c ?? 0;
-	console.log(`DB rows with source_url=${SOURCE_URL}: ${n}`);
+	console.log(
+		`DB rows with source_url=${SOURCE_URL}: ${n} (unchanged unless --delete-db-rows)`,
+	);
 
-	if (!dryRun && n > 0) {
-		const del = await pool.query(
-			`DELETE FROM institutions WHERE source_url = $1`,
-			[SOURCE_URL],
-		);
-		console.log(`Deleted ${del.rowCount ?? 0} institution row(s).`);
-	} else if (dryRun && n > 0) {
-		console.log(`[dry-run] Would delete ${n} institution row(s).`);
+	if (deleteDbRows) {
+		if (!dryRun && n > 0) {
+			const del = await pool.query(
+				`DELETE FROM institutions WHERE source_url = $1`,
+				[SOURCE_URL],
+			);
+			console.log(`Deleted ${del.rowCount ?? 0} institution row(s).`);
+		} else if (dryRun && n > 0) {
+			console.log(`[dry-run] Would delete ${n} institution row(s).`);
+		} else if (n === 0) {
+			console.log("No matching rows to delete.");
+		}
 	}
 
 	let report: {
