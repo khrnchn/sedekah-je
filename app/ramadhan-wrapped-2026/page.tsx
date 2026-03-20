@@ -1,12 +1,16 @@
 import type { Metadata } from "next";
 import { unstable_cache } from "next/cache";
 import { Header } from "@/components/shared/header";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
 	getRamadhanWrappedStats,
 	RAMADHAN_WRAPPED_CONFIG,
 } from "@/lib/ramadhan-wrapped";
+import { getGitHubWrappedStats } from "@/lib/ramadhan-wrapped-github";
+import { getUmamiWrappedStats } from "@/lib/ramadhan-wrapped-umami";
 import { cn } from "@/lib/utils";
+import { DailyPageviewsChart } from "./_components/daily-pageviews-chart";
 import { DailySubmissionsChart } from "./_components/daily-submissions-chart";
 
 export const metadata: Metadata = {
@@ -38,6 +42,24 @@ const getWrappedStatsCached = unstable_cache(
 	},
 );
 
+const getUmamiStatsCached = unstable_cache(
+	async () => getUmamiWrappedStats(),
+	["ramadhan-wrapped-2026-umami"],
+	{
+		revalidate: 300,
+		tags: ["ramadhan-wrapped-2026-umami"],
+	},
+);
+
+const getGitHubStatsCached = unstable_cache(
+	async () => getGitHubWrappedStats(),
+	["ramadhan-wrapped-2026-github"],
+	{
+		revalidate: 300,
+		tags: ["ramadhan-wrapped-2026-github"],
+	},
+);
+
 function formatNumber(value: number): string {
 	return new Intl.NumberFormat("en-GB").format(value);
 }
@@ -45,7 +67,11 @@ function formatNumber(value: number): string {
 export default async function RamadhanWrappedPage({ searchParams }: Props) {
 	const params = await searchParams;
 	const posterMode = params.poster === "1" || params.poster === "true";
-	const stats = await getWrappedStatsCached();
+	const [stats, umamiStats, githubStats] = await Promise.all([
+		getWrappedStatsCached(),
+		getUmamiStatsCached(),
+		getGitHubStatsCached(),
+	]);
 	const { kpis, rankings, campaignProgress, range } = stats;
 
 	const strongestDay = [...stats.dailyTrend].sort(
@@ -56,8 +82,6 @@ export default async function RamadhanWrappedPage({ searchParams }: Props) {
 		label: row.label,
 		submissions: row.submissions,
 	}));
-
-	const isComplete = campaignProgress.completionRate >= 100;
 
 	return (
 		<>
@@ -145,6 +169,11 @@ export default async function RamadhanWrappedPage({ searchParams }: Props) {
 									})}
 								</span>
 							</p>
+							{!posterMode && (
+								<Button asChild variant="outline" size="sm" className="mt-4">
+									<a href="/ramadhan-wrapped-2026?poster=1">View poster</a>
+								</Button>
+							)}
 						</div>
 					</header>
 
@@ -169,6 +198,32 @@ export default async function RamadhanWrappedPage({ searchParams }: Props) {
 							size="hero"
 						/>
 					</section>
+
+					{umamiStats && (
+						<>
+							<SectionLabel className="mt-6 sm:mt-8">Site Traffic</SectionLabel>
+							<section className="grid grid-cols-1 gap-2.5 sm:grid-cols-3 sm:gap-4">
+								<StatCard
+									title="Total pageviews"
+									value={formatNumber(umamiStats.kpis.totalPageviews)}
+									description="All page loads during the campaign"
+									size="hero"
+								/>
+								<StatCard
+									title="Unique visitors"
+									value={formatNumber(umamiStats.kpis.uniqueVisits)}
+									description="Distinct visits in the window"
+									size="hero"
+								/>
+								<StatCard
+									title="Peak day"
+									value={formatNumber(umamiStats.kpis.peakDayViews)}
+									description={`${umamiStats.kpis.peakDayLabel} — highest single-day traffic`}
+									size="hero"
+								/>
+							</section>
+						</>
+					)}
 
 					<SectionLabel className="mt-6 sm:mt-8">Status breakdown</SectionLabel>
 					<section className="grid grid-cols-1 gap-2.5 sm:grid-cols-3 sm:gap-4">
@@ -200,10 +255,9 @@ export default async function RamadhanWrappedPage({ searchParams }: Props) {
 							description="Reviewed and approved during the campaign range"
 						/>
 						<StatCard
-							variant={isComplete ? "celebration" : "default"}
-							title="30 Days 30 QR progress"
-							value={`${campaignProgress.filledDays}/${campaignProgress.targetDays}`}
-							description={`${campaignProgress.completionRate}% complete`}
+							title="Busiest day"
+							value={formatNumber(strongestDay?.submissions ?? 0)}
+							description={`${strongestDay?.label ?? "-"} — most submissions in a single day`}
 						/>
 					</section>
 
@@ -231,6 +285,30 @@ export default async function RamadhanWrappedPage({ searchParams }: Props) {
 							}))}
 						/>
 					</section>
+
+					{umamiStats && (
+						<>
+							<SectionLabel className="mt-6 sm:mt-8">
+								Traffic Insights
+							</SectionLabel>
+							<section className="grid grid-cols-1 gap-2.5 sm:gap-4 lg:grid-cols-2">
+								<RankingCard
+									title="Top pages"
+									items={umamiStats.rankings.topPages.map((row) => ({
+										label: row.path,
+										value: formatNumber(row.views),
+									}))}
+								/>
+								<RankingCard
+									title="Traffic sources"
+									items={umamiStats.rankings.topReferrers.map((row) => ({
+										label: row.domain,
+										value: formatNumber(row.views),
+									}))}
+								/>
+							</section>
+						</>
+					)}
 
 					<SectionLabel className="mt-6 sm:mt-8">Activity</SectionLabel>
 					<section className="grid grid-cols-1 gap-2.5 sm:gap-4 lg:grid-cols-2">
@@ -284,12 +362,81 @@ export default async function RamadhanWrappedPage({ searchParams }: Props) {
 										</span>
 									</p>
 								</div>
-								<p className="mt-6 border-t border-border/50 pt-4 text-xs text-muted-foreground">
-									Umami analytics are not included in this version.
-								</p>
+								{!umamiStats && (
+									<p className="mt-6 border-t border-border/50 pt-4 text-xs text-muted-foreground">
+										Umami analytics are not available.
+									</p>
+								)}
 							</CardContent>
 						</Card>
 					</section>
+
+					{umamiStats && (
+						<>
+							<SectionLabel className="mt-6 sm:mt-8">
+								Daily Pageviews
+							</SectionLabel>
+							<section>
+								<Card className="rounded-xl border-border/60 shadow-sm sm:rounded-2xl dark:border-border/80 dark:shadow-none">
+									<CardContent className="p-4 pt-5 sm:p-5 sm:pt-6">
+										<div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
+											<h2 className="font-heading text-base font-semibold tracking-tight text-foreground sm:text-lg">
+												Pageviews trend
+											</h2>
+											<p className="text-xs text-muted-foreground">
+												Daily pageviews during the campaign
+											</p>
+										</div>
+										<div className="mt-4">
+											<DailyPageviewsChart
+												data={umamiStats.dailyPageviews.map((d) => ({
+													label: d.label,
+													views: d.views,
+												}))}
+											/>
+										</div>
+									</CardContent>
+								</Card>
+							</section>
+
+							<SectionLabel className="mt-6 sm:mt-8">Audience</SectionLabel>
+							<section className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-4">
+								<StatCard
+									title="Mobile traffic"
+									value={`${umamiStats.kpis.mobilePercent}%`}
+									description="Visitors on mobile devices"
+								/>
+								<StatCard
+									title="Peak hour"
+									value={`${umamiStats.kpis.peakHour}:00`}
+									description={`Most active hour during Ramadhan (${formatNumber(umamiStats.kpis.peakHourViews)} views)`}
+								/>
+							</section>
+						</>
+					)}
+
+					{githubStats && (
+						<>
+							<SectionLabel className="mt-6 sm:mt-8">Open Source</SectionLabel>
+							<section className="grid grid-cols-1 gap-2.5 sm:grid-cols-3 sm:gap-4">
+								<StatCard
+									title="Commits"
+									value={formatNumber(githubStats.commits)}
+									description="Code commits during the campaign"
+								/>
+								<StatCard
+									title="Pull requests merged"
+									value={formatNumber(githubStats.mergedPRs)}
+									description={`${formatNumber(githubStats.pullRequests)} PRs total`}
+								/>
+								<StatCard
+									title="Issues opened"
+									value={formatNumber(githubStats.issues)}
+									description="Bug reports and feature requests"
+								/>
+							</section>
+						</>
+					)}
 
 					{!posterMode && (
 						<footer className="mt-6 rounded-xl border border-dashed border-border/60 bg-muted/25 px-3 py-3 text-sm text-muted-foreground sm:mt-8 sm:rounded-2xl sm:px-4 dark:border-border/80 dark:bg-muted/15">
