@@ -18,6 +18,7 @@
 		"db:seed-quest": "bun scripts/seed-quest-mosques.ts",
 		"db:geocode-quest": "bun scripts/geocode-quest-mosques.ts",
 		"db:backfill-institutions-location": "bun scripts/backfill-institutions-location.ts",
+		"import:walter-qrs": "bun scripts/import-walter-qrs.ts",
 		"clean": "rm -rf node_modules/ .next/ bun.lock*",
 		"prepare": "husky"
 	},

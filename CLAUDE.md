@@ -26,6 +26,7 @@ bun run db:truncate        # Clear database
 
 # Utilities
 bun run clean              # Remove node_modules, .next, locks
+bun run import:walter-qrs  # Bulk QR import from scripts/data (see script header)
 ```
 
 **Important**: This project uses Bun as the package manager and runtime. Always use `bun` instead of `npm` or `yarn`.

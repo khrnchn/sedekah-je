@@ -22,6 +22,11 @@ export const env = createEnv({
 		// Google Geocoding (optional, for backfill scripts)
 		GOOGLE_GEOCODING_API_KEY: z.string().min(1).optional(),
 
+		// OpenAI (optional, bulk QR import script)
+		OPENAI_API_KEY: z.string().min(1).optional(),
+		// Better Auth user id to attribute bulk imports (optional)
+		BULK_IMPORT_CONTRIBUTOR_ID: z.string().min(1).optional(),
+
 		// Cloudflare R2 Storage
 		R2_ENDPOINT: z.string().url(),
 		R2_ACCESS_KEY_ID: z.string(),
@@ -51,6 +56,8 @@ export const env = createEnv({
 	runtimeEnv: {
 		...process.env,
 		GOOGLE_GEOCODING_API_KEY: process.env.GOOGLE_GEOCODING_API_KEY,
+		OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+		BULK_IMPORT_CONTRIBUTOR_ID: process.env.BULK_IMPORT_CONTRIBUTOR_ID,
 		NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
 		NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
 		NEXT_PUBLIC_GOOGLE_MAPS_API_KEY:
