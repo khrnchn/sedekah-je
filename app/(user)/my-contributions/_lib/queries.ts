@@ -6,6 +6,7 @@ import { headers } from "next/headers";
 import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions } from "@/db/schema";
+import { normalizeInstitutionCategory } from "@/lib/institution-categories";
 
 export interface MyContributionsStats {
 	totalContributions: number;
@@ -93,7 +94,7 @@ export async function getMyContributions(
 					name: inst.name,
 					status: inst.status as ContributionItem["status"],
 					date: inst.createdAt?.toISOString() ?? "",
-					type: inst.category,
+					type: normalizeInstitutionCategory(inst.category),
 					slug: inst.slug,
 					adminNotes: inst.adminNotes ?? null,
 				}));

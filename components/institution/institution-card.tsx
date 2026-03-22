@@ -26,6 +26,10 @@ import {
 } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/use-auth";
 import { useOutsideClick } from "@/hooks/use-outside-click";
+import {
+	getInstitutionCategoryIcon,
+	normalizeInstitutionCategory,
+} from "@/lib/institution-categories";
 import { cn, slugify } from "@/lib/utils";
 import { ClaimModal } from "./claim-modal";
 import QrCodeDisplay from "./qr-code-display";
@@ -103,7 +107,8 @@ const InstitutionCard = forwardRef<
 
 		const router = useRouter();
 		const resolvedSlug = slug ?? slugify(name);
-		const href = `/${category}/${resolvedSlug}`;
+		const normalizedCategory = normalizeInstitutionCategory(category);
+		const href = `/${normalizedCategory}/${resolvedSlug}`;
 
 		useEffect(() => {
 			setHasMounted(true);
@@ -361,13 +366,7 @@ const InstitutionCard = forwardRef<
 								<div className="flex flex-col items-center gap-1 mb-2 w-full">
 									<motion.div>
 										<Image
-											src={
-												category === "mosque"
-													? "/masjid/masjid-figma.svg"
-													: category === "surau"
-														? "/surau/surau-figma.svg"
-														: "/lain/lain-figma.svg"
-											}
+											src={getInstitutionCategoryIcon(category)}
 											alt="category logo"
 											width={50}
 											height={50}

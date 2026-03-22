@@ -1,10 +1,13 @@
 "use server";
 
-import { db } from "@/db";
-import { institutions, users } from "@/db/schema";
-import { slugify } from "@/lib/utils";
 import { and, eq } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
+import { db } from "@/db";
+import { institutions, users } from "@/db/schema";
+import { normalizeInstitutionCategory } from "@/lib/institution-categories";
+import { slugify } from "@/lib/utils";
+
+const INSTITUTIONS_CACHE_VERSION = "v2";
 
 const getInstitutionsInternal = unstable_cache(
 	async () => {
@@ -41,9 +44,12 @@ const getInstitutionsInternal = unstable_cache(
 			.where(eq(institutions.status, "approved"))
 			.orderBy(institutions.name);
 
-		return results;
+		return results.map((institution) => ({
+			...institution,
+			category: normalizeInstitutionCategory(institution.category),
+		}));
 	},
-	["all-institutions"],
+	["all-institutions", INSTITUTIONS_CACHE_VERSION],
 	{
 		revalidate: 86400, // 1 day for stable homepage data
 		tags: ["institutions"],
@@ -91,9 +97,14 @@ const getInstitutionBySlugInternal = unstable_cache(
 			)
 			.limit(1);
 
-		return institution || null;
+		return institution
+			? {
+					...institution,
+					category: normalizeInstitutionCategory(institution.category),
+				}
+			: null;
 	},
-	["institution-by-slug"],
+	["institution-by-slug", INSTITUTIONS_CACHE_VERSION],
 	{
 		revalidate: 86400, // 1 day for individual institution pages
 		tags: ["institutions"],

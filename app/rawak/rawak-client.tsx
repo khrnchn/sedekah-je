@@ -36,16 +36,25 @@ import {
 } from "@/components/ui/drawer";
 import type { Institution } from "@/db/schema";
 import useClientDimensions from "@/hooks/use-client-dimensions";
+import {
+	type CanonicalInstitutionCategory,
+	normalizeInstitutionCategory,
+} from "@/lib/institution-categories";
 import { getBaseUrl, removeDuplicateInstitutions, slugify } from "@/lib/utils";
 
 type Props = {
 	initialInstitutions: Institution[];
 };
+type NormalizedInstitution = Omit<OldInstitution, "category"> & {
+	category: CanonicalInstitutionCategory;
+};
 
 export function RawakClient({ initialInstitutions }: Props) {
 	const [randomInstitution, setRandomInstitution] =
-		useState<OldInstitution | null>(null);
-	const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+		useState<NormalizedInstitution | null>(null);
+	const [selectedCategories, setSelectedCategories] = useState<
+		CanonicalInstitutionCategory[]
+	>([]);
 	const [selectedState, setSelectedState] = useState<string>("");
 	const { width } = useClientDimensions();
 	const [url, setUrl] = useState<string>("");
@@ -57,11 +66,12 @@ export function RawakClient({ initialInstitutions }: Props) {
 	const institutions = useMemo(() => {
 		const adapted = initialInstitutions.map((inst) => ({
 			...inst,
+			category: normalizeInstitutionCategory(inst.category),
 			description: inst.description || undefined,
 			supportedPayment: inst.supportedPayment || undefined,
 			coords: inst.coords || undefined,
 			qrImage: inst.qrImage || "",
-		})) as OldInstitution[];
+		})) as NormalizedInstitution[];
 		return removeDuplicateInstitutions(adapted);
 	}, [initialInstitutions]);
 
@@ -79,7 +89,7 @@ export function RawakClient({ initialInstitutions }: Props) {
 		});
 	}, [institutions, selectedCategories, selectedState]);
 
-	const getInstitutionSlug = useCallback((inst: OldInstitution) => {
+	const getInstitutionSlug = useCallback((inst: NormalizedInstitution) => {
 		return inst.slug ?? slugify(inst.name);
 	}, []);
 
@@ -148,7 +158,11 @@ export function RawakClient({ initialInstitutions }: Props) {
 				<div className="hidden sm:block space-y-4">
 					<FilterCategory
 						onCategoryChange={(categories) => {
-							setSelectedCategories(categories);
+							setSelectedCategories(
+								categories.map((category) =>
+									normalizeInstitutionCategory(category),
+								),
+							);
 							setRandomInstitution(null);
 						}}
 						selectedState={selectedState}
@@ -222,7 +236,11 @@ export function RawakClient({ initialInstitutions }: Props) {
 									/>
 									<FilterCategory
 										onCategoryChange={(categories) => {
-											setSelectedCategories(categories);
+											setSelectedCategories(
+												categories.map((category) =>
+													normalizeInstitutionCategory(category),
+												),
+											);
 											setRandomInstitution(null);
 										}}
 										selectedState={selectedState}

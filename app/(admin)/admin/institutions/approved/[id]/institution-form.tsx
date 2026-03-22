@@ -28,6 +28,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { Institution } from "@/db/institutions";
 import { env } from "@/env";
 import { formatFullDate, formatTime } from "@/lib/date-utils";
+import { normalizeInstitutionCategory } from "@/lib/institution-categories";
 import {
 	categories as CATEGORY_OPTIONS,
 	supportedPayments as PAYMENT_OPTIONS,
@@ -185,7 +186,7 @@ const ApprovedInstitutionForm = forwardRef<ApprovedFormHandle, Props>(
 			resolver: zodResolver(formSchema),
 			defaultValues: {
 				name: institution.name ?? "",
-				category: institution.category || CATEGORY_OPTIONS[0],
+				category: normalizeInstitutionCategory(institution.category),
 				state: institution.state || STATE_OPTIONS[0],
 				city: institution.city ?? "",
 				address: institution.address ?? "",

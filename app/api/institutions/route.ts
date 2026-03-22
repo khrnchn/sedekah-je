@@ -3,6 +3,7 @@ import { unstable_cache } from "next/cache";
 import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { institutions } from "@/db/schema";
+import { normalizeInstitutionCategory } from "@/lib/institution-categories";
 import type {
 	categories as categoryOptions,
 	states as stateOptions,
@@ -18,6 +19,8 @@ type SearchParams = {
 	page: number;
 	limit: number;
 };
+
+const INSTITUTIONS_API_CACHE_VERSION = "v2";
 
 const getInstitutionsWithFiltersInternal = unstable_cache(
 	async (params: SearchParams) => {
@@ -41,7 +44,10 @@ const getInstitutionsWithFiltersInternal = unstable_cache(
 
 		// Category filter
 		if (category) {
-			const categories = category.split(",").filter(Boolean);
+			const categories = category
+				.split(",")
+				.filter(Boolean)
+				.map((value) => normalizeInstitutionCategory(value));
 			if (categories.length > 0) {
 				// Type assertion needed for Drizzle's strict typing
 				conditions.push(
@@ -102,7 +108,7 @@ const getInstitutionsWithFiltersInternal = unstable_cache(
 			},
 		};
 	},
-	["institutions-api"],
+	["institutions-api", INSTITUTIONS_API_CACHE_VERSION],
 	{
 		revalidate: 86400, // 1 day for API responses
 		tags: ["institutions"],

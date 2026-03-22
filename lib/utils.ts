@@ -36,7 +36,9 @@ export const slugify = (str: string) =>
  * @param institutions Array of institutions
  * @returns Array of institutions without duplicates
  */
-export function removeDuplicateInstitutions(institutions: Institution[]) {
+export function removeDuplicateInstitutions<T extends Institution>(
+	institutions: T[],
+) {
 	return institutions.filter(
 		(institution, index, self) =>
 			index ===

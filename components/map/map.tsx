@@ -13,7 +13,11 @@ import L, { Icon, type LatLngExpression } from "leaflet";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Marker, TileLayer, Tooltip, useMap } from "react-leaflet";
-import { CategoryColor, type Institution } from "@/app/types/institutions";
+import type { Institution } from "@/app/types/institutions";
+import {
+	getInstitutionCategoryColor,
+	normalizeInstitutionCategory,
+} from "@/lib/institution-categories";
 import { slugify } from "@/lib/utils";
 
 type MarkerColor =
@@ -149,7 +153,9 @@ export default function MapLocation({
 	const markerClickHandler = useCallback(
 		(institution: Institution) => {
 			const slug = institution.slug ?? slugify(institution.name);
-			router.push(`/${institution.category}/${slug}`);
+			router.push(
+				`/${normalizeInstitutionCategory(institution.category)}/${slug}`,
+			);
 		},
 		[router],
 	);
@@ -176,8 +182,7 @@ export default function MapLocation({
 					key={institution.id}
 					position={institution.coords as LatLngExpression}
 					icon={getMarkerIcon(
-						CategoryColor[institution.category as keyof typeof CategoryColor] ??
-							"violet",
+						getInstitutionCategoryColor(institution.category),
 					)}
 					eventHandlers={{ click: () => markerClickHandler(institution) }}
 				>

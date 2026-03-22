@@ -1,3 +1,5 @@
+import { normalizeInstitutionCategory } from "@/lib/institution-categories";
+
 interface TelegramMessage {
 	chat_id: string;
 	text: string;
@@ -130,12 +132,15 @@ export async function logNewInstitution(institution: {
 	contributorName: string;
 	contributorEmail: string;
 }): Promise<void> {
+	const normalizedCategory = normalizeInstitutionCategory(institution.category);
 	const categoryEmoji =
 		{
-			mosque: "🕌",
+			masjid: "🕌",
 			surau: "🏢",
-			others: "🏛️",
-		}[institution.category] || "🏛️";
+			tahfiz: "📚",
+			kebajikan: "🤝",
+			"lain-lain": "🏛️",
+		}[normalizedCategory] || "🏛️";
 
 	await logToTelegram({
 		level: "info",

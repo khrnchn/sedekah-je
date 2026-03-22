@@ -1,20 +1,10 @@
-export type PaymentOption = "duitnow" | "tng" | "boost" | "toyyibpay";
-export const categories = {
-	mosque: {
-		label: "Masjid",
-		icon: "/masjid/masjid-figma.svg",
-	},
-	surau: {
-		label: "Surau",
-		icon: "/surau/surau-figma.svg",
-	},
-	others: {
-		label: "Lain-lain",
-		icon: "/lain/lain-figma.svg",
-	},
-};
+import type { InstitutionCategory } from "@/lib/institution-categories";
+import { institutionCategoryMeta } from "@/lib/institution-categories";
 
-export type Category = keyof typeof categories;
+export type PaymentOption = "duitnow" | "tng" | "boost" | "toyyibpay";
+export const categories = institutionCategoryMeta;
+
+export type Category = InstitutionCategory;
 
 export type Institution = {
 	id: number;
@@ -31,9 +21,3 @@ export type Institution = {
 	contributorId?: string | null;
 	contributorEmail?: string | null;
 };
-
-export enum CategoryColor {
-	mosque = "blue",
-	surau = "green",
-	others = "violet",
-}

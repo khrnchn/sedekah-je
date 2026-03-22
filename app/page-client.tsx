@@ -29,6 +29,10 @@ import {
 } from "@/components/ui/drawer";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Institution } from "@/db/schema";
+import {
+	type CanonicalInstitutionCategory,
+	normalizeInstitutionCategory,
+} from "@/lib/institution-categories";
 
 type SearchParams = {
 	search?: string;
@@ -43,6 +47,9 @@ type Props = {
 };
 
 const limit = 15;
+type NormalizedInstitution = Omit<OldInstitution, "category"> & {
+	category: CanonicalInstitutionCategory;
+};
 
 export function PageClient({
 	initialInstitutions,
@@ -53,8 +60,13 @@ export function PageClient({
 
 	// URL state
 	const [query, setQuery] = useState<string>(initialSearchParams.search || "");
-	const [selectedCategories, setSelectedCategories] = useState<string[]>(
-		initialSearchParams.category?.split(",").filter(Boolean) || [],
+	const [selectedCategories, setSelectedCategories] = useState<
+		CanonicalInstitutionCategory[]
+	>(
+		initialSearchParams.category
+			?.split(",")
+			.filter(Boolean)
+			.map((category) => normalizeInstitutionCategory(category)) || [],
 	);
 	const [selectedState, setSelectedState] = useState<string>(
 		initialSearchParams.state || "",
@@ -70,7 +82,7 @@ export function PageClient({
 	const [currentUserCoordinate, setCurrentUserCoordinate] =
 		useState<GeolibInputCoordinates | null>(null);
 	const [closestInstitution, setClosestInstitution] = useState<
-		(OldInstitution & { distanceToCurrentUserInMeter: number }) | null
+		(NormalizedInstitution & { distanceToCurrentUserInMeter: number }) | null
 	>(null);
 
 	// Map
@@ -83,11 +95,12 @@ export function PageClient({
 	const adaptedInstitutions = useMemo(() => {
 		return institutions.map((inst) => ({
 			...inst,
+			category: normalizeInstitutionCategory(inst.category),
 			description: inst.description || undefined,
 			supportedPayment: inst.supportedPayment || undefined,
 			coords: inst.coords || undefined,
 			qrImage: inst.qrImage || "",
-		})) as OldInstitution[];
+		})) as NormalizedInstitution[];
 	}, [institutions]);
 
 	// Filter institutions client-side for now
@@ -156,10 +169,16 @@ export function PageClient({
 
 	const handleCategoryChange = useCallback(
 		(categories: string[]) => {
-			setSelectedCategories(categories);
+			setSelectedCategories(
+				categories.map((category) => normalizeInstitutionCategory(category)),
+			);
 			setOffset(0);
 			setAllItemsLoaded(false);
-			debouncedUpdateURL(query, categories, selectedState);
+			debouncedUpdateURL(
+				query,
+				categories.map((category) => normalizeInstitutionCategory(category)),
+				selectedState,
+			);
 		},
 		[debouncedUpdateURL, query, selectedState],
 	);
@@ -239,7 +258,9 @@ export function PageClient({
 		const c = {
 			...closestCoordinate,
 			distanceToCurrentUserInMeter,
-		} as unknown as OldInstitution & { distanceToCurrentUserInMeter: number };
+		} as unknown as NormalizedInstitution & {
+			distanceToCurrentUserInMeter: number;
+		};
 
 		setClosestInstitution(c);
 	}, [

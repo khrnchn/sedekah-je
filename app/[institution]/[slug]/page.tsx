@@ -2,7 +2,6 @@ import { MapIcon } from "lucide-react";
 import { notFound } from "next/navigation";
 import type React from "react";
 import { Suspense } from "react";
-import { CategoryColor } from "@/app/types/institutions";
 import GetdoaFooter from "@/components/getdoa-footer";
 import InstitutionCard from "@/components/institution/institution-card";
 import PageFooter from "@/components/layout/page-footer";

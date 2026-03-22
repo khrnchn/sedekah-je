@@ -3,11 +3,14 @@
 import { MapIcon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import type { Institution as OldInstitution } from "@/app/types/institutions";
-import { CategoryColor } from "@/app/types/institutions";
 import InstitutionCard from "@/components/institution/institution-card";
 import CollapsibleCustomMap from "@/components/map/custom-map";
 import { Button } from "@/components/ui/button";
 import type { Institution } from "@/db/schema";
+import {
+	getInstitutionCategoryColor,
+	normalizeInstitutionCategory,
+} from "@/lib/institution-categories";
 
 type Props = {
 	institution: Institution;
@@ -24,6 +27,7 @@ export function InstitutionPageClient({ institution }: Props) {
 	const adaptedInstitution = useMemo(() => {
 		return {
 			...institution,
+			category: normalizeInstitutionCategory(institution.category),
 			description: institution.description || undefined,
 			supportedPayment: institution.supportedPayment || undefined,
 			coords: institution.coords || undefined,
@@ -54,10 +58,7 @@ export function InstitutionPageClient({ institution }: Props) {
 							marker={{
 								coords: adaptedInstitution.coords as [number, number],
 								name: adaptedInstitution.name,
-								color:
-									CategoryColor[
-										adaptedInstitution.category as keyof typeof CategoryColor
-									],
+								color: getInstitutionCategoryColor(adaptedInstitution.category),
 							}}
 						/>
 					</>

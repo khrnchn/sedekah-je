@@ -1,7 +1,8 @@
-import { type Institution, categories } from "@/app/types/institutions";
 import Image from "next/image";
 import type React from "react";
 import { useState } from "react";
+import { categories, type Institution } from "@/app/types/institutions";
+import { normalizeInstitutionCategory } from "@/lib/institution-categories";
 
 type Props = {
 	onCategoryChange: (categories: string[]) => void;
@@ -39,7 +40,7 @@ const FilterCategory = ({
 		return institutions.filter(
 			(institution) =>
 				(!selectedState || institution.state === selectedState) &&
-				institution.category === category,
+				normalizeInstitutionCategory(institution.category) === category,
 		).length;
 	};
 

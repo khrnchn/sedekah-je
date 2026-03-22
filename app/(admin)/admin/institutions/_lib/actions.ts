@@ -8,6 +8,7 @@ import { institutions, questMosques, users } from "@/db/schema";
 import { requireAdminSession } from "@/lib/auth-helpers";
 import { sendInstitutionApprovalEmail } from "@/lib/email/approval";
 import { buildInstitutionApproveLink } from "@/lib/email/approval-link";
+import { normalizeInstitutionCategory } from "@/lib/institution-categories";
 import { reverseGeocodeInstitution } from "@/lib/integrations/geocode";
 import { slugify } from "@/lib/utils";
 
@@ -214,6 +215,9 @@ export async function updateInstitutionByAdmin(
 
 	// If name is being updated, regenerate the slug
 	const updatePayload = { ...payload };
+	if (payload.category) {
+		updatePayload.category = normalizeInstitutionCategory(payload.category);
+	}
 	if (payload.name) {
 		const newSlug = await generateUniqueSlug(payload.name, id);
 		updatePayload.slug = newSlug;

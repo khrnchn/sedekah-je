@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatDateOnly } from "@/lib/date-utils";
+import { getInstitutionCategoryLabel } from "@/lib/institution-categories";
 import { cn } from "@/lib/utils";
 
 interface Contribution {
@@ -64,12 +65,6 @@ const STATUS_LABELS: Record<string, string> = {
 	rejected: "Ditolak",
 };
 
-const TYPE_LABELS: Record<string, string> = {
-	mosque: "Masjid",
-	surau: "Surau",
-	others: "Lain-lain",
-};
-
 function ContributionItem({
 	contribution,
 	onEditRejected,
@@ -112,7 +107,7 @@ function ContributionItem({
 					</Button>
 				)}
 				<Badge variant="secondary" className="text-xs">
-					{TYPE_LABELS[contribution.type] ?? contribution.type}
+					{getInstitutionCategoryLabel(contribution.type)}
 				</Badge>
 				<Badge
 					variant="secondary"

@@ -8,9 +8,11 @@ import {
 } from "@/components/ui/chart";
 
 const COLORS = {
-	mosque: "#10b981",
+	masjid: "#10b981",
 	surau: "#3b82f6",
-	others: "#f59e0b",
+	tahfiz: "#f59e0b",
+	kebajikan: "#f97316",
+	"lain-lain": "#8b5cf6",
 };
 
 interface CategoryData {
