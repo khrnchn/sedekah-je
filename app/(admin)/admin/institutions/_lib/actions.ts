@@ -219,7 +219,8 @@ export async function updateInstitutionByAdmin(
 		updatePayload.category = normalizeInstitutionCategory(payload.category);
 	}
 	if (payload.name) {
-		const newSlug = await generateUniqueSlug(payload.name, id);
+		updatePayload.name = payload.name.trim();
+		const newSlug = await generateUniqueSlug(updatePayload.name, id);
 		updatePayload.slug = newSlug;
 	}
 

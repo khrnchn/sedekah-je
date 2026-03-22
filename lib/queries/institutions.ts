@@ -1,13 +1,13 @@
 "use server";
 
-import { and, eq } from "drizzle-orm";
+import { and, asc, eq, sql } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import { db } from "@/db";
 import { institutions, users } from "@/db/schema";
 import { normalizeInstitutionCategory } from "@/lib/institution-categories";
 import { slugify } from "@/lib/utils";
 
-const INSTITUTIONS_CACHE_VERSION = "v2";
+const INSTITUTIONS_CACHE_VERSION = "v3";
 
 const getInstitutionsInternal = unstable_cache(
 	async () => {
@@ -42,7 +42,10 @@ const getInstitutionsInternal = unstable_cache(
 			.from(institutions)
 			.leftJoin(users, eq(institutions.contributorId, users.id))
 			.where(eq(institutions.status, "approved"))
-			.orderBy(institutions.name);
+			.orderBy(
+				asc(sql`lower(btrim(${institutions.name}))`),
+				asc(institutions.id),
+			);
 
 		return results.map((institution) => ({
 			...institution,

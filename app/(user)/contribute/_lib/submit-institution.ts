@@ -69,11 +69,20 @@ export async function submitInstitution(
 
 	// --- Extract raw values
 	const rawFromForm = {
-		name: formData.get("name"),
+		name:
+			typeof formData.get("name") === "string"
+				? formData.get("name")?.toString().trim()
+				: formData.get("name"),
 		category: formData.get("category"),
 		state: formData.get("state"),
-		city: formData.get("city"),
-		address: formData.get("address"),
+		city:
+			typeof formData.get("city") === "string"
+				? formData.get("city")?.toString().trim()
+				: formData.get("city"),
+		address:
+			typeof formData.get("address") === "string"
+				? formData.get("address")?.toString().trim()
+				: formData.get("address"),
 		contributorRemarks: formData.get("contributorRemarks"),
 		sourceUrl: formData.get("sourceUrl"),
 		contributorId: formData.get("contributorId"),
