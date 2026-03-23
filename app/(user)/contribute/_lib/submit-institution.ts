@@ -17,6 +17,7 @@ import {
 	logInstitutionSubmissionFailure,
 	logNewInstitution,
 } from "@/lib/integrations/telegram";
+import { decodeQrFromBuffer } from "@/lib/qr-decode";
 import { isToyyibpay } from "@/lib/qr-utils";
 import { getUserById } from "@/lib/queries/users";
 import { slugify } from "@/lib/utils";
@@ -261,10 +262,9 @@ export async function submitInstitution(
 
 	console.log("Validation passed, proceeding with submission");
 
-	// --- Handle QR image (optional)
+	// --- Handle QR image upload + server-side QR extraction
 	let qrImageUrl: string | undefined;
-	// We get qrContent from the form data now, no more backend processing
-	const qrContent = formData.get("qrContent") as string | null;
+	let qrContent: string | null = null;
 
 	try {
 		if (qrImageFile && qrImageFile.size > 0) {
@@ -327,6 +327,17 @@ export async function submitInstitution(
 					},
 				};
 			}
+
+			// Server-side QR extraction (more reliable than browser-side canvas decode)
+			qrContent = await decodeQrFromBuffer(buffer);
+
+			// Fall back to client-provided value if server extraction fails
+			if (!qrContent) {
+				const clientQrContent = formData.get("qrContent") as string | null;
+				if (clientQrContent?.trim()) {
+					qrContent = clientQrContent.trim();
+				}
+			}
 		}
 	} catch (error) {
 		console.error("Error handling QR image upload:", error);
@@ -356,6 +367,26 @@ export async function submitInstitution(
 				qrImage: ["Berlaku ralat semasa memproses imej QR. Sila cuba lagi."],
 			},
 		};
+	}
+
+	// --- Server-side duplicate QR check (catches cases where only server decoded)
+	if (qrContent) {
+		const [existingQr] = await db
+			.select({ id: institutions.id })
+			.from(institutions)
+			.where(eq(institutions.qrContent, qrContent))
+			.limit(1);
+
+		if (existingQr) {
+			return {
+				status: "error",
+				errors: {
+					general: [
+						"QR code ini telah pun wujud dalam sistem. Sila semak semula.",
+					],
+				},
+			};
+		}
 	}
 
 	// Geocode if coords not provided
@@ -398,6 +429,7 @@ export async function submitInstitution(
 				state: parsed.data.state as (typeof states)[number],
 				coords: coords, // Coords may be updated by geocoding
 				qrImage: qrImageUrl,
+				qrContent: qrContent || null,
 				contributorId: contributorId, // Include the contributor ID
 				status: "pending", // Always pending for new submissions
 				supportedPayment: [isToyyibpay(qrContent) ? "toyyibpay" : "duitnow"],
