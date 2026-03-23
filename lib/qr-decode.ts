@@ -9,21 +9,26 @@ import sharp from "sharp";
 /**
  * Decode QR code content from an image buffer using sharp + @zxing/library.
  *
- * Uses sharp to convert the image to raw RGBA pixel data, then strips the alpha
- * channel to produce RGB data compatible with @zxing/library's RGBLuminanceSource.
- * This approach is more reliable than browser-side canvas decoding because sharp
- * preserves full image fidelity without browser rendering variance.
+ * Converts the image to sRGB colorspace first (handles grayscale inputs that
+ * would otherwise produce 2-channel GA data), then adds alpha to guarantee
+ * 4-channel RGBA output. Strips alpha to produce RGB data compatible with
+ * @zxing/library's RGBLuminanceSource.
  *
  * @returns The decoded QR text, or null if decoding fails.
  */
-export async function decodeQrFromBuffer(
+export const decodeQrFromBuffer = async (
 	buffer: Buffer,
-): Promise<string | null> {
+): Promise<string | null> => {
 	try {
 		const { data, info } = await sharp(buffer)
+			.toColorspace("srgb")
 			.ensureAlpha()
 			.raw()
 			.toBuffer({ resolveWithObject: true });
+
+		if (info.channels !== 4) {
+			return null;
+		}
 
 		// Convert RGBA to RGB for @zxing/library
 		const rgbData = new Uint8ClampedArray(info.width * info.height * 3);
@@ -48,4 +53,4 @@ export async function decodeQrFromBuffer(
 	} catch {
 		return null;
 	}
-}
+};
