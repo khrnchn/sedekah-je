@@ -43,14 +43,13 @@ export const decodeQrFromBuffer = async (
 			info.width,
 			info.height,
 		);
-		const binaryBitmap = new BinaryBitmap(
-			new HybridBinarizer(luminanceSource),
-		);
+		const binaryBitmap = new BinaryBitmap(new HybridBinarizer(luminanceSource));
 		const reader = new QRCodeReader();
 		const result = reader.decode(binaryBitmap);
 
 		return result?.getText() ?? null;
-	} catch {
+	} catch (err) {
+		console.warn("QR decode failed:", err);
 		return null;
 	}
 };
