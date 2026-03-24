@@ -5,6 +5,7 @@ import Script from "next/script";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { DisclaimerModal } from "@/components/disclaimer";
 import { QueryProvider } from "@/components/providers/query-provider";
+import { ServiceWorkerRegistration } from "@/components/pwa/service-worker-registration";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeScript } from "@/components/theme-script";
 import { Toaster } from "@/components/ui/sonner";
@@ -12,6 +13,8 @@ import { cn } from "@/lib/utils";
 import "./globals.css";
 
 const poppins = Poppins({ weight: ["400", "700", "900"], subsets: ["latin"] });
+const PWA_THEME_COLOR = "#0a8532";
+const PWA_BACKGROUND_COLOR = "#fffaf7";
 
 export const metadata: Metadata = {
 	title: {
@@ -41,8 +44,33 @@ export const metadata: Metadata = {
 		"sumbangan digital",
 	],
 	metadataBase: new URL("https://sedekah.je"),
+	manifest: "/manifest.json",
 	alternates: {
 		canonical: "https://sedekah.je",
+	},
+	applicationName: "Sedekah Je",
+	icons: {
+		icon: [
+			{ url: "/favicon.ico", sizes: "any" },
+			{ url: "/pwa-64x64.png", sizes: "64x64", type: "image/png" },
+			{ url: "/pwa-192x192.png", sizes: "192x192", type: "image/png" },
+			{ url: "/pwa-512x512.png", sizes: "512x512", type: "image/png" },
+		],
+		apple: [
+			{
+				url: "/apple-touch-icon-180x180.png",
+				sizes: "180x180",
+				type: "image/png",
+			},
+		],
+	},
+	appleWebApp: {
+		capable: true,
+		statusBarStyle: "default",
+		title: "Sedekah Je",
+	},
+	formatDetection: {
+		telephone: false,
 	},
 	robots: {
 		index: true,
@@ -81,10 +109,21 @@ export const metadata: Metadata = {
 			"Senarai QR code masjid, surau dan institusi di Malaysia yang dikumpul dan disumbang oleh komuniti",
 		images: "https://sedekah.je/sedekahje-twitter.png",
 	},
+	other: {
+		"mobile-web-app-capable": "yes",
+		"apple-mobile-web-app-capable": "yes",
+		"apple-mobile-web-app-title": "Sedekah Je",
+		"msapplication-TileColor": PWA_THEME_COLOR,
+	},
 };
 
 export const viewport: Viewport = {
+	colorScheme: "light dark",
 	initialScale: 1,
+	themeColor: [
+		{ media: "(prefers-color-scheme: light)", color: PWA_THEME_COLOR },
+		{ media: "(prefers-color-scheme: dark)", color: PWA_THEME_COLOR },
+	],
 	width: "device-width",
 	viewportFit: "cover",
 };
@@ -102,7 +141,9 @@ export default async function RootLayout({
 	if (pathname && regex.test(pathname)) {
 		return (
 			<html suppressHydrationWarning lang="en">
-				<body>{children}</body>
+				<body style={{ backgroundColor: PWA_BACKGROUND_COLOR }}>
+					{children}
+				</body>
 			</html>
 		);
 	}
@@ -114,7 +155,6 @@ export default async function RootLayout({
 				<Script
 					id="json-ld"
 					type="application/ld+json"
-					// biome-ignore lint/security/noDangerouslySetInnerHtml: Required for structured data JSON-LD
 					dangerouslySetInnerHTML={{
 						__html: JSON.stringify({
 							"@context": "https://schema.org",
@@ -142,7 +182,6 @@ export default async function RootLayout({
 				/>
 				<Script
 					id="sidegent-position"
-					// biome-ignore lint/security/noDangerouslySetInnerHtml: Required to reposition and resize third-party widget above fixed footer
 					dangerouslySetInnerHTML={{
 						__html: `(function(){function r(n){n.style.setProperty("bottom","72px","important");n.style.setProperty("transform","scale(0.8)","important");n.style.setProperty("transform-origin","bottom right","important")}function rc(n){n.style.setProperty("bottom","140px","important");n.style.setProperty("transform","scale(0.9)","important");n.style.setProperty("transform-origin","bottom right","important")}var o=new MutationObserver(function(){var l=document.getElementById("da-embed-launcher");var c=document.getElementById("da-embed-container");if(l)r(l);if(c)rc(c)});o.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["style"]})})()`,
 					}}
@@ -163,6 +202,7 @@ export default async function RootLayout({
 							disableTransitionOnChange
 						>
 							{children}
+							<ServiceWorkerRegistration />
 							<Toaster richColors />
 							<DisclaimerModal />
 						</ThemeProvider>
