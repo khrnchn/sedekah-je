@@ -1,18 +1,12 @@
 "use server";
 
-import {
-	BinaryBitmap,
-	HybridBinarizer,
-	QRCodeReader,
-	RGBLuminanceSource,
-} from "@zxing/library";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import sharp from "sharp";
 import { db } from "@/db";
 import { institutions } from "@/db/institutions";
 import { requireAdminSession } from "@/lib/auth-helpers";
 import { r2Storage } from "@/lib/integrations/r2-client";
+import { decodeQrFromBuffer } from "@/lib/qr-decode";
 
 export type UploadQrReplacementResult = {
 	success: boolean;
@@ -45,41 +39,8 @@ export async function uploadQrReplacement(
 		// Upload to R2 storage
 		const qrImageUrl = await r2Storage.uploadFile(buffer, qrImageFile.name);
 
-		// Attempt QR code extraction
-		let qrContent: string | undefined;
-		try {
-			const { data, info } = await sharp(buffer)
-				.ensureAlpha()
-				.raw()
-				.toBuffer({ resolveWithObject: true });
-
-			// Convert RGBA to RGB for @zxing/library
-			const rgbData = new Uint8ClampedArray(info.width * info.height * 3);
-			for (let i = 0, j = 0; i < data.length; i += 4, j += 3) {
-				rgbData[j] = data[i]; // R
-				rgbData[j + 1] = data[i + 1]; // G
-				rgbData[j + 2] = data[i + 2]; // B
-				// Skip alpha channel
-			}
-
-			const luminanceSource = new RGBLuminanceSource(
-				rgbData,
-				info.width,
-				info.height,
-			);
-			const binaryBitmap = new BinaryBitmap(
-				new HybridBinarizer(luminanceSource),
-			);
-			const reader = new QRCodeReader();
-
-			const result = reader.decode(binaryBitmap);
-			if (result) {
-				qrContent = result.getText();
-			}
-		} catch (err) {
-			console.error("QR decode failed:", err);
-			// Don't fail the upload if QR extraction fails
-		}
+		// Attempt QR code extraction using shared server-side utility
+		const qrContent = (await decodeQrFromBuffer(buffer)) ?? undefined;
 
 		return {
 			success: true,

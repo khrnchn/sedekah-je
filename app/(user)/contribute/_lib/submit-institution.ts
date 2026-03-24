@@ -17,6 +17,7 @@ import {
 	logInstitutionSubmissionFailure,
 	logNewInstitution,
 } from "@/lib/integrations/telegram";
+import { decodeQrFromBuffer } from "@/lib/qr-decode";
 import { isToyyibpay } from "@/lib/qr-utils";
 import { getUserById } from "@/lib/queries/users";
 import { slugify } from "@/lib/utils";
@@ -179,31 +180,6 @@ export async function submitInstitution(
 		};
 	}
 
-	// --- Duplicate QR content check
-	const qrContentRaw = rawFromForm.qrContent;
-	if (
-		qrContentRaw &&
-		typeof qrContentRaw === "string" &&
-		qrContentRaw.trim() !== ""
-	) {
-		const [existingQr] = await db
-			.select({ id: institutions.id })
-			.from(institutions)
-			.where(eq(institutions.qrContent, qrContentRaw.trim()))
-			.limit(1);
-
-		if (existingQr) {
-			return {
-				status: "error",
-				errors: {
-					general: [
-						"QR code ini telah pun wujud dalam sistem. Sila semak semula.",
-					],
-				},
-			};
-		}
-	}
-
 	const socialMedia = {
 		facebook: formData.get("facebook") || undefined,
 		instagram: formData.get("instagram") || undefined,
@@ -261,10 +237,10 @@ export async function submitInstitution(
 
 	console.log("Validation passed, proceeding with submission");
 
-	// --- Handle QR image (optional)
+	// --- Handle QR image upload + server-side QR extraction
 	let qrImageUrl: string | undefined;
-	// We get qrContent from the form data now, no more backend processing
-	const qrContent = formData.get("qrContent") as string | null;
+	let qrContent: string | null = null;
+	let qrBuffer: Buffer | undefined;
 
 	try {
 		if (qrImageFile && qrImageFile.size > 0) {
@@ -290,65 +266,21 @@ export async function submitInstitution(
 			}
 
 			const arrayBuffer = await qrImageFile.arrayBuffer();
-			const buffer = Buffer.from(arrayBuffer);
+			qrBuffer = Buffer.from(arrayBuffer);
 
-			// Upload to R2
-			try {
-				qrImageUrl = await r2Storage.uploadFile(buffer, qrImageFile.name);
-			} catch (uploadError) {
-				console.error("Failed to upload QR image to R2:", uploadError);
+			// Server-side QR extraction (more reliable than browser-side canvas decode)
+			qrContent = await decodeQrFromBuffer(qrBuffer);
 
-				// Log to Telegram with error details
-				try {
-					await logInstitutionSubmissionFailure({
-						error:
-							uploadError instanceof Error
-								? uploadError.message
-								: String(uploadError),
-						institutionName: parsed.data.name,
-						category: parsed.data.category,
-						state: parsed.data.state,
-						city: parsed.data.city,
-						contributorName: user?.name || undefined,
-						contributorEmail: user?.email,
-						errorType: "R2 image upload failure",
-					});
-				} catch (telegramError) {
-					console.error(
-						"Failed to log upload failure to Telegram:",
-						telegramError,
-					);
+			// Fall back to client-provided value if server extraction fails
+			if (!qrContent) {
+				const clientQrContent = formData.get("qrContent") as string | null;
+				if (clientQrContent?.trim()) {
+					qrContent = clientQrContent.trim();
 				}
-
-				return {
-					status: "error",
-					errors: {
-						qrImage: ["Gagal memuat naik imej QR. Sila cuba lagi."],
-					},
-				};
 			}
 		}
 	} catch (error) {
-		console.error("Error handling QR image upload:", error);
-
-		// Log to Telegram with error details
-		try {
-			await logInstitutionSubmissionFailure({
-				error: error instanceof Error ? error.message : String(error),
-				institutionName: parsed?.data?.name,
-				category: parsed?.data?.category,
-				state: parsed?.data?.state,
-				city: parsed?.data?.city,
-				contributorName: user?.name || undefined,
-				contributorEmail: user?.email,
-				errorType: "QR image processing failure",
-			});
-		} catch (telegramError) {
-			console.error(
-				"Failed to log QR processing failure to Telegram:",
-				telegramError,
-			);
-		}
+		console.error("Error handling QR image processing:", error);
 
 		return {
 			status: "error",
@@ -356,6 +288,64 @@ export async function submitInstitution(
 				qrImage: ["Berlaku ralat semasa memproses imej QR. Sila cuba lagi."],
 			},
 		};
+	}
+
+	// --- Duplicate QR check (before R2 upload to avoid orphaned objects)
+	if (qrContent) {
+		const [existingQr] = await db
+			.select({ id: institutions.id })
+			.from(institutions)
+			.where(eq(institutions.qrContent, qrContent))
+			.limit(1);
+
+		if (existingQr) {
+			return {
+				status: "error",
+				errors: {
+					general: [
+						"QR code ini telah pun wujud dalam sistem. Sila semak semula.",
+					],
+				},
+			};
+		}
+	}
+
+	// --- Upload to R2 (only after duplicate check passes)
+	if (qrBuffer && qrImageFile) {
+		try {
+			qrImageUrl = await r2Storage.uploadFile(qrBuffer, qrImageFile.name);
+		} catch (uploadError) {
+			console.error("Failed to upload QR image to R2:", uploadError);
+
+			// Log to Telegram with error details
+			try {
+				await logInstitutionSubmissionFailure({
+					error:
+						uploadError instanceof Error
+							? uploadError.message
+							: String(uploadError),
+					institutionName: parsed.data.name,
+					category: parsed.data.category,
+					state: parsed.data.state,
+					city: parsed.data.city,
+					contributorName: user?.name || undefined,
+					contributorEmail: user?.email,
+					errorType: "R2 image upload failure",
+				});
+			} catch (telegramError) {
+				console.error(
+					"Failed to log upload failure to Telegram:",
+					telegramError,
+				);
+			}
+
+			return {
+				status: "error",
+				errors: {
+					qrImage: ["Gagal memuat naik imej QR. Sila cuba lagi."],
+				},
+			};
+		}
 	}
 
 	// Geocode if coords not provided
@@ -398,6 +388,7 @@ export async function submitInstitution(
 				state: parsed.data.state as (typeof states)[number],
 				coords: coords, // Coords may be updated by geocoding
 				qrImage: qrImageUrl,
+				qrContent: qrContent || null,
 				contributorId: contributorId, // Include the contributor ID
 				status: "pending", // Always pending for new submissions
 				supportedPayment: [isToyyibpay(qrContent) ? "toyyibpay" : "duitnow"],
