@@ -1,13 +1,13 @@
 "use server";
 
-import { auth } from "@/auth";
-import { db } from "@/db";
-import { claimRequests, institutions } from "@/db/schema";
-import { requireAdminSession } from "@/lib/auth-helpers";
 import { eq } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { auth } from "@/auth";
+import { db } from "@/db";
+import { claimRequests, institutions } from "@/db/schema";
+import { requireAdminSession } from "@/lib/auth-helpers";
 
 export async function approveClaimRequest(formData: FormData) {
 	try {
@@ -65,13 +65,13 @@ export async function approveClaimRequest(formData: FormData) {
 		});
 
 		// Revalidate cache
-		revalidateTag("claim-requests");
-		revalidateTag("claim-requests-count");
-		revalidateTag("claim-requests-data");
-		revalidateTag("institutions");
-		revalidateTag("leaderboard");
-		revalidateTag("leaderboard-stats");
-		revalidateTag("leaderboard-top-contributors");
+		revalidateTag("claim-requests", "max");
+		revalidateTag("claim-requests-count", "max");
+		revalidateTag("claim-requests-data", "max");
+		revalidateTag("institutions", "max");
+		revalidateTag("leaderboard", "max");
+		revalidateTag("leaderboard-stats", "max");
+		revalidateTag("leaderboard-top-contributors", "max");
 
 		return {
 			success: true,
@@ -135,9 +135,9 @@ export async function rejectClaimRequest(formData: FormData) {
 			.where(eq(claimRequests.id, claimId));
 
 		// Revalidate cache
-		revalidateTag("claim-requests");
-		revalidateTag("claim-requests-count");
-		revalidateTag("claim-requests-data");
+		revalidateTag("claim-requests", "max");
+		revalidateTag("claim-requests-count", "max");
+		revalidateTag("claim-requests-data", "max");
 
 		return {
 			success: true,

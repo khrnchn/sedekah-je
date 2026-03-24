@@ -189,7 +189,7 @@ export async function saveBlogPostAction(formData: FormData) {
 		}
 	});
 
-	revalidateTag("blog-posts");
+	revalidateTag("blog-posts", "max");
 	revalidatePath("/blog");
 	revalidatePath("/admin/blog");
 
@@ -250,7 +250,7 @@ export async function publishBlogPostAction(formData: FormData) {
 			);
 	}
 
-	revalidateTag("blog-posts");
+	revalidateTag("blog-posts", "max");
 	revalidatePath("/blog");
 	revalidatePath("/admin/blog");
 	redirect(`/admin/blog/${postId}`);
@@ -272,7 +272,7 @@ export async function unpublishBlogPostAction(formData: FormData) {
 		})
 		.where(eq(blogPosts.id, postId));
 
-	revalidateTag("blog-posts");
+	revalidateTag("blog-posts", "max");
 	revalidatePath("/blog");
 	revalidatePath("/admin/blog");
 	redirect(`/admin/blog/${postId}`);
@@ -288,7 +288,7 @@ export async function deleteBlogPostAction(formData: FormData) {
 
 	await db.delete(blogPosts).where(eq(blogPosts.id, postId));
 
-	revalidateTag("blog-posts");
+	revalidateTag("blog-posts", "max");
 	revalidatePath("/blog");
 	revalidatePath("/admin/blog");
 	redirect("/admin/blog");

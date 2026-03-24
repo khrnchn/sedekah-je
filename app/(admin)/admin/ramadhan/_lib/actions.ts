@@ -1,14 +1,14 @@
 "use server";
 
+import { eq } from "drizzle-orm";
+import { revalidateTag } from "next/cache";
 import { auth } from "@/auth";
 import { db } from "@/db";
 import { ramadhanCampaigns } from "@/db/schema";
 import { requireAdminSession } from "@/lib/auth-helpers";
-import { eq } from "drizzle-orm";
-import { revalidateTag } from "next/cache";
 import {
-	type SaveCampaignInput,
 	computeFeaturedDate,
+	type SaveCampaignInput,
 	saveCampaignSchema,
 } from "./validations";
 
@@ -45,6 +45,6 @@ export async function saveCampaign(input: SaveCampaignInput) {
 		}
 	});
 
-	revalidateTag("ramadhan-campaign");
+	revalidateTag("ramadhan-campaign", "max");
 	return { success: true };
 }

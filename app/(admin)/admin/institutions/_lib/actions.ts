@@ -74,11 +74,11 @@ export async function approveInstitution(
 	revalidatePath("/admin/dashboard", "page");
 
 	// Revalidate cached data and counts
-	revalidateTag("pending-institutions");
-	revalidateTag("approved-institutions");
-	revalidateTag("institutions-count");
-	revalidateTag("institutions"); // Homepage cache
-	revalidateTag("leaderboard");
+	revalidateTag("pending-institutions", "max");
+	revalidateTag("approved-institutions", "max");
+	revalidateTag("institutions-count", "max");
+	revalidateTag("institutions", "max"); // Homepage cache
+	revalidateTag("leaderboard", "max");
 
 	// Schedule approval email after response is sent (avoids serverless killing the request)
 	const row = result[0];
@@ -167,10 +167,10 @@ export async function rejectInstitution(
 	revalidatePath("/admin/dashboard", "page");
 
 	// Revalidate cached data and counts
-	revalidateTag("pending-institutions");
-	revalidateTag("rejected-institutions");
-	revalidateTag("institutions-count");
-	revalidateTag("quest-mosques");
+	revalidateTag("pending-institutions", "max");
+	revalidateTag("rejected-institutions", "max");
+	revalidateTag("institutions-count", "max");
+	revalidateTag("quest-mosques", "max");
 
 	return result;
 }
@@ -236,11 +236,11 @@ export async function updateInstitutionByAdmin(
 	revalidatePath("/admin/dashboard", "page");
 
 	// Revalidate cached data and counts
-	revalidateTag("pending-institutions");
-	revalidateTag("approved-institutions");
-	revalidateTag("institutions-count");
-	revalidateTag("institutions-data");
-	revalidateTag("institutions"); // Homepage cache
+	revalidateTag("pending-institutions", "max");
+	revalidateTag("approved-institutions", "max");
+	revalidateTag("institutions-count", "max");
+	revalidateTag("institutions-data", "max");
+	revalidateTag("institutions", "max"); // Homepage cache
 
 	return result;
 }
@@ -290,9 +290,9 @@ export async function assignContributorToInstitution(
 
 	// Revalidate approved institutions data
 	revalidatePath("/admin/institutions/approved", "page");
-	revalidateTag("approved-institutions");
-	revalidateTag("institutions-data");
-	revalidateTag("institutions"); // Homepage cache
+	revalidateTag("approved-institutions", "max");
+	revalidateTag("institutions-data", "max");
+	revalidateTag("institutions", "max"); // Homepage cache
 
 	return result;
 }
@@ -337,11 +337,11 @@ export async function undoApproval(id: number, adminNotes?: string) {
 	revalidatePath("/admin/dashboard", "page");
 
 	// Revalidate cached data and counts
-	revalidateTag("approved-institutions");
-	revalidateTag("rejected-institutions");
-	revalidateTag("institutions-count");
-	revalidateTag("institutions-data");
-	revalidateTag("institutions"); // Homepage cache
+	revalidateTag("approved-institutions", "max");
+	revalidateTag("rejected-institutions", "max");
+	revalidateTag("institutions-count", "max");
+	revalidateTag("institutions-data", "max");
+	revalidateTag("institutions", "max"); // Homepage cache
 
 	return result;
 }
@@ -382,10 +382,10 @@ export async function undoRejection(id: number, adminNotes?: string) {
 	revalidatePath("/admin/institutions/pending", "page");
 	revalidatePath("/admin/dashboard", "page");
 
-	revalidateTag("rejected-institutions");
-	revalidateTag("pending-institutions");
-	revalidateTag("institutions-count");
-	revalidateTag("institutions-data");
+	revalidateTag("rejected-institutions", "max");
+	revalidateTag("pending-institutions", "max");
+	revalidateTag("institutions-count", "max");
+	revalidateTag("institutions-data", "max");
 
 	return result;
 }

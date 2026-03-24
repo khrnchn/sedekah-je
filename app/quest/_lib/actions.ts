@@ -296,10 +296,10 @@ export async function submitQuestContribution(
 		}
 
 		// 10. Revalidate caches
-		revalidateTag("quest-mosques");
-		revalidateTag("institutions-count");
-		revalidateTag("pending-institutions");
-		revalidateTag(`user_contributions_count:${userId}`);
+		revalidateTag("quest-mosques", "max");
+		revalidateTag("institutions-count", "max");
+		revalidateTag("pending-institutions", "max");
+		revalidateTag(`user_contributions_count:${userId}`, "max");
 
 		return { status: "success" };
 	} catch (error) {

@@ -428,9 +428,9 @@ export async function submitInstitution(
 		// Route groups are not part of the public pathname.
 		revalidatePath("/my-contributions", "page");
 		revalidatePath("/admin/institutions/pending", "page");
-		revalidateTag("institutions-count");
-		revalidateTag("pending-institutions");
-		revalidateTag(`user_contributions_count:${contributorId}`);
+		revalidateTag("institutions-count", "max");
+		revalidateTag("pending-institutions", "max");
+		revalidateTag(`user_contributions_count:${contributorId}`, "max");
 
 		return { status: "success" };
 	} catch (error) {

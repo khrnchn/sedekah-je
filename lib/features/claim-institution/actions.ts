@@ -139,9 +139,9 @@ export async function submitClaimRequest(formData: FormData) {
 		}
 
 		// Revalidate cache to update counts immediately
-		revalidateTag("claim-requests");
-		revalidateTag("claim-requests-count");
-		revalidateTag("claim-requests-data");
+		revalidateTag("claim-requests", "max");
+		revalidateTag("claim-requests-count", "max");
+		revalidateTag("claim-requests-data", "max");
 
 		return {
 			success: true,

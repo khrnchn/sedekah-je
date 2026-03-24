@@ -252,9 +252,9 @@ export async function POST(request: NextRequest) {
 		// Revalidate caches
 		revalidatePath("/my-contributions", "page");
 		revalidatePath("/admin/institutions/pending", "page");
-		revalidateTag("institutions-count");
-		revalidateTag("pending-institutions");
-		revalidateTag(`user_contributions_count:${contributorId}`);
+		revalidateTag("institutions-count", "max");
+		revalidateTag("pending-institutions", "max");
+		revalidateTag(`user_contributions_count:${contributorId}`, "max");
 
 		return json({ status: "success", id: newId });
 	} catch (error) {

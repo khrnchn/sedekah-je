@@ -2,6 +2,8 @@
  * Ramadan campaign utilities.
  * Uses Asia/Kuala_Lumpur timezone for "today" calculations.
  */
+import moment from "moment-hijri";
+
 const TIMEZONE = "Asia/Kuala_Lumpur";
 
 /**
@@ -100,6 +102,58 @@ export function getCurrentRamadhanDay(startDate: Date): number | null {
 	const diffMs = today.getTime() - start.getTime();
 	const diffDays = Math.floor(diffMs / (24 * 60 * 60 * 1000)) + 1;
 	return Math.min(Math.max(diffDays, 1), 30);
+}
+
+type RamadhanWindow = {
+	startDate: Date;
+	endDate: Date;
+};
+
+/**
+ * Get the Gregorian Ramadan window for a given Gregorian year in Malaysia.
+ * Returns the start and end dates (inclusive) for the Ramadan that falls in that year.
+ */
+export function getRamadhanWindowForGregorianYear(
+	year: number,
+): RamadhanWindow | null {
+	const candidateHijriYears = [year - 581, year - 580, year - 579];
+
+	for (const hijriYear of candidateHijriYears) {
+		const ramadhanStart = moment().iYear(hijriYear).iMonth(8).iDate(1).toDate();
+
+		if (ramadhanStart.getFullYear() !== year) continue;
+
+		const daysInRamadhan = moment.iDaysInMonth(hijriYear, 8);
+		const startDate = new Date(
+			ramadhanStart.getFullYear(),
+			ramadhanStart.getMonth(),
+			ramadhanStart.getDate(),
+		);
+		const endDate = new Date(startDate);
+		endDate.setDate(endDate.getDate() + daysInRamadhan - 1);
+
+		return { startDate, endDate };
+	}
+
+	return null;
+}
+
+/**
+ * Check if today's MYT date falls within the Ramadan window for the current Gregorian year.
+ */
+export function isCurrentGregorianYearRamadhanActive(): boolean {
+	const today = getTodayMYT();
+	const window = getRamadhanWindowForGregorianYear(today.getFullYear());
+
+	if (!window) return false;
+
+	const start = new Date(window.startDate);
+	start.setHours(0, 0, 0, 0);
+
+	const end = new Date(window.endDate);
+	end.setHours(23, 59, 59, 999);
+
+	return today >= start && today <= end;
 }
 
 /**

@@ -29,6 +29,7 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { signInWithGoogle } from "@/lib/auth-client";
+import { isCurrentGregorianYearRamadhanActive } from "@/lib/ramadhan";
 import { cn } from "@/lib/utils";
 import { ModeToggle } from "./mode-toggle";
 import { UserNavDesktop } from "./user-nav";
@@ -77,8 +78,15 @@ export const Header = ({ compactMobileBrand = false }: HeaderProps) => {
 	const { user, isAuthenticated, isAdmin, signOut, isLoading } = useAuth();
 	const pathname = usePathname();
 	const [open, setOpen] = useState(false);
+	const showRamadhanLink = isCurrentGregorianYearRamadhanActive();
 	const showBrandText = !compactMobileBrand || !isMobile;
 	const logoSize = compactMobileBrand && isMobile ? 76 : 100;
+	const mobileLinks = (isAuthenticated ? links : publicLinks).filter(
+		(link) => showRamadhanLink || link.href !== "/ramadhan",
+	);
+	const desktopPublicLinks = publicLinks.filter(
+		(link) => showRamadhanLink || link.href !== "/ramadhan",
+	);
 
 	const handleSignOut = async () => {
 		setOpen(false);
@@ -156,7 +164,7 @@ export const Header = ({ compactMobileBrand = false }: HeaderProps) => {
 											/>
 										</div>
 									)}
-									{(isAuthenticated ? links : publicLinks).map((link) => (
+									{mobileLinks.map((link) => (
 										<Link
 											key={link.href}
 											href={link.href}
@@ -246,7 +254,7 @@ export const Header = ({ compactMobileBrand = false }: HeaderProps) => {
 						<UserNavDesktop />
 					) : (
 						<div className="flex items-center gap-4">
-							{publicLinks.map((link) => {
+							{desktopPublicLinks.map((link) => {
 								const Icon = link.icon;
 								const isActive = pathname === link.href;
 								return (

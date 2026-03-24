@@ -196,12 +196,12 @@ export async function updateRejectedInstitution(
 			);
 		}
 
-		revalidateTag(`user-contributions:${contributorId}`);
-		revalidateTag("user-contributions");
+		revalidateTag(`user-contributions:${contributorId}`, "max");
+		revalidateTag("user-contributions", "max");
 		revalidatePath("/my-contributions", "page");
 		revalidatePath("/admin/institutions/pending", "page");
-		revalidateTag("institutions-count");
-		revalidateTag("pending-institutions");
+		revalidateTag("institutions-count", "max");
+		revalidateTag("pending-institutions", "max");
 
 		return { status: "success" };
 	} catch (error) {

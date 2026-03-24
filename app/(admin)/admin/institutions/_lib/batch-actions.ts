@@ -68,14 +68,14 @@ export async function batchApproveInstitutions(
 	revalidatePath("/admin/dashboard", "page");
 
 	// Revalidate cached counts for sidebar badges
-	revalidateTag("institutions-count");
-	revalidateTag("pending-institutions");
-	revalidateTag("approved-institutions");
+	revalidateTag("institutions-count", "max");
+	revalidateTag("pending-institutions", "max");
+	revalidateTag("approved-institutions", "max");
 
 	// Revalidate cached data tables
-	revalidateTag("institutions-data");
-	revalidateTag("institutions"); // Homepage cache
-	revalidateTag("leaderboard");
+	revalidateTag("institutions-data", "max");
+	revalidateTag("institutions", "max"); // Homepage cache
+	revalidateTag("leaderboard", "max");
 
 	// Schedule approval emails after response is sent (avoids serverless killing the request)
 	const rows = result.map((r) => ({
@@ -196,11 +196,11 @@ export async function batchUndoApproval(ids: number[], adminNotes?: string) {
 	revalidatePath("/admin/dashboard", "page");
 
 	// Revalidate caches
-	revalidateTag("approved-institutions");
-	revalidateTag("rejected-institutions");
-	revalidateTag("institutions-count");
-	revalidateTag("institutions-data");
-	revalidateTag("institutions"); // Homepage cache
+	revalidateTag("approved-institutions", "max");
+	revalidateTag("rejected-institutions", "max");
+	revalidateTag("institutions-count", "max");
+	revalidateTag("institutions-data", "max");
+	revalidateTag("institutions", "max"); // Homepage cache
 
 	return result;
 }
@@ -264,9 +264,9 @@ export async function batchRejectInstitutions(
 	revalidatePath("/admin/dashboard", "page");
 
 	// Revalidate caches
-	revalidateTag("pending-institutions");
-	revalidateTag("rejected-institutions");
-	revalidateTag("institutions-count");
+	revalidateTag("pending-institutions", "max");
+	revalidateTag("rejected-institutions", "max");
+	revalidateTag("institutions-count", "max");
 
 	return result;
 }
