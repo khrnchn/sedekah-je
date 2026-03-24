@@ -18,6 +18,15 @@ export function TouchFeedback({
 }: TouchFeedbackProps) {
 	const [isPressed, setIsPressed] = useState(false);
 
+	const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+		if (!onTap) return;
+
+		if (event.key === "Enter" || event.key === " ") {
+			event.preventDefault();
+			onTap();
+		}
+	};
+
 	const handleTouchStart = () => {
 		setIsPressed(true);
 		if (hapticFeedback && navigator.vibrate) {
@@ -31,15 +40,19 @@ export function TouchFeedback({
 	};
 
 	return (
+		// biome-ignore lint/a11y/noStaticElementInteractions: Wrapper preserves existing child semantics while adding touch feedback.
 		<div
 			className={`transition-transform duration-75 ${
 				isPressed ? "scale-95" : "scale-100"
 			} ${className}`}
+			onKeyDown={handleKeyDown}
 			onTouchStart={handleTouchStart}
 			onTouchEnd={handleTouchEnd}
 			onMouseDown={handleTouchStart}
 			onMouseUp={handleTouchEnd}
 			onMouseLeave={() => setIsPressed(false)}
+			role={onTap ? "button" : undefined}
+			tabIndex={onTap ? 0 : undefined}
 		>
 			{children}
 		</div>
@@ -60,7 +73,6 @@ export function PullToRefresh({
 }: PullToRefreshProps) {
 	const [pullDistance, setPullDistance] = useState(0);
 	const [isRefreshing, setIsRefreshing] = useState(false);
-	const [startY, setStartY] = useState(0);
 
 	useEffect(() => {
 		let touchStartY = 0;
@@ -68,7 +80,6 @@ export function PullToRefresh({
 		const handleTouchStart = (e: TouchEvent) => {
 			if (window.scrollY === 0) {
 				touchStartY = e.touches[0].clientY;
-				setStartY(touchStartY);
 			}
 		};
 
@@ -96,7 +107,6 @@ export function PullToRefresh({
 				}
 			}
 			setPullDistance(0);
-			setStartY(0);
 		};
 
 		document.addEventListener("touchstart", handleTouchStart);
@@ -223,6 +233,8 @@ interface BeforeInstallPromptEvent extends Event {
 	userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
 }
 
+const PWA_INSTALL_DISMISS_KEY = "pwa-install-dismissed";
+
 export function PWAInstallPrompt() {
 	const [installPrompt, setInstallPrompt] =
 		useState<BeforeInstallPromptEvent | null>(null);
@@ -232,24 +244,39 @@ export function PWAInstallPrompt() {
 		const handler = (e: BeforeInstallPromptEvent) => {
 			e.preventDefault();
 			setInstallPrompt(e);
-			setShowPrompt(true);
+			setShowPrompt(sessionStorage.getItem(PWA_INSTALL_DISMISS_KEY) !== "true");
+		};
+
+		const handleAppInstalled = () => {
+			sessionStorage.removeItem(PWA_INSTALL_DISMISS_KEY);
+			setInstallPrompt(null);
+			setShowPrompt(false);
 		};
 
 		window.addEventListener("beforeinstallprompt", handler as EventListener);
+		window.addEventListener("appinstalled", handleAppInstalled);
 
-		return () =>
+		return () => {
 			window.removeEventListener(
 				"beforeinstallprompt",
 				handler as EventListener,
 			);
+			window.removeEventListener("appinstalled", handleAppInstalled);
+		};
 	}, []);
 
 	const handleInstall = async () => {
 		if (!installPrompt) return;
 
-		const result = await installPrompt.prompt();
-		console.log("Install prompt result:", result);
+		await installPrompt.prompt();
+		await installPrompt.userChoice;
 		setInstallPrompt(null);
+		setShowPrompt(false);
+		sessionStorage.removeItem(PWA_INSTALL_DISMISS_KEY);
+	};
+
+	const handleDismiss = () => {
+		sessionStorage.setItem(PWA_INSTALL_DISMISS_KEY, "true");
 		setShowPrompt(false);
 	};
 
@@ -267,7 +294,7 @@ export function PWAInstallPrompt() {
 				<div className="flex gap-2">
 					<button
 						type="button"
-						onClick={() => setShowPrompt(false)}
+						onClick={handleDismiss}
 						className="px-3 py-1 text-sm rounded bg-primary-foreground/20"
 					>
 						Later
