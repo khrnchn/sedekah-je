@@ -27,7 +27,7 @@ export default async function Home(props: Props) {
 		<>
 			<Header />
 			<Suspense fallback={null}>
-				<div className="max-w-5xl mx-auto px-4 lg:px-6 pt-0">
+				<div className="max-w-5xl mx-auto px-4 lg:px-6 pt-2 sm:pt-4 lg:pt-6">
 					<RamadhanBanner />
 				</div>
 			</Suspense>
