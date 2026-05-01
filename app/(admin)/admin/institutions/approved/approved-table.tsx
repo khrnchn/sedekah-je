@@ -1,7 +1,7 @@
 "use client";
 
 import type { Updater } from "@tanstack/react-table";
-import { Undo2Icon } from "lucide-react";
+import { DownloadIcon, Undo2Icon } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
 	useCallback,
@@ -262,16 +262,24 @@ export default function ApprovedInstitutionsTable({
 	);
 
 	const bulkButtons = (
-		<Button
-			variant="outline"
-			size="sm"
-			disabled={selectedIds.length === 0}
-			onClick={() => setUndoDialogOpen(true)}
-			className="gap-2 text-destructive hover:text-destructive"
-		>
-			<Undo2Icon className="h-4 w-4" />
-			Undo Selected ({selectedIds.length})
-		</Button>
+		<>
+			<Button variant="outline" size="sm" className="h-8 gap-2" asChild>
+				<a href="/api/admin/institutions/export?format=json">
+					<DownloadIcon className="h-4 w-4" />
+					Export JSON
+				</a>
+			</Button>
+			<Button
+				variant="outline"
+				size="sm"
+				disabled={selectedIds.length === 0}
+				onClick={() => setUndoDialogOpen(true)}
+				className="gap-2 text-destructive hover:text-destructive"
+			>
+				<Undo2Icon className="h-4 w-4" />
+				Undo Selected ({selectedIds.length})
+			</Button>
+		</>
 	);
 
 	return (
