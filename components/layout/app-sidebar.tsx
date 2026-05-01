@@ -72,6 +72,12 @@ const data = {
 			group: "Campaign",
 		},
 		{
+			title: "Friday",
+			url: "/admin/friday",
+			icon: "Heart",
+			group: "Campaign",
+		},
+		{
 			title: "Threads",
 			url: "/admin/threads",
 			icon: "MessageCircle",

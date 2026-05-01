@@ -3,6 +3,7 @@
 export * from "./auth";
 export * from "./blog";
 export * from "./claim_requests";
+export * from "./friday_campaigns";
 export * from "./institutions";
 export * from "./quest_mosques";
 export * from "./ramadhan_campaigns";

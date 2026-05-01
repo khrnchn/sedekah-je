@@ -4,6 +4,7 @@ import {
 	BarChart,
 	Building,
 	FileText,
+	Heart,
 	Home as HomeIcon,
 	LayoutDashboard,
 	type LucideIcon,
@@ -34,6 +35,7 @@ const iconMap: Record<string, LucideIcon> = {
 	BarChart,
 	Home: HomeIcon,
 	Moon,
+	Heart,
 	MessageCircle,
 	FileText,
 };

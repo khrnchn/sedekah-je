@@ -57,6 +57,13 @@
 			"when": 1772010174257,
 			"tag": "0007_woozy_roland_deschain",
 			"breakpoints": true
+		},
+		{
+			"idx": 8,
+			"version": "7",
+			"when": 1777636800000,
+			"tag": "0008_friday_campaigns",
+			"breakpoints": true
 		}
 	]
 }
