@@ -1,7 +1,12 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import {
+	CheckCircle2,
+	ChevronDown,
+	ChevronUp,
+	ClipboardCheck,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
 	lazy,
@@ -53,6 +58,7 @@ function SubmitButton({
 	hasFile,
 	isAuthenticated,
 	isInCooldown,
+	qrExtractionFailed,
 }: {
 	isSubmitting: boolean;
 	qrExtracting: boolean;
@@ -68,23 +74,45 @@ function SubmitButton({
 		!isAuthenticated ||
 		isInCooldown;
 
+	const helperText = !isAuthenticated
+		? "Log masuk diperlukan sebelum sumbangan boleh dihantar."
+		: isInCooldown
+			? "Tunggu tempoh cooldown tamat sebelum menghantar sumbangan baharu."
+			: qrExtracting
+				? "Tunggu sehingga QR selesai diproses."
+				: !hasFile
+					? "Muat naik gambar QR dahulu untuk aktifkan butang hantar."
+					: qrExtractionFailed
+						? "QR akan disemak secara manual selepas dihantar."
+						: "Sumbangan akan masuk ke semakan komuniti sebelum dipaparkan.";
+
 	return (
-		<Button
-			type="submit"
-			className="w-full h-12 text-base" // Larger touch target for mobile
-			disabled={isDisabled}
-		>
-			{isSubmitting ? (
-				<>
-					<Spinner size="small" className="mr-2" />
-					Menghantar...
-				</>
-			) : !isAuthenticated ? (
-				"Log masuk untuk hantar"
-			) : (
-				"Hantar"
-			)}
-		</Button>
+		<div className="space-y-2">
+			<Button
+				type="submit"
+				className="h-12 w-full text-base"
+				disabled={isDisabled}
+			>
+				{isSubmitting ? (
+					<>
+						<Spinner size="small" className="mr-2" />
+						Menghantar...
+					</>
+				) : !isAuthenticated ? (
+					"Log masuk untuk hantar"
+				) : (
+					"Hantar untuk semakan"
+				)}
+			</Button>
+			<p
+				className={cn(
+					"text-center text-xs leading-relaxed text-muted-foreground",
+					!hasFile && isAuthenticated && !isInCooldown && "text-primary",
+				)}
+			>
+				{helperText}
+			</p>
+		</div>
 	);
 }
 
@@ -105,6 +133,61 @@ function BasicLocationInput() {
 				Memuatkan perkhidmatan lokasi...
 			</p>
 		</div>
+	);
+}
+
+function RequiredMark() {
+	return <span className="text-destructive">*</span>;
+}
+
+function ContributionBrief() {
+	return (
+		<div className="rounded-lg border border-border/70 bg-card/70 p-3.5 text-sm shadow-sm sm:p-4">
+			<div className="flex items-center gap-2">
+				<span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
+					<ClipboardCheck className="h-3.5 w-3.5" />
+				</span>
+				<p className="font-semibold text-foreground">Sebelum dihantar</p>
+			</div>
+			<p className="mt-2 max-w-prose text-muted-foreground">
+				QR akan disemak sebelum dipaparkan di direktori.
+			</p>
+			<div className="mt-3 flex flex-wrap gap-1.5">
+				{["Gambar QR", "Nama institusi", "Lokasi"].map((item) => (
+					<div
+						key={item}
+						className="inline-flex items-center gap-1.5 rounded-full bg-muted/50 px-2.5 py-1 text-xs font-medium text-muted-foreground"
+					>
+						<CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+						{item}
+					</div>
+				))}
+			</div>
+		</div>
+	);
+}
+
+function FormSection({
+	title,
+	children,
+	description,
+}: {
+	title: string;
+	children: React.ReactNode;
+	description?: string;
+}) {
+	return (
+		<section className="space-y-4">
+			<div className="space-y-1">
+				<h2 className="text-sm font-semibold text-foreground">{title}</h2>
+				{description && (
+					<p className="text-xs leading-relaxed text-muted-foreground">
+						{description}
+					</p>
+				)}
+			</div>
+			{children}
+		</section>
 	);
 }
 
@@ -305,11 +388,12 @@ export default function InstitutionFormOptimized() {
 		<form
 			onSubmit={handleSubmit(onSubmit)}
 			encType="multipart/form-data"
-			className="space-y-6 max-w-lg mx-auto pb-20 md:pb-6 px-4 md:px-0"
+			className="mx-auto max-w-xl space-y-6 px-4 pb-20 md:px-0 md:pb-6"
 		>
+			<ContributionBrief />
 			<fieldset
 				disabled={isSubmitting || qrStatus.qrExtracting}
-				className="space-y-6"
+				className="space-y-6 sm:space-y-7"
 			>
 				{/* Hidden fields */}
 				<input
@@ -328,8 +412,10 @@ export default function InstitutionFormOptimized() {
 					render={({ field }) => <input type="hidden" {...field} />}
 				/>
 
-				{/* 1. QR upload */}
-				<div className="space-y-4">
+				<FormSection
+					title="1. Gambar QR"
+					description="Ambil gambar terus dari kamera atau pilih imej yang jelas dari galeri."
+				>
 					<Suspense fallback={<QRUploadSkeleton />}>
 						<QRExtractionFeature
 							isSubmitting={isSubmitting}
@@ -338,27 +424,25 @@ export default function InstitutionFormOptimized() {
 							onClearQrContent={setClearQrContent}
 						/>
 					</Suspense>
-				</div>
+				</FormSection>
 
-				{/* 2. Maklumat institusi utama */}
-				<div className="space-y-4">
-					<h3 className="text-sm font-semibold text-foreground">
-						Maklumat Institusi
-					</h3>
-					{/* Institution name - mobile optimized */}
+				<FormSection title="2. Maklumat institusi">
 					<Controller
 						control={control}
 						name="name"
 						render={({ field, fieldState }) => (
 							<Field className="space-y-2">
 								<FieldLabel htmlFor="name" className="font-medium text-base">
-									Nama Institusi <span className="text-red-500">*</span>
+									Nama institusi <RequiredMark />
 								</FieldLabel>
 								<Input
 									id="name"
 									{...field}
 									placeholder="Contoh: Masjid Al-Falah"
-									className={`h-12 text-base ${fieldState.invalid ? "border-red-500" : ""}`}
+									className={cn(
+										"h-12 text-base",
+										fieldState.invalid && "border-destructive",
+									)}
 									autoComplete="organization"
 								/>
 								{fieldState.error && <FieldError errors={[fieldState.error]} />}
@@ -373,7 +457,7 @@ export default function InstitutionFormOptimized() {
 						render={({ field, fieldState }) => (
 							<Field className="space-y-2">
 								<FieldLabel className="font-medium text-base">
-									Kategori <span className="text-red-500">*</span>
+									Kategori <RequiredMark />
 								</FieldLabel>
 								<Select
 									value={field.value ?? ""}
@@ -400,11 +484,12 @@ export default function InstitutionFormOptimized() {
 							</Field>
 						)}
 					/>
-				</div>
+				</FormSection>
 
-				{/* 3. Lokasi */}
-				<div className="space-y-4">
-					<h3 className="text-sm font-semibold text-foreground">Lokasi</h3>
+				<FormSection
+					title="3. Lokasi"
+					description="Lokasi membantu penyumbang lain cari institusi yang betul."
+				>
 					{enableAdvancedFeatures ? (
 						<Suspense fallback={<BasicLocationInput />}>
 							<LocationServicesFeature setValue={setValue} />
@@ -419,7 +504,7 @@ export default function InstitutionFormOptimized() {
 							render={({ field, fieldState }) => (
 								<Field className="space-y-2">
 									<FieldLabel htmlFor="state" className="font-medium text-base">
-										Negeri <span className="text-red-500">*</span>
+										Negeri <RequiredMark />
 									</FieldLabel>
 									<Select
 										value={field.value ?? ""}
@@ -452,7 +537,7 @@ export default function InstitutionFormOptimized() {
 							render={({ field, fieldState }) => (
 								<Field className="space-y-2">
 									<FieldLabel htmlFor="city" className="font-medium text-base">
-										Bandar <span className="text-red-500">*</span>
+										Bandar <RequiredMark />
 									</FieldLabel>
 									<Input
 										id="city"
@@ -460,7 +545,7 @@ export default function InstitutionFormOptimized() {
 										placeholder="Contoh: Shah Alam"
 										className={cn(
 											"h-12 text-base",
-											fieldState.invalid && "border-red-500",
+											fieldState.invalid && "border-destructive",
 										)}
 										autoComplete="address-level2"
 									/>
@@ -471,15 +556,15 @@ export default function InstitutionFormOptimized() {
 							)}
 						/>
 					</div>
-				</div>
+				</FormSection>
 
-				{/* 4. Maklumat tambahan (optional) */}
-				<div className="space-y-2">
+				<div className="space-y-3">
 					<Button
 						type="button"
 						variant="ghost"
 						onClick={() => setAdditionalInfoExpanded(!additionalInfoExpanded)}
-						className="flex items-center space-x-2 font-medium p-0 h-auto hover:bg-transparent text-base"
+						className="h-auto justify-start gap-2 p-0 text-base font-medium hover:bg-transparent"
+						aria-expanded={additionalInfoExpanded}
 					>
 						<span>Maklumat Tambahan (Opsional)</span>
 						{additionalInfoExpanded ? (
@@ -489,7 +574,7 @@ export default function InstitutionFormOptimized() {
 						)}
 					</Button>
 					{additionalInfoExpanded && (
-						<div className="space-y-4 pl-4 border-l-2 border-muted">
+						<div className="space-y-4 rounded-lg border border-border/70 bg-card/60 p-4">
 							<Controller
 								name="contributorRemarks"
 								control={control}
@@ -499,7 +584,7 @@ export default function InstitutionFormOptimized() {
 											htmlFor="contributorRemarks"
 											className="font-medium text-base"
 										>
-											Info Tambahan
+											Info tambahan
 										</FieldLabel>
 										<textarea
 											id="contributorRemarks"
@@ -507,7 +592,7 @@ export default function InstitutionFormOptimized() {
 											placeholder="Info tambahan berkenaan institusi ini"
 											className={cn(
 												"w-full min-h-[100px] px-3 py-2 text-base border rounded-md bg-background resize-vertical",
-												fieldState.invalid && "border-red-500",
+												fieldState.invalid && "border-destructive",
 											)}
 										/>
 										{fieldState.invalid && (
@@ -552,7 +637,7 @@ export default function InstitutionFormOptimized() {
 													htmlFor="sourceUrl"
 													className="font-medium text-sm"
 												>
-													Alamat Web
+													Alamat web
 												</FieldLabel>
 												<Input
 													id="sourceUrl"
@@ -560,7 +645,7 @@ export default function InstitutionFormOptimized() {
 													placeholder="https://facebook.com/post/123 atau URL Instagram"
 													className={cn(
 														"h-12 text-base",
-														fieldState.invalid && "border-red-500",
+														fieldState.invalid && "border-destructive",
 													)}
 													type="url"
 												/>
@@ -574,7 +659,7 @@ export default function InstitutionFormOptimized() {
 							</Field>
 
 							<div className="space-y-3">
-								<p className="text-sm font-medium">Media Sosial</p>
+								<p className="text-sm font-medium">Media sosial</p>
 								<Controller
 									name="facebook"
 									control={control}
@@ -592,7 +677,7 @@ export default function InstitutionFormOptimized() {
 												placeholder="Pautan Facebook"
 												className={cn(
 													"h-12 text-base",
-													fieldState.invalid && "border-red-500",
+													fieldState.invalid && "border-destructive",
 												)}
 												type="url"
 											/>
@@ -619,7 +704,7 @@ export default function InstitutionFormOptimized() {
 												placeholder="Pautan Instagram"
 												className={cn(
 													"h-12 text-base",
-													fieldState.invalid && "border-red-500",
+													fieldState.invalid && "border-destructive",
 												)}
 												type="url"
 											/>
@@ -646,7 +731,7 @@ export default function InstitutionFormOptimized() {
 												placeholder="Pautan laman web"
 												className={cn(
 													"h-12 text-base",
-													fieldState.invalid && "border-red-500",
+													fieldState.invalid && "border-destructive",
 												)}
 												type="url"
 											/>
@@ -680,8 +765,8 @@ export default function InstitutionFormOptimized() {
 				/>
 			) : (
 				errors.root?.general && (
-					<div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md text-center">
-						<p className="text-sm font-medium text-red-800">
+					<div className="mt-4 rounded-md border border-destructive/20 bg-destructive/10 p-3 text-center">
+						<p className="text-sm font-medium text-destructive">
 							{errors.root.general.message}
 						</p>
 					</div>

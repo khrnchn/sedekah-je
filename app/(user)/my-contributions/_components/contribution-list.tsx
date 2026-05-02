@@ -1,6 +1,13 @@
 "use client";
 
-import { CheckCircle2, Clock, Inbox, Pencil, XCircle } from "lucide-react";
+import {
+	CheckCircle2,
+	ChevronRight,
+	Clock,
+	Inbox,
+	Pencil,
+	XCircle,
+} from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
 import { EmptyState } from "@/components/layout/user-page-components";
@@ -36,11 +43,11 @@ interface ContributionListProps {
 const getStatusIcon = (status: string) => {
 	switch (status) {
 		case "approved":
-			return <CheckCircle2 className="h-4 w-4 text-green-500" />;
+			return <CheckCircle2 className="h-4 w-4 text-emerald-600" />;
 		case "pending":
-			return <Clock className="h-4 w-4 text-yellow-500" />;
+			return <Clock className="h-4 w-4 text-amber-600" />;
 		case "rejected":
-			return <XCircle className="h-4 w-4 text-red-500" />;
+			return <XCircle className="h-4 w-4 text-red-600" />;
 		default:
 			return null;
 	}
@@ -49,11 +56,11 @@ const getStatusIcon = (status: string) => {
 const getStatusColor = (status: string) => {
 	switch (status) {
 		case "approved":
-			return "bg-green-500/10 text-green-500";
+			return "bg-emerald-600/10 text-emerald-700 dark:text-emerald-300";
 		case "pending":
-			return "bg-yellow-500/10 text-yellow-500";
+			return "bg-amber-500/15 text-amber-800 dark:text-amber-300";
 		case "rejected":
-			return "bg-red-500/10 text-red-500";
+			return "bg-red-600/10 text-red-700 dark:text-red-300";
 		default:
 			return "";
 	}
@@ -73,56 +80,79 @@ function ContributionItem({
 	onEditRejected?: (institutionId: string) => void;
 }) {
 	const isApproved = contribution.status === "approved";
+	const isRejected = contribution.status === "rejected";
+	const categoryLabel = getInstitutionCategoryLabel(contribution.type);
+	const statusLabel = STATUS_LABELS[contribution.status] ?? contribution.status;
 	const content = (
 		<>
-			<div className="flex items-center justify-center w-8 shrink-0">
-				{getStatusIcon(contribution.status)}
-			</div>
-			<div className="flex-1 min-w-0">
-				<div className="font-semibold text-sm md:text-base break-words">
-					{contribution.name}
+			<div className="flex items-start gap-3 md:flex-1">
+				<div className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md bg-muted">
+					{getStatusIcon(contribution.status)}
 				</div>
-				<div className="text-xs md:text-sm text-muted-foreground">
-					{formatDateOnly(contribution.date)}
-				</div>
-				{contribution.status === "rejected" &&
-					contribution.adminNotes?.trim() && (
-						<p className="text-xs text-muted-foreground italic mt-0.5 break-words">
+				<div className="min-w-0 flex-1">
+					<div className="flex items-start justify-between gap-2">
+						<div className="min-w-0">
+							<div className="break-words text-sm font-semibold leading-snug md:text-base">
+								{contribution.name}
+							</div>
+							<div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground md:text-sm">
+								<span>{formatDateOnly(contribution.date)}</span>
+								<span className="md:hidden" aria-hidden="true">
+									·
+								</span>
+								<span className="md:hidden">{categoryLabel}</span>
+							</div>
+						</div>
+						<Badge
+							variant="secondary"
+							className={cn(
+								"shrink-0 text-xs",
+								getStatusColor(contribution.status),
+							)}
+						>
+							{statusLabel}
+						</Badge>
+					</div>
+					{isRejected && contribution.adminNotes?.trim() && (
+						<p className="mt-2 break-words rounded-md bg-muted/60 px-2 py-1.5 text-xs text-muted-foreground">
 							Catatan: {contribution.adminNotes}
 						</p>
 					)}
+				</div>
 			</div>
-			<div className="flex items-center gap-2 shrink-0">
-				{contribution.status === "rejected" && onEditRejected && (
+			<div className="mt-3 flex min-h-9 items-center justify-between gap-2 md:mt-0 md:min-h-0 md:shrink-0">
+				<div className="hidden items-center gap-2 md:flex">
+					<Badge variant="secondary" className="text-xs">
+						{categoryLabel}
+					</Badge>
+				</div>
+				{isApproved && (
+					<span className="ml-auto inline-flex items-center gap-1 text-xs font-medium text-primary md:text-sm">
+						Lihat QR
+						<ChevronRight className="size-4" aria-hidden="true" />
+					</span>
+				)}
+				{isRejected && onEditRejected && (
 					<Button
 						type="button"
-						variant="ghost"
-						size="icon"
-						className="h-8 w-8 shrink-0"
+						variant="outline"
+						size="sm"
+						className="ml-auto h-9 shrink-0 gap-1.5 px-3"
 						onClick={() => onEditRejected(contribution.id)}
-						aria-label="Edit sumbangan ditolak"
 						data-tour="mycontrib-edit-rejected"
 					>
 						<Pencil className="h-4 w-4" />
+						Edit semula
 					</Button>
 				)}
-				<Badge variant="secondary" className="text-xs">
-					{getInstitutionCategoryLabel(contribution.type)}
-				</Badge>
-				<Badge
-					variant="secondary"
-					className={cn("text-xs", getStatusColor(contribution.status))}
-				>
-					{STATUS_LABELS[contribution.status] ?? contribution.status}
-				</Badge>
 			</div>
 		</>
 	);
 
 	const clickableWrapper =
-		"flex items-start gap-2 md:gap-4 p-2 md:p-3 rounded-lg bg-background hover:bg-muted/50";
+		"group block rounded-lg border border-border/70 bg-background p-3 transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:flex md:items-start md:gap-4 md:border-0 md:px-3";
 	const nonClickableWrapper =
-		"flex items-start gap-2 md:gap-4 p-2 md:p-3 rounded-lg bg-background cursor-default opacity-80";
+		"block rounded-lg border border-border/70 bg-background p-3 md:flex md:items-start md:gap-4 md:border-0 md:px-3";
 
 	if (isApproved && contribution.slug) {
 		return (
@@ -135,7 +165,11 @@ function ContributionItem({
 		);
 	}
 
-	return <div className={nonClickableWrapper}>{content}</div>;
+	return (
+		<div className={cn(nonClickableWrapper, !isRejected && "opacity-90")}>
+			{content}
+		</div>
+	);
 }
 
 export function ContributionList({
@@ -153,17 +187,17 @@ export function ContributionList({
 	);
 
 	return (
-		<Card>
-			<CardHeader>
+		<Card className="overflow-hidden">
+			<CardHeader className="px-4 py-4 md:px-6">
 				<CardTitle>Sejarah Sumbangan</CardTitle>
 				<CardDescription>Sumbangan terkini anda dan statusnya</CardDescription>
 			</CardHeader>
-			<CardContent>
+			<CardContent className="px-3 pb-4 md:px-6">
 				<Tabs defaultValue="all" className="w-full">
 					<div className="w-full overflow-x-auto -mx-1 px-1">
 						<TabsList
 							data-tour="mycontrib-status-tabs"
-							className="w-max min-w-full"
+							className="h-10 w-max min-w-full"
 						>
 							<TabsTrigger value="all">Semua</TabsTrigger>
 							<TabsTrigger value="approved">Diluluskan</TabsTrigger>

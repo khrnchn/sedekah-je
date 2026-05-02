@@ -1,5 +1,6 @@
 "use client";
 
+import { Camera, ImagePlus, X } from "lucide-react";
 import Image from "next/image";
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -257,10 +258,22 @@ export default function QRExtractionFeature({
 	};
 
 	return (
-		<div className="space-y-2" data-tour="contribute-qr-upload">
-			<label htmlFor={inputId} className="font-medium">
-				Gambar Kod QR {!optional && <span className="text-red-500">*</span>}
-			</label>
+		<div
+			className="space-y-3 rounded-lg border border-border/70 bg-card/70 p-4 shadow-sm"
+			data-tour="contribute-qr-upload"
+		>
+			<div className="space-y-1">
+				<label htmlFor={inputId} className="font-medium">
+					Gambar Kod QR{" "}
+					{!optional && <span className="text-destructive">*</span>}
+				</label>
+				<p className="text-xs leading-relaxed text-muted-foreground">
+					Saiz maksimum 5MB. Format yang disokong: JPG, PNG, WebP.
+				</p>
+				<p className="text-xs leading-relaxed text-muted-foreground">
+					Boleh juga tampal imej dengan Ctrl+V atau Cmd+V.
+				</p>
+			</div>
 			{initialImageUrl && (
 				<div className="space-y-2">
 					<p className="text-xs text-muted-foreground">Gambar semasa</p>
@@ -274,12 +287,6 @@ export default function QRExtractionFeature({
 					</div>
 				</div>
 			)}
-			<p className="text-xs text-muted-foreground">
-				Saiz maksimum: 5MB • Format yang disokong: JPG, PNG, WebP
-			</p>
-			<p className="text-xs text-muted-foreground">
-				Atau tampal imej (Ctrl+V / Cmd+V)
-			</p>
 
 			<Suspense fallback={<QRUploadFallback />}>
 				<LazyQRProcessor
@@ -315,12 +322,13 @@ export default function QRExtractionFeature({
 							type="button"
 							asChild
 							disabled={isSubmitting || qrStatus.qrExtracting}
-							className="h-12 text-base flex-1"
+							className="h-12 flex-1 gap-2 text-base"
 						>
 							<label
 								htmlFor={inputId}
-								className="cursor-pointer flex items-center justify-center w-full h-12"
+								className="flex h-12 w-full cursor-pointer items-center justify-center gap-2"
 							>
+								<Camera className="h-4 w-4" />
 								{qrStatus.qrExtracting
 									? "Memproses..."
 									: selectedFile
@@ -335,21 +343,22 @@ export default function QRExtractionFeature({
 							variant="outline"
 							asChild
 							disabled={isSubmitting || qrStatus.qrExtracting}
-							className="h-12 text-base flex-1"
+							className="h-12 flex-1 gap-2 text-base"
 						>
 							<label
 								htmlFor={`${inputId}-gallery`}
-								className="cursor-pointer flex items-center justify-center w-full h-12"
+								className="flex h-12 w-full cursor-pointer items-center justify-center gap-2"
 							>
+								<ImagePlus className="h-4 w-4" />
 								Pilih dari Galeri
 							</label>
 						</Button>
 					</div>
 					{selectedFile && (
-						<div className="flex items-center gap-2 text-sm">
+						<div className="flex items-center gap-3 rounded-md bg-muted/50 px-3 py-2 text-sm">
 							<div className="flex flex-col min-w-0">
 								<span className="truncate max-w-xs">{selectedFile.name}</span>
-								<span className="text-xs text-gray-500">
+								<span className="text-xs text-muted-foreground">
 									{formatFileSize(selectedFile.size)}
 								</span>
 							</div>
@@ -358,23 +367,10 @@ export default function QRExtractionFeature({
 								variant="ghost"
 								size="icon"
 								onClick={clearFile}
-								className="h-6 w-6 flex-shrink-0"
+								className="ml-auto h-8 w-8 flex-shrink-0"
+								aria-label="Buang gambar QR"
 							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									width="24"
-									height="24"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									strokeWidth="2"
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									className="h-4 w-4"
-								>
-									<path d="M18 6 6 18" />
-									<path d="m6 6 12 12" />
-								</svg>
+								<X className="h-4 w-4" />
 							</Button>
 						</div>
 					)}
@@ -387,23 +383,23 @@ export default function QRExtractionFeature({
 				</p>
 			)}
 			{qrContent && (
-				<div className="p-3 bg-green-50 border border-green-200 rounded-md">
-					<p className="text-sm font-medium text-green-800">
+				<div className="rounded-md border border-primary/20 bg-primary/10 p-3">
+					<p className="text-sm font-medium text-primary">
 						Kod QR berjaya dibaca. Ini akan mempercepatkan semakan sumbangan
 						anda.
 					</p>
-					<p className="text-sm text-green-700 break-all">{qrContent}</p>
+					<p className="break-all text-sm text-primary/90">{qrContent}</p>
 				</div>
 			)}
 			{!qrStatus.qrExtracting &&
 				qrStatus.qrExtractionFailed &&
 				qrStatus.hasAttemptedExtraction && (
-					<div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+					<div className="rounded-md border border-accent/50 bg-accent/30 p-3">
 						<div className="flex items-start justify-between gap-3">
 							<div className="flex-1">
-								<p className="text-sm font-medium text-yellow-800">
-									Kod QR tidak dapat dibaca secara automatik. Tiada masalah—sila
-									teruskan. Pasukan kami akan semak imej secara manual.
+								<p className="text-sm font-medium text-foreground">
+									Kod QR tidak dapat dibaca secara automatik. Tiada masalah,
+									sila teruskan. Pasukan kami akan semak imej secara manual.
 								</p>
 							</div>
 							<Button
@@ -423,8 +419,8 @@ export default function QRExtractionFeature({
 				qrStatus.hasAttemptedExtraction &&
 				!qrContent &&
 				!qrStatus.qrExtractionFailed && (
-					<div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md">
-						<p className="text-sm font-medium text-yellow-800">
+					<div className="rounded-md border border-accent/50 bg-accent/30 p-3">
+						<p className="text-sm font-medium text-foreground">
 							Memproses kod QR...
 						</p>
 					</div>

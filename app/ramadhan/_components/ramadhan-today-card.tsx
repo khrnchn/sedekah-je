@@ -23,16 +23,18 @@ export function RamadhanTodayCard({
 	const customMessage = `QR Hari Ini — Hari ke-${featured.dayNumber}/30 Ramadan! 🌙\n\n${featured.institutionName} (${featured.institutionState})\n\n${institutionUrl}\n\n#SedekahJe #30Hari30QR`;
 
 	return (
-		<Card className="relative overflow-hidden bg-gradient-to-r from-emerald-400 to-teal-800 text-white shadow-lg">
-			<div className="absolute inset-0 opacity-30 ramadhan-bg" />
+		<Card className="relative overflow-hidden border-primary/20 bg-primary/10">
+			<div className="absolute inset-0 opacity-20 ramadhan-bg" />
 			<CardContent className="relative p-6 flex flex-col sm:flex-row gap-6">
 				<div className="flex-1 space-y-4">
 					<div>
-						<p className="text-sm font-medium opacity-90">
+						<p className="text-sm font-medium text-primary">
 							QR Hari Ini — Hari ke-{featured.dayNumber}/30
 						</p>
-						<h2 className="text-2xl font-bold">{featured.institutionName}</h2>
-						<p className="text-sm opacity-90">
+						<h2 className="text-2xl font-bold text-foreground">
+							{featured.institutionName}
+						</h2>
+						<p className="text-sm text-muted-foreground">
 							{featured.institutionCity}, {featured.institutionState}
 						</p>
 						<div className="flex items-center gap-2 mt-2">
@@ -42,21 +44,16 @@ export function RamadhanTodayCard({
 								width={28}
 								height={28}
 							/>
-							<span className="text-sm capitalize">
+							<span className="text-sm capitalize text-muted-foreground">
 								{featured.institutionCategory.replace("-", " ")}
 							</span>
 						</div>
 					</div>
 					{featured.caption && (
-						<p className="text-sm opacity-90">{featured.caption}</p>
+						<p className="text-sm text-muted-foreground">{featured.caption}</p>
 					)}
 					<div className="flex flex-wrap gap-2">
-						<Button
-							asChild
-							variant="secondary"
-							size="default"
-							className="text-emerald-900 bg-white hover:bg-white/90 border-0 font-semibold"
-						>
+						<Button asChild size="default">
 							<Link
 								href={`/${featured.institutionCategory}/${featured.institutionSlug}`}
 							>
@@ -70,8 +67,7 @@ export function RamadhanTodayCard({
 								slug: featured.institutionSlug,
 								customMessage,
 							}}
-							variant="secondary"
-							className="text-emerald-900 bg-white/90 hover:bg-white border-white/30"
+							variant="outline"
 						/>
 					</div>
 				</div>

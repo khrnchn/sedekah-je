@@ -8,7 +8,7 @@ import { formatDate } from "@/lib/utils";
 
 export const metadata: Metadata = {
 	title: "Blog",
-	description: "Updates, stories, and notes from sedekah.je.",
+	description: "Nota dan kemas kini daripada sedekah.je.",
 	alternates: {
 		canonical: "https://sedekah.je/blog",
 	},
@@ -33,12 +33,12 @@ export default async function BlogPage({ searchParams }: Props) {
 				<div className="mb-8">
 					<h1 className="text-3xl font-bold">Blog</h1>
 					<p className="mt-2 text-muted-foreground">
-						Updates and stories from sedekah.je.
+						Nota, kemas kini, dan cerita daripada sedekah.je.
 					</p>
 				</div>
 
 				{featured ? (
-					<article className="mb-10 overflow-hidden rounded-xl border">
+					<article className="mb-10 overflow-hidden rounded-lg border bg-card">
 						{featured.coverImageUrl ? (
 							<Image
 								src={featured.coverImageUrl}
@@ -49,8 +49,8 @@ export default async function BlogPage({ searchParams }: Props) {
 							/>
 						) : null}
 						<div className="space-y-3 p-6">
-							<p className="text-xs uppercase tracking-wider text-muted-foreground">
-								Featured
+							<p className="text-xs font-semibold uppercase text-muted-foreground">
+								Pilihan
 							</p>
 							<h2 className="text-2xl font-semibold">
 								<Link
@@ -75,7 +75,7 @@ export default async function BlogPage({ searchParams }: Props) {
 					{list.items.map((post) => (
 						<article
 							key={post.id}
-							className="overflow-hidden rounded-lg border"
+							className="overflow-hidden rounded-lg border bg-card transition-colors hover:bg-accent/20"
 						>
 							{post.coverImageUrl ? (
 								<Image
@@ -108,7 +108,7 @@ export default async function BlogPage({ searchParams }: Props) {
 
 				{list.items.length === 0 ? (
 					<p className="mt-10 text-center text-muted-foreground">
-						No published posts yet.
+						Belum ada post yang diterbitkan.
 					</p>
 				) : null}
 
@@ -119,18 +119,18 @@ export default async function BlogPage({ searchParams }: Props) {
 								href={`/blog?page=${list.page - 1}`}
 								className="rounded-md border px-3 py-2 text-sm"
 							>
-								Previous
+								Sebelum
 							</Link>
 						) : null}
 						<span className="text-sm text-muted-foreground">
-							Page {list.page} of {list.totalPages}
+							Halaman {list.page} daripada {list.totalPages}
 						</span>
 						{list.page < list.totalPages ? (
 							<Link
 								href={`/blog?page=${list.page + 1}`}
 								className="rounded-md border px-3 py-2 text-sm"
 							>
-								Next
+								Selepas
 							</Link>
 						) : null}
 					</nav>

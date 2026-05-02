@@ -24,7 +24,7 @@ export function RamadhanDayDetailPanel({
 	const customMessage = `QR Hari ke-${dayNumber}/30 Ramadan! 🌙\n\n${day.institutionName} (${day.institutionState})\n\n${baseUrl}/${day.institutionCategory}/${day.institutionSlug}\n\n#SedekahJe #30Hari30QR`;
 
 	return (
-		<Card className="mt-4 border-2 border-primary/20 bg-accent/20">
+		<Card className="mt-4 border-primary/20 bg-primary/5">
 			<CardContent className="p-6">
 				<div className="space-y-4">
 					<div className="flex items-start gap-4">

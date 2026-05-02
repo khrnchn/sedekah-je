@@ -38,7 +38,7 @@ export default function MyContributionsPage() {
 			title="Sumbangan Saya"
 			description="Jejak dan urus sumbangan anda kepada komuniti sedekah.je"
 		>
-			<div className="space-y-8">
+			<div className="space-y-5 md:space-y-8">
 				<Suspense fallback={<StatsCardsSkeleton />}>
 					<AsyncStatsCards />
 				</Suspense>

@@ -1,10 +1,10 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { calculateSunsetTime } from "@/lib/utils/sunset";
-import { type Location, getUserLocation } from "@/lib/utils/timezone";
 import moment from "moment-hijri";
 import { useEffect, useMemo, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { calculateSunsetTime } from "@/lib/utils/sunset";
+import { getUserLocation, type Location } from "@/lib/utils/timezone";
 
 type RamadanStatus = {
 	isRamadan: boolean;
@@ -150,23 +150,22 @@ export default function RamadhanCountdown() {
 
 	// Show countdown before Ramadan
 	return (
-		<Card className="relative overflow-hidden bg-gradient-to-r from-emerald-400 to-teal-800 text-white shadow-lg">
-			<div className="absolute inset-0 opacity-30 ramadhan-bg" />
+		<Card className="relative overflow-hidden border-accent/40 bg-accent/15">
+			<div className="absolute inset-0 opacity-20 ramadhan-bg" />
 			<CardContent className="relative p-4 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
-				<span className="text-lg sm:text-xl">🌙</span>
-				<span className="font-semibold text-sm sm:text-base">
+				<span className="text-sm font-semibold text-accent-foreground sm:text-base">
 					Ramadan bermula dalam:
 				</span>
 				<div className="flex items-center gap-2 sm:gap-4">
 					{status.days > 0 && (
-						<span className="font-bold text-sm sm:text-base">
+						<span className="text-sm font-bold text-foreground sm:text-base">
 							{status.days} {status.days === 1 ? "hari" : "hari"}
 						</span>
 					)}
-					<span className="font-bold text-sm sm:text-base">
+					<span className="text-sm font-bold text-foreground sm:text-base">
 						{status.hours} {status.hours === 1 ? "jam" : "jam"}
 					</span>
-					<span className="font-bold text-sm sm:text-base">
+					<span className="text-sm font-bold text-foreground sm:text-base">
 						{status.minutes} {status.minutes === 1 ? "minit" : "minit"}
 					</span>
 				</div>

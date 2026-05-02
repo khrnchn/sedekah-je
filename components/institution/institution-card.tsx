@@ -2,8 +2,9 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import html2canvas from "html2canvas";
-import { DownloadIcon, Eye, Share2, User } from "lucide-react";
+import { DownloadIcon, Eye, MapPin, Share2, User } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -28,6 +29,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 import {
 	getInstitutionCategoryIcon,
+	getInstitutionCategoryLabel,
 	normalizeInstitutionCategory,
 } from "@/lib/institution-categories";
 import { cn, slugify } from "@/lib/utils";
@@ -56,6 +58,16 @@ const capitalizeWords = (str: string): string => {
 	});
 };
 
+const formatDistance = (distanceInMeter?: number): string | null => {
+	if (!distanceInMeter) return null;
+
+	if (distanceInMeter >= 1000) {
+		return `${(distanceInMeter / 1000).toFixed(1)} km`;
+	}
+
+	return `${Math.round(distanceInMeter)} m`;
+};
+
 const InstitutionCard = forwardRef<
 	HTMLDivElement,
 	Institution & { isClosest?: boolean; distanceToCurrentUserInMeter?: number }
@@ -77,6 +89,7 @@ const InstitutionCard = forwardRef<
 			distanceToCurrentUserInMeter,
 			contributorId,
 			contributorEmail,
+			claimable,
 		},
 		ref,
 	) => {
@@ -88,11 +101,12 @@ const InstitutionCard = forwardRef<
 		const innerRef = useRef<HTMLDivElement>(null);
 		const printRef = useRef<HTMLButtonElement>(null);
 
-		const { user, isAuthenticated, isLoading } = useAuth();
+		const { isAuthenticated, isLoading } = useAuth();
 
 		const capitalizedName = capitalizeWords(name);
 		const capitalizedState = capitalizeWords(state);
 		const capitalizedCity = capitalizeWords(city);
+		const formattedDistance = formatDistance(distanceToCurrentUserInMeter);
 
 		// Check if user can claim this institution
 		// 1. User must be logged in
@@ -102,8 +116,9 @@ const InstitutionCard = forwardRef<
 			hasMounted &&
 			!isLoading &&
 			isAuthenticated &&
-			(contributorId === null ||
-				contributorEmail === "khairin13chan@gmail.com");
+			(claimable ??
+				(contributorId === null ||
+					contributorEmail === "khairin13chan@gmail.com"));
 
 		const router = useRouter();
 		const resolvedSlug = slug ?? slugify(name);
@@ -186,7 +201,7 @@ const InstitutionCard = forwardRef<
 				if (!extension) throw new Error("No extension found");
 
 				return convertToPng(imgBlob);
-			} catch (e) {
+			} catch {
 				console.error("Format unsupported");
 			}
 			return;
@@ -200,7 +215,7 @@ const InstitutionCard = forwardRef<
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
 							exit={{ opacity: 0 }}
-							className="fixed inset-0 h-full w-full z-10 md:bg-black/20 bg-transparent"
+							className="fixed inset-0 z-10 h-full w-full bg-transparent md:bg-foreground/20"
 						/>
 					)}
 				</AnimatePresence>
@@ -212,14 +227,14 @@ const InstitutionCard = forwardRef<
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
 							exit={{ opacity: 0 }}
-							className="fixed inset-0 h-full w-full z-50 bg-black/50 flex flex-col items-center justify-center"
+							className="fixed inset-0 z-50 flex h-full w-full flex-col items-center justify-center bg-foreground/50"
 						>
-							<div className="bg-card rounded-lg p-6 max-w-xs w-full flex flex-col items-center gap-4 border shadow-lg">
+							<div className="flex w-full max-w-xs flex-col items-center gap-4 rounded-lg border bg-card p-6 shadow-lg">
 								<div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
 								<p className="text-center font-medium">
 									Memuat turun kod QR...
 								</p>
-								<p className="text-center text-sm text-gray-500 dark:text-gray-400">
+								<p className="text-center text-sm text-muted-foreground">
 									{downloadStage || "Sila tunggu sebentar"}
 								</p>
 							</div>
@@ -236,7 +251,7 @@ const InstitutionCard = forwardRef<
 								initial={{ opacity: 0 }}
 								animate={{ opacity: 1 }}
 								exit={{ opacity: 0, transition: { duration: 0.05 } }}
-								className="flex absolute top-2 right-2 lg:hidden items-center justify-center bg-card rounded-full h-6 w-6 z-10 border"
+								className="absolute right-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-md border bg-card lg:hidden"
 								onClick={(e) => {
 									e.stopPropagation();
 									setActive(null);
@@ -253,11 +268,11 @@ const InstitutionCard = forwardRef<
 									setActive(null);
 								}}
 								whileDrag={{ scale: 1.05 }}
-								className="w-full max-w-[460px] max-h-[calc(100dvh-1.5rem)] sm:max-h-[calc(100dvh-2rem)] p-5 flex flex-col bg-card border shadow-xl rounded-3xl overflow-auto lg:overflow-hidden"
+								className="flex max-h-[calc(100dvh-1.5rem)] w-full max-w-[460px] flex-col overflow-auto rounded-lg border bg-card p-5 shadow-lg sm:max-h-[calc(100dvh-2rem)] lg:overflow-hidden"
 							>
 								<motion.div
 									layoutId={`image-${name}-${id}`}
-									className="flex items-center justify-center rounded-2xl border bg-muted/30 p-3"
+									className="flex items-center justify-center rounded-lg border bg-muted/40 p-3"
 								>
 									{qrContent ? (
 										<QrCodeDisplay
@@ -282,13 +297,13 @@ const InstitutionCard = forwardRef<
 										<div className="flex-1">
 											<motion.h3
 												layoutId={`title-${name}-${id}`}
-												className="font-medium text-neutral-700 dark:text-neutral-200 text-base"
+												className="text-base font-semibold text-foreground"
 											>
 												{capitalizedName}
 											</motion.h3>
 											<motion.p
 												layoutId={`location-${city}-${state}-${id}`}
-												className="text-neutral-600 dark:text-neutral-400 text-base"
+												className="text-base text-muted-foreground"
 											>
 												{capitalizedCity}, {capitalizedState}
 											</motion.p>
@@ -302,7 +317,7 @@ const InstitutionCard = forwardRef<
 												coords ? coords.join(",") : encodeURIComponent(name)
 											}`}
 											target="_blank"
-											className="px-4 py-3 text-sm rounded-full font-bold bg-green-500 text-white"
+											className="rounded-md bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
 											rel="noreferrer"
 										>
 											Cari di peta
@@ -315,7 +330,7 @@ const InstitutionCard = forwardRef<
 												initial={{ opacity: 0 }}
 												animate={{ opacity: 1 }}
 												exit={{ opacity: 0 }}
-												className="text-neutral-600 text-xs md:text-sm lg:text-base max-h-40 md:max-h-60 lg:max-h-80 pb-10 flex flex-col items-start gap-4 overflow-auto dark:text-neutral-400 [mask:linear-gradient(to_bottom,white,white,transparent)] [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-overflow-scrolling:touch]"
+												className="flex max-h-40 flex-col items-start gap-4 overflow-auto pb-10 text-xs text-muted-foreground [mask:linear-gradient(to_bottom,white,white,transparent)] [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-overflow-scrolling:touch] md:max-h-60 md:text-sm lg:max-h-80 lg:text-base"
 											>
 												{description}
 											</motion.div>
@@ -328,55 +343,79 @@ const InstitutionCard = forwardRef<
 				</AnimatePresence>
 
 				<TooltipProvider>
-					<motion.div ref={ref} layoutId={`card-${name}-${id}`}>
+					<motion.div
+						ref={ref}
+						layoutId={`card-${name}-${id}`}
+						className="h-full"
+					>
 						<Card
+							data-cat={normalizedCategory}
 							className={cn(
-								"relative group border-4 border-transparent shadow-lg dark:shadow-muted/50 cursor-pointer hover:shadow-xl transition-all duration-200 ease-in-out",
-								"hover:bg-gray-100 dark:hover:bg-zinc-800",
+								"relative h-full border shadow-sm transition-all duration-200 ease-out hover:-translate-y-0.5",
 								isClosest
-									? "border-[hsl(var(--primary))] animate-pulse-subtle"
-									: "",
+									? "border-primary/50 ring-1 ring-primary/20"
+									: "border-border/80 hover:border-primary/35",
 							)}
+							style={{ backgroundColor: "oklch(var(--cat-surface))" }}
 							onMouseEnter={() => router.prefetch(href)}
-							onClick={() => router.push(href)}
 						>
-							<CardContent className="flex flex-col items-center gap-2 p-4 h-full">
+							<CardContent className="flex h-full flex-col items-center gap-3 p-4">
+								{canClaim && (
+									<div className="absolute top-2 right-2 z-10">
+										<Tooltip>
+											<TooltipTrigger asChild>
+												<Button
+													size="sm"
+													variant="ghost"
+													className="h-7 gap-1 px-2 text-xs text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors duration-200 ease-out"
+													onClick={(e) => {
+														e.stopPropagation();
+														setShowClaimModal(true);
+													}}
+												>
+													<User className="h-3.5 w-3.5" />
+													Tuntut
+												</Button>
+											</TooltipTrigger>
+											<TooltipContent side="top">
+												<p>Tuntut sebagai milik anda</p>
+											</TooltipContent>
+										</Tooltip>
+									</div>
+								)}
 								{isClosest && (
-									<div className="absolute -top-3 left-4 shadow-lg">
-										<div className="relative">
-											<div className="absolute inset-0 blur-sm bg-[hsl(var(--primary)/0.9)] rounded-full" />
-											<div className="relative bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] py-1 px-3 rounded-full text-xs font-semibold flex items-center gap-1.5 text-white">
-												<span className="animate-ping absolute h-2 w-2 rounded-full bg-[hsl(var(--primary)/0.7)] opacity-75" />
-												<span className="relative h-2 w-2 rounded-full bg-[hsl(var(--primary)/0.9)]" />
-												Yang terdekat
-												{distanceToCurrentUserInMeter && (
-													<span className="font-medium">
-														•{" "}
-														{distanceToCurrentUserInMeter > 1000
-															? `${(
-																	distanceToCurrentUserInMeter / 1000
-																).toFixed(1)}km`
-															: `${Math.round(distanceToCurrentUserInMeter)}m`}
-													</span>
-												)}
-											</div>
+									<div className="flex w-full justify-center">
+										<div className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-2.5 py-1 text-xs text-primary">
+											<MapPin className="h-3.5 w-3.5" aria-hidden="true" />
+											<span className="font-medium">Terdekat</span>
+											{formattedDistance && (
+												<span className="font-semibold tabular-nums">
+													{formattedDistance}
+												</span>
+											)}
 										</div>
 									</div>
 								)}
-								<div className="flex flex-col items-center gap-1 mb-2 w-full">
+								<Link
+									href={href}
+									className="mb-2 flex w-full flex-col items-center gap-1 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+									aria-label={`Buka halaman ${capitalizedName}`}
+								>
 									<motion.div>
 										<Image
 											src={getInstitutionCategoryIcon(category)}
-											alt="category logo"
+											alt=""
 											width={50}
 											height={50}
+											unoptimized
+											aria-hidden="true"
 										/>
 									</motion.div>
 									<Tooltip>
 										<TooltipTrigger asChild>
 											<motion.h3
 												layoutId={`title-${name}-${id}`}
-												className="text-lg font-semibold text-foreground truncate w-full text-center"
+												className="w-full truncate text-center text-base font-semibold text-foreground"
 											>
 												{capitalizedName}
 											</motion.h3>
@@ -387,67 +426,70 @@ const InstitutionCard = forwardRef<
 									</Tooltip>
 									<motion.p
 										layoutId={`location-${city}-${state}-${id}`}
-										className="text-sm text-cyan-500 truncate w-full text-center font-medium"
+										className="w-full truncate text-center text-sm font-medium text-muted-foreground"
 									>
 										{capitalizedCity}, {capitalizedState}
 									</motion.p>
-								</div>
+									<span
+										data-cat={normalizedCategory}
+										className="mt-0.5 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium"
+										style={{
+											borderColor: "var(--cat-ring)",
+											backgroundColor: "var(--cat-surface)",
+											color: "var(--cat-text)",
+										}}
+									>
+										{getInstitutionCategoryLabel(category)}
+									</span>
+								</Link>
 								<motion.div
 									layoutId={`image-${name}-${id}`}
-									className="cursor-pointer"
+									className="cursor-pointer rounded-lg bg-background p-2.5 ring-1 ring-border/60 shadow-sm"
 								>
 									{qrContent ? (
-										<QrCodeDisplay
-											qrContent={qrContent}
-											supportedPayment={supportedPayment}
-											ref={printRef}
-											name={name}
-										/>
+										<div className="flex aspect-square w-40 items-center justify-center">
+											<QrCodeDisplay
+												qrContent={qrContent}
+												supportedPayment={supportedPayment}
+												ref={printRef}
+												name={name}
+												aria-label={`Perbesarkan kod QR untuk ${capitalizedName}`}
+												onClick={(e) => {
+													e.stopPropagation();
+													setActive(true);
+												}}
+											/>
+										</div>
 									) : (
-										<Image
-											src={qrImage}
-											alt={`QR Code for ${name}`}
-											width={160}
-											height={160}
-											className="rounded-lg h-40 object-cover"
+										<button
+											type="button"
+											className="block aspect-square w-40 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+											aria-label={`Perbesarkan kod QR untuk ${capitalizedName}`}
 											onClick={(e) => {
 												e.stopPropagation();
 												setActive(true);
 											}}
-										/>
+										>
+											<Image
+												src={qrImage}
+												alt={`QR Code for ${name}`}
+												width={160}
+												height={160}
+												className="h-full w-full rounded-md object-cover"
+											/>
+										</button>
 									)}
 								</motion.div>
-								<div className="flex gap-2 mt-auto">
-									{/* Claim Button */}
-									{canClaim && (
-										<Tooltip>
-											<TooltipTrigger asChild>
-												<Button
-													size="icon"
-													variant="ghost"
-													className="hover:bg-primary/10 hover:text-primary transition-colors duration-200 ease-in-out"
-													onClick={(e) => {
-														e.stopPropagation();
-														setShowClaimModal(true);
-													}}
-												>
-													<User className="h-5 w-5" />
-												</Button>
-											</TooltipTrigger>
-											<TooltipContent side="top">
-												<p>Tuntut sebagai milik anda</p>
-											</TooltipContent>
-										</Tooltip>
-									)}
-
+								<div className="mt-auto flex w-full justify-center gap-1.5">
 									{/* Download Button */}
 									<Tooltip>
 										<TooltipTrigger asChild>
 											<Button
-												size="icon"
+												size="sm"
 												variant="ghost"
-												className="hover:bg-primary/10 hover:text-primary transition-colors duration-200 ease-in-out"
+												className="h-11 gap-1.5 px-2.5 hover:bg-primary/10 hover:text-primary transition-colors duration-200 ease-out"
 												disabled={isDownloading}
+												aria-label={`Muat turun kod QR untuk ${capitalizedName}`}
 												onClick={async (e) => {
 													e.stopPropagation();
 													setIsDownloading(true);
@@ -533,6 +575,7 @@ const InstitutionCard = forwardRef<
 												) : (
 													<DownloadIcon className="h-5 w-5" />
 												)}
+												<span className="text-xs font-medium">Muat turun</span>
 											</Button>
 										</TooltipTrigger>
 										<TooltipContent side="top">
@@ -548,13 +591,14 @@ const InstitutionCard = forwardRef<
 									<DropdownMenu>
 										<DropdownMenuTrigger asChild>
 											<Button
-												size="icon"
+												size="sm"
 												variant="ghost"
-												className="hover:bg-primary/10 hover:text-primary transition-colors duration-200 ease-in-out"
+												className="h-11 gap-1.5 px-2.5 hover:bg-primary/10 hover:text-primary transition-colors duration-200 ease-out"
 												disabled={isDownloading}
+												aria-label={`Kongsi ${capitalizedName}`}
 											>
 												<Share2 className="h-5 w-5" />
-												<span className="sr-only">Kongsi</span>
+												<span className="text-xs font-medium">Kongsi</span>
 											</Button>
 										</DropdownMenuTrigger>
 										<DropdownMenuContent
@@ -598,15 +642,17 @@ const InstitutionCard = forwardRef<
 									<Tooltip>
 										<TooltipTrigger asChild>
 											<Button
-												size="icon"
+												size="sm"
 												variant="ghost"
-												className="hover:bg-primary/10 hover:text-primary transition-colors duration-200 ease-in-out"
+												className="h-11 gap-1.5 px-2.5 hover:bg-primary/10 hover:text-primary transition-colors duration-200 ease-out"
+												aria-label={`Perbesarkan kod QR untuk ${capitalizedName}`}
 												onClick={async (e) => {
 													e.stopPropagation();
 													setActive(true);
 												}}
 											>
 												<Eye className="h-5 w-5" />
+												<span className="text-xs font-medium">QR</span>
 											</Button>
 										</TooltipTrigger>
 										<TooltipContent side="top">
@@ -649,7 +695,7 @@ export const CloseIcon = () => {
 			strokeWidth="2"
 			strokeLinecap="round"
 			strokeLinejoin="round"
-			className="h-4 w-4 text-black dark:text-neutral-200"
+			className="h-4 w-4 text-foreground"
 		>
 			<path stroke="none" d="M0 0h24v24H0z" fill="none" />
 			<path d="M18 6l-12 12" />

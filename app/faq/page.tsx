@@ -1,8 +1,7 @@
 "use client";
 
-import { HelpCircle, MessageCircle, Shield, Users, Zap } from "lucide-react";
+import { HelpCircle, MessageCircle, Shield, Users } from "lucide-react";
 import Link from "next/link";
-import React from "react";
 import PageFooter from "@/components/layout/page-footer";
 import PageHeader from "@/components/layout/page-header";
 import { Header } from "@/components/shared/header";
@@ -26,8 +25,8 @@ const faqCategories = [
 	{
 		title: "Sumbangan & Derma",
 		icon: HelpCircle,
-		color: "bg-green-100 dark:bg-green-900",
-		textColor: "text-green-700 dark:text-green-300",
+		color: "bg-primary/10",
+		textColor: "text-primary",
 		badge: "success",
 		faqs: [
 			{
@@ -40,7 +39,7 @@ const faqCategories = [
 						web kami. Anda perlu{" "}
 						<Link
 							href="/contribute"
-							className="text-blue-500 dark:text-blue-400 hover:underline font-medium"
+							className="font-medium text-primary hover:underline"
 						>
 							log masuk untuk submit
 						</Link>
@@ -65,8 +64,8 @@ const faqCategories = [
 	{
 		title: "Keselamatan & Privasi",
 		icon: Shield,
-		color: "bg-blue-100 dark:bg-blue-900",
-		textColor: "text-blue-700 dark:text-blue-300",
+		color: "bg-muted",
+		textColor: "text-foreground",
 		badge: "default",
 		faqs: [
 			{
@@ -85,8 +84,8 @@ const faqCategories = [
 	{
 		title: "Mengenai Platform",
 		icon: Users,
-		color: "bg-purple-100 dark:bg-purple-900",
-		textColor: "text-purple-700 dark:text-purple-300",
+		color: "bg-muted",
+		textColor: "text-foreground",
 		badge: "secondary",
 		faqs: [
 			{
@@ -98,7 +97,7 @@ const faqCategories = [
 						<span className="italic">maintainer/contributor</span> di{" "}
 						<Link
 							href="https://github.com/khrnchn/sedekah-je/graphs/contributors"
-							className="text-blue-500 dark:text-blue-400 hover:underline"
+							className="text-primary hover:underline"
 						>
 							sini
 						</Link>
@@ -111,9 +110,9 @@ const faqCategories = [
 	{
 		title: "Bantuan & Sokongan",
 		icon: MessageCircle,
-		color: "bg-orange-100 dark:bg-orange-900",
-		textColor: "text-orange-700 dark:text-orange-300",
-		badge: "warning",
+		color: "bg-secondary",
+		textColor: "text-secondary-foreground",
+		badge: "secondary",
 		faqs: [
 			{
 				question:
@@ -123,7 +122,7 @@ const faqCategories = [
 						Anda boleh menghubungi akaun X kami dengan mengetip{" "}
 						<Link
 							href="https://x.com/sedekahje"
-							className="text-blue-500 dark:text-blue-400 hover:underline"
+							className="text-primary hover:underline"
 							target="_blank"
 						>
 							pautan ini
@@ -209,13 +208,13 @@ const FAQ = () => {
 					})}
 				</div>
 
-				<Card className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 border-blue-200 dark:border-blue-800">
+				<Card className="mt-8 border-primary/20 bg-primary/5">
 					<CardHeader>
-						<CardTitle className="flex items-center gap-2 text-blue-900 dark:text-blue-100">
+						<CardTitle className="flex items-center gap-2 text-foreground">
 							<MessageCircle className="h-5 w-5" />
 							Masih ada soalan?
 						</CardTitle>
-						<CardDescription className="text-blue-700 dark:text-blue-300">
+						<CardDescription>
 							Jika anda tidak menemui jawapan yang anda cari, jangan ragu untuk
 							menghubungi kami.
 						</CardDescription>
@@ -225,14 +224,14 @@ const FAQ = () => {
 							<Link
 								href="https://x.com/sedekahje"
 								target="_blank"
-								className="inline-flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium text-sm"
+								className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
 							>
 								Hubungi Kami
 							</Link>
 							<Link
 								href="https://github.com/khrnchn/sedekah-je/issues"
 								target="_blank"
-								className="inline-flex items-center justify-center px-4 py-2 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-50 dark:hover:bg-blue-950 transition-colors font-medium text-sm"
+								className="inline-flex items-center justify-center rounded-md border px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
 							>
 								Laporkan Isu Berkaitan Kod
 							</Link>

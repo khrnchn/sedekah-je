@@ -31,7 +31,7 @@ export function CategoryChart({ data }: CategoryChartProps) {
 			config={{
 				count: {
 					label: "Count",
-					color: "hsl(var(--chart-1))",
+					color: "oklch(var(--chart-1))",
 				},
 			}}
 		>

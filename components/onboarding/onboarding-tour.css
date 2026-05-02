@@ -14,11 +14,11 @@
 	position: fixed;
 	z-index: 1000000000;
 
-	background: hsl(var(--card));
-	border: 1px solid hsl(var(--border));
+	background: oklch(var(--card));
+	border: 1px solid oklch(var(--border));
 	border-radius: 1rem;
 	box-shadow:
-		0 0 0 1px hsl(var(--border) / 0.05),
+		0 0 0 1px oklch(var(--border) / 0.05),
 		0 4px 6px -1px hsl(240 10% 4% / 0.06),
 		0 12px 24px -4px hsl(240 10% 4% / 0.1);
 	padding: 1.25rem 1.25rem 1rem;
@@ -46,19 +46,19 @@
 }
 
 .driver-popover.sedekah-tour .driver-popover-arrow-side-left {
-	border-left-color: hsl(var(--card));
+	border-left-color: oklch(var(--card));
 }
 
 .driver-popover.sedekah-tour .driver-popover-arrow-side-right {
-	border-right-color: hsl(var(--card));
+	border-right-color: oklch(var(--card));
 }
 
 .driver-popover.sedekah-tour .driver-popover-arrow-side-top {
-	border-top-color: hsl(var(--card));
+	border-top-color: oklch(var(--card));
 }
 
 .driver-popover.sedekah-tour .driver-popover-arrow-side-bottom {
-	border-bottom-color: hsl(var(--card));
+	border-bottom-color: oklch(var(--card));
 }
 
 /* ── Typography ── */
@@ -68,7 +68,7 @@
 }
 
 .driver-popover.sedekah-tour .driver-popover-title {
-	color: hsl(var(--foreground));
+	color: oklch(var(--foreground));
 	font-weight: 700;
 	font-size: 0.9375rem;
 	line-height: 1.4;
@@ -77,7 +77,7 @@
 }
 
 .driver-popover.sedekah-tour .driver-popover-description {
-	color: hsl(var(--muted-foreground));
+	color: oklch(var(--muted-foreground));
 	font-size: 0.8125rem;
 	line-height: 1.6;
 	margin: 0 0 1rem;
@@ -94,7 +94,7 @@
 	display: grid;
 	place-items: center;
 	border-radius: 0.5rem;
-	color: hsl(var(--muted-foreground));
+	color: oklch(var(--muted-foreground));
 	font-size: 1rem;
 	cursor: pointer;
 	transition: all 0.15s ease;
@@ -102,8 +102,8 @@
 }
 
 .driver-popover.sedekah-tour .driver-popover-close-btn:hover {
-	background: hsl(var(--muted));
-	color: hsl(var(--foreground));
+	background: oklch(var(--muted));
+	color: oklch(var(--foreground));
 }
 
 /* ── Footer layout ── */
@@ -114,7 +114,7 @@
 	gap: 0.5rem;
 	margin-top: 0;
 	padding-top: 0.75rem;
-	border-top: 1px solid hsl(var(--border) / 0.6);
+	border-top: 1px solid oklch(var(--border) / 0.6);
 }
 
 /* ── Progress text — styled as pill ── */
@@ -122,8 +122,8 @@
 	font-size: 0.6875rem;
 	font-weight: 600;
 	letter-spacing: 0.04em;
-	color: hsl(var(--primary));
-	background: hsl(var(--primary) / 0.08);
+	color: oklch(var(--primary));
+	background: oklch(var(--primary) / 0.08);
 	padding: 0.2rem 0.625rem;
 	border-radius: 9999px;
 	white-space: nowrap;
@@ -157,33 +157,33 @@
 
 /* Previous button — ghost style */
 .driver-popover.sedekah-tour .driver-popover-prev-btn {
-	color: hsl(var(--muted-foreground));
+	color: oklch(var(--muted-foreground));
 	background: transparent;
 	border: none;
 }
 
 .driver-popover.sedekah-tour .driver-popover-prev-btn:hover {
-	color: hsl(var(--foreground));
-	background: hsl(var(--muted));
+	color: oklch(var(--foreground));
+	background: oklch(var(--muted));
 }
 
 /* Next / Done button — primary solid */
 .driver-popover.sedekah-tour .driver-popover-next-btn {
-	color: hsl(var(--primary-foreground));
-	background: hsl(var(--primary));
+	color: oklch(var(--primary-foreground));
+	background: oklch(var(--primary));
 	border: none;
-	box-shadow: 0 1px 2px hsl(var(--primary) / 0.3);
+	box-shadow: 0 1px 2px oklch(var(--primary) / 0.3);
 }
 
 .driver-popover.sedekah-tour .driver-popover-next-btn:hover {
 	background: hsl(142 86% 24%);
-	box-shadow: 0 2px 6px hsl(var(--primary) / 0.35);
+	box-shadow: 0 2px 6px oklch(var(--primary) / 0.35);
 	transform: translateY(-1px);
 }
 
 .driver-popover.sedekah-tour .driver-popover-next-btn:active {
 	transform: translateY(0);
-	box-shadow: 0 1px 2px hsl(var(--primary) / 0.25);
+	box-shadow: 0 1px 2px oklch(var(--primary) / 0.25);
 }
 
 /* Disabled state */
@@ -203,13 +203,13 @@
 
 .dark .driver-popover.sedekah-tour {
 	box-shadow:
-		0 0 0 1px hsl(var(--border) / 0.15),
+		0 0 0 1px oklch(var(--border) / 0.15),
 		0 4px 6px -1px hsl(0 0% 0% / 0.2),
 		0 12px 24px -4px hsl(0 0% 0% / 0.4);
 }
 
 .dark .driver-popover.sedekah-tour .driver-popover-progress-text {
-	background: hsl(var(--primary) / 0.15);
+	background: oklch(var(--primary) / 0.15);
 }
 
 .dark .driver-popover.sedekah-tour .driver-popover-next-btn {

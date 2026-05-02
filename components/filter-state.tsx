@@ -1,3 +1,5 @@
+import Image from "next/image";
+import { useEffect, useState } from "react";
 import {
 	Select,
 	SelectContent,
@@ -7,9 +9,6 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import Image from "next/image";
-import type React from "react";
-import { useState } from "react";
 
 const ALL_STATES = "all_states";
 
@@ -61,6 +60,12 @@ const FilterState = ({ onStateChange, className, initialState }: Props) => {
 		initialState && initialState !== "" ? initialState : ALL_STATES;
 	const [selectedState, setSelectedState] = useState<string>(initialValue);
 
+	useEffect(() => {
+		setSelectedState(
+			initialState && initialState !== "" ? initialState : ALL_STATES,
+		);
+	}, [initialState]);
+
 	const handleStateChange = (currentValue: string) => {
 		const newState = currentValue === ALL_STATES ? "" : currentValue;
 		setSelectedState(currentValue);
@@ -70,7 +75,7 @@ const FilterState = ({ onStateChange, className, initialState }: Props) => {
 	return (
 		<div className={cn("w-full", className)}>
 			<Select value={selectedState} onValueChange={handleStateChange}>
-				<SelectTrigger className="rounded-lg border bg-background shadow-md">
+				<SelectTrigger>
 					<SelectValue placeholder="" />
 				</SelectTrigger>
 				<SelectContent>
@@ -83,7 +88,7 @@ const FilterState = ({ onStateChange, className, initialState }: Props) => {
 							>
 								{state.flag ? (
 									<div className="flex items-center space-x-3 w-full">
-										<div className="relative overflow-hidden border border-gray-200">
+										<div className="relative overflow-hidden border border-border">
 											<Image
 												loading="lazy"
 												src={state.flag}

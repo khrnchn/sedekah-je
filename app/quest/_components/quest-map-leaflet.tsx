@@ -384,15 +384,15 @@ export default function QuestMapLeaflet({
 				<style>
 					{`
 					.quest-tooltip {
-						background: hsl(var(--popover)) !important;
-						color: hsl(var(--popover-foreground)) !important;
-						border: 1px solid hsl(var(--border)) !important;
+						background: oklch(var(--popover)) !important;
+						color: oklch(var(--popover-foreground)) !important;
+						border: 1px solid oklch(var(--border)) !important;
 						border-radius: 6px !important;
 						font-size: 12px !important;
 						padding: 4px 8px !important;
 					}
 					.quest-tooltip::before {
-						border-top-color: hsl(var(--border)) !important;
+						border-top-color: oklch(var(--border)) !important;
 					}
 					.quest-marker-icon {
 						background: transparent !important;
@@ -414,16 +414,16 @@ export default function QuestMapLeaflet({
 						filter: none !important;
 					}
 					.leaflet-control-zoom a {
-						background: hsl(var(--accent)) !important;
-						color: hsl(var(--foreground)) !important;
-						border-color: hsl(var(--border)) !important;
+						background: oklch(var(--accent)) !important;
+						color: oklch(var(--foreground)) !important;
+						border-color: oklch(var(--border)) !important;
 					}
 					.leaflet-control-zoom a:hover {
-						background: hsl(var(--muted)) !important;
+						background: oklch(var(--muted)) !important;
 					}
 					.quest-recenter-control {
 						margin-top: 8px;
-						border: 1px solid hsl(var(--border)) !important;
+						border: 1px solid oklch(var(--border)) !important;
 						border-radius: 4px !important;
 						overflow: hidden;
 						box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
@@ -434,20 +434,20 @@ export default function QuestMapLeaflet({
 						justify-content: center;
 						width: 30px;
 						height: 30px;
-						background: hsl(var(--accent));
-						color: hsl(var(--foreground));
+						background: oklch(var(--accent));
+						color: oklch(var(--foreground));
 						border: 0;
 						cursor: pointer;
 					}
 					.quest-recenter-button:hover {
-						background: hsl(var(--muted));
+						background: oklch(var(--muted));
 					}
 					.leaflet-control-attribution {
-						background: hsl(var(--background) / 0.8) !important;
-						color: hsl(var(--muted-foreground)) !important;
+						background: oklch(var(--background) / 0.8) !important;
+						color: oklch(var(--muted-foreground)) !important;
 					}
 					.leaflet-control-attribution a {
-						color: hsl(var(--muted-foreground)) !important;
+						color: oklch(var(--muted-foreground)) !important;
 					}
 				`}
 				</style>

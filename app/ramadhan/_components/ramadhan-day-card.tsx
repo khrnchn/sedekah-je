@@ -1,9 +1,9 @@
 "use client";
 
-import { Card } from "@/components/ui/card";
-import { formatDateBM, formatDateBMShort } from "@/lib/ramadhan";
-import { cn } from "@/lib/utils";
 import { ChevronRight, Lock } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { formatDateBMShort } from "@/lib/ramadhan";
+import { cn } from "@/lib/utils";
 import type { RamadhanCampaignDay } from "../_lib/queries";
 
 type RamadhanDayCardProps = {
@@ -33,7 +33,7 @@ export function RamadhanDayCard({
 		return (
 			<Card
 				className={cn(
-					"p-3 min-h-[120px] flex flex-col justify-center",
+					"flex min-h-[120px] flex-col justify-center p-3",
 					"bg-muted/50",
 				)}
 				aria-hidden="true"
@@ -64,9 +64,9 @@ export function RamadhanDayCard({
 	return (
 		<Card
 			className={cn(
-				"min-h-[120px] overflow-hidden transition-shadow duration-200",
+				"min-h-[120px] overflow-hidden transition-colors duration-200",
 				"focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2",
-				isSelected && "ring-2 ring-primary ring-offset-2 shadow-md",
+				isSelected && "ring-2 ring-primary ring-offset-2",
 				isToday &&
 					!isSelected &&
 					"ring-2 ring-emerald-500 ring-offset-2 animate-pulse-subtle",
@@ -76,7 +76,7 @@ export function RamadhanDayCard({
 				type="button"
 				className={cn(
 					"w-full text-left p-3 flex items-start gap-2 rounded-lg",
-					"hover:bg-accent/50 hover:shadow-sm",
+					"hover:bg-accent/50",
 					"focus:outline-none focus-visible:ring-0",
 					isPast && !isSelected && "hover:bg-muted/50",
 				)}

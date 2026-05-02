@@ -1,11 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { type ComponentProps, forwardRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 type Props = ComponentProps<typeof Button>;
 
@@ -38,24 +36,11 @@ export const ModeToggle = forwardRef<HTMLButtonElement, Props>(
 				size="icon"
 				onClick={toggleTheme}
 				ref={ref}
-				className={cn(
-					"bg-muted border border-gray-200 dark:border-slate-900 rounded-full w-20 relative",
-					className,
-				)}
+				className={className}
 				{...props}
 			>
-				<motion.div
-					initial={false} // Prevent initial animation during hydration
-					animate={{
-						left: theme === "light" ? "2px" : "auto",
-						right: theme === "light" ? "auto" : "2px",
-						transition: { ease: "easeInOut" },
-					}}
-					className="bg-background rounded-full absolute size-8 flex items-center justify-center"
-				>
-					<Moon className="dark:size-[1.2rem] size-0 transition-all" />
-					<Sun className="h-[1.2rem] w-[1.2rem] dark:size-0 transition-all" />
-				</motion.div>
+				<Moon className="hidden h-4 w-4 dark:block" />
+				<Sun className="h-4 w-4 dark:hidden" />
 				<span className="sr-only">Toggle theme</span>
 			</Button>
 		);

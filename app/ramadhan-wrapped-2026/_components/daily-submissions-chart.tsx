@@ -26,7 +26,9 @@ export function DailySubmissionsChart({
 	const safeId = useId().replace(/:/g, "");
 	const fillId = `wrapped-submissions-${safeId}`;
 	const strokeColor =
-		seriesColor === "primary" ? "hsl(var(--primary))" : "hsl(var(--chart-1))";
+		seriesColor === "primary"
+			? "oklch(var(--primary))"
+			: "oklch(var(--chart-1))";
 
 	return (
 		<ChartContainer

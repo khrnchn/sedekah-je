@@ -12,11 +12,11 @@ import { getTopContributors } from "../_lib/queries";
 function getRankIcon(rank: number) {
 	switch (rank) {
 		case 1:
-			return <Trophy className="h-6 w-6 text-yellow-500" />;
+			return <Trophy className="h-6 w-6 text-primary" />;
 		case 2:
-			return <Medal className="h-6 w-6 text-slate-400" />;
+			return <Medal className="h-6 w-6 text-muted-foreground" />;
 		case 3:
-			return <Award className="h-6 w-6 text-amber-600" />;
+			return <Award className="h-6 w-6 text-accent-foreground" />;
 		default:
 			return (
 				<span className="text-sm font-bold text-muted-foreground">#{rank}</span>
@@ -47,7 +47,7 @@ export async function AsyncTopContributors() {
 				{/* Second Place */}
 				{topContributors[1] && (
 					<div className="flex flex-col items-center w-1/3">
-						<Avatar className="w-12 h-12 md:w-20 md:h-20 border-4 border-slate-300">
+						<Avatar className="w-12 h-12 md:w-20 md:h-20 border-2 border-border">
 							<AvatarImage src={topContributors[1].avatar ?? undefined} />
 							<AvatarFallback>
 								{topContributors[1].name.charAt(0)}
@@ -61,8 +61,8 @@ export async function AsyncTopContributors() {
 								{topContributors[1].contributions} submission
 							</div>
 						</div>
-						<div className="w-full h-16 md:h-24 bg-slate-300/50 rounded-t-lg flex items-center justify-center mt-2">
-							<span className="text-2xl md:text-4xl font-bold text-slate-600">
+						<div className="mt-2 flex h-16 w-full items-center justify-center rounded-t-lg border bg-muted/50 md:h-24">
+							<span className="text-2xl font-bold text-muted-foreground md:text-4xl">
 								2
 							</span>
 						</div>
@@ -72,7 +72,7 @@ export async function AsyncTopContributors() {
 				{/* First Place */}
 				{topContributors[0] && (
 					<div className="flex flex-col items-center w-1/3">
-						<Avatar className="w-16 h-16 md:w-24 md:h-24 border-4 border-yellow-400">
+						<Avatar className="w-16 h-16 md:w-24 md:h-24 border-2 border-primary">
 							<AvatarImage src={topContributors[0].avatar ?? undefined} />
 							<AvatarFallback>
 								{topContributors[0].name.charAt(0)}
@@ -86,8 +86,8 @@ export async function AsyncTopContributors() {
 								{topContributors[0].contributions} submission
 							</div>
 						</div>
-						<div className="w-full h-20 md:h-32 bg-yellow-400/50 rounded-t-lg flex items-center justify-center mt-2">
-							<span className="text-3xl md:text-5xl font-bold text-yellow-600">
+						<div className="mt-2 flex h-20 w-full items-center justify-center rounded-t-lg border border-primary/30 bg-primary/10 md:h-32">
+							<span className="text-3xl font-bold text-primary md:text-5xl">
 								1
 							</span>
 						</div>
@@ -97,7 +97,7 @@ export async function AsyncTopContributors() {
 				{/* Third Place */}
 				{topContributors[2] && (
 					<div className="flex flex-col items-center w-1/3">
-						<Avatar className="w-12 h-12 md:w-20 md:h-20 border-4 border-amber-500">
+						<Avatar className="w-12 h-12 md:w-20 md:h-20 border-2 border-accent">
 							<AvatarImage src={topContributors[2].avatar ?? undefined} />
 							<AvatarFallback>
 								{topContributors[2].name.charAt(0)}
@@ -111,8 +111,8 @@ export async function AsyncTopContributors() {
 								{topContributors[2].contributions} submission
 							</div>
 						</div>
-						<div className="w-full h-12 md:h-20 bg-amber-500/50 rounded-t-lg flex items-center justify-center mt-2">
-							<span className="text-xl md:text-3xl font-bold text-amber-700">
+						<div className="mt-2 flex h-12 w-full items-center justify-center rounded-t-lg border bg-accent/60 md:h-20">
+							<span className="text-xl font-bold text-accent-foreground md:text-3xl">
 								3
 							</span>
 						</div>
