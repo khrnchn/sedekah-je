@@ -49,10 +49,10 @@ const userNavItems: NavItem[] = [
 		description: "Lihat carta",
 	},
 	{
-		title: "Sumbangan Saya",
+		title: "Submission Saya",
 		href: "/my-contributions",
 		icon: BarChart3,
-		description: "Lihat sumbangan anda",
+		description: "Lihat submission anda",
 	},
 ];
 

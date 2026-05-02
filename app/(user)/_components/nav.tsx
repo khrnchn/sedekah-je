@@ -1,5 +1,14 @@
 "use client";
 
+import {
+	BarChart,
+	HeartHandshake,
+	LayoutDashboard,
+	LogOut,
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
 	Drawer,
@@ -11,19 +20,10 @@ import {
 } from "@/components/ui/drawer";
 import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
-import {
-	BarChart,
-	HeartHandshake,
-	LayoutDashboard,
-	LogOut,
-} from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
 
 const links = [
 	{
-		name: "Semua sumbangan",
+		name: "Submission",
 		href: "/my-contributions",
 		icon: LayoutDashboard,
 	},

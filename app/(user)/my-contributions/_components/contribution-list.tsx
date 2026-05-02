@@ -68,9 +68,15 @@ const getStatusColor = (status: string) => {
 
 const STATUS_LABELS: Record<string, string> = {
 	approved: "Diluluskan",
-	pending: "Menunggu",
+	pending: "Pending",
 	rejected: "Ditolak",
 };
+
+const STATUS_TABS = [
+	{ value: "approved", label: "Diluluskan" },
+	{ value: "pending", label: "Pending" },
+	{ value: "rejected", label: "Ditolak" },
+] as const;
 
 function ContributionItem({
 	contribution,
@@ -185,105 +191,123 @@ export function ContributionList({
 		}),
 		[contributions],
 	);
+	const statusCounts = {
+		approved: filteredContributions.approved.length,
+		pending: filteredContributions.pending.length,
+		rejected: filteredContributions.rejected.length,
+	};
+	const defaultTab =
+		filteredContributions.pending.length > 0
+			? "pending"
+			: filteredContributions.rejected.length > 0
+				? "rejected"
+				: "approved";
 
 	return (
 		<Card className="overflow-hidden">
 			<CardHeader className="px-4 py-4 md:px-6">
-				<CardTitle>Sejarah Sumbangan</CardTitle>
-				<CardDescription>Sumbangan terkini anda dan statusnya</CardDescription>
+				<CardTitle>Sejarah Submission</CardTitle>
+				<CardDescription>Submission terkini anda dan statusnya</CardDescription>
 			</CardHeader>
 			<CardContent className="px-3 pb-4 md:px-6">
-				<Tabs defaultValue="all" className="w-full">
-					<div className="w-full overflow-x-auto -mx-1 px-1">
-						<TabsList
-							data-tour="mycontrib-status-tabs"
-							className="h-10 w-max min-w-full"
-						>
-							<TabsTrigger value="all">Semua</TabsTrigger>
-							<TabsTrigger value="approved">Diluluskan</TabsTrigger>
-							<TabsTrigger value="pending">Menunggu</TabsTrigger>
-							<TabsTrigger value="rejected" data-tour="mycontrib-tab-rejected">
-								Ditolak
-							</TabsTrigger>
-						</TabsList>
+				{contributions.length === 0 ? (
+					<div className="px-1">
+						<EmptyState
+							icon={Inbox}
+							title="Belum ada submission"
+							description="Submission QR yang anda hantar akan dipaparkan di sini selepas ia masuk ke semakan komuniti."
+						/>
+						<div className="-mt-6 flex justify-center pb-4">
+							<Button asChild size="sm">
+								<Link href="/contribute">Hantar submission</Link>
+							</Button>
+						</div>
 					</div>
-					<TabsContent value="all" className="mt-4">
-						<div className="space-y-4">
-							{contributions.length === 0 ? (
-								<EmptyState
-									icon={Inbox}
-									title="Tiada sumbangan"
-									description="Anda belum menyumbang sebarang institusi. Mulakan dengan menyumbang masjid atau surau terdekat."
-								/>
-							) : (
-								contributions.map((contribution) => (
-									<ContributionItem
-										key={contribution.id}
-										contribution={contribution}
-										onEditRejected={onEditRejected}
-									/>
-								))
-							)}
+				) : (
+					<Tabs defaultValue={defaultTab} className="w-full">
+						<div className="w-full overflow-x-auto -mx-1 px-1">
+							<TabsList
+								data-tour="mycontrib-status-tabs"
+								className="h-10 w-max min-w-full"
+							>
+								{STATUS_TABS.map((tab) => (
+									<TabsTrigger
+										key={tab.value}
+										value={tab.value}
+										data-tour={
+											tab.value === "rejected"
+												? "mycontrib-tab-rejected"
+												: undefined
+										}
+										className="group gap-1.5"
+									>
+										{tab.label}
+										<span className="rounded-full bg-muted px-1.5 py-0.5 text-[10px] leading-none text-muted-foreground group-data-[state=active]:bg-background">
+											{statusCounts[tab.value]}
+										</span>
+									</TabsTrigger>
+								))}
+							</TabsList>
 						</div>
-					</TabsContent>
-					<TabsContent value="approved" className="mt-4">
-						<div className="space-y-4">
-							{filteredContributions.approved.length === 0 ? (
-								<EmptyState
-									icon={CheckCircle2}
-									title="Tiada sumbangan diluluskan"
-									description="Sumbangan yang diluluskan akan muncul di sini. Teruskan menyumbang!"
-								/>
-							) : (
-								filteredContributions.approved.map((contribution) => (
-									<ContributionItem
-										key={contribution.id}
-										contribution={contribution}
-										onEditRejected={onEditRejected}
+						<TabsContent value="approved" className="mt-4">
+							<div className="space-y-4">
+								{filteredContributions.approved.length === 0 ? (
+									<EmptyState
+										icon={CheckCircle2}
+										title="Tiada submission diluluskan lagi"
+										description="Submission yang lulus semakan akan muncul di sini."
 									/>
-								))
-							)}
-						</div>
-					</TabsContent>
-					<TabsContent value="pending" className="mt-4">
-						<div className="space-y-4">
-							{filteredContributions.pending.length === 0 ? (
-								<EmptyState
-									icon={Clock}
-									title="Tiada sumbangan menunggu"
-									description="Sumbangan yang sedang menunggu semakan admin akan muncul di sini."
-								/>
-							) : (
-								filteredContributions.pending.map((contribution) => (
-									<ContributionItem
-										key={contribution.id}
-										contribution={contribution}
-										onEditRejected={onEditRejected}
+								) : (
+									filteredContributions.approved.map((contribution) => (
+										<ContributionItem
+											key={contribution.id}
+											contribution={contribution}
+											onEditRejected={onEditRejected}
+										/>
+									))
+								)}
+							</div>
+						</TabsContent>
+						<TabsContent value="pending" className="mt-4">
+							<div className="space-y-4">
+								{filteredContributions.pending.length === 0 ? (
+									<EmptyState
+										icon={Clock}
+										title="Tiada submission pending"
+										description="Submission yang sedang menunggu semakan akan muncul di sini."
 									/>
-								))
-							)}
-						</div>
-					</TabsContent>
-					<TabsContent value="rejected" className="mt-4">
-						<div className="space-y-4">
-							{filteredContributions.rejected.length === 0 ? (
-								<EmptyState
-									icon={XCircle}
-									title="Tiada sumbangan ditolak"
-									description="Sumbangan yang ditolak akan muncul di sini. Anda boleh edit dan hantar semula."
-								/>
-							) : (
-								filteredContributions.rejected.map((contribution) => (
-									<ContributionItem
-										key={contribution.id}
-										contribution={contribution}
-										onEditRejected={onEditRejected}
+								) : (
+									filteredContributions.pending.map((contribution) => (
+										<ContributionItem
+											key={contribution.id}
+											contribution={contribution}
+											onEditRejected={onEditRejected}
+										/>
+									))
+								)}
+							</div>
+						</TabsContent>
+						<TabsContent value="rejected" className="mt-4">
+							<div className="space-y-4">
+								{filteredContributions.rejected.length === 0 ? (
+									<EmptyState
+										icon={XCircle}
+										title="Tiada submission ditolak"
+										description="Submission yang ditolak akan muncul di sini. Anda boleh edit dan hantar semula."
 									/>
-								))
-							)}
-						</div>
-					</TabsContent>
-				</Tabs>
+								) : (
+									filteredContributions.rejected.map((contribution) => (
+										<ContributionItem
+											key={contribution.id}
+											contribution={contribution}
+											onEditRejected={onEditRejected}
+										/>
+									))
+								)}
+							</div>
+						</TabsContent>
+					</Tabs>
+				)}
 			</CardContent>
 		</Card>
 	);

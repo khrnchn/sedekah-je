@@ -41,7 +41,7 @@ const links = [
 		icon: Home,
 	},
 	{
-		name: "Semua sumbangan",
+		name: "Submission",
 		href: "/my-contributions",
 		icon: LayoutDashboard,
 	},
@@ -51,7 +51,7 @@ const links = [
 		icon: HeartHandshake,
 	},
 	{
-		name: "Carta Penyumbang",
+		name: "Carta Penghantar QR",
 		href: "/leaderboard",
 		icon: BarChart,
 	},
@@ -65,7 +65,7 @@ const links = [
 const publicLinks = [
 	{ name: "Laman Utama", href: "/", icon: Home },
 	{ name: "Sumbang QR", href: "/contribute", icon: HeartHandshake },
-	{ name: "Carta Penyumbang", href: "/leaderboard", icon: BarChart },
+	{ name: "Carta Penghantar QR", href: "/leaderboard", icon: BarChart },
 	{ name: "Ramadhan", href: "/ramadhan", icon: Moon },
 ];
 
@@ -73,14 +73,12 @@ interface HeaderProps {
 	compactMobileBrand?: boolean;
 }
 
-export const Header = ({ compactMobileBrand = false }: HeaderProps) => {
+export const Header = (_props: HeaderProps = {}) => {
 	const isMobile = useIsMobile();
 	const { user, isAuthenticated, isAdmin, signOut, isLoading } = useAuth();
 	const pathname = usePathname();
 	const [open, setOpen] = useState(false);
 	const showRamadhanLink = isCurrentGregorianYearRamadhanActive();
-	const showBrandText = !compactMobileBrand || !isMobile;
-	const logoSize = compactMobileBrand && isMobile ? 76 : 100;
 	const mobileLinks = (isAuthenticated ? links : publicLinks).filter(
 		(link) => showRamadhanLink || link.href !== "/ramadhan",
 	);

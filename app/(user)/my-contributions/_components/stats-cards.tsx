@@ -20,7 +20,7 @@ export function StatsCards({ stats }: StatsCardsProps) {
 			className: "text-emerald-700 dark:text-emerald-300",
 		},
 		{
-			label: "Menunggu",
+			label: "Pending",
 			value: stats.pendingContributions,
 			icon: Clock,
 			className: "text-amber-700 dark:text-amber-300",
@@ -42,7 +42,7 @@ export function StatsCards({ stats }: StatsCardsProps) {
 					</div>
 					<div className="min-w-0">
 						<p className="text-xs font-medium text-muted-foreground">
-							Jumlah sumbangan
+							Jumlah submission
 						</p>
 						<p className="text-2xl font-semibold leading-none tabular-nums">
 							{stats.totalContributions}
@@ -73,12 +73,12 @@ export function StatsCards({ stats }: StatsCardsProps) {
 			</div>
 			<div className="hidden md:block">
 				<StatsGrid cols={4}>
-					<StatCard value={stats.totalContributions} label="Jumlah Sumbangan" />
-					<StatCard value={stats.approvedContributions} label="Diluluskan" />
 					<StatCard
-						value={stats.pendingContributions}
-						label="Menunggu Semakan"
+						value={stats.totalContributions}
+						label="Jumlah Submission"
 					/>
+					<StatCard value={stats.approvedContributions} label="Diluluskan" />
+					<StatCard value={stats.pendingContributions} label="Pending" />
 					<StatCard value={stats.rejectedContributions} label="Ditolak" />
 				</StatsGrid>
 			</div>

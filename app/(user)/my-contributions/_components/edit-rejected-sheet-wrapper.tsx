@@ -1,7 +1,7 @@
 "use client";
 
-import { getInstitutionForEdit } from "@/app/(user)/my-contributions/_lib/queries";
 import { useCallback, useEffect, useState } from "react";
+import { getInstitutionForEdit } from "@/app/(user)/my-contributions/_lib/queries";
 import { EditInstitutionSheet } from "./edit-institution-sheet";
 
 interface EditRejectedSheetWrapperProps {

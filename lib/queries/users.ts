@@ -1,8 +1,7 @@
+import { count, eq } from "drizzle-orm";
+import { unstable_cache } from "next/cache";
 import { db } from "@/db";
 import { users } from "@/db/schema";
-import { count } from "drizzle-orm";
-import { eq } from "drizzle-orm";
-import { unstable_cache } from "next/cache";
 
 /**
  * Get total users count for display in sidebar badges

@@ -1,6 +1,6 @@
+import { Building2, CheckCircle, Clock, XCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building2, CheckCircle, Clock, XCircle } from "lucide-react";
 
 interface DashboardStatsProps {
 	data: {

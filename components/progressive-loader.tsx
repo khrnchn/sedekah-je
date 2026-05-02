@@ -1,8 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIntersectionObserver } from "@/hooks/use-intersection-observer";
-import { useEffect, useState } from "react";
 
 interface ProgressiveLoaderProps {
 	children: React.ReactNode;

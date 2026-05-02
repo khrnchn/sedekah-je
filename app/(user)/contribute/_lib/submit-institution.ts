@@ -97,7 +97,7 @@ export async function submitInstitution(
 			status: "error",
 			errors: {
 				general: [
-					"Anda mesti log masuk untuk menyumbang. Sila log masuk dan cuba lagi.",
+					"Anda mesti log masuk untuk menghantar submission. Sila log masuk dan cuba lagi.",
 				],
 			},
 		};
@@ -161,7 +161,7 @@ export async function submitInstitution(
 				status: "error",
 				errors: {
 					general: [
-						"Anda telah mencapai had 3 sumbangan sehari. Sila cuba lagi esok. Terima kasih!",
+						"Anda telah mencapai had 3 submission sehari. Sila cuba lagi esok. Terima kasih!",
 					],
 				},
 				cooldownEndsAt: cooldownEndsAt.toISOString(),
@@ -450,7 +450,7 @@ export async function submitInstitution(
 			status: "error",
 			errors: {
 				general: [
-					"Gagal menyimpan sumbangan anda. Sila cuba lagi atau hubungi kami.",
+					"Gagal menyimpan submission anda. Sila cuba lagi atau hubungi kami.",
 				],
 			},
 		};

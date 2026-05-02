@@ -16,17 +16,17 @@ export async function AsyncLeaderboardStats() {
 				<StatCard
 					icon={Star}
 					value={stats.totalContributions}
-					label="Submission QR"
+					label="QR Diluluskan"
 				/>
 				<StatCard
 					icon={Trophy}
 					value={stats.mostActiveContributions}
-					label="Paling Aktif"
+					label="Rekod Tertinggi"
 				/>
 				<StatCard
 					icon={Award}
 					value={`${stats.approvalRate}%`}
-					label="Kadar Lulus"
+					label="Kadar Diluluskan"
 				/>
 			</StatsGrid>
 		</div>

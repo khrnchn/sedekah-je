@@ -75,16 +75,16 @@ function SubmitButton({
 		isInCooldown;
 
 	const helperText = !isAuthenticated
-		? "Log masuk diperlukan sebelum sumbangan boleh dihantar."
+		? "Log masuk diperlukan sebelum submission boleh dihantar."
 		: isInCooldown
-			? "Tunggu tempoh cooldown tamat sebelum menghantar sumbangan baharu."
+			? "Tunggu tempoh cooldown tamat sebelum menghantar submission baharu."
 			: qrExtracting
 				? "Tunggu sehingga QR selesai diproses."
 				: !hasFile
 					? "Muat naik gambar QR dahulu untuk aktifkan butang hantar."
 					: qrExtractionFailed
 						? "QR akan disemak secara manual selepas dihantar."
-						: "Sumbangan akan masuk ke semakan komuniti sebelum dipaparkan.";
+						: "Submission akan masuk ke semakan komuniti sebelum dipaparkan.";
 
 	return (
 		<div className="space-y-2">
@@ -297,7 +297,7 @@ export default function InstitutionFormOptimized() {
 		if (!user?.id) {
 			toast.error("Ralat", {
 				description:
-					"Anda mesti log masuk untuk menyumbang. Sila log masuk dan cuba lagi.",
+					"Anda mesti log masuk untuk menghantar submission. Sila log masuk dan cuba lagi.",
 			});
 			return;
 		}
@@ -338,7 +338,7 @@ export default function InstitutionFormOptimized() {
 
 			if (result.status === "success") {
 				toast.success("Jazakallahu khair!", {
-					description: "Sumbangan anda sedang disemak.",
+					description: "Submission anda sedang disemak.",
 				});
 				router.replace("/my-contributions");
 				return;

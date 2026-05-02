@@ -1,5 +1,5 @@
-import { Skeleton } from "@/components/ui/skeleton";
 import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 import { SectionCards } from "./section-cards";
 
 // Loading skeleton that matches the SectionCards layout

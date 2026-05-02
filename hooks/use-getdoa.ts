@@ -1,5 +1,5 @@
-import type { GetDoaResponse } from "@/app/types";
 import { useQuery } from "@tanstack/react-query";
+import type { GetDoaResponse } from "@/app/types";
 
 // In case GetDoa API went down, use this mock data
 export const mockGetDoa: GetDoaResponse = {

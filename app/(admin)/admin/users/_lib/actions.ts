@@ -1,11 +1,11 @@
 "use server";
 
-import { auth } from "@/auth";
-import { db } from "@/db";
-import { users } from "@/db/users";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
+import { auth } from "@/auth";
+import { db } from "@/db";
+import { users } from "@/db/users";
 import { getAuthClient } from "./client";
 
 export type UserRole = "user" | "admin";

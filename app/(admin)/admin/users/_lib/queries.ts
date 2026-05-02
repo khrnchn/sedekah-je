@@ -1,11 +1,11 @@
 "use server";
 
-import { db } from "@/db";
-import { institutions } from "@/db/schema";
 import type { User } from "better-auth";
 import { inArray } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
+import { db } from "@/db";
+import { institutions } from "@/db/schema";
 import { getAuthClientFromCookie } from "./client";
 
 function normalizeParam(v: string | string[] | undefined): string {

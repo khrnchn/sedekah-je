@@ -1,11 +1,10 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import type { UseFormSetValue } from "react-hook-form";
 import { toast } from "sonner";
-
 import type { InstitutionFormData } from "@/app/(user)/contribute/_lib/validations";
 import type { states as STATE_OPTIONS } from "@/lib/institution-constants";
-import type { UseFormSetValue } from "react-hook-form";
 
 /**
  * Encapsulates the location-detection logic for InstitutionForm with lazy loading.

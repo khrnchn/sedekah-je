@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { ReusableDataTable } from "@/components/reusable-data-table";
 import {
 	Select,
@@ -9,7 +10,6 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { categories, states } from "@/lib/institution-constants";
-import { useEffect, useState } from "react";
 import { columns } from "./columns";
 
 export type RejectedInstitution = {

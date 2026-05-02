@@ -277,12 +277,14 @@ export default function QRExtractionFeature({
 			{initialImageUrl && (
 				<div className="space-y-2">
 					<p className="text-xs text-muted-foreground">Gambar semasa</p>
-					<div className="relative w-full max-w-[200px] rounded-lg border overflow-hidden bg-muted">
+					<div className="relative aspect-square w-full max-w-[200px] rounded-lg border overflow-hidden bg-muted">
 						<Image
 							unoptimized
 							src={initialImageUrl}
 							alt="QR semasa"
-							className="w-full h-auto object-contain"
+							fill
+							sizes="200px"
+							className="object-contain"
 						/>
 					</div>
 				</div>
@@ -385,7 +387,7 @@ export default function QRExtractionFeature({
 			{qrContent && (
 				<div className="rounded-md border border-primary/20 bg-primary/10 p-3">
 					<p className="text-sm font-medium text-primary">
-						Kod QR berjaya dibaca. Ini akan mempercepatkan semakan sumbangan
+						Kod QR berjaya dibaca. Ini akan mempercepatkan semakan submission
 						anda.
 					</p>
 					<p className="break-all text-sm text-primary/90">{qrContent}</p>

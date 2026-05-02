@@ -31,10 +31,10 @@ export async function AsyncTopContributors() {
 		return (
 			<Card>
 				<CardHeader>
-					<CardTitle>Belum Ada Penghantar QR</CardTitle>
+					<CardTitle>Belum Ada QR Diluluskan</CardTitle>
 					<CardDescription>
-						Jadilah yang pertama hantar QR institusi dan muncul di papan
-						pendahulu!
+						Hantar QR institusi untuk membantu komuniti dan mula membina carta
+						penghantar QR.
 					</CardDescription>
 				</CardHeader>
 			</Card>
@@ -58,7 +58,7 @@ export async function AsyncTopContributors() {
 								{topContributors[1].name}
 							</div>
 							<div className="text-xs md:text-sm text-muted-foreground">
-								{topContributors[1].contributions} submission
+								{topContributors[1].contributions} QR diluluskan
 							</div>
 						</div>
 						<div className="mt-2 flex h-16 w-full items-center justify-center rounded-t-lg border bg-muted/50 md:h-24">
@@ -83,7 +83,7 @@ export async function AsyncTopContributors() {
 								{topContributors[0].name}
 							</div>
 							<div className="text-xs md:text-sm text-muted-foreground">
-								{topContributors[0].contributions} submission
+								{topContributors[0].contributions} QR diluluskan
 							</div>
 						</div>
 						<div className="mt-2 flex h-20 w-full items-center justify-center rounded-t-lg border border-primary/30 bg-primary/10 md:h-32">
@@ -108,7 +108,7 @@ export async function AsyncTopContributors() {
 								{topContributors[2].name}
 							</div>
 							<div className="text-xs md:text-sm text-muted-foreground">
-								{topContributors[2].contributions} submission
+								{topContributors[2].contributions} QR diluluskan
 							</div>
 						</div>
 						<div className="mt-2 flex h-12 w-full items-center justify-center rounded-t-lg border bg-accent/60 md:h-20">
@@ -122,10 +122,9 @@ export async function AsyncTopContributors() {
 
 			<Card>
 				<CardHeader>
-					<CardTitle>Top 20 Penghantar QR</CardTitle>
+					<CardTitle>20 Penghantar QR Teratas</CardTitle>
 					<CardDescription>
-						20 pengguna paling aktif menghantar QR institusi dalam komuniti
-						sedekah.je
+						Dikira daripada QR institusi yang sudah diluluskan oleh penyemak.
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
@@ -147,7 +146,7 @@ export async function AsyncTopContributors() {
 										{contributor.name}
 									</div>
 									<div className="text-xs md:text-sm text-muted-foreground">
-										{contributor.contributions} submission
+										{contributor.contributions} QR diluluskan
 									</div>
 								</div>
 							</div>

@@ -210,7 +210,7 @@ export async function updateRejectedInstitution(
 			status: "error",
 			errors: {
 				general: [
-					"Gagal mengemaskini sumbangan. Sila cuba lagi atau hubungi kami.",
+					"Gagal mengemaskini submission. Sila cuba lagi atau hubungi kami.",
 				],
 			},
 		};

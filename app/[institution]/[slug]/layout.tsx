@@ -1,6 +1,6 @@
-import { getInstitutionBySlug } from "@/lib/queries/institutions";
 import type { Metadata, ResolvingMetadata } from "next";
 import Script from "next/script";
+import { getInstitutionBySlug } from "@/lib/queries/institutions";
 
 type LayoutProps = {
 	params: Promise<{
