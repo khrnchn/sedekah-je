@@ -16,7 +16,7 @@ export async function AsyncLeaderboardStats() {
 				<StatCard
 					icon={Star}
 					value={stats.totalContributions}
-					label="Submission QR"
+					label="Sumbangan QR"
 				/>
 				<StatCard
 					icon={Trophy}
