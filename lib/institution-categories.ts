@@ -50,12 +50,12 @@ export const institutionCategoryMeta: Record<
 	},
 	tahfiz: {
 		label: "Tahfiz",
-		icon: "/lain/lain-figma.svg",
+		icon: "/tahfiz/tahfiz-figma.svg",
 		color: "gold",
 	},
 	kebajikan: {
 		label: "Kebajikan",
-		icon: "/lain/lain-figma.svg",
+		icon: "/kebajikan/kebajikan-figma.svg",
 		color: "orange",
 	},
 	"lain-lain": {

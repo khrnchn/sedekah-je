@@ -20,4 +20,5 @@ export type Institution = {
 	coords?: [number, number];
 	contributorId?: string | null;
 	contributorEmail?: string | null;
+	claimable?: boolean;
 };
