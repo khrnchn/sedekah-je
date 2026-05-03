@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { categories, type Institution } from "@/app/types/institutions";
 import {
 	type CanonicalInstitutionCategory,
@@ -24,10 +24,12 @@ const FilterCategory = ({
 	const [selectedCategories, setSelectedCategories] = useState<string[]>(
 		initialCategories || [],
 	);
-
-	useEffect(() => {
+	const [prevInitialCategories, setPrevInitialCategories] =
+		useState(initialCategories);
+	if (prevInitialCategories !== initialCategories) {
+		setPrevInitialCategories(initialCategories);
 		setSelectedCategories(initialCategories || []);
-	}, [initialCategories]);
+	}
 
 	const mappedCategories = Object.keys(categories).map((category) => ({
 		label: categories[category as keyof typeof categories].label,

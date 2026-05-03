@@ -13,7 +13,6 @@ import type {
 
 const INSTITUTIONS_CACHE_VERSION = "v3";
 const PUBLIC_INSTITUTIONS_CACHE_VERSION = "v1";
-const CLAIMABLE_FALLBACK_EMAIL = "khairin13chan@gmail.com";
 
 type Category = (typeof categoryOptions)[number];
 type State = (typeof stateOptions)[number];
@@ -120,7 +119,7 @@ const publicInstitutionSelect = {
 	supportedPayment: institutions.supportedPayment,
 	coords: institutions.coords,
 	contributorId: institutions.contributorId,
-	claimable: sql<boolean>`(${institutions.contributorId} is null or ${users.email} = ${CLAIMABLE_FALLBACK_EMAIL})`,
+	claimable: sql<boolean>`(${institutions.contributorId} is null)`,
 };
 
 const getPublicInstitutionsPageInternal = unstable_cache(
@@ -214,7 +213,8 @@ const getPublicInstitutionMarkersInternal = unstable_cache(
 			.orderBy(
 				asc(sql`lower(btrim(${institutions.name}))`),
 				asc(institutions.id),
-			);
+			)
+			.limit(params.limit);
 
 		return results
 			.filter((institution) => institution.coords)

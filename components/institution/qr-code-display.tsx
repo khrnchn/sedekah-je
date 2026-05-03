@@ -24,9 +24,8 @@ const QrCodeDisplay = forwardRef<HTMLButtonElement, Props>((props, ref) => {
 		return null;
 	}
 
-	const payment =
-		(supportedPayment?.[0] as PaymentOption | undefined) ?? "duitnow";
-	const brand = paymentBrands[payment] ?? paymentBrands.duitnow;
+	const payment = supportedPayment?.[0] as PaymentOption | undefined;
+	const brand = payment ? paymentBrands[payment] : undefined;
 
 	return (
 		<button
@@ -36,7 +35,7 @@ const QrCodeDisplay = forwardRef<HTMLButtonElement, Props>((props, ref) => {
 				height: size,
 				padding: size * 0.05,
 				paddingTop: size * 0.1,
-				backgroundColor: brand.color,
+				backgroundColor: brand?.color ?? "#e5e7eb",
 				...style,
 			}}
 			className={cn(
@@ -53,7 +52,7 @@ const QrCodeDisplay = forwardRef<HTMLButtonElement, Props>((props, ref) => {
 						style={{
 							width: size * 0.2,
 							height: size * 0.2,
-							backgroundColor: brand.color,
+							backgroundColor: brand?.color,
 						}}
 						className="absolute top-0 flex items-center justify-center rounded-full border-4 border-white"
 					>
@@ -88,7 +87,7 @@ const QrCodeDisplay = forwardRef<HTMLButtonElement, Props>((props, ref) => {
 						style={{
 							width: size * 0.2,
 							height: size * 0.2,
-							backgroundColor: brand.color,
+							backgroundColor: brand?.color,
 						}}
 						className="absolute top-0 flex items-center justify-center rounded-full border-4 border-white"
 					>

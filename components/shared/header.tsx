@@ -168,15 +168,16 @@ export const Header = (_props: HeaderProps = {}) => {
 						<span className="text-sm font-medium">Log Keluar</span>
 					</Button>
 				) : (
-					<Link href="/auth" onClick={() => setOpen(false)}>
-						<Button
-							variant="default"
-							className="w-full flex items-center justify-center"
-						>
+					<Button
+						asChild
+						variant="default"
+						className="w-full flex items-center justify-center"
+					>
+						<Link href="/auth" onClick={() => setOpen(false)}>
 							<LogIn className="size-5 mr-2" />
 							<span className="text-sm font-medium">Log Masuk</span>
-						</Button>
-					</Link>
+						</Link>
+					</Button>
 				)}
 			</div>
 		</DrawerContent>

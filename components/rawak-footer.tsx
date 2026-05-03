@@ -22,11 +22,11 @@ const RawakFooter = () => {
 
 	return (
 		<footer className="fixed bottom-0 left-0 right-0 z-50 flex w-full flex-wrap items-center justify-center gap-3 border-t border-border/60 bg-background/90 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 shadow-sm backdrop-blur-sm">
-			<Link href="/rawak">
-				<Button variant="outline">
+			<Button asChild variant="outline">
+				<Link href="/rawak">
 					<p className="font-medium text-foreground">Sedekah Rawak</p>
-				</Button>
-			</Link>
+				</Link>
+			</Button>
 			{mounted && !user && (
 				<Button variant="outline" onClick={handleLogin} disabled={isLoading}>
 					{isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}

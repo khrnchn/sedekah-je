@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
 	Select,
 	SelectContent,
@@ -59,12 +59,13 @@ const FilterState = ({ onStateChange, className, initialState }: Props) => {
 	const initialValue =
 		initialState && initialState !== "" ? initialState : ALL_STATES;
 	const [selectedState, setSelectedState] = useState<string>(initialValue);
-
-	useEffect(() => {
+	const [prevInitialState, setPrevInitialState] = useState(initialState);
+	if (prevInitialState !== initialState) {
+		setPrevInitialState(initialState);
 		setSelectedState(
 			initialState && initialState !== "" ? initialState : ALL_STATES,
 		);
-	}, [initialState]);
+	}
 
 	const handleStateChange = (currentValue: string) => {
 		const newState = currentValue === ALL_STATES ? "" : currentValue;
