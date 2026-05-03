@@ -69,7 +69,7 @@ export function RamadhanDayCard({
 				isSelected && "ring-2 ring-primary ring-offset-2",
 				isToday &&
 					!isSelected &&
-					"ring-2 ring-emerald-500 ring-offset-2 animate-pulse-subtle",
+					"ring-2 ring-primary ring-offset-2 motion-safe:animate-pulse-subtle",
 			)}
 		>
 			<button
