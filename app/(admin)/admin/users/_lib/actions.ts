@@ -97,3 +97,39 @@ export async function removeAdminRole(userId: string) {
 		return { success: false, error: errorMessage };
 	}
 }
+
+export async function resetUserOnboardingTour(userId: string) {
+	try {
+		const session = await auth.api.getSession({
+			headers: await headers(),
+		});
+
+		if (!session) {
+			return { success: false, error: "Unauthorized" };
+		}
+
+		if (session.user.role !== "admin") {
+			return { success: false, error: "Forbidden" };
+		}
+
+		await db
+			.update(users)
+			.set({
+				onboardingTourState: "not_started",
+				onboardingTourCurrentRoute: null,
+				onboardingTourCurrentStep: null,
+				onboardingTourStartedAt: null,
+				onboardingTourCompletedAt: null,
+				onboardingTourSkippedAt: null,
+			})
+			.where(eq(users.id, userId));
+
+		revalidatePath("/admin/users");
+		return { success: true };
+	} catch (error) {
+		console.error("Failed to reset onboarding tour:", error);
+		const errorMessage =
+			error instanceof Error ? error.message : "An unknown error occurred";
+		return { success: false, error: errorMessage };
+	}
+}

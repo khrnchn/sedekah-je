@@ -24,7 +24,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatDateOnly } from "@/lib/date-utils";
-import { removeAdminRole, setUserRole } from "./_lib/actions";
+import {
+	removeAdminRole,
+	resetUserOnboardingTour,
+	setUserRole,
+} from "./_lib/actions";
 
 // Assuming a User type based on better-auth documentation
 export type User = {
@@ -188,6 +192,17 @@ export const columns: ColumnDef<User>[] = [
 				});
 			};
 
+			const handleResetOnboarding = () => {
+				startTransition(async () => {
+					const result = await resetUserOnboardingTour(user.id);
+					if (result.success) {
+						toast.success("Onboarding tour reset for this user.");
+					} else {
+						toast.error(result.error);
+					}
+				});
+			};
+
 			return (
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
@@ -210,6 +225,13 @@ export const columns: ColumnDef<User>[] = [
 							disabled={isPending || !user.role?.includes("admin")}
 						>
 							Remove admin
+						</DropdownMenuItem>
+						<DropdownMenuSeparator />
+						<DropdownMenuItem
+							onClick={handleResetOnboarding}
+							disabled={isPending}
+						>
+							Reset onboarding tour
 						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>
