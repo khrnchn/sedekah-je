@@ -197,21 +197,17 @@ export function UserOnboardingTour() {
 
 	return (
 		<Dialog open={showPrompt} onOpenChange={setShowPrompt}>
-			<DialogContent
-				className="sm:max-w-md"
-				onPointerDownOutside={(e) => e.preventDefault()}
-				onEscapeKeyDown={(e) => e.preventDefault()}
-			>
+			<DialogContent className="sm:max-w-md">
 				<DialogHeader>
-					<DialogTitle>Mulakan tour?</DialogTitle>
+					<DialogTitle>Nak ikuti tour?</DialogTitle>
 					<DialogDescription>
-						Ikuti panduan ringkas untuk mengenali ciri-ciri utama platform
-						sedekah.je.
+						Ambil masa kira-kira 2 minit, biar kami tunjukkan cara penggunaan
+						aplikasi ini.
 					</DialogDescription>
 				</DialogHeader>
 				<DialogFooter className="gap-2 sm:gap-0">
 					<Button variant="outline" onClick={handleLepas}>
-						Lepas dulu
+						Skip
 					</Button>
 					<Button onClick={handleMulakan}>Mulakan</Button>
 				</DialogFooter>

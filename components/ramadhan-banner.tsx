@@ -64,10 +64,14 @@ export async function RamadhanBanner() {
 					</div>
 					<div className="flex gap-2 shrink-0">
 						<Button asChild size="sm">
-							<Link href="/ramadhan">Lihat QR</Link>
+							<Link
+								href={`/${featured.institutionCategory}/${featured.institutionSlug}`}
+							>
+								Lihat QR
+							</Link>
 						</Button>
 						<Button asChild size="sm" variant="outline">
-							<Link href="/ramadhan">Senarai QR Ramadhan</Link>
+							<Link href="/ramadhan">Semua 30 Hari</Link>
 						</Button>
 					</div>
 				</CardContent>
