@@ -13,8 +13,8 @@ import { cn } from "@/lib/utils";
 import "./globals.css";
 
 const poppins = Poppins({ weight: ["400", "700", "900"], subsets: ["latin"] });
-const PWA_THEME_COLOR = "#0a8532";
-const PWA_BACKGROUND_COLOR = "#fffaf7";
+const PWA_THEME_COLOR = "#007d70";
+const PWA_BACKGROUND_COLOR = "#f2fafb";
 
 export const metadata: Metadata = {
 	title: {

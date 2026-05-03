@@ -4,79 +4,81 @@
 
 @layer base {
 	:root {
-		--background: 0.985 0.009 96;
-		--foreground: 0.208 0.024 154;
-		--card: 0.997 0.005 96;
-		--card-foreground: 0.208 0.024 154;
-		--popover: 0.997 0.005 96;
-		--popover-foreground: 0.208 0.024 154;
-		--primary: 0.545 0.145 151;
-		--primary-foreground: 0.985 0.012 130;
-		--secondary: 0.942 0.017 96;
-		--secondary-foreground: 0.267 0.024 142;
-		--muted: 0.955 0.013 99;
-		--muted-foreground: 0.487 0.026 132;
-		--accent: 0.902 0.065 82;
-		--accent-foreground: 0.278 0.034 92;
-		--destructive: 0.577 0.19 29;
-		--destructive-foreground: 0.985 0.01 96;
-		--border: 0.885 0.018 102;
-		--input: 0.885 0.018 102;
-		--ring: 0.545 0.145 151;
+		/* masjid.svg identity — dome teal · crescent gold · stone */
+		--background: 0.974 0.006 200;
+		--foreground: 0.175 0.03 185;
+		--card: 0.988 0.003 210;
+		--card-foreground: 0.175 0.03 185;
+		--popover: 0.988 0.003 210;
+		--popover-foreground: 0.175 0.03 185;
+		--primary: 0.52 0.13 183;
+		--primary-foreground: 0.982 0.004 200;
+		--secondary: 0.93 0.016 195;
+		--secondary-foreground: 0.22 0.025 185;
+		--muted: 0.95 0.009 200;
+		--muted-foreground: 0.4 0.018 190;
+		--accent: 0.875 0.13 88;
+		--accent-foreground: 0.25 0.045 75;
+		--destructive: 0.555 0.185 22;
+		--destructive-foreground: 0.982 0.004 200;
+		--border: 0.76 0.014 200;
+		--input: 0.76 0.014 200;
+		--ring: 0.52 0.13 183;
 		--radius: 0.5rem;
-		--chart-1: 0.62 0.14 151;
-		--chart-2: 0.61 0.12 232;
-		--chart-3: 0.72 0.11 82;
-		--chart-4: 0.64 0.14 31;
-		--chart-5: 0.58 0.13 306;
-		--sidebar-background: 0.972 0.01 99;
-		--sidebar-foreground: 0.32 0.026 142;
-		--sidebar-primary: 0.545 0.145 151;
-		--sidebar-primary-foreground: 0.985 0.012 130;
-		--sidebar-accent: 0.942 0.017 96;
-		--sidebar-accent-foreground: 0.267 0.024 142;
-		--sidebar-border: 0.885 0.018 102;
-		--sidebar-ring: 0.545 0.145 151;
+		--chart-1: 0.64 0.13 183;
+		--chart-2: 0.6 0.19 260;
+		--chart-3: 0.87 0.14 88;
+		--chart-4: 0.64 0.14 25;
+		--chart-5: 0.5 0.1 183;
+		--sidebar-background: 0.96 0.01 197;
+		--sidebar-foreground: 0.22 0.025 185;
+		--sidebar-primary: 0.52 0.13 183;
+		--sidebar-primary-foreground: 0.982 0.004 200;
+		--sidebar-accent: 0.93 0.016 195;
+		--sidebar-accent-foreground: 0.22 0.025 185;
+		--sidebar-border: 0.76 0.014 200;
+		--sidebar-ring: 0.52 0.13 183;
 	}
 
 	.dark {
-		--background: 0.17 0.022 154;
-		--foreground: 0.955 0.009 148;
-		--card: 0.205 0.023 154;
-		--card-foreground: 0.955 0.009 148;
-		--popover: 0.205 0.023 154;
-		--popover-foreground: 0.955 0.009 148;
-		--primary: 0.66 0.14 151;
-		--primary-foreground: 0.16 0.024 154;
-		--secondary: 0.268 0.023 154;
-		--secondary-foreground: 0.955 0.009 148;
-		--muted: 0.268 0.023 154;
-		--muted-foreground: 0.742 0.026 148;
-		--accent: 0.338 0.04 93;
-		--accent-foreground: 0.944 0.03 91;
-		--destructive: 0.54 0.16 29;
-		--destructive-foreground: 0.965 0.012 96;
-		--border: 0.335 0.027 154;
-		--input: 0.335 0.027 154;
-		--ring: 0.66 0.14 151;
-		--chart-1: 0.68 0.14 151;
-		--chart-2: 0.68 0.11 232;
-		--chart-3: 0.75 0.1 82;
-		--chart-4: 0.68 0.14 31;
-		--chart-5: 0.68 0.12 306;
-		--sidebar-background: 0.19 0.022 154;
-		--sidebar-foreground: 0.932 0.009 148;
-		--sidebar-primary: 0.66 0.14 151;
-		--sidebar-primary-foreground: 0.16 0.024 154;
-		--sidebar-accent: 0.268 0.023 154;
-		--sidebar-accent-foreground: 0.955 0.009 148;
-		--sidebar-border: 0.335 0.027 154;
-		--sidebar-ring: 0.66 0.14 151;
+		/* twilight — dome glow · crescent ember · deep stone */
+		--background: 0.12 0.025 205;
+		--foreground: 0.952 0.008 195;
+		--card: 0.162 0.025 205;
+		--card-foreground: 0.952 0.008 195;
+		--popover: 0.162 0.025 205;
+		--popover-foreground: 0.952 0.008 195;
+		--primary: 0.7 0.13 183;
+		--primary-foreground: 0.11 0.025 200;
+		--secondary: 0.218 0.018 200;
+		--secondary-foreground: 0.945 0.008 195;
+		--muted: 0.2 0.015 200;
+		--muted-foreground: 0.68 0.018 195;
+		--accent: 0.32 0.055 85;
+		--accent-foreground: 0.92 0.08 88;
+		--destructive: 0.52 0.155 25;
+		--destructive-foreground: 0.965 0.008 200;
+		--border: 0.4 0.02 200;
+		--input: 0.4 0.02 200;
+		--ring: 0.7 0.13 183;
+		--chart-1: 0.68 0.13 183;
+		--chart-2: 0.65 0.19 260;
+		--chart-3: 0.8 0.12 88;
+		--chart-4: 0.68 0.14 25;
+		--chart-5: 0.55 0.1 183;
+		--sidebar-background: 0.148 0.025 205;
+		--sidebar-foreground: 0.932 0.008 195;
+		--sidebar-primary: 0.7 0.13 183;
+		--sidebar-primary-foreground: 0.11 0.025 200;
+		--sidebar-accent: 0.218 0.018 200;
+		--sidebar-accent-foreground: 0.945 0.008 195;
+		--sidebar-border: 0.4 0.02 200;
+		--sidebar-ring: 0.7 0.13 183;
 	}
 
 	.ramadhan-bg {
 		background-color: oklch(var(--background));
-		background-image: url("data:image/svg+xml,%3Csvg width='80' height='88' viewBox='0 0 80 88' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M22 21.91V26h-2c-9.94 0-18 8.06-18 18 0 9.943 8.058 18 18 18h2v4.09c8.012.722 14.785 5.738 18 12.73 3.212-6.99 9.983-12.008 18-12.73V62h2c9.94 0 18-8.06 18-18 0-9.943-8.058-18-18-18h-2v-4.09c-8.012-.722-14.785-5.738-18-12.73-3.212 6.99-9.983 12.008-18 12.73zM54 58v4.696c-5.574 1.316-10.455 4.428-14 8.69-3.545-4.262-8.426-7.374-14-8.69V58h-5.993C12.27 58 6 51.734 6 44c0-7.732 6.275-14 14.007-14H26v-4.696c5.574-1.316 10.455-4.428 14-8.69 3.545 4.262 8.426 7.374 14 8.69V30h5.993C67.73 30 74 36.266 74 44c0 7.732-6.275 14-14.007 14H54zM42 88c0-9.94 8.06-18 18-18h2v-4.09c8.016-.722 14.787-5.738 18-12.73v7.434c-3.545 4.262-8.426 7.374-14 8.69V74h-5.993C52.275 74 46 80.268 46 88h-4zm-4 0c0-9.943-8.058-18-18-18h-2v-4.09c-8.012-.722-14.785-5.738-18-12.73v7.434c3.545 4.262 8.426 7.374 14 8.69V74h5.993C27.73 74 34 80.266 34 88h4zm4-88c0 9.943 8.058 18 18 18h2v4.09c8.012.722 14.785 5.738 18 12.73v-7.434c-3.545-4.262-8.426-7.374-14-8.69V14h-5.993C52.27 14 46 7.734 46 0h-4zM0 34.82c3.213-6.992 9.984-12.008 18-12.73V18h2c9.94 0 18-8.06 18-18h-4c0 7.732-6.275 14-14.007 14H14v4.696c-5.574 1.316-10.455 4.428-14 8.69v7.433z' fill='%2363b87a' fill-opacity='0.12' fill-rule='evenodd'/%3E%3C/svg%3E");
+		background-image: url("data:image/svg+xml,%3Csvg width='80' height='88' viewBox='0 0 80 88' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M22 21.91V26h-2c-9.94 0-18 8.06-18 18 0 9.943 8.058 18 18 18h2v4.09c8.012.722 14.785 5.738 18 12.73 3.212-6.99 9.983-12.008 18-12.73V62h2c9.94 0 18-8.06 18-18 0-9.943-8.058-18-18-18h-2v-4.09c-8.012-.722-14.785-5.738-18-12.73-3.212 6.99-9.983 12.008-18 12.73zM54 58v4.696c-5.574 1.316-10.455 4.428-14 8.69-3.545-4.262-8.426-7.374-14-8.69V58h-5.993C12.27 58 6 51.734 6 44c0-7.732 6.275-14 14.007-14H26v-4.696c5.574-1.316 10.455-4.428 14-8.69 3.545 4.262 8.426 7.374 14 8.69V30h5.993C67.73 30 74 36.266 74 44c0 7.732-6.275 14-14.007 14H54zM42 88c0-9.94 8.06-18 18-18h2v-4.09c8.016-.722 14.787-5.738 18-12.73v7.434c-3.545 4.262-8.426 7.374-14 8.69V74h-5.993C52.275 74 46 80.268 46 88h-4zm-4 0c0-9.943-8.058-18-18-18h-2v-4.09c-8.012-.722-14.785-5.738-18-12.73v7.434c3.545 4.262 8.426 7.374 14 8.69V74h5.993C27.73 74 34 80.266 34 88h4zm4-88c0 9.943 8.058 18 18 18h2v4.09c8.012.722 14.785 5.738 18 12.73v-7.434c-3.545-4.262-8.426-7.374-14-8.69V14h-5.993C52.27 14 46 7.734 46 0h-4zM0 34.82c3.213-6.992 9.984-12.008 18-12.73V18h2c9.94 0 18-8.06 18-18h-4c0 7.732-6.275 14-14.007 14H14v4.696c-5.574 1.316-10.455 4.428-14 8.69v7.433z' fill='%2301ab95' fill-opacity='0.12' fill-rule='evenodd'/%3E%3C/svg%3E");
 	}
 
 	/* Category badge colour tokens — used via data-cat attribute */
