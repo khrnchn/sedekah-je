@@ -231,20 +231,14 @@ export default function PageFooter() {
 				<Separator className="my-8" />
 				<div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
 					<p className="text-xs text-muted-foreground">
-						&copy; {new Date().getFullYear()} Hak Cipta Terpelihara. Dibina
-						dengan{" "}
-						<Heart
-							className="inline h-3 w-3 text-destructive/70"
-							aria-hidden="true"
-						/>{" "}
-						oleh{" "}
+						&copy; {new Date().getFullYear()} Hak Cipta Terpelihara. Dibina oleh{" "}
 						<a
 							href="https://github.com/khrnchn/sedekah-je/graphs/contributors"
 							target="_blank"
 							className="text-primary hover:underline font-medium"
 							rel="noreferrer"
 						>
-							Khairin Chan dan kawan-kawan
+							khairin chan dan komuniti
 						</a>
 						.
 					</p>
