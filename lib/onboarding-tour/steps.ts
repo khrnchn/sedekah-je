@@ -13,7 +13,7 @@ const STEP_COPY: Record<TourRoute, { title: string; description: string }[]> = {
 		{
 			title: "Menu navigasi",
 			description:
-				"Gunakan menu ini untuk navigasi ke halaman lain seperti sumbangan, carta penyumbang, dan lain-lain.",
+				"Gunakan menu ini untuk navigasi ke halaman lain seperti sumbangan, leaderboard, dan lain-lain.",
 		},
 		{
 			title: "Lokasi semasa",

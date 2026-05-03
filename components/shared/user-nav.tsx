@@ -43,7 +43,7 @@ const userNavItems: NavItem[] = [
 		description: "Tambah institusi baru",
 	},
 	{
-		title: "Carta Penyumbang",
+		title: "Leaderboard",
 		href: "/leaderboard",
 		icon: Trophy,
 		description: "Lihat carta",

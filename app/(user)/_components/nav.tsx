@@ -33,7 +33,7 @@ const links = [
 		icon: HeartHandshake,
 	},
 	{
-		name: "Carta Penyumbang",
+		name: "Leaderboard",
 		href: "/leaderboard",
 		icon: BarChart,
 	},
