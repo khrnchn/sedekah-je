@@ -45,7 +45,7 @@ const STEP_COPY: Record<TourRoute, { title: string; description: string }[]> = {
 		{
 			title: "Cara edit item ditolak",
 			description:
-				"Klik ikon pensil pada item ditolak untuk mengemaskini dan hantar semula.",
+				"Buka tab Ditolak, kemudian tekan Edit semula pada item berkenaan untuk kemaskini dan hantar semula.",
 		},
 	],
 	"/leaderboard": [

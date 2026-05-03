@@ -172,18 +172,17 @@
 	color: oklch(var(--primary-foreground));
 	background: oklch(var(--primary));
 	border: none;
-	box-shadow: 0 1px 2px oklch(var(--primary) / 0.3);
+	box-shadow: 0 1px 2px oklch(var(--primary) / 0.28);
 }
 
 .driver-popover.sedekah-tour .driver-popover-next-btn:hover {
-	background: hsl(142 86% 24%);
-	box-shadow: 0 2px 6px oklch(var(--primary) / 0.35);
-	transform: translateY(-1px);
+	background: color-mix(in oklch, oklch(var(--primary)) 88%, white);
+	box-shadow: 0 1px 3px oklch(var(--primary) / 0.32);
 }
 
 .driver-popover.sedekah-tour .driver-popover-next-btn:active {
-	transform: translateY(0);
-	box-shadow: 0 1px 2px oklch(var(--primary) / 0.25);
+	background: color-mix(in oklch, oklch(var(--primary)) 92%, black);
+	box-shadow: 0 1px 2px oklch(var(--primary) / 0.22);
 }
 
 /* Disabled state */
@@ -213,5 +212,13 @@
 }
 
 .dark .driver-popover.sedekah-tour .driver-popover-next-btn {
-	box-shadow: 0 1px 3px hsl(0 0% 0% / 0.4);
+	box-shadow: 0 1px 2px oklch(var(--primary) / 0.2);
+}
+
+.dark .driver-popover.sedekah-tour .driver-popover-next-btn:hover {
+	box-shadow: 0 1px 3px oklch(var(--primary) / 0.28);
+}
+
+.dark .driver-popover.sedekah-tour .driver-popover-next-btn:active {
+	box-shadow: 0 1px 2px oklch(var(--primary) / 0.18);
 }
