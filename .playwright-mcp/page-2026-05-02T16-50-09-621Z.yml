@@ -1,0 +1,39 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - link "Masjid" [ref=e3] [cursor=pointer]:
+      - /url: /
+      - img "Masjid" [ref=e4]
+    - generic [ref=e5]:
+      - link "SedekahJe" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - heading "SedekahJe" [level=1] [ref=e7]
+      - paragraph [ref=e8]: Direktori QR DuitNow masjid, surau, dan institusi.
+  - generic [ref=e10]:
+    - link "Laman Utama" [ref=e11] [cursor=pointer]:
+      - /url: /
+      - generic [ref=e12]:
+        - img [ref=e13]
+        - text: Laman Utama
+    - link "Sumbang QR" [ref=e16] [cursor=pointer]:
+      - /url: /contribute
+      - generic [ref=e17]:
+        - img [ref=e18]
+        - text: Sumbang QR
+    - link "Carta Penyumbang" [ref=e23] [cursor=pointer]:
+      - /url: /leaderboard
+      - generic [ref=e24]:
+        - img [ref=e25]
+        - text: Carta Penyumbang
+    - button "Log Masuk" [disabled]:
+      - img
+      - text: Log Masuk
+  - generic [ref=e32]:
+    - generic [ref=e33]:
+      - heading "Log Masuk" [level=3] [ref=e34]
+      - paragraph [ref=e35]: Gunakan akaun Google untuk menyumbang dan mengurus QR.
+    - button "Log Masuk dengan Google" [ref=e37] [cursor=pointer]:
+      - img [ref=e38]
+      - text: Log Masuk dengan Google
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e48] [cursor=pointer]:
+    - img [ref=e49]

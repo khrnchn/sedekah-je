@@ -28,7 +28,7 @@ const links = [
 		icon: LayoutDashboard,
 	},
 	{
-		name: "Sumbang QR",
+		name: "Submit QR",
 		href: "/contribute",
 		icon: HeartHandshake,
 	},

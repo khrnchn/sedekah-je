@@ -49,6 +49,10 @@ type Props = {
 };
 
 const limit = 50;
+
+/** If set in sessionStorage, automatic nearest lookup will not re-run after the user denies location. */
+const GEO_SKIP_AUTO_SESSION_KEY = "sedekah-je-geo-skip-auto";
+
 type NormalizedInstitution = Omit<OldInstitution, "category"> & {
 	category: CanonicalInstitutionCategory;
 };
@@ -78,6 +82,8 @@ type InstitutionListRequest = {
 export function PageClient({ initialResult, initialSearchParams }: Props) {
 	const router = useRouter();
 	const requestIdRef = useRef(0);
+	/** Reset when any filter is applied so clearing filters can trigger auto-locate again. */
+	const autoLocateEligibleRef = useRef(false);
 
 	const [query, setQuery] = useState<string>(initialSearchParams.search || "");
 	const [selectedCategories, setSelectedCategories] = useState<
@@ -421,32 +427,82 @@ export function PageClient({ initialResult, initialSearchParams }: Props) {
 		[fetchFilteredInstitutionsForMap],
 	);
 
-	async function getLocation() {
-		if (!("geolocation" in navigator)) {
-			setLocationError("Lokasi tidak disokong oleh pelayar ini.");
+	const getLocation = useCallback(
+		(opts?: { fromAuto?: boolean }) => {
+			const fromAuto = opts?.fromAuto ?? false;
+
+			if (!("geolocation" in navigator)) {
+				setLocationError("Lokasi tidak disokong oleh pelayar ini.");
+				return;
+			}
+
+			setIsLocating(true);
+			setLocationError(null);
+
+			navigator.geolocation.getCurrentPosition(
+				(p) => {
+					const coordinate = {
+						latitude: p.coords.latitude,
+						longitude: p.coords.longitude,
+					};
+					void resolveClosestInstitution(coordinate).finally(() => {
+						setIsLocating(false);
+					});
+				},
+				(err) => {
+					setIsLocating(false);
+					if (err.code === err.PERMISSION_DENIED) {
+						if (fromAuto && typeof window !== "undefined") {
+							try {
+								sessionStorage.setItem(GEO_SKIP_AUTO_SESSION_KEY, "1");
+							} catch {
+								/* private / blocked storage */
+							}
+						}
+						setLocationError(
+							"Kebenaran lokasi ditolak. Aktifkan lokasi dalam tetapan pelayar untuk cari institusi terdekat.",
+						);
+					} else if (err.code === err.POSITION_UNAVAILABLE) {
+						setLocationError(
+							"Lokasi tidak tersedia buat masa ini. Cuba sekali lagi.",
+						);
+					} else if (err.code === err.TIMEOUT) {
+						setLocationError("Permintaan lokasi tamat masa. Cuba sekali lagi.");
+					} else {
+						setLocationError(
+							"Lokasi tidak dapat diakses. Semak kebenaran lokasi.",
+						);
+					}
+				},
+				{ enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 },
+			);
+		},
+		[resolveClosestInstitution],
+	);
+
+	useEffect(() => {
+		if (typeof window === "undefined") return;
+		if (!("geolocation" in navigator)) return;
+
+		const noFilters =
+			query === "" && selectedCategories.length === 0 && selectedState === "";
+
+		if (!noFilters) {
+			autoLocateEligibleRef.current = false;
 			return;
 		}
 
-		setIsLocating(true);
-		setLocationError(null);
+		try {
+			if (sessionStorage.getItem(GEO_SKIP_AUTO_SESSION_KEY)) return;
+		} catch {
+			return;
+		}
 
-		navigator.geolocation.getCurrentPosition(
-			(p) => {
-				const coordinate = {
-					latitude: p.coords.latitude,
-					longitude: p.coords.longitude,
-				};
-				void resolveClosestInstitution(coordinate).finally(() => {
-					setIsLocating(false);
-				});
-			},
-			() => {
-				setLocationError("Lokasi tidak dapat diakses. Semak kebenaran lokasi.");
-				setIsLocating(false);
-			},
-			{ enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 },
-		);
-	}
+		if (autoLocateEligibleRef.current) return;
+		autoLocateEligibleRef.current = true;
+
+		getLocation({ fromAuto: true });
+	}, [query, selectedCategories, selectedState, getLocation]);
 
 	useEffect(() => {
 		return () => debouncedSearch.cancel();
@@ -503,7 +559,7 @@ export function PageClient({ initialResult, initialSearchParams }: Props) {
 							</Button>
 						)}
 						<Button
-							onClick={getLocation}
+							onClick={() => getLocation()}
 							variant="ghost"
 							size="icon"
 							disabled={isLocating}
@@ -577,16 +633,6 @@ export function PageClient({ initialResult, initialSearchParams }: Props) {
 									initialCategories={selectedCategories}
 									categoryCounts={categoryCounts}
 								/>
-								<Button
-									type="button"
-									variant="outline"
-									onClick={getLocation}
-									disabled={isLocating}
-									className="w-full gap-2"
-								>
-									<LocateFixed className="h-4 w-4" />
-									{isLocating ? "Mencari lokasi..." : "Cari institusi terdekat"}
-								</Button>
 							</div>
 							<DrawerFooter>
 								{isFiltered && <FilteredCount count={pagination.total} />}
@@ -608,6 +654,20 @@ export function PageClient({ initialResult, initialSearchParams }: Props) {
 							</DrawerFooter>
 						</DrawerContent>
 					</Drawer>
+					<Button
+						onClick={() => getLocation()}
+						variant="outline"
+						size="icon"
+						disabled={isLocating}
+						className="shrink-0"
+						aria-label={
+							isLocating
+								? "Mencari institusi terdekat"
+								: "Cari institusi terdekat"
+						}
+					>
+						<LocateFixed className="h-4 w-4" />
+					</Button>
 					<Button
 						onClick={toggleMap}
 						variant="outline"

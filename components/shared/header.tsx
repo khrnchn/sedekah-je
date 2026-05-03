@@ -41,12 +41,12 @@ const links = [
 		icon: Home,
 	},
 	{
-		name: "Submission",
+		name: "Submission Saya",
 		href: "/my-contributions",
 		icon: LayoutDashboard,
 	},
 	{
-		name: "Sumbang QR",
+		name: "Hantar QR",
 		href: "/contribute",
 		icon: HeartHandshake,
 	},
@@ -64,7 +64,7 @@ const links = [
 
 const publicLinks = [
 	{ name: "Laman Utama", href: "/", icon: Home },
-	{ name: "Sumbang QR", href: "/contribute", icon: HeartHandshake },
+	{ name: "Hantar QR", href: "/contribute", icon: HeartHandshake },
 	{ name: "Carta Penghantar QR", href: "/leaderboard", icon: BarChart },
 	{ name: "Ramadhan", href: "/ramadhan", icon: Moon },
 ];

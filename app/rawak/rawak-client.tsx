@@ -202,7 +202,9 @@ export function RawakClient({ initialInstitutions }: Props) {
 						</div>
 					</div>
 					{(selectedState !== "" || selectedCategories.length > 0) && (
-						<FilteredCount count={filteredInstitutions.length} />
+						<div className="mt-3">
+							<FilteredCount count={filteredInstitutions.length} />
+						</div>
 					)}
 					{noMatchWithFilters && (
 						<p className="mt-2 text-center text-sm text-muted-foreground">

@@ -82,7 +82,7 @@ export default function QuestMosqueDetail({
 									onClick={() => setContributeOpen(true)}
 								>
 									<QrCode className="h-3 w-3" />
-									Sumbang QR
+									Hantar QR
 								</Button>
 							</>
 						)}
@@ -173,7 +173,7 @@ export default function QuestMosqueDetail({
 										onClick={() => setContributeOpen(true)}
 									>
 										<QrCode className="h-3 w-3" />
-										Sumbang QR
+										Hantar QR
 									</Button>
 								</>
 							)}
