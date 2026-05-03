@@ -259,6 +259,7 @@ export function PageClient({ initialResult, initialSearchParams }: Props) {
 	const handleStateChange = useCallback(
 		(state: string) => {
 			debouncedSearch.cancel();
+			setCommittedQuery(query);
 			setSelectedState(state);
 			updateURL(query, selectedCategories, state);
 			setClosestInstitution(null);
@@ -269,6 +270,7 @@ export function PageClient({ initialResult, initialSearchParams }: Props) {
 	const handleCategoryChange = useCallback(
 		(categories: string[]) => {
 			debouncedSearch.cancel();
+			setCommittedQuery(query);
 			const normalizedCategories = categories.map((category) =>
 				normalizeInstitutionCategory(category),
 			);
