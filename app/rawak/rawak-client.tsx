@@ -9,6 +9,7 @@ import {
 	Loader2,
 	MapPin,
 	QrCode,
+	RotateCcw,
 } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useMemo, useRef, useState } from "react";
@@ -89,6 +90,9 @@ export function RawakClient({ initialInstitutions }: Props) {
 		});
 	}, [institutions, selectedCategories, selectedState]);
 
+	const hasFilteredMatches = filteredInstitutions.length > 0;
+	const noMatchWithFilters = activeFilterCount > 0 && !hasFilteredMatches;
+
 	const getInstitutionSlug = useCallback((inst: NormalizedInstitution) => {
 		return inst.slug ?? slugify(inst.name);
 	}, []);
@@ -127,6 +131,13 @@ export function RawakClient({ initialInstitutions }: Props) {
 		toast.success("Peta dibuka dalam tab baru.");
 	}, [randomInstitution]);
 
+	const resetFilters = useCallback(() => {
+		setSelectedCategories([]);
+		setSelectedState("");
+		setRandomInstitution(null);
+		setUrl("");
+	}, []);
+
 	return (
 		<>
 			<Header />
@@ -152,7 +163,7 @@ export function RawakClient({ initialInstitutions }: Props) {
 			</AnimatePresence>
 
 			<PageSection className="bg-background transition-colors duration-200 ease-in-out">
-				<PageHeader pageTitle="Sedekah Rawak" showHeader={false} />
+				<PageHeader pageTitle="Sedekah Rawak" showHeader={true} />
 
 				{/* Desktop (sm+): inline filter UI */}
 				<div className="hidden rounded-lg border bg-background/95 p-3 sm:block">
@@ -167,6 +178,7 @@ export function RawakClient({ initialInstitutions }: Props) {
 						}}
 						selectedState={selectedState}
 						institutions={institutions}
+						initialCategories={[...selectedCategories]}
 					/>
 					<div className="mt-3 flex w-full flex-row items-center gap-3">
 						<div className="w-2/5">
@@ -175,37 +187,75 @@ export function RawakClient({ initialInstitutions }: Props) {
 									setSelectedState(state);
 									setRandomInstitution(null);
 								}}
+								initialState={selectedState}
 							/>
 						</div>
 						<div className="w-3/5">
 							<Button
 								onClick={generateRandomNumber}
 								className="w-full gap-2"
-								disabled={isDownloading}
+								disabled={isDownloading || !hasFilteredMatches}
 							>
 								<QrCode className="h-4 w-4" />
-								Jana QR Secara Rawak
+								Jana QR Rawak
 							</Button>
 						</div>
 					</div>
 					{(selectedState !== "" || selectedCategories.length > 0) && (
 						<FilteredCount count={filteredInstitutions.length} />
 					)}
+					{noMatchWithFilters && (
+						<p className="mt-2 text-center text-sm text-muted-foreground">
+							Tiada institusi sepadan pilihan.
+						</p>
+					)}
+					{activeFilterCount > 0 && (
+						<div className="mt-2 flex justify-end">
+							<Button
+								type="button"
+								variant="ghost"
+								size="sm"
+								className="h-8 gap-1.5 text-muted-foreground"
+								onClick={resetFilters}
+							>
+								<RotateCcw className="h-3.5 w-3.5" aria-hidden />
+								Set semula filter
+							</Button>
+						</div>
+					)}
 				</div>
 
 				{/* Mobile (<sm): compact row + filter drawer */}
 				<div className="space-y-2 sm:hidden">
+					{noMatchWithFilters && (
+						<p className="px-1 text-center text-sm text-muted-foreground">
+							Tiada institusi sepadan pilihan.
+						</p>
+					)}
 					<div className="flex w-full items-center gap-2 rounded-lg border bg-background/95 p-2">
 						<div className="flex-1 min-w-0">
 							<Button
 								onClick={generateRandomNumber}
 								className="w-full gap-2"
-								disabled={isDownloading}
+								disabled={isDownloading || !hasFilteredMatches}
 							>
 								<QrCode className="h-4 w-4" />
-								Jana Rawak
+								Jana QR Rawak
 							</Button>
 						</div>
+						{activeFilterCount > 0 && (
+							<Button
+								type="button"
+								variant="ghost"
+								size="icon"
+								className="shrink-0 text-muted-foreground"
+								onClick={resetFilters}
+								aria-label="Set semula filter"
+								title="Set semula filter"
+							>
+								<RotateCcw className="h-4 w-4" />
+							</Button>
+						)}
 						<Drawer>
 							<DrawerTrigger asChild>
 								<Button
@@ -235,6 +285,7 @@ export function RawakClient({ initialInstitutions }: Props) {
 											setSelectedState(state);
 											setRandomInstitution(null);
 										}}
+										initialState={selectedState}
 									/>
 									<FilterCategory
 										onCategoryChange={(categories) => {
@@ -247,11 +298,21 @@ export function RawakClient({ initialInstitutions }: Props) {
 										}}
 										selectedState={selectedState}
 										institutions={institutions}
+										initialCategories={[...selectedCategories]}
 									/>
 								</div>
 								{(selectedState !== "" || selectedCategories.length > 0) && (
-									<DrawerFooter>
+									<DrawerFooter className="gap-2">
 										<FilteredCount count={filteredInstitutions.length} />
+										<Button
+											type="button"
+											variant="outline"
+											className="w-full gap-2"
+											onClick={resetFilters}
+										>
+											<RotateCcw className="h-4 w-4" aria-hidden />
+											Set semula filter
+										</Button>
 									</DrawerFooter>
 								)}
 							</DrawerContent>
@@ -292,6 +353,14 @@ export function RawakClient({ initialInstitutions }: Props) {
 											{randomInstitution.city}, {randomInstitution.state}
 										</span>
 									</div>
+									{url ? (
+										<p
+											className="mb-3 w-full min-w-0 max-w-full truncate text-center text-xs text-muted-foreground"
+											title={url}
+										>
+											{url}
+										</p>
+									) : null}
 									<div className="mt-4 flex w-full justify-between gap-2">
 										<Button
 											variant="outline"
