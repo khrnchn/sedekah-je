@@ -386,21 +386,22 @@ const InstitutionCard = forwardRef<
 									</div>
 								)}
 								{isClosest && (
-									<div className="flex w-full justify-center">
-										<div className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-2.5 py-1 text-xs text-primary">
-											<MapPin className="h-3.5 w-3.5" aria-hidden="true" />
-											<span className="font-medium">Terdekat</span>
-											{formattedDistance && (
-												<span className="font-semibold tabular-nums">
-													{formattedDistance}
-												</span>
-											)}
-										</div>
+									<div className="absolute top-0 left-1/2 z-10 inline-flex -translate-x-1/2 -translate-y-1/2 items-center gap-1.5 rounded-full border border-primary/20 bg-card px-2.5 py-1 text-xs text-primary shadow-sm">
+										<MapPin className="h-3.5 w-3.5" aria-hidden="true" />
+										<span className="font-medium">Terdekat</span>
+										{formattedDistance && (
+											<span className="font-semibold tabular-nums">
+												{formattedDistance}
+											</span>
+										)}
 									</div>
 								)}
 								<Link
 									href={href}
-									className="mb-2 flex w-full flex-col items-center gap-1 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+									className={cn(
+										"mb-2 flex w-full flex-col items-center gap-1 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+										isClosest && "pt-2",
+									)}
 									aria-label={`Buka halaman ${capitalizedName}`}
 								>
 									<motion.div>
