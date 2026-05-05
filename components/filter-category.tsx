@@ -3,6 +3,7 @@ import { useState } from "react";
 import { categories, type Institution } from "@/app/types/institutions";
 import {
 	type CanonicalInstitutionCategory,
+	getInstitutionCategoryIconDimensions,
 	normalizeInstitutionCategory,
 } from "@/lib/institution-categories";
 
@@ -35,6 +36,7 @@ const FilterCategory = ({
 		label: categories[category as keyof typeof categories].label,
 		value: category,
 		icon: categories[category as keyof typeof categories].icon,
+		iconDimensions: getInstitutionCategoryIconDimensions(category),
 	}));
 
 	const handleCategoryClick = (categoryValue: string) => {
@@ -68,19 +70,23 @@ const FilterCategory = ({
 						onClick={() => handleCategoryClick(category.value)}
 						aria-pressed={selectedCategories.includes(category.value)}
 						data-active={selectedCategories.includes(category.value)}
-						className="group flex min-h-10 w-fit select-none flex-row items-center justify-center gap-2 truncate whitespace-nowrap rounded-md border border-border bg-card px-3 py-2 text-sm font-semibold shadow-sm transition-colors duration-200 ease-out hover:border-primary/30 hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/25 data-[active=true]:border-primary data-[active=true]:bg-primary data-[active=true]:text-primary-foreground max-sm:text-xs"
+						className="group flex min-h-10 w-fit select-none flex-row items-center justify-center gap-2 truncate whitespace-nowrap rounded-md border border-border/50 bg-background/70 px-3 py-2 text-sm font-semibold shadow-sm transition-colors duration-200 ease-out hover:border-primary/35 hover:bg-accent/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/25 data-[active=true]:border-primary data-[active=true]:bg-primary data-[active=true]:text-primary-foreground max-sm:text-xs"
 					>
 						<Image
 							src={category.icon}
 							alt={category.label}
-							width={24}
-							height={24}
+							width={category.iconDimensions.width}
+							height={category.iconDimensions.height}
 							unoptimized
 							className="hidden sm:block"
+							style={{
+								height: "auto",
+								width: "24px",
+							}}
 						/>
 						<span className="md:hidden">{category.label}</span>
 						<span className="hidden md:block">{category.label}</span>
-						<span className="rounded-md border border-transparent bg-muted px-2 py-0.5 text-xs font-bold tabular-nums text-muted-foreground transition-colors group-data-[active=true]:border-primary-foreground/25 group-data-[active=true]:bg-primary-foreground group-data-[active=true]:text-primary">
+						<span className="rounded-md border border-transparent bg-muted/80 px-2 py-0.5 text-xs font-bold tabular-nums text-muted-foreground transition-colors group-data-[active=true]:border-primary-foreground/25 group-data-[active=true]:bg-primary-foreground group-data-[active=true]:text-primary">
 							{getCountForCategory(category.value)}
 						</span>
 					</button>

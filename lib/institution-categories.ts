@@ -35,32 +35,41 @@ export const institutionCategoryMeta: Record<
 	{
 		label: string;
 		icon: string;
+		iconDimensions: {
+			width: number;
+			height: number;
+		};
 		color: "blue" | "green" | "gold" | "orange" | "violet";
 	}
 > = {
 	masjid: {
 		label: "Masjid",
 		icon: "/masjid/masjid-figma.svg",
+		iconDimensions: { width: 66, height: 39 },
 		color: "blue",
 	},
 	surau: {
 		label: "Surau",
 		icon: "/surau/surau-figma.svg",
+		iconDimensions: { width: 48, height: 33 },
 		color: "green",
 	},
 	tahfiz: {
 		label: "Tahfiz",
 		icon: "/tahfiz/tahfiz-figma.svg",
+		iconDimensions: { width: 56, height: 36 },
 		color: "gold",
 	},
 	kebajikan: {
 		label: "Kebajikan",
 		icon: "/kebajikan/kebajikan-figma.svg",
+		iconDimensions: { width: 56, height: 36 },
 		color: "orange",
 	},
 	"lain-lain": {
 		label: "Lain-lain",
 		icon: "/lain/lain-figma.svg",
+		iconDimensions: { width: 52, height: 32 },
 		color: "violet",
 	},
 };
@@ -81,6 +90,12 @@ export function getInstitutionCategoryIcon(
 	category: string | null | undefined,
 ) {
 	return getInstitutionCategoryMeta(category).icon;
+}
+
+export function getInstitutionCategoryIconDimensions(
+	category: string | null | undefined,
+) {
+	return getInstitutionCategoryMeta(category).iconDimensions;
 }
 
 export function getInstitutionCategoryColor(

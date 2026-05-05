@@ -483,7 +483,7 @@ export function PageClient({ initialResult, initialSearchParams }: Props) {
 	return (
 		<PageSection className="pb-28 sm:pb-32 lg:pb-36">
 			{/* Desktop (sm+): stacked filter bar with integrated actions */}
-			<div className="sticky top-0 z-40 hidden rounded-b-lg border border-border/70 bg-background/95 px-3 py-3 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/85 sm:block">
+			<div className="sticky top-0 z-40 hidden rounded-b-lg border border-border/40 bg-card/90 px-3 py-3 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-card/80 sm:block">
 				<FilterCategory
 					onCategoryChange={handleCategoryChange}
 					selectedState={selectedState}
@@ -547,7 +547,7 @@ export function PageClient({ initialResult, initialSearchParams }: Props) {
 
 			{/* Mobile (<sm): compact sticky row + filter drawer */}
 			<div className="sticky top-0 z-40 py-3 sm:hidden">
-				<div className="flex w-full items-center gap-2 rounded-lg border border-border/70 bg-background/95 p-2 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-background/85">
+				<div className="flex w-full items-center gap-2 rounded-lg border border-border/40 bg-card/90 p-2 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-card/80">
 					<div className="flex-1 min-w-0">
 						<Search
 							onSearchChange={handleSearch}
@@ -649,13 +649,13 @@ export function PageClient({ initialResult, initialSearchParams }: Props) {
 			/>
 
 			{isMapLoading && isMapVisible && (
-				<div className="mb-4 rounded-lg border bg-card px-4 py-3 text-sm text-muted-foreground">
+				<div className="mb-4 rounded-lg border border-border/45 bg-card px-4 py-3 text-sm text-muted-foreground">
 					Peta sedang memuatkan institusi...
 				</div>
 			)}
 
 			{locationError && (
-				<div className="mb-4 rounded-lg border bg-card px-4 py-3 text-sm text-muted-foreground">
+				<div className="mb-4 rounded-lg border border-border/45 bg-card px-4 py-3 text-sm text-muted-foreground">
 					{locationError}
 				</div>
 			)}
@@ -669,7 +669,7 @@ export function PageClient({ initialResult, initialSearchParams }: Props) {
 					))}
 				</div>
 			) : displayedInstitutions.length === 0 ? (
-				<div className="flex min-h-48 flex-col items-center justify-center gap-4 rounded-lg border bg-card p-6 text-center">
+				<div className="flex min-h-48 flex-col items-center justify-center gap-4 rounded-lg border border-border/45 bg-card p-6 text-center">
 					<div className="space-y-1">
 						<p className="text-sm font-semibold text-foreground">
 							Tiada institusi dijumpai.

@@ -29,6 +29,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 import {
 	getInstitutionCategoryIcon,
+	getInstitutionCategoryIconDimensions,
 	getInstitutionCategoryLabel,
 	normalizeInstitutionCategory,
 } from "@/lib/institution-categories";
@@ -123,6 +124,8 @@ const InstitutionCard = forwardRef<
 		const router = useRouter();
 		const resolvedSlug = slug ?? slugify(name);
 		const normalizedCategory = normalizeInstitutionCategory(category);
+		const categoryIconDimensions =
+			getInstitutionCategoryIconDimensions(normalizedCategory);
 		const href = `/${normalizedCategory}/${resolvedSlug}`;
 
 		useEffect(() => {
@@ -351,12 +354,11 @@ const InstitutionCard = forwardRef<
 						<Card
 							data-cat={normalizedCategory}
 							className={cn(
-								"relative h-full border shadow-sm transition-all duration-200 ease-out hover:-translate-y-0.5",
+								"relative h-full border shadow-sm transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md",
 								isClosest
-									? "border-primary/50 ring-1 ring-primary/20"
-									: "border-border/80 hover:border-primary/35",
+									? "border-primary/45 ring-1 ring-primary/15"
+									: "border-border/45 hover:border-primary/30",
 							)}
-							style={{ backgroundColor: "oklch(var(--cat-surface))" }}
 							onMouseEnter={() => router.prefetch(href)}
 						>
 							<CardContent className="flex h-full flex-col items-center gap-3 p-4">
@@ -405,10 +407,11 @@ const InstitutionCard = forwardRef<
 										<Image
 											src={getInstitutionCategoryIcon(category)}
 											alt=""
-											width={50}
-											height={50}
+											width={categoryIconDimensions.width}
+											height={categoryIconDimensions.height}
 											unoptimized
 											aria-hidden="true"
+											style={{ height: "auto", width: "50px" }}
 										/>
 									</motion.div>
 									<Tooltip>
@@ -434,8 +437,10 @@ const InstitutionCard = forwardRef<
 										data-cat={normalizedCategory}
 										className="mt-0.5 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium"
 										style={{
-											borderColor: "var(--cat-ring)",
-											backgroundColor: "var(--cat-surface)",
+											borderColor:
+												"color-mix(in oklch, var(--cat-ring) 55%, transparent)",
+											backgroundColor:
+												"color-mix(in oklch, var(--cat-surface) 76%, oklch(var(--card)))",
 											color: "var(--cat-text)",
 										}}
 									>
@@ -444,7 +449,7 @@ const InstitutionCard = forwardRef<
 								</Link>
 								<motion.div
 									layoutId={`image-${name}-${id}`}
-									className="cursor-pointer rounded-lg bg-background p-2.5 ring-1 ring-border/60 shadow-sm"
+									className="cursor-pointer rounded-lg bg-background/90 p-2.5 ring-1 ring-primary/15 shadow-sm"
 								>
 									{qrContent ? (
 										<div className="flex aspect-square w-40 items-center justify-center">

@@ -4,76 +4,76 @@
 
 @layer base {
 	:root {
-		/* masjid.svg identity — dome teal · crescent gold · stone */
-		--background: 0.974 0.006 200;
-		--foreground: 0.175 0.03 185;
-		--card: 0.988 0.003 210;
-		--card-foreground: 0.175 0.03 185;
-		--popover: 0.988 0.003 210;
-		--popover-foreground: 0.175 0.03 185;
-		--primary: 0.52 0.13 183;
-		--primary-foreground: 0.982 0.004 200;
-		--secondary: 0.93 0.016 195;
-		--secondary-foreground: 0.22 0.025 185;
-		--muted: 0.95 0.009 200;
-		--muted-foreground: 0.4 0.018 190;
-		--accent: 0.875 0.13 88;
-		--accent-foreground: 0.25 0.045 75;
+		/* trust green primary with masjid.svg teal as supporting identity */
+		--background: 0.982 0.009 98;
+		--foreground: 0.208 0.024 154;
+		--card: 0.994 0.006 98;
+		--card-foreground: 0.208 0.024 154;
+		--popover: 0.994 0.006 98;
+		--popover-foreground: 0.208 0.024 154;
+		--primary: 0.545 0.145 151;
+		--primary-foreground: 0.985 0.012 130;
+		--secondary: 0.942 0.017 96;
+		--secondary-foreground: 0.267 0.024 142;
+		--muted: 0.955 0.013 99;
+		--muted-foreground: 0.487 0.026 132;
+		--accent: 0.902 0.065 82;
+		--accent-foreground: 0.278 0.034 92;
 		--destructive: 0.555 0.185 22;
-		--destructive-foreground: 0.982 0.004 200;
-		--border: 0.62 0.018 195;
-		--input: 0.62 0.018 195;
-		--ring: 0.52 0.13 183;
+		--destructive-foreground: 0.985 0.01 96;
+		--border: 0.74 0.022 118;
+		--input: 0.72 0.024 118;
+		--ring: 0.545 0.145 151;
 		--radius: 0.5rem;
-		--chart-1: 0.64 0.13 183;
-		--chart-2: 0.6 0.19 260;
-		--chart-3: 0.62 0.18 88;
-		--chart-4: 0.64 0.14 25;
-		--chart-5: 0.5 0.1 183;
-		--sidebar-background: 0.96 0.01 197;
-		--sidebar-foreground: 0.22 0.025 185;
-		--sidebar-primary: 0.52 0.13 183;
-		--sidebar-primary-foreground: 0.982 0.004 200;
-		--sidebar-accent: 0.93 0.016 195;
-		--sidebar-accent-foreground: 0.22 0.025 185;
-		--sidebar-border: 0.62 0.018 195;
-		--sidebar-ring: 0.52 0.13 183;
+		--chart-1: 0.62 0.14 151;
+		--chart-2: 0.64 0.13 183;
+		--chart-3: 0.72 0.11 82;
+		--chart-4: 0.64 0.14 31;
+		--chart-5: 0.58 0.13 306;
+		--sidebar-background: 0.972 0.01 99;
+		--sidebar-foreground: 0.32 0.026 142;
+		--sidebar-primary: 0.545 0.145 151;
+		--sidebar-primary-foreground: 0.985 0.012 130;
+		--sidebar-accent: 0.942 0.017 96;
+		--sidebar-accent-foreground: 0.267 0.024 142;
+		--sidebar-border: 0.74 0.022 118;
+		--sidebar-ring: 0.545 0.145 151;
 	}
 
 	.dark {
-		/* twilight — dome glow · crescent ember · deep stone */
-		--background: 0.12 0.025 205;
-		--foreground: 0.952 0.008 195;
-		--card: 0.162 0.025 205;
-		--card-foreground: 0.952 0.008 195;
-		--popover: 0.162 0.025 205;
-		--popover-foreground: 0.952 0.008 195;
-		--primary: 0.7 0.13 183;
-		--primary-foreground: 0.11 0.025 200;
-		--secondary: 0.218 0.018 200;
-		--secondary-foreground: 0.945 0.008 195;
-		--muted: 0.2 0.015 200;
-		--muted-foreground: 0.68 0.018 195;
-		--accent: 0.32 0.055 85;
-		--accent-foreground: 0.92 0.08 88;
-		--destructive: 0.52 0.155 25;
-		--destructive-foreground: 0.965 0.008 200;
-		--border: 0.5 0.025 200;
-		--input: 0.5 0.025 200;
-		--ring: 0.7 0.13 183;
-		--chart-1: 0.68 0.13 183;
-		--chart-2: 0.65 0.19 260;
-		--chart-3: 0.8 0.12 88;
-		--chart-4: 0.68 0.14 25;
-		--chart-5: 0.55 0.1 183;
-		--sidebar-background: 0.148 0.025 205;
-		--sidebar-foreground: 0.932 0.008 195;
-		--sidebar-primary: 0.7 0.13 183;
-		--sidebar-primary-foreground: 0.11 0.025 200;
-		--sidebar-accent: 0.218 0.018 200;
-		--sidebar-accent-foreground: 0.945 0.008 195;
-		--sidebar-border: 0.5 0.025 200;
-		--sidebar-ring: 0.7 0.13 183;
+		/* deep green surfaces with restrained teal support */
+		--background: 0.17 0.022 154;
+		--foreground: 0.955 0.009 148;
+		--card: 0.205 0.023 154;
+		--card-foreground: 0.955 0.009 148;
+		--popover: 0.205 0.023 154;
+		--popover-foreground: 0.955 0.009 148;
+		--primary: 0.66 0.14 151;
+		--primary-foreground: 0.16 0.024 154;
+		--secondary: 0.268 0.023 154;
+		--secondary-foreground: 0.955 0.009 148;
+		--muted: 0.268 0.023 154;
+		--muted-foreground: 0.742 0.026 148;
+		--accent: 0.338 0.04 93;
+		--accent-foreground: 0.944 0.03 91;
+		--destructive: 0.54 0.16 29;
+		--destructive-foreground: 0.965 0.012 96;
+		--border: 0.335 0.027 154;
+		--input: 0.335 0.027 154;
+		--ring: 0.66 0.14 151;
+		--chart-1: 0.68 0.14 151;
+		--chart-2: 0.68 0.11 183;
+		--chart-3: 0.75 0.1 82;
+		--chart-4: 0.68 0.14 31;
+		--chart-5: 0.68 0.12 306;
+		--sidebar-background: 0.19 0.022 154;
+		--sidebar-foreground: 0.932 0.009 148;
+		--sidebar-primary: 0.66 0.14 151;
+		--sidebar-primary-foreground: 0.16 0.024 154;
+		--sidebar-accent: 0.268 0.023 154;
+		--sidebar-accent-foreground: 0.955 0.009 148;
+		--sidebar-border: 0.335 0.027 154;
+		--sidebar-ring: 0.66 0.14 151;
 	}
 
 	.ramadhan-bg {
