@@ -16,7 +16,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 		return (
 			<div
 				className={cn(
-					"flex h-10 w-full min-w-0 items-center gap-2 rounded-md border border-input bg-card px-3 shadow-sm ring-offset-background transition-colors duration-200 ease-out",
+					"flex h-10 w-full min-w-0 items-center gap-2 rounded-md border border-input/85 bg-card px-3 shadow-[0_1px_1px_oklch(var(--foreground)/0.03)] ring-offset-background transition-colors duration-200 ease-out",
 					"focus-within:border-ring focus-within:outline-none focus-within:ring-2 focus-within:ring-ring/20 focus-within:ring-offset-0",
 					className,
 				)}

@@ -33,6 +33,7 @@ import {
 	getInstitutionCategoryLabel,
 	normalizeInstitutionCategory,
 } from "@/lib/institution-categories";
+import { paymentBrands } from "@/lib/payment-brands";
 import { cn, slugify } from "@/lib/utils";
 import { ClaimModal } from "./claim-modal";
 import QrCodeDisplay from "./qr-code-display";
@@ -68,6 +69,13 @@ const formatDistance = (distanceInMeter?: number): string | null => {
 
 	return `${Math.round(distanceInMeter)} m`;
 };
+
+const paymentLogoMap = {
+	duitnow: "/icons/duitnow.png",
+	tng: "/icons/tng.png",
+	boost: "/icons/boost.png",
+	toyyibpay: "/icons/toyyibpay-wordmark.png",
+} as const;
 
 const InstitutionCard = forwardRef<
 	HTMLDivElement,
@@ -153,10 +161,137 @@ const InstitutionCard = forwardRef<
 
 		const createImage = (options: { src: string }) => {
 			const img = document.createElement("img");
+			img.crossOrigin = "anonymous";
 			if (options.src) {
 				img.src = options.src;
 			}
 			return img;
+		};
+
+		const loadImage = (src: string) =>
+			new Promise<HTMLImageElement>((resolve, reject) => {
+				const img = createImage({ src });
+				img.onload = () => resolve(img);
+				img.onerror = reject;
+			});
+
+		const canvasToBlob = (
+			canvas: HTMLCanvasElement,
+			type = "image/png",
+			quality = 1,
+		) =>
+			new Promise<Blob>((resolve, reject) => {
+				canvas.toBlob(
+					(blob) => {
+						if (blob) {
+							resolve(blob);
+						} else {
+							reject(new Error("Unable to create image blob"));
+						}
+					},
+					type,
+					quality,
+				);
+			});
+
+		const drawContainedImage = (
+			ctx: CanvasRenderingContext2D,
+			img: HTMLImageElement,
+			x: number,
+			y: number,
+			width: number,
+			height: number,
+		) => {
+			const ratio = Math.min(
+				width / img.naturalWidth,
+				height / img.naturalHeight,
+			);
+			const drawWidth = img.naturalWidth * ratio;
+			const drawHeight = img.naturalHeight * ratio;
+			ctx.drawImage(
+				img,
+				x + (width - drawWidth) / 2,
+				y + (height - drawHeight) / 2,
+				drawWidth,
+				drawHeight,
+			);
+		};
+
+		const renderQrContentToCanvas = async () => {
+			const payment = supportedPayment?.[0];
+			const brand = payment ? paymentBrands[payment] : undefined;
+			const svg = printRef.current?.querySelector("svg");
+
+			if (!svg) {
+				throw new Error("QR SVG unavailable");
+			}
+
+			const canvas = document.createElement("canvas");
+			const size = 600;
+			const padding = size * 0.05;
+			const topPadding = size * 0.1;
+			const innerSize = size - padding * 2;
+			const qrSize = size * 0.7;
+			canvas.width = size;
+			canvas.height = size;
+
+			const ctx = canvas.getContext("2d");
+			if (!ctx) {
+				throw new Error("Canvas context unavailable");
+			}
+
+			ctx.fillStyle = brand?.color ?? "#e5e7eb";
+			ctx.fillRect(0, 0, size, size);
+			ctx.fillStyle = "#ffffff";
+			ctx.fillRect(padding, topPadding, innerSize, innerSize);
+
+			const serializedSvg = new XMLSerializer().serializeToString(svg);
+			const svgBlob = new Blob([serializedSvg], {
+				type: "image/svg+xml;charset=utf-8",
+			});
+			const svgUrl = window.URL.createObjectURL(svgBlob);
+
+			try {
+				const qrImageEl = await loadImage(svgUrl);
+				ctx.drawImage(
+					qrImageEl,
+					(size - qrSize) / 2,
+					topPadding + (innerSize - qrSize) / 2,
+					qrSize,
+					qrSize,
+				);
+			} finally {
+				window.URL.revokeObjectURL(svgUrl);
+			}
+
+			if (payment && paymentLogoMap[payment]) {
+				try {
+					const logo = await loadImage(paymentLogoMap[payment]);
+					const logoWidth = payment === "toyyibpay" ? size * 0.34 : size * 0.2;
+					const logoHeight = size * 0.2;
+					const logoX = (size - logoWidth) / 2;
+					const logoY = 0;
+
+					if (payment === "duitnow" || payment === "boost") {
+						ctx.fillStyle = brand?.color ?? "#e5e7eb";
+						ctx.beginPath();
+						ctx.arc(
+							size / 2,
+							logoY + logoHeight / 2,
+							logoHeight / 2,
+							0,
+							Math.PI * 2,
+						);
+						ctx.fill();
+					}
+
+					drawContainedImage(ctx, logo, logoX, logoY, logoWidth, logoHeight);
+				} catch (error) {
+					console.error("QR logo render error:", error);
+				}
+			}
+
+			return canvas;
 		};
 
 		const copyToClipboard = async (pngBlob: Blob | null) => {
@@ -354,10 +489,10 @@ const InstitutionCard = forwardRef<
 						<Card
 							data-cat={normalizedCategory}
 							className={cn(
-								"relative h-full border shadow-sm transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-md",
+								"relative h-full border shadow-[0_1px_2px_oklch(var(--foreground)/0.03)] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_4px_12px_oklch(var(--foreground)/0.05)]",
 								isClosest
-									? "border-primary/45 ring-1 ring-primary/15"
-									: "border-border/45 hover:border-primary/30",
+									? "border-primary/35 ring-1 ring-primary/10"
+									: "border-border/22 hover:border-primary/18",
 							)}
 							onMouseEnter={() => router.prefetch(href)}
 						>
@@ -450,7 +585,7 @@ const InstitutionCard = forwardRef<
 								</Link>
 								<motion.div
 									layoutId={`image-${name}-${id}`}
-									className="cursor-pointer rounded-lg bg-background/90 p-2.5 ring-1 ring-primary/15 shadow-sm"
+									className="cursor-pointer rounded-lg bg-muted/25 p-2.5 shadow-none"
 								>
 									{qrContent ? (
 										<div className="flex aspect-square w-40 items-center justify-center">
@@ -618,18 +753,14 @@ const InstitutionCard = forwardRef<
 														return;
 													}
 
-													const element = printRef.current;
-													const canvas = await html2canvas(
-														element as HTMLButtonElement,
-													);
-
-													const data = canvas.toDataURL("image/jpg");
-													const blob = await fetch(data).then((res) =>
-														res.blob(),
-													);
-
-													copyToClipboard(blob);
-													return;
+													try {
+														const canvas = await renderQrContentToCanvas();
+														const blob = await canvasToBlob(canvas);
+														copyToClipboard(blob);
+													} catch (error) {
+														console.error("Copy QR error:", error);
+														toast.error("Gagal menyalin kod QR.");
+													}
 												}}
 											>
 												Salin QR

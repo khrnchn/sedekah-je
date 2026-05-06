@@ -70,7 +70,7 @@ const FilterCategory = ({
 						onClick={() => handleCategoryClick(category.value)}
 						aria-pressed={selectedCategories.includes(category.value)}
 						data-active={selectedCategories.includes(category.value)}
-						className="group flex min-h-10 w-fit select-none flex-row items-center justify-center gap-2 truncate whitespace-nowrap rounded-md border border-border/50 bg-background/70 px-3 py-2 text-sm font-semibold shadow-sm transition-colors duration-200 ease-out hover:border-primary/35 hover:bg-accent/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/25 data-[active=true]:border-primary data-[active=true]:bg-primary data-[active=true]:text-primary-foreground max-sm:text-xs"
+						className="group flex min-h-10 w-fit select-none flex-row items-center justify-center gap-2 truncate whitespace-nowrap rounded-md border border-border/25 bg-card/70 px-3 py-2 text-sm font-semibold shadow-[0_1px_1px_oklch(var(--foreground)/0.02)] transition-colors duration-200 ease-out hover:border-primary/22 hover:bg-secondary/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/25 data-[active=true]:border-primary/75 data-[active=true]:bg-primary data-[active=true]:text-primary-foreground max-sm:text-xs"
 					>
 						<Image
 							src={category.icon}
