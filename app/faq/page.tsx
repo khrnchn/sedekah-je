@@ -30,6 +30,7 @@ import {
 import { Input } from "@/components/ui/input";
 
 type FaqEntry = {
+	id: string;
 	question: string;
 	answer: ReactNode;
 	/** Plain text for search when answer is not a string */
@@ -46,6 +47,7 @@ const faqCategories: FaqCategory[] = [
 		title: "Sumbangan & Derma",
 		faqs: [
 			{
+				id: "submit-qr-dari-masjid",
 				question:
 					"Saya ada beberapa gambar kod QR yang diambil dari masjid. Bagaimanakah cara untuk saya menyumbang?",
 				searchText:
@@ -66,12 +68,14 @@ const faqCategories: FaqCategory[] = [
 				),
 			},
 			{
+				id: "derma-terus-sampai",
 				question:
 					"Bagaimana saya tahu derma saya terus sampai kepada penerima yang dimaksudkan?",
 				answer:
 					"Kod QR yang disediakan adalah diambil terus dari masjid atau laman sosial mereka. Tiada perantara, dan 100% derma akan sampai kepada penerima.",
 			},
 			{
+				id: "tiada-yuran-komisen",
 				question:
 					"Adakah platform ini mengambil sebarang yuran atau komisen daripada derma?",
 				answer:
@@ -83,11 +87,13 @@ const faqCategories: FaqCategory[] = [
 		title: "Keselamatan & Privasi",
 		faqs: [
 			{
+				id: "keselamatan-derma",
 				question: "Selamatkah untuk membuat derma melalui platform ini?",
 				answer:
 					"Ya, platform ini hanya menyediakan senarai QR. Kod QR ditapis dan disahkan sebelum diterbitkan di laman web kami.",
 			},
 			{
+				id: "bebas-dari-pihak-ketiga",
 				question:
 					"Adakah platform ini mempunyai kaitan dengan mana-mana organisasi atau pihak ketiga?",
 				answer:
@@ -99,6 +105,7 @@ const faqCategories: FaqCategory[] = [
 		title: "Mengenai Platform",
 		faqs: [
 			{
+				id: "pengurusan-platform",
 				question: "Siapakah yang mengurus dan membangunkan platform ini?",
 				searchText:
 					"komuniti tech X penyelenggara penyumbang kod github contributors sumber terbuka",
@@ -135,6 +142,7 @@ const faqCategories: FaqCategory[] = [
 		title: "Bantuan & Sokongan",
 		faqs: [
 			{
+				id: "isu-derma-atau-qr",
 				question:
 					"Apa yang perlu saya lakukan jika terdapat isu dengan derma atau kod QR?",
 				searchText: "hubungi x twitter sedekahje bantuan isu",
@@ -166,23 +174,15 @@ const faqCategories: FaqCategory[] = [
 	},
 ];
 
-function faqItemId(categoryIndex: number, faqIndex: number) {
-	return `c${categoryIndex}-i${faqIndex}`;
-}
-
 function collectSearchBlob(faq: FaqEntry): string {
 	const answerPart =
 		typeof faq.answer === "string" ? faq.answer : (faq.searchText ?? "");
 	return `${faq.question} ${answerPart}`.toLowerCase();
 }
 
-const allFaqIds = new Set<string>();
-for (let ci = 0; ci < faqCategories.length; ci++) {
-	const cat = faqCategories[ci];
-	for (let fi = 0; fi < cat.faqs.length; fi++) {
-		allFaqIds.add(faqItemId(ci, fi));
-	}
-}
+const allFaqIds = new Set(
+	faqCategories.flatMap((category) => category.faqs.map((faq) => faq.id)),
+);
 
 type FlatFaqItem = {
 	id: string;
@@ -193,16 +193,22 @@ type FlatFaqItem = {
 
 const FAQ = () => {
 	const [query, setQuery] = useState("");
-	const [openValue, setOpenValue] = useState<string | undefined>(undefined);
+	const [requestedOpenValue, setRequestedOpenValue] = useState<
+		string | undefined
+	>(() => {
+		if (typeof window === "undefined") return undefined;
+		const hash = window.location.hash.slice(1);
+		return hash && allFaqIds.has(hash) ? hash : undefined;
+	});
 
 	const filteredItems = useMemo(() => {
 		const q = query.trim().toLowerCase();
 		const items: FlatFaqItem[] = [];
-		faqCategories.forEach((category, categoryIndex) => {
-			category.faqs.forEach((faq, faqIndex) => {
+		faqCategories.forEach((category) => {
+			category.faqs.forEach((faq) => {
 				if (!q || collectSearchBlob(faq).includes(q)) {
 					items.push({
-						id: faqItemId(categoryIndex, faqIndex),
+						id: faq.id,
 						categoryTitle: category.title,
 						question: faq.question,
 						answer: faq.answer,
@@ -213,26 +219,20 @@ const FAQ = () => {
 		return items;
 	}, [query]);
 
-	useEffect(() => {
-		const hash = window.location.hash.slice(1);
-		if (hash && allFaqIds.has(hash)) {
-			setOpenValue(hash);
-		}
-	}, []);
+	const openValue =
+		requestedOpenValue &&
+		filteredItems.some((item) => item.id === requestedOpenValue)
+			? requestedOpenValue
+			: undefined;
 
 	useEffect(() => {
-		if (openValue && !filteredItems.some((item) => item.id === openValue)) {
-			setOpenValue(undefined);
-			const url = `${window.location.pathname}${window.location.search}`;
-			window.history.replaceState(null, "", url);
-		}
-	}, [filteredItems, openValue]);
+		const url = `${window.location.pathname}${window.location.search}${openValue ? `#${openValue}` : ""}`;
+		window.history.replaceState(null, "", url);
+	}, [openValue]);
 
 	const handleOpenChange = useCallback((value: string) => {
 		const next = value === "" ? undefined : value;
-		setOpenValue(next);
-		const url = `${window.location.pathname}${window.location.search}${next ? `#${next}` : ""}`;
-		window.history.replaceState(null, "", url);
+		setRequestedOpenValue(next);
 	}, []);
 
 	return (
@@ -285,6 +285,7 @@ const FAQ = () => {
 							>
 								{filteredItems.map((item) => (
 									<AccordionItem
+										id={item.id}
 										key={item.id}
 										value={item.id}
 										className="border-b border-border/40 last:border-b-0"

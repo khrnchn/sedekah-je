@@ -5,7 +5,6 @@ import html2canvas from "html2canvas";
 import { DownloadIcon, Eye, MapPin, Share2, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import type { Institution } from "@/app/types/institutions";
@@ -129,7 +128,6 @@ const InstitutionCard = forwardRef<
 				(contributorId === null ||
 					contributorEmail === "khairin13chan@gmail.com"));
 
-		const router = useRouter();
 		const resolvedSlug = slug ?? slugify(name);
 		const normalizedCategory = normalizeInstitutionCategory(category);
 		const categoryIconDimensions =
@@ -494,7 +492,6 @@ const InstitutionCard = forwardRef<
 									? "border-primary/35 ring-1 ring-primary/10"
 									: "border-border/22 hover:border-primary/18",
 							)}
-							onMouseEnter={() => router.prefetch(href)}
 						>
 							<CardContent className="flex h-full flex-col items-center gap-3 p-4">
 								{canClaim && (

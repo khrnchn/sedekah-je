@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { unstable_cache } from "next/cache";
+import Link from "next/link";
 import { Header } from "@/components/shared/header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -154,7 +155,9 @@ export default async function RamadhanWrappedPage({ searchParams }: Props) {
 							</p>
 							{!posterMode && (
 								<Button asChild variant="outline" size="sm" className="mt-4">
-									<a href="/ramadhan-wrapped-2026?poster=1">Lihat poster</a>
+									<Link href="/ramadhan-wrapped-2026?poster=1">
+										Lihat poster
+									</Link>
 								</Button>
 							)}
 						</div>

@@ -129,7 +129,7 @@ const publicInstitutionSelect = {
 	supportedPayment: institutions.supportedPayment,
 	coords: institutions.coords,
 	contributorId: institutions.contributorId,
-	claimable: sql<boolean>`(${institutions.contributorId} is null)`,
+	claimable: sql<boolean>`(${institutions.contributorId} is null or ${users.email} = 'khairin13chan@gmail.com')`,
 };
 
 const getPublicInstitutionsPageInternal = unstable_cache(

@@ -157,6 +157,22 @@ export function PageClient({ initialResult, initialSearchParams }: Props) {
 		[],
 	);
 
+	const initialCategories = useMemo(
+		() =>
+			initialSearchParams.category
+				?.split(",")
+				.filter(Boolean)
+				.map((category) => normalizeInstitutionCategory(category)) || [],
+		[initialSearchParams.category],
+	);
+	const canUseInitialResult =
+		committedQuery === (initialSearchParams.search ?? "") &&
+		selectedState === (initialSearchParams.state ?? "") &&
+		selectedCategories.length === initialCategories.length &&
+		selectedCategories.every(
+			(category, index) => category === initialCategories[index],
+		);
+
 	const infiniteQuery = useInfiniteQuery({
 		queryKey: [
 			"institutions",
@@ -180,10 +196,12 @@ export function PageClient({ initialResult, initialSearchParams }: Props) {
 		initialPageParam: 1,
 		getNextPageParam: (lastPage) =>
 			lastPage.pagination.hasMore ? lastPage.pagination.page + 1 : undefined,
-		initialData: {
-			pages: [initialResult],
-			pageParams: [1],
-		},
+		initialData: canUseInitialResult
+			? {
+					pages: [initialResult],
+					pageParams: [1],
+				}
+			: undefined,
 	});
 
 	const institutions =
