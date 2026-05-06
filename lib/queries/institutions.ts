@@ -1,6 +1,16 @@
 "use server";
 
-import { and, asc, count, eq, ilike, inArray, or, sql } from "drizzle-orm";
+import {
+	and,
+	asc,
+	count,
+	eq,
+	ilike,
+	inArray,
+	isNotNull,
+	or,
+	sql,
+} from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import { db } from "@/db";
 import { institutions, users } from "@/db/schema";
@@ -12,7 +22,7 @@ import type {
 } from "@/lib/institution-constants";
 
 const INSTITUTIONS_CACHE_VERSION = "v3";
-const PUBLIC_INSTITUTIONS_CACHE_VERSION = "v1";
+const PUBLIC_INSTITUTIONS_CACHE_VERSION = "v2";
 
 type Category = (typeof categoryOptions)[number];
 type State = (typeof stateOptions)[number];
@@ -201,7 +211,6 @@ const getPublicInstitutionMarkersInternal = unstable_cache(
 		const params = normalizePublicInstitutionParams({
 			...rawParams,
 			page: 1,
-			limit: 50,
 		});
 		const conditions = buildPublicInstitutionConditions(params);
 
@@ -209,19 +218,16 @@ const getPublicInstitutionMarkersInternal = unstable_cache(
 			.select(publicInstitutionSelect)
 			.from(institutions)
 			.leftJoin(users, eq(institutions.contributorId, users.id))
-			.where(and(...conditions))
+			.where(and(...conditions, isNotNull(institutions.coords)))
 			.orderBy(
 				asc(sql`lower(btrim(${institutions.name}))`),
 				asc(institutions.id),
-			)
-			.limit(params.limit);
+			);
 
-		return results
-			.filter((institution) => institution.coords)
-			.map((institution) => ({
-				...institution,
-				category: normalizeInstitutionCategory(institution.category),
-			}));
+		return results.map((institution) => ({
+			...institution,
+			category: normalizeInstitutionCategory(institution.category),
+		}));
 	},
 	["public-institution-markers", PUBLIC_INSTITUTIONS_CACHE_VERSION],
 	{
