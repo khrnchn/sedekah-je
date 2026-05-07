@@ -69,6 +69,8 @@ const formatDistance = (distanceInMeter?: number): string | null => {
 	return `${Math.round(distanceInMeter)} m`;
 };
 
+const CLIPBOARD_WRITE_TIMEOUT_MS = 12_000;
+
 const paymentLogoMap = {
 	duitnow: "/icons/duitnow.png",
 	tng: "/icons/tng.png",
@@ -192,6 +194,45 @@ const InstitutionCard = forwardRef<
 				);
 			});
 
+		const withTimeout = async <T,>(
+			promise: Promise<T>,
+			message: string,
+			timeoutMs = CLIPBOARD_WRITE_TIMEOUT_MS,
+		) => {
+			let timeoutId: number | undefined;
+
+			try {
+				return await Promise.race([
+					promise,
+					new Promise<never>((_resolve, reject) => {
+						timeoutId = window.setTimeout(
+							() => reject(new Error(message)),
+							timeoutMs,
+						);
+					}),
+				]);
+			} finally {
+				if (timeoutId !== undefined) {
+					window.clearTimeout(timeoutId);
+				}
+			}
+		};
+
+		const writePngBlobToClipboard = async (pngBlob: Blob) => {
+			if (!navigator.clipboard?.write || !("ClipboardItem" in window)) {
+				throw new Error("Image clipboard is not supported");
+			}
+
+			await withTimeout(
+				navigator.clipboard.write([
+					new ClipboardItem({
+						[pngBlob.type]: pngBlob,
+					}),
+				]),
+				"Clipboard write timed out",
+			);
+		};
+
 		const drawContainedImage = (
 			ctx: CanvasRenderingContext2D,
 			img: HTMLImageElement,
@@ -226,51 +267,53 @@ const InstitutionCard = forwardRef<
 
 			const canvas = document.createElement("canvas");
 			const size = 600;
-			const padding = size * 0.05;
-			const topPadding = size * 0.1;
-			const innerSize = size - padding * 2;
-			const qrSize = size * 0.7;
+			const qrCardSize = 350;
+			const qrSize = 250;
+			const ctx = canvas.getContext("2d");
+
 			canvas.width = size;
 			canvas.height = size;
 
-			const ctx = canvas.getContext("2d");
 			if (!ctx) {
 				throw new Error("Canvas context unavailable");
 			}
 
-			ctx.fillStyle = brand?.color ?? "#e5e7eb";
-			ctx.fillRect(0, 0, size, size);
 			ctx.fillStyle = "#ffffff";
-			ctx.fillRect(padding, topPadding, innerSize, innerSize);
+			ctx.fillRect(0, 0, size, size);
 
-			const serializedSvg = new XMLSerializer().serializeToString(svg);
-			const svgBlob = new Blob([serializedSvg], {
-				type: "image/svg+xml;charset=utf-8",
-			});
-			const svgUrl = window.URL.createObjectURL(svgBlob);
+			ctx.fillStyle = "#111827";
+			ctx.font = "700 18px sans-serif";
+			ctx.textAlign = "center";
+			ctx.fillText("SedekahJe", size / 2, 92);
 
-			try {
-				const qrImageEl = await loadImage(svgUrl);
-				ctx.drawImage(
-					qrImageEl,
-					(size - qrSize) / 2,
-					topPadding + (innerSize - qrSize) / 2,
-					qrSize,
-					qrSize,
-				);
-			} finally {
-				window.URL.revokeObjectURL(svgUrl);
-			}
+			const cardX = (size - qrCardSize) / 2;
+			const cardY = 125;
+			const radius = 24;
+			ctx.fillStyle = brand?.color ?? "#e5e7eb";
+			ctx.beginPath();
+			ctx.roundRect(cardX, cardY, qrCardSize, qrCardSize, radius);
+			ctx.fill();
 
 			if (payment && paymentLogoMap[payment]) {
 				try {
 					const logo = await loadImage(paymentLogoMap[payment]);
-					const logoWidth = payment === "toyyibpay" ? size * 0.34 : size * 0.2;
-					const logoHeight = size * 0.2;
+					const logoWidth = payment === "toyyibpay" ? 118 : 58;
+					const logoHeight = 58;
 					const logoX = (size - logoWidth) / 2;
-					const logoY = 0;
+					const logoY = cardY + 8;
 
-					if (payment === "duitnow" || payment === "boost") {
+					ctx.fillStyle = "#ffffff";
+					ctx.beginPath();
+					ctx.roundRect(
+						logoX - 8,
+						logoY - 4,
+						logoWidth + 16,
+						logoHeight + 8,
+						999,
+					);
+					ctx.fill();
+
+					if (payment !== "tng" && payment !== "toyyibpay") {
 						ctx.fillStyle = brand?.color ?? "#e5e7eb";
 						ctx.beginPath();
 						ctx.arc(
@@ -289,22 +332,151 @@ const InstitutionCard = forwardRef<
 				}
 			}
 
+			const qrBackgroundSize = 282;
+			const qrBackgroundX = (size - qrBackgroundSize) / 2;
+			const qrBackgroundY = cardY + 52;
+			ctx.fillStyle = "#ffffff";
+			ctx.beginPath();
+			ctx.roundRect(
+				qrBackgroundX,
+				qrBackgroundY,
+				qrBackgroundSize,
+				qrBackgroundSize,
+				12,
+			);
+			ctx.fill();
+
+			const qrClone = svg.cloneNode(true) as SVGElement;
+			qrClone.setAttribute("width", String(qrSize));
+			qrClone.setAttribute("height", String(qrSize));
+			for (const element of Array.from(qrClone.querySelectorAll("*"))) {
+				const fill = element.getAttribute("fill");
+				if (fill && fill !== "none" && fill.toLowerCase() !== "#ffffff") {
+					element.setAttribute("fill", brand?.color ?? "#111827");
+				}
+			}
+
+			const serializedSvg = new XMLSerializer().serializeToString(qrClone);
+			const svgBlob = new Blob([serializedSvg], {
+				type: "image/svg+xml;charset=utf-8",
+			});
+			const svgUrl = window.URL.createObjectURL(svgBlob);
+
+			try {
+				const qrImageEl = await loadImage(svgUrl);
+				ctx.drawImage(
+					qrImageEl,
+					(size - qrSize) / 2,
+					qrBackgroundY + (qrBackgroundSize - qrSize) / 2,
+					qrSize,
+					qrSize,
+				);
+			} finally {
+				window.URL.revokeObjectURL(svgUrl);
+			}
+
+			ctx.fillStyle = "#111827";
+			ctx.font = "700 20px sans-serif";
+			ctx.textAlign = "center";
+			const maxTextWidth = 500;
+			let displayName = capitalizedName;
+			while (
+				ctx.measureText(displayName).width > maxTextWidth &&
+				displayName.length > 12
+			) {
+				displayName = `${displayName.slice(0, -2)}...`;
+			}
+			ctx.fillText(displayName, size / 2, 535);
+
 			return canvas;
+		};
+
+		const renderBrandedQrPageToCanvas = async (
+			onStage?: (stage: string) => void,
+		) => {
+			const iframe = document.createElement("iframe");
+			iframe.style.visibility = "hidden";
+			iframe.style.position = "fixed";
+			iframe.style.right = "0";
+			iframe.style.bottom = "0";
+			iframe.width = "600px";
+			iframe.height = "600px";
+
+			const waitForIframe = new Promise<void>((resolve, reject) => {
+				const timeoutId = window.setTimeout(() => {
+					reject(new Error("QR page load timed out"));
+				}, 8000);
+
+				iframe.onload = () => {
+					window.clearTimeout(timeoutId);
+					onStage?.("Memuatkan halaman kod QR...");
+					setTimeout(resolve, 1000);
+				};
+
+				iframe.onerror = () => {
+					window.clearTimeout(timeoutId);
+					reject(new Error("QR page failed to load"));
+				};
+			});
+
+			try {
+				document.body.appendChild(iframe);
+				iframe.src = `${window.location.origin}/qr/${resolvedSlug}`;
+				await waitForIframe;
+
+				const documentBody = iframe.contentDocument?.body;
+				if (!documentBody) {
+					throw new Error("QR page unavailable");
+				}
+
+				const style = iframe.contentDocument.createElement("style");
+				style.textContent = `
+					html, body {
+						width: 600px !important;
+						height: 600px !important;
+						margin: 0 !important;
+						background: #ffffff !important;
+						color: #111827 !important;
+					}
+					*, ::before, ::after {
+						color: #111827 !important;
+						border-color: transparent !important;
+						box-shadow: none !important;
+						text-shadow: none !important;
+					}
+				`;
+				iframe.contentDocument.head.appendChild(style);
+
+				onStage?.("Mengambil gambar kod QR...");
+				return html2canvas(documentBody, {
+					useCORS: true,
+					allowTaint: true,
+					backgroundColor: "#ffffff",
+					scale: 2,
+					width: 600,
+					height: 600,
+					windowWidth: 600,
+					windowHeight: 600,
+				});
+			} finally {
+				iframe.remove();
+			}
 		};
 
 		const copyToClipboard = async (pngBlob: Blob | null) => {
 			if (!pngBlob) return;
 			try {
-				await navigator.clipboard.write([
-					new ClipboardItem({
-						[pngBlob.type]: pngBlob,
-					}),
-				]);
+				await writePngBlobToClipboard(pngBlob);
 				toast.success("Berjaya menyalin kod QR ke papan klipboard.");
 			} catch (error) {
 				console.error(error);
 				toast.error("Gagal menyalin kod QR.");
 			}
+		};
+
+		const copyCanvasToClipboard = async (canvas: HTMLCanvasElement) => {
+			const pngBlob = await canvasToBlob(canvas);
+			await writePngBlobToClipboard(pngBlob);
 		};
 
 		const convertToPng = (imgBlob: Blob) => {
@@ -636,39 +808,10 @@ const InstitutionCard = forwardRef<
 														let canvas: HTMLCanvasElement;
 
 														if (qrContent) {
-															// Preserve branded template by rendering /qr/[slug] page
-															const iframe = document.createElement("iframe");
-															iframe.style.visibility = "hidden";
-															iframe.style.position = "fixed";
-															iframe.style.right = "0";
-															iframe.style.bottom = "0";
-															iframe.width = "600px";
-															iframe.height = "600px";
-															iframe.src = `${window.location.origin}/qr/${resolvedSlug}`;
-
-															document.body.appendChild(iframe);
-
-															await new Promise((resolve) => {
-																iframe.onload = () => {
-																	setDownloadStage(
-																		"Memuatkan halaman kod QR...",
-																	);
-																	setTimeout(resolve, 1000);
-																};
-															});
-
-															setDownloadStage("Mengambil gambar kod QR...");
-															canvas = await html2canvas(
-																iframe.contentDocument?.body as HTMLElement,
-																{
-																	useCORS: true,
-																	allowTaint: true,
-																	backgroundColor: "#ffffff",
-																	scale: 2,
-																},
-															);
-
-															document.body.removeChild(iframe);
+															canvas =
+																await renderBrandedQrPageToCanvas(
+																	setDownloadStage,
+																);
 														} else {
 															setDownloadStage("Mengambil gambar kod QR...");
 															const imageEl = createImage({ src: qrImage });
@@ -746,17 +889,23 @@ const InstitutionCard = forwardRef<
 											<DropdownMenuItem
 												onClick={async () => {
 													if (!qrContent) {
-														copyImg(qrImage);
+														await copyImg(qrImage);
 														return;
 													}
 
+													const toastId = toast.loading("Menyalin kod QR...");
 													try {
 														const canvas = await renderQrContentToCanvas();
-														const blob = await canvasToBlob(canvas);
-														copyToClipboard(blob);
+														await copyCanvasToClipboard(canvas);
+														toast.success(
+															"Berjaya menyalin kod QR ke papan klipboard.",
+															{ id: toastId },
+														);
 													} catch (error) {
 														console.error("Copy QR error:", error);
-														toast.error("Gagal menyalin kod QR.");
+														toast.error("Gagal menyalin kod QR.", {
+															id: toastId,
+														});
 													}
 												}}
 											>
