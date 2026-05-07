@@ -1,9 +1,3 @@
-import type {
-	categories,
-	institutionStatuses,
-	states,
-	supportedPayments,
-} from "@/lib/institution-constants";
 import { relations } from "drizzle-orm";
 import {
 	boolean,
@@ -14,6 +8,12 @@ import {
 	timestamp,
 	varchar,
 } from "drizzle-orm/pg-core";
+import type {
+	categories,
+	institutionStatuses,
+	states,
+	supportedPayments,
+} from "@/lib/institution-constants";
 import { timestamps } from "./helpers";
 import { users } from "./users";
 

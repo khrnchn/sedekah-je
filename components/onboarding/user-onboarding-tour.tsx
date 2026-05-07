@@ -113,6 +113,7 @@ export function UserOnboardingTour() {
 						);
 						d.destroy();
 						driverRef.current = null;
+						if (result) setSnapshot(result);
 						if (result?.currentRoute && result.currentRoute !== pathname) {
 							router.push(result.currentRoute);
 						}
@@ -168,10 +169,10 @@ export function UserOnboardingTour() {
 			snapshot.state === "in_progress" &&
 			snapshot.currentRoute === pathAsRoute
 		) {
-			hasStartedRef.current = true;
 			const step = snapshot.currentStep ?? 0;
 			// Short delay for DOM to be ready (Suspense/lazy)
 			const t = setTimeout(() => {
+				hasStartedRef.current = true;
 				startDriver(pathAsRoute, step);
 			}, 500);
 			return () => clearTimeout(t);
@@ -184,8 +185,10 @@ export function UserOnboardingTour() {
 		setPromptHandled(true);
 		const result = await patchTour("start", pathAsRoute, 0);
 		if (result) setSnapshot(result);
-		hasStartedRef.current = true;
-		setTimeout(() => startDriver(pathAsRoute, 0), 100);
+		setTimeout(() => {
+			hasStartedRef.current = true;
+			startDriver(pathAsRoute, 0);
+		}, 100);
 	}, [pathAsRoute, startDriver]);
 
 	const handleLepas = useCallback(async () => {
@@ -197,21 +200,17 @@ export function UserOnboardingTour() {
 
 	return (
 		<Dialog open={showPrompt} onOpenChange={setShowPrompt}>
-			<DialogContent
-				className="sm:max-w-md"
-				onPointerDownOutside={(e) => e.preventDefault()}
-				onEscapeKeyDown={(e) => e.preventDefault()}
-			>
+			<DialogContent className="sm:max-w-md">
 				<DialogHeader>
-					<DialogTitle>Mulakan tour?</DialogTitle>
+					<DialogTitle>Nak ikuti tour?</DialogTitle>
 					<DialogDescription>
-						Ikuti panduan ringkas untuk mengenali ciri-ciri utama platform
-						sedekah.je.
+						Ambil masa kira-kira 2 minit, biar kami tunjukkan cara penggunaan
+						aplikasi ini.
 					</DialogDescription>
 				</DialogHeader>
 				<DialogFooter className="gap-2 sm:gap-0">
 					<Button variant="outline" onClick={handleLepas}>
-						Lepas dulu
+						Skip
 					</Button>
 					<Button onClick={handleMulakan}>Mulakan</Button>
 				</DialogFooter>

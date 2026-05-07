@@ -127,7 +127,6 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.4.3",
-		"@playwright/test": "^1.58.2",
 		"@types/adm-zip": "^0.5.7",
 		"@types/leaflet": "^1.9.12",
 		"@types/lodash-es": "^4.17.12",

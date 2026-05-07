@@ -2,9 +2,9 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import html2canvas from "html2canvas";
-import { DownloadIcon, Eye, Share2, User } from "lucide-react";
+import { DownloadIcon, Eye, MapPin, Share2, User } from "lucide-react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import type { Institution } from "@/app/types/institutions";
@@ -28,8 +28,11 @@ import { useAuth } from "@/hooks/use-auth";
 import { useOutsideClick } from "@/hooks/use-outside-click";
 import {
 	getInstitutionCategoryIcon,
+	getInstitutionCategoryIconDimensions,
+	getInstitutionCategoryLabel,
 	normalizeInstitutionCategory,
 } from "@/lib/institution-categories";
+import { paymentBrands } from "@/lib/payment-brands";
 import { cn, slugify } from "@/lib/utils";
 import { ClaimModal } from "./claim-modal";
 import QrCodeDisplay from "./qr-code-display";
@@ -56,6 +59,25 @@ const capitalizeWords = (str: string): string => {
 	});
 };
 
+const formatDistance = (distanceInMeter?: number): string | null => {
+	if (!distanceInMeter) return null;
+
+	if (distanceInMeter >= 1000) {
+		return `${(distanceInMeter / 1000).toFixed(1)} km`;
+	}
+
+	return `${Math.round(distanceInMeter)} m`;
+};
+
+const CLIPBOARD_WRITE_TIMEOUT_MS = 12_000;
+
+const paymentLogoMap = {
+	duitnow: "/icons/duitnow.png",
+	tng: "/icons/tng.png",
+	boost: "/icons/boost.png",
+	toyyibpay: "/icons/toyyibpay-wordmark.png",
+} as const;
+
 const InstitutionCard = forwardRef<
 	HTMLDivElement,
 	Institution & { isClosest?: boolean; distanceToCurrentUserInMeter?: number }
@@ -77,6 +99,7 @@ const InstitutionCard = forwardRef<
 			distanceToCurrentUserInMeter,
 			contributorId,
 			contributorEmail,
+			claimable,
 		},
 		ref,
 	) => {
@@ -88,11 +111,12 @@ const InstitutionCard = forwardRef<
 		const innerRef = useRef<HTMLDivElement>(null);
 		const printRef = useRef<HTMLButtonElement>(null);
 
-		const { user, isAuthenticated, isLoading } = useAuth();
+		const { isAuthenticated, isLoading } = useAuth();
 
 		const capitalizedName = capitalizeWords(name);
 		const capitalizedState = capitalizeWords(state);
 		const capitalizedCity = capitalizeWords(city);
+		const formattedDistance = formatDistance(distanceToCurrentUserInMeter);
 
 		// Check if user can claim this institution
 		// 1. User must be logged in
@@ -102,12 +126,14 @@ const InstitutionCard = forwardRef<
 			hasMounted &&
 			!isLoading &&
 			isAuthenticated &&
-			(contributorId === null ||
-				contributorEmail === "khairin13chan@gmail.com");
+			(claimable ??
+				(contributorId === null ||
+					contributorEmail === "khairin13chan@gmail.com"));
 
-		const router = useRouter();
 		const resolvedSlug = slug ?? slugify(name);
 		const normalizedCategory = normalizeInstitutionCategory(category);
+		const categoryIconDimensions =
+			getInstitutionCategoryIconDimensions(normalizedCategory);
 		const href = `/${normalizedCategory}/${resolvedSlug}`;
 
 		useEffect(() => {
@@ -135,25 +161,322 @@ const InstitutionCard = forwardRef<
 
 		const createImage = (options: { src: string }) => {
 			const img = document.createElement("img");
+			img.crossOrigin = "anonymous";
 			if (options.src) {
 				img.src = options.src;
 			}
 			return img;
 		};
 
-		const copyToClipboard = async (pngBlob: Blob | null) => {
-			if (!pngBlob) return;
+		const loadImage = (src: string) =>
+			new Promise<HTMLImageElement>((resolve, reject) => {
+				const img = createImage({ src });
+				img.onload = () => resolve(img);
+				img.onerror = reject;
+			});
+
+		const canvasToBlob = (
+			canvas: HTMLCanvasElement,
+			type = "image/png",
+			quality = 1,
+		) =>
+			new Promise<Blob>((resolve, reject) => {
+				canvas.toBlob(
+					(blob) => {
+						if (blob) {
+							resolve(blob);
+						} else {
+							reject(new Error("Unable to create image blob"));
+						}
+					},
+					type,
+					quality,
+				);
+			});
+
+		const withTimeout = async <T,>(
+			promise: Promise<T>,
+			message: string,
+			timeoutMs = CLIPBOARD_WRITE_TIMEOUT_MS,
+		) => {
+			let timeoutId: number | undefined;
+
 			try {
-				await navigator.clipboard.write([
+				return await Promise.race([
+					promise,
+					new Promise<never>((_resolve, reject) => {
+						timeoutId = window.setTimeout(
+							() => reject(new Error(message)),
+							timeoutMs,
+						);
+					}),
+				]);
+			} finally {
+				if (timeoutId !== undefined) {
+					window.clearTimeout(timeoutId);
+				}
+			}
+		};
+
+		const writePngBlobToClipboard = async (pngBlob: Blob) => {
+			if (!navigator.clipboard?.write || !("ClipboardItem" in window)) {
+				throw new Error("Image clipboard is not supported");
+			}
+
+			await withTimeout(
+				navigator.clipboard.write([
 					new ClipboardItem({
 						[pngBlob.type]: pngBlob,
 					}),
-				]);
+				]),
+				"Clipboard write timed out",
+			);
+		};
+
+		const drawContainedImage = (
+			ctx: CanvasRenderingContext2D,
+			img: HTMLImageElement,
+			x: number,
+			y: number,
+			width: number,
+			height: number,
+		) => {
+			const ratio = Math.min(
+				width / img.naturalWidth,
+				height / img.naturalHeight,
+			);
+			const drawWidth = img.naturalWidth * ratio;
+			const drawHeight = img.naturalHeight * ratio;
+			ctx.drawImage(
+				img,
+				x + (width - drawWidth) / 2,
+				y + (height - drawHeight) / 2,
+				drawWidth,
+				drawHeight,
+			);
+		};
+
+		const renderQrContentToCanvas = async () => {
+			const payment = supportedPayment?.[0];
+			const brand = payment ? paymentBrands[payment] : undefined;
+			const svg = printRef.current?.querySelector("svg");
+
+			if (!svg) {
+				throw new Error("QR SVG unavailable");
+			}
+
+			const canvas = document.createElement("canvas");
+			const size = 600;
+			const qrCardSize = 350;
+			const qrSize = 250;
+			const ctx = canvas.getContext("2d");
+
+			canvas.width = size;
+			canvas.height = size;
+
+			if (!ctx) {
+				throw new Error("Canvas context unavailable");
+			}
+
+			ctx.fillStyle = "#ffffff";
+			ctx.fillRect(0, 0, size, size);
+
+			ctx.fillStyle = "#111827";
+			ctx.font = "700 18px sans-serif";
+			ctx.textAlign = "center";
+			ctx.fillText("SedekahJe", size / 2, 92);
+
+			const cardX = (size - qrCardSize) / 2;
+			const cardY = 125;
+			const radius = 24;
+			ctx.fillStyle = brand?.color ?? "#e5e7eb";
+			ctx.beginPath();
+			ctx.roundRect(cardX, cardY, qrCardSize, qrCardSize, radius);
+			ctx.fill();
+
+			if (payment && paymentLogoMap[payment]) {
+				try {
+					const logo = await loadImage(paymentLogoMap[payment]);
+					const logoWidth = payment === "toyyibpay" ? 118 : 58;
+					const logoHeight = 58;
+					const logoX = (size - logoWidth) / 2;
+					const logoY = cardY + 8;
+
+					ctx.fillStyle = "#ffffff";
+					ctx.beginPath();
+					ctx.roundRect(
+						logoX - 8,
+						logoY - 4,
+						logoWidth + 16,
+						logoHeight + 8,
+						999,
+					);
+					ctx.fill();
+
+					if (payment !== "tng" && payment !== "toyyibpay") {
+						ctx.fillStyle = brand?.color ?? "#e5e7eb";
+						ctx.beginPath();
+						ctx.arc(
+							size / 2,
+							logoY + logoHeight / 2,
+							logoHeight / 2,
+							0,
+							Math.PI * 2,
+						);
+						ctx.fill();
+					}
+
+					drawContainedImage(ctx, logo, logoX, logoY, logoWidth, logoHeight);
+				} catch (error) {
+					console.error("QR logo render error:", error);
+				}
+			}
+
+			const qrBackgroundSize = 282;
+			const qrBackgroundX = (size - qrBackgroundSize) / 2;
+			const qrBackgroundY = cardY + 52;
+			ctx.fillStyle = "#ffffff";
+			ctx.beginPath();
+			ctx.roundRect(
+				qrBackgroundX,
+				qrBackgroundY,
+				qrBackgroundSize,
+				qrBackgroundSize,
+				12,
+			);
+			ctx.fill();
+
+			const qrClone = svg.cloneNode(true) as SVGElement;
+			qrClone.setAttribute("width", String(qrSize));
+			qrClone.setAttribute("height", String(qrSize));
+			for (const element of Array.from(qrClone.querySelectorAll("*"))) {
+				const fill = element.getAttribute("fill");
+				if (fill && fill !== "none" && fill.toLowerCase() !== "#ffffff") {
+					element.setAttribute("fill", brand?.color ?? "#111827");
+				}
+			}
+
+			const serializedSvg = new XMLSerializer().serializeToString(qrClone);
+			const svgBlob = new Blob([serializedSvg], {
+				type: "image/svg+xml;charset=utf-8",
+			});
+			const svgUrl = window.URL.createObjectURL(svgBlob);
+
+			try {
+				const qrImageEl = await loadImage(svgUrl);
+				ctx.drawImage(
+					qrImageEl,
+					(size - qrSize) / 2,
+					qrBackgroundY + (qrBackgroundSize - qrSize) / 2,
+					qrSize,
+					qrSize,
+				);
+			} finally {
+				window.URL.revokeObjectURL(svgUrl);
+			}
+
+			ctx.fillStyle = "#111827";
+			ctx.font = "700 20px sans-serif";
+			ctx.textAlign = "center";
+			const maxTextWidth = 500;
+			let displayName = capitalizedName;
+			while (
+				ctx.measureText(displayName).width > maxTextWidth &&
+				displayName.length > 12
+			) {
+				displayName = `${displayName.slice(0, -2)}...`;
+			}
+			ctx.fillText(displayName, size / 2, 535);
+
+			return canvas;
+		};
+
+		const renderBrandedQrPageToCanvas = async (
+			onStage?: (stage: string) => void,
+		) => {
+			const iframe = document.createElement("iframe");
+			iframe.style.visibility = "hidden";
+			iframe.style.position = "fixed";
+			iframe.style.right = "0";
+			iframe.style.bottom = "0";
+			iframe.width = "600px";
+			iframe.height = "600px";
+
+			const waitForIframe = new Promise<void>((resolve, reject) => {
+				const timeoutId = window.setTimeout(() => {
+					reject(new Error("QR page load timed out"));
+				}, 8000);
+
+				iframe.onload = () => {
+					window.clearTimeout(timeoutId);
+					onStage?.("Memuatkan halaman kod QR...");
+					setTimeout(resolve, 1000);
+				};
+
+				iframe.onerror = () => {
+					window.clearTimeout(timeoutId);
+					reject(new Error("QR page failed to load"));
+				};
+			});
+
+			try {
+				document.body.appendChild(iframe);
+				iframe.src = `${window.location.origin}/qr/${resolvedSlug}`;
+				await waitForIframe;
+
+				const documentBody = iframe.contentDocument?.body;
+				if (!documentBody) {
+					throw new Error("QR page unavailable");
+				}
+
+				const style = iframe.contentDocument.createElement("style");
+				style.textContent = `
+					html, body {
+						width: 600px !important;
+						height: 600px !important;
+						margin: 0 !important;
+						background: #ffffff !important;
+						color: #111827 !important;
+					}
+					*, ::before, ::after {
+						color: #111827 !important;
+						border-color: transparent !important;
+						box-shadow: none !important;
+						text-shadow: none !important;
+					}
+				`;
+				iframe.contentDocument.head.appendChild(style);
+
+				onStage?.("Mengambil gambar kod QR...");
+				return html2canvas(documentBody, {
+					useCORS: true,
+					allowTaint: true,
+					backgroundColor: "#ffffff",
+					scale: 2,
+					width: 600,
+					height: 600,
+					windowWidth: 600,
+					windowHeight: 600,
+				});
+			} finally {
+				iframe.remove();
+			}
+		};
+
+		const copyToClipboard = async (pngBlob: Blob | null) => {
+			if (!pngBlob) return;
+			try {
+				await writePngBlobToClipboard(pngBlob);
 				toast.success("Berjaya menyalin kod QR ke papan klipboard.");
 			} catch (error) {
 				console.error(error);
 				toast.error("Gagal menyalin kod QR.");
 			}
+		};
+
+		const copyCanvasToClipboard = async (canvas: HTMLCanvasElement) => {
+			const pngBlob = await canvasToBlob(canvas);
+			await writePngBlobToClipboard(pngBlob);
 		};
 
 		const convertToPng = (imgBlob: Blob) => {
@@ -186,7 +509,7 @@ const InstitutionCard = forwardRef<
 				if (!extension) throw new Error("No extension found");
 
 				return convertToPng(imgBlob);
-			} catch (e) {
+			} catch {
 				console.error("Format unsupported");
 			}
 			return;
@@ -200,7 +523,7 @@ const InstitutionCard = forwardRef<
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
 							exit={{ opacity: 0 }}
-							className="fixed inset-0 h-full w-full z-10 md:bg-black/20 bg-transparent"
+							className="fixed inset-0 z-10 h-full w-full bg-transparent md:bg-foreground/20"
 						/>
 					)}
 				</AnimatePresence>
@@ -212,14 +535,14 @@ const InstitutionCard = forwardRef<
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
 							exit={{ opacity: 0 }}
-							className="fixed inset-0 h-full w-full z-50 bg-black/50 flex flex-col items-center justify-center"
+							className="fixed inset-0 z-50 flex h-full w-full flex-col items-center justify-center bg-foreground/50"
 						>
-							<div className="bg-card rounded-lg p-6 max-w-xs w-full flex flex-col items-center gap-4 border shadow-lg">
+							<div className="flex w-full max-w-xs flex-col items-center gap-4 rounded-lg border bg-card p-6 shadow-lg">
 								<div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
 								<p className="text-center font-medium">
 									Memuat turun kod QR...
 								</p>
-								<p className="text-center text-sm text-gray-500 dark:text-gray-400">
+								<p className="text-center text-sm text-muted-foreground">
 									{downloadStage || "Sila tunggu sebentar"}
 								</p>
 							</div>
@@ -236,7 +559,7 @@ const InstitutionCard = forwardRef<
 								initial={{ opacity: 0 }}
 								animate={{ opacity: 1 }}
 								exit={{ opacity: 0, transition: { duration: 0.05 } }}
-								className="flex absolute top-2 right-2 lg:hidden items-center justify-center bg-card rounded-full h-6 w-6 z-10 border"
+								className="absolute right-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-md border bg-card lg:hidden"
 								onClick={(e) => {
 									e.stopPropagation();
 									setActive(null);
@@ -253,11 +576,11 @@ const InstitutionCard = forwardRef<
 									setActive(null);
 								}}
 								whileDrag={{ scale: 1.05 }}
-								className="w-full max-w-[460px] max-h-[calc(100dvh-1.5rem)] sm:max-h-[calc(100dvh-2rem)] p-5 flex flex-col bg-card border shadow-xl rounded-3xl overflow-auto lg:overflow-hidden"
+								className="flex max-h-[calc(100dvh-1.5rem)] w-full max-w-[460px] flex-col overflow-auto rounded-lg border bg-card p-5 shadow-lg sm:max-h-[calc(100dvh-2rem)] lg:overflow-hidden"
 							>
 								<motion.div
 									layoutId={`image-${name}-${id}`}
-									className="flex items-center justify-center rounded-2xl border bg-muted/30 p-3"
+									className="flex items-center justify-center rounded-lg border bg-muted/40 p-3"
 								>
 									{qrContent ? (
 										<QrCodeDisplay
@@ -282,13 +605,13 @@ const InstitutionCard = forwardRef<
 										<div className="flex-1">
 											<motion.h3
 												layoutId={`title-${name}-${id}`}
-												className="font-medium text-neutral-700 dark:text-neutral-200 text-base"
+												className="text-base font-semibold text-foreground"
 											>
 												{capitalizedName}
 											</motion.h3>
 											<motion.p
 												layoutId={`location-${city}-${state}-${id}`}
-												className="text-neutral-600 dark:text-neutral-400 text-base"
+												className="text-base text-muted-foreground"
 											>
 												{capitalizedCity}, {capitalizedState}
 											</motion.p>
@@ -302,7 +625,7 @@ const InstitutionCard = forwardRef<
 												coords ? coords.join(",") : encodeURIComponent(name)
 											}`}
 											target="_blank"
-											className="px-4 py-3 text-sm rounded-full font-bold bg-green-500 text-white"
+											className="rounded-md bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
 											rel="noreferrer"
 										>
 											Cari di peta
@@ -315,7 +638,7 @@ const InstitutionCard = forwardRef<
 												initial={{ opacity: 0 }}
 												animate={{ opacity: 1 }}
 												exit={{ opacity: 0 }}
-												className="text-neutral-600 text-xs md:text-sm lg:text-base max-h-40 md:max-h-60 lg:max-h-80 pb-10 flex flex-col items-start gap-4 overflow-auto dark:text-neutral-400 [mask:linear-gradient(to_bottom,white,white,transparent)] [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-overflow-scrolling:touch]"
+												className="flex max-h-40 flex-col items-start gap-4 overflow-auto pb-10 text-xs text-muted-foreground [mask:linear-gradient(to_bottom,white,white,transparent)] [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-overflow-scrolling:touch] md:max-h-60 md:text-sm lg:max-h-80 lg:text-base"
 											>
 												{description}
 											</motion.div>
@@ -328,55 +651,79 @@ const InstitutionCard = forwardRef<
 				</AnimatePresence>
 
 				<TooltipProvider>
-					<motion.div ref={ref} layoutId={`card-${name}-${id}`}>
+					<motion.div
+						ref={ref}
+						layoutId={`card-${name}-${id}`}
+						className="h-full"
+					>
 						<Card
+							data-cat={normalizedCategory}
 							className={cn(
-								"relative group border-4 border-transparent shadow-lg dark:shadow-muted/50 cursor-pointer hover:shadow-xl transition-all duration-200 ease-in-out",
-								"hover:bg-gray-100 dark:hover:bg-zinc-800",
+								"relative h-full border shadow-[0_1px_2px_oklch(var(--foreground)/0.03)] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_4px_12px_oklch(var(--foreground)/0.05)]",
 								isClosest
-									? "border-[hsl(var(--primary))] animate-pulse-subtle"
-									: "",
+									? "border-primary/35 ring-1 ring-primary/10"
+									: "border-border/22 hover:border-primary/18",
 							)}
-							onMouseEnter={() => router.prefetch(href)}
-							onClick={() => router.push(href)}
 						>
-							<CardContent className="flex flex-col items-center gap-2 p-4 h-full">
-								{isClosest && (
-									<div className="absolute -top-3 left-4 shadow-lg">
-										<div className="relative">
-											<div className="absolute inset-0 blur-sm bg-[hsl(var(--primary)/0.9)] rounded-full" />
-											<div className="relative bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] py-1 px-3 rounded-full text-xs font-semibold flex items-center gap-1.5 text-white">
-												<span className="animate-ping absolute h-2 w-2 rounded-full bg-[hsl(var(--primary)/0.7)] opacity-75" />
-												<span className="relative h-2 w-2 rounded-full bg-[hsl(var(--primary)/0.9)]" />
-												Yang terdekat
-												{distanceToCurrentUserInMeter && (
-													<span className="font-medium">
-														•{" "}
-														{distanceToCurrentUserInMeter > 1000
-															? `${(
-																	distanceToCurrentUserInMeter / 1000
-																).toFixed(1)}km`
-															: `${Math.round(distanceToCurrentUserInMeter)}m`}
-													</span>
-												)}
-											</div>
-										</div>
+							<CardContent className="flex h-full flex-col items-center gap-3 p-4">
+								{canClaim && (
+									<div className="absolute top-2 right-2 z-10">
+										<Tooltip>
+											<TooltipTrigger asChild>
+												<Button
+													size="sm"
+													variant="ghost"
+													className="h-7 gap-1 px-2 text-xs text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors duration-200 ease-out"
+													onClick={(e) => {
+														e.stopPropagation();
+														setShowClaimModal(true);
+													}}
+												>
+													<User className="h-3.5 w-3.5" />
+													Tuntut
+												</Button>
+											</TooltipTrigger>
+											<TooltipContent side="top">
+												<p>Tuntut sebagai milik anda</p>
+											</TooltipContent>
+										</Tooltip>
 									</div>
 								)}
-								<div className="flex flex-col items-center gap-1 mb-2 w-full">
+								{isClosest && (
+									<div className="absolute top-0 left-1/2 z-10 inline-flex -translate-x-1/2 -translate-y-1/2 items-center gap-1.5 rounded-full border border-primary/20 bg-card px-2.5 py-1 text-xs text-primary shadow-sm">
+										<MapPin className="h-3.5 w-3.5" aria-hidden="true" />
+										<span className="font-medium">Terdekat</span>
+										{formattedDistance && (
+											<span className="font-semibold tabular-nums">
+												{formattedDistance}
+											</span>
+										)}
+									</div>
+								)}
+								<Link
+									href={href}
+									className={cn(
+										"mb-2 flex w-full flex-col items-center gap-1 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+										isClosest && "pt-2",
+									)}
+									aria-label={`Buka halaman ${capitalizedName}`}
+								>
 									<motion.div>
 										<Image
 											src={getInstitutionCategoryIcon(category)}
-											alt="category logo"
-											width={50}
-											height={50}
+											alt=""
+											width={categoryIconDimensions.width}
+											height={categoryIconDimensions.height}
+											unoptimized
+											aria-hidden="true"
+											style={{ height: "auto", width: "50px" }}
 										/>
 									</motion.div>
 									<Tooltip>
 										<TooltipTrigger asChild>
 											<motion.h3
 												layoutId={`title-${name}-${id}`}
-												className="text-lg font-semibold text-foreground truncate w-full text-center"
+												className="w-full truncate text-center text-base font-semibold text-foreground"
 											>
 												{capitalizedName}
 											</motion.h3>
@@ -387,67 +734,72 @@ const InstitutionCard = forwardRef<
 									</Tooltip>
 									<motion.p
 										layoutId={`location-${city}-${state}-${id}`}
-										className="text-sm text-cyan-500 truncate w-full text-center font-medium"
+										className="w-full truncate text-center text-sm font-medium text-muted-foreground"
 									>
 										{capitalizedCity}, {capitalizedState}
 									</motion.p>
-								</div>
+									<span
+										data-cat={normalizedCategory}
+										className="mt-0.5 inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium"
+										style={{
+											borderColor:
+												"color-mix(in oklch, var(--cat-ring) 55%, transparent)",
+											backgroundColor:
+												"color-mix(in oklch, var(--cat-surface) 76%, oklch(var(--card)))",
+											color: "var(--cat-text)",
+										}}
+									>
+										{getInstitutionCategoryLabel(category)}
+									</span>
+								</Link>
 								<motion.div
 									layoutId={`image-${name}-${id}`}
-									className="cursor-pointer"
+									className="cursor-pointer rounded-lg bg-muted/25 p-2.5 shadow-none"
 								>
 									{qrContent ? (
-										<QrCodeDisplay
-											qrContent={qrContent}
-											supportedPayment={supportedPayment}
-											ref={printRef}
-											name={name}
-										/>
+										<div className="flex aspect-square w-40 items-center justify-center">
+											<QrCodeDisplay
+												qrContent={qrContent}
+												supportedPayment={supportedPayment}
+												ref={printRef}
+												name={name}
+												aria-label={`Perbesarkan kod QR untuk ${capitalizedName}`}
+												onClick={(e) => {
+													e.stopPropagation();
+													setActive(true);
+												}}
+											/>
+										</div>
 									) : (
-										<Image
-											src={qrImage}
-											alt={`QR Code for ${name}`}
-											width={160}
-											height={160}
-											className="rounded-lg h-40 object-cover"
+										<button
+											type="button"
+											className="block aspect-square w-40 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+											aria-label={`Perbesarkan kod QR untuk ${capitalizedName}`}
 											onClick={(e) => {
 												e.stopPropagation();
 												setActive(true);
 											}}
-										/>
+										>
+											<Image
+												src={qrImage}
+												alt={`QR Code for ${name}`}
+												width={160}
+												height={160}
+												className="h-full w-full rounded-md object-cover"
+											/>
+										</button>
 									)}
 								</motion.div>
-								<div className="flex gap-2 mt-auto">
-									{/* Claim Button */}
-									{canClaim && (
-										<Tooltip>
-											<TooltipTrigger asChild>
-												<Button
-													size="icon"
-													variant="ghost"
-													className="hover:bg-primary/10 hover:text-primary transition-colors duration-200 ease-in-out"
-													onClick={(e) => {
-														e.stopPropagation();
-														setShowClaimModal(true);
-													}}
-												>
-													<User className="h-5 w-5" />
-												</Button>
-											</TooltipTrigger>
-											<TooltipContent side="top">
-												<p>Tuntut sebagai milik anda</p>
-											</TooltipContent>
-										</Tooltip>
-									)}
-
+								<div className="mt-auto flex w-full justify-center gap-1.5">
 									{/* Download Button */}
 									<Tooltip>
 										<TooltipTrigger asChild>
 											<Button
-												size="icon"
+												size="sm"
 												variant="ghost"
-												className="hover:bg-primary/10 hover:text-primary transition-colors duration-200 ease-in-out"
+												className="h-11 gap-1.5 px-2.5 hover:bg-primary/10 hover:text-primary transition-colors duration-200 ease-out"
 												disabled={isDownloading}
+												aria-label={`Muat turun kod QR untuk ${capitalizedName}`}
 												onClick={async (e) => {
 													e.stopPropagation();
 													setIsDownloading(true);
@@ -456,39 +808,10 @@ const InstitutionCard = forwardRef<
 														let canvas: HTMLCanvasElement;
 
 														if (qrContent) {
-															// Preserve branded template by rendering /qr/[slug] page
-															const iframe = document.createElement("iframe");
-															iframe.style.visibility = "hidden";
-															iframe.style.position = "fixed";
-															iframe.style.right = "0";
-															iframe.style.bottom = "0";
-															iframe.width = "600px";
-															iframe.height = "600px";
-															iframe.src = `${window.location.origin}/qr/${resolvedSlug}`;
-
-															document.body.appendChild(iframe);
-
-															await new Promise((resolve) => {
-																iframe.onload = () => {
-																	setDownloadStage(
-																		"Memuatkan halaman kod QR...",
-																	);
-																	setTimeout(resolve, 1000);
-																};
-															});
-
-															setDownloadStage("Mengambil gambar kod QR...");
-															canvas = await html2canvas(
-																iframe.contentDocument?.body as HTMLElement,
-																{
-																	useCORS: true,
-																	allowTaint: true,
-																	backgroundColor: "#ffffff",
-																	scale: 2,
-																},
-															);
-
-															document.body.removeChild(iframe);
+															canvas =
+																await renderBrandedQrPageToCanvas(
+																	setDownloadStage,
+																);
 														} else {
 															setDownloadStage("Mengambil gambar kod QR...");
 															const imageEl = createImage({ src: qrImage });
@@ -533,6 +856,7 @@ const InstitutionCard = forwardRef<
 												) : (
 													<DownloadIcon className="h-5 w-5" />
 												)}
+												<span className="text-xs font-medium">Muat turun</span>
 											</Button>
 										</TooltipTrigger>
 										<TooltipContent side="top">
@@ -548,13 +872,14 @@ const InstitutionCard = forwardRef<
 									<DropdownMenu>
 										<DropdownMenuTrigger asChild>
 											<Button
-												size="icon"
+												size="sm"
 												variant="ghost"
-												className="hover:bg-primary/10 hover:text-primary transition-colors duration-200 ease-in-out"
+												className="h-11 gap-1.5 px-2.5 hover:bg-primary/10 hover:text-primary transition-colors duration-200 ease-out"
 												disabled={isDownloading}
+												aria-label={`Kongsi ${capitalizedName}`}
 											>
 												<Share2 className="h-5 w-5" />
-												<span className="sr-only">Kongsi</span>
+												<span className="text-xs font-medium">Kongsi</span>
 											</Button>
 										</DropdownMenuTrigger>
 										<DropdownMenuContent
@@ -564,22 +889,24 @@ const InstitutionCard = forwardRef<
 											<DropdownMenuItem
 												onClick={async () => {
 													if (!qrContent) {
-														copyImg(qrImage);
+														await copyImg(qrImage);
 														return;
 													}
 
-													const element = printRef.current;
-													const canvas = await html2canvas(
-														element as HTMLButtonElement,
-													);
-
-													const data = canvas.toDataURL("image/jpg");
-													const blob = await fetch(data).then((res) =>
-														res.blob(),
-													);
-
-													copyToClipboard(blob);
-													return;
+													const toastId = toast.loading("Menyalin kod QR...");
+													try {
+														const canvas = await renderQrContentToCanvas();
+														await copyCanvasToClipboard(canvas);
+														toast.success(
+															"Berjaya menyalin kod QR ke papan klipboard.",
+															{ id: toastId },
+														);
+													} catch (error) {
+														console.error("Copy QR error:", error);
+														toast.error("Gagal menyalin kod QR.", {
+															id: toastId,
+														});
+													}
 												}}
 											>
 												Salin QR
@@ -598,15 +925,17 @@ const InstitutionCard = forwardRef<
 									<Tooltip>
 										<TooltipTrigger asChild>
 											<Button
-												size="icon"
+												size="sm"
 												variant="ghost"
-												className="hover:bg-primary/10 hover:text-primary transition-colors duration-200 ease-in-out"
+												className="h-11 gap-1.5 px-2.5 hover:bg-primary/10 hover:text-primary transition-colors duration-200 ease-out"
+												aria-label={`Perbesarkan kod QR untuk ${capitalizedName}`}
 												onClick={async (e) => {
 													e.stopPropagation();
 													setActive(true);
 												}}
 											>
 												<Eye className="h-5 w-5" />
+												<span className="text-xs font-medium">QR</span>
 											</Button>
 										</TooltipTrigger>
 										<TooltipContent side="top">
@@ -649,7 +978,7 @@ export const CloseIcon = () => {
 			strokeWidth="2"
 			strokeLinecap="round"
 			strokeLinejoin="round"
-			className="h-4 w-4 text-black dark:text-neutral-200"
+			className="h-4 w-4 text-foreground"
 		>
 			<path stroke="none" d="M0 0h24v24H0z" fill="none" />
 			<path d="M18 6l-12 12" />

@@ -58,8 +58,8 @@ export function CooldownTimer({
 	return (
 		<div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-md text-center">
 			<p className="text-sm font-medium text-amber-800">
-				Anda telah mencapai had 3 sumbangan sehari. Anda boleh menyumbang semula
-				dalam <strong>{formatRemaining(remaining)}</strong>.
+				Anda telah mencapai had 3 submission sehari. Anda boleh menghantar
+				semula dalam <strong>{formatRemaining(remaining)}</strong>.
 			</p>
 		</div>
 	);

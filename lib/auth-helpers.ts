@@ -1,8 +1,8 @@
+import { eq } from "drizzle-orm";
+import { headers } from "next/headers";
 import { auth } from "@/auth";
 import { db } from "@/db";
 import { users } from "@/db/schema";
-import { eq } from "drizzle-orm";
-import { headers } from "next/headers";
 
 export async function requireAdminSession() {
 	const hdrs = await headers();

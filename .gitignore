@@ -20,6 +20,9 @@ yarn.lock
 # production
 /build
 
+# Claude Code (local)
+.claude/
+
 # misc
 .DS_Store
 *.pem

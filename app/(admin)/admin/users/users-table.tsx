@@ -1,10 +1,10 @@
 "use client";
 
-import type { User } from "@/app/(admin)/admin/users/columns";
-import { ReusableDataTable } from "@/components/reusable-data-table";
 import type { Updater } from "@tanstack/react-table";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { User } from "@/app/(admin)/admin/users/columns";
+import { ReusableDataTable } from "@/components/reusable-data-table";
 import { columns } from "./columns";
 
 type UsersData = {

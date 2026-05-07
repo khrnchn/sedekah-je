@@ -3,7 +3,7 @@ import { RamadhanBanner } from "@/components/ramadhan-banner";
 import { Header } from "@/components/shared/header";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getInstitutions } from "@/lib/queries/institutions";
+import { getPublicInstitutionsPage } from "@/lib/queries/institutions";
 import { PageClient } from "./page-client";
 
 type SearchParams = {
@@ -19,9 +19,13 @@ type Props = {
 
 export default async function Home(props: Props) {
 	const searchParams = await props.searchParams;
-	// For initial server-side render, we'll fetch all approved institutions
-	// Client will handle filtering and pagination
-	const institutions = await getInstitutions();
+	const initialResult = await getPublicInstitutionsPage({
+		search: searchParams.search,
+		category: searchParams.category,
+		state: searchParams.state,
+		page: 1,
+		limit: 50,
+	});
 
 	return (
 		<>
@@ -33,7 +37,7 @@ export default async function Home(props: Props) {
 			</Suspense>
 			<Suspense fallback={<HomeLoading />}>
 				<PageClient
-					initialInstitutions={institutions}
+					initialResult={initialResult}
 					initialSearchParams={searchParams}
 				/>
 			</Suspense>
@@ -45,7 +49,7 @@ function HomeLoading() {
 	return (
 		<div className="container mx-auto px-4 py-8">
 			<div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-				{Array.from({ length: 15 }).map((_, idx) => (
+				{Array.from({ length: 24 }).map((_, idx) => (
 					<Card key={idx} className="aspect-square w-full">
 						<Skeleton className="min-h-full min-w-full" />
 					</Card>

@@ -78,11 +78,11 @@ const navigation = {
 
 export default function PageFooter() {
 	return (
-		<footer className="bg-gradient-to-br from-background to-muted/20 border-t border-border/40 mt-16">
+		<footer className="mt-16 border-t border-border/70 bg-background">
 			<h2 id="footer-heading" className="sr-only">
 				Footer
 			</h2>
-			<div className="mx-auto max-w-7xl px-6 py-12 sm:py-16 lg:px-8 lg:py-20">
+			<div className="mx-auto max-w-7xl px-6 py-12 sm:py-14 lg:px-8">
 				<div className="xl:grid xl:grid-cols-3 xl:gap-12">
 					{/* Brand Section */}
 					<div className="space-y-6 xl:col-span-1">
@@ -99,13 +99,15 @@ export default function PageFooter() {
 								<h3 className="text-lg font-bold text-foreground">
 									sedekah.je
 								</h3>
-								<p className="text-xs text-muted-foreground">QR Directory</p>
+								<p className="text-xs text-muted-foreground">
+									Direktori QR DuitNow
+								</p>
 							</div>
 						</div>
 
 						<p className="text-sm leading-6 text-muted-foreground max-w-md">
 							Senarai QR masjid, surau, dan institusi yang dikumpulkan oleh
-							netizen untuk memudahkan sedekah dan sumbangan.
+							komuniti untuk memudahkan sedekah.
 						</p>
 
 						{/* Social Links */}
@@ -115,7 +117,7 @@ export default function PageFooter() {
 									key={item.name}
 									href={item.href}
 									target="_blank"
-									className="group flex items-center justify-center w-10 h-10 rounded-full bg-muted/50 hover:bg-muted transition-colors duration-200"
+									className="group flex h-10 w-10 items-center justify-center rounded-md border bg-card transition-colors duration-200 hover:bg-accent"
 									rel="noreferrer"
 									title={`Follow us on ${item.name}`}
 								>
@@ -229,17 +231,14 @@ export default function PageFooter() {
 				<Separator className="my-8" />
 				<div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
 					<p className="text-xs text-muted-foreground">
-						&copy; {new Date().getFullYear()} Hak Cipta Terpelihara. Dibina
-						dengan{" "}
-						<Heart className="inline h-3 w-3 text-red-500" aria-hidden="true" />{" "}
-						oleh{" "}
+						&copy; {new Date().getFullYear()} Hak Cipta Terpelihara. Dibina oleh{" "}
 						<a
 							href="https://github.com/khrnchn/sedekah-je/graphs/contributors"
 							target="_blank"
 							className="text-primary hover:underline font-medium"
 							rel="noreferrer"
 						>
-							Khairin Chan dan kawan-kawan
+							khairin chan dan komuniti
 						</a>
 						.
 					</p>

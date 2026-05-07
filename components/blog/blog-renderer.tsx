@@ -85,7 +85,7 @@ function renderNode(node: BlogDocumentNode, key: string): ReactNode {
 			return (
 				<blockquote
 					key={key}
-					className="border-l-4 pl-4 italic text-muted-foreground"
+					className="rounded-lg border bg-muted/35 px-4 py-3 italic text-muted-foreground"
 				>
 					{renderChildren(node.content, key)}
 				</blockquote>

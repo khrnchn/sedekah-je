@@ -43,16 +43,16 @@ const userNavItems: NavItem[] = [
 		description: "Tambah institusi baru",
 	},
 	{
-		title: "Carta Penyumbang",
+		title: "Leaderboard",
 		href: "/leaderboard",
 		icon: Trophy,
 		description: "Lihat carta",
 	},
 	{
-		title: "Sumbangan Saya",
+		title: "Submission Saya",
 		href: "/my-contributions",
 		icon: BarChart3,
-		description: "Lihat sumbangan anda",
+		description: "Lihat submission anda",
 	},
 ];
 
@@ -96,8 +96,8 @@ export function UserNav() {
 					{/* Header */}
 					<div className="p-6 border-b">
 						<div className="flex items-center gap-3">
-							<div className="w-10 h-10 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full flex items-center justify-center">
-								<User className="h-5 w-5 text-white" />
+							<div className="flex h-10 w-10 items-center justify-center rounded-md border bg-primary/10">
+								<User className="h-5 w-5 text-primary" />
 							</div>
 							<div>
 								<div className="font-semibold text-sm">
@@ -121,8 +121,8 @@ export function UserNav() {
 									<Link key={item.href} href={item.href}>
 										<div
 											className={cn(
-												"flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground",
-												isActive && "bg-accent text-accent-foreground",
+												"flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-muted hover:text-foreground",
+												isActive && "bg-primary/10 text-primary font-medium",
 											)}
 										>
 											<Icon className="h-4 w-4" />
@@ -145,9 +145,9 @@ export function UserNav() {
 								<Link href="/admin/dashboard">
 									<div
 										className={cn(
-											"flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground",
+											"flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-muted hover:text-foreground",
 											pathname === "/admin/dashboard" &&
-												"bg-accent text-accent-foreground",
+												"bg-primary/10 text-primary font-medium",
 										)}
 									>
 										<Settings className="h-4 w-4" />
@@ -173,8 +173,8 @@ export function UserNav() {
 									<Link key={item.href} href={item.href}>
 										<div
 											className={cn(
-												"flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-accent hover:text-accent-foreground",
-												isActive && "bg-accent text-accent-foreground",
+												"flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-muted hover:text-foreground",
+												isActive && "bg-primary/10 text-primary font-medium",
 											)}
 										>
 											<Icon className="h-4 w-4" />
@@ -228,8 +228,8 @@ export function UserNavDesktop() {
 					<Link key={item.href} href={item.href}>
 						<div
 							className={cn(
-								"flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
-								isActive && "bg-accent text-accent-foreground",
+								"flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-muted hover:text-foreground",
+								isActive && "bg-primary/10 text-primary font-medium",
 							)}
 						>
 							<Icon className="h-4 w-4" />
@@ -248,9 +248,9 @@ export function UserNavDesktop() {
 				<Link href="/admin/dashboard">
 					<div
 						className={cn(
-							"flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
+							"flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-muted hover:text-foreground",
 							pathname === "/admin/dashboard" &&
-								"bg-accent text-accent-foreground",
+								"bg-primary/10 text-primary font-medium",
 						)}
 					>
 						<Settings className="h-4 w-4" />

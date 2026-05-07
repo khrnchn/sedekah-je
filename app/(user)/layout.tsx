@@ -1,6 +1,6 @@
-import { auth } from "@/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+import { auth } from "@/auth";
 
 interface UserLayoutProps {
 	children: React.ReactNode;

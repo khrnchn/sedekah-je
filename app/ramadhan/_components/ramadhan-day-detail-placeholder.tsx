@@ -1,11 +1,11 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
 import { CalendarDays } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
 export function RamadhanDayDetailPlaceholder() {
 	return (
-		<Card className="mt-4 border-2 border-primary/20 bg-accent/20">
+		<Card className="mt-4 border-primary/15 bg-primary/5">
 			<CardContent className="p-6">
 				<div className="flex flex-col items-center justify-center gap-4 py-4 text-center">
 					<CalendarDays

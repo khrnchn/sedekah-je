@@ -26,7 +26,7 @@ export function DailyPageviewsChart({ data }: DailyPageviewsChartProps) {
 			config={{
 				views: {
 					label: "Pageviews",
-					color: "hsl(var(--chart-2))",
+					color: "oklch(var(--chart-2))",
 				},
 			}}
 			className="aspect-auto h-[210px] w-full min-[400px]:h-[240px] sm:h-[260px] md:h-[280px]"

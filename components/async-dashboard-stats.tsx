@@ -1,5 +1,5 @@
-import { Skeleton } from "@/components/ui/skeleton";
 import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Mock data fetching functions (replace with actual API calls)
 async function getTotalInstitutions() {

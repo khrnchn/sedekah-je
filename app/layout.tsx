@@ -13,8 +13,8 @@ import { cn } from "@/lib/utils";
 import "./globals.css";
 
 const poppins = Poppins({ weight: ["400", "700", "900"], subsets: ["latin"] });
-const PWA_THEME_COLOR = "#0a8532";
-const PWA_BACKGROUND_COLOR = "#fffaf7";
+const PWA_THEME_COLOR = "#007d70";
+const PWA_BACKGROUND_COLOR = "#f2fafb";
 
 export const metadata: Metadata = {
 	title: {
@@ -175,16 +175,6 @@ export default async function RootLayout({
 					defer
 					src="https://umami-production-8fc8.up.railway.app/script.js"
 					data-website-id="fc2662e6-e375-416a-9ff2-44d7f8e2b343"
-				/>
-				<Script
-					src="https://app.sidegent.com/embed-launcher.js"
-					data-embed-id="yr9BG6Xgts6pZIzlOKo2kw"
-				/>
-				<Script
-					id="sidegent-position"
-					dangerouslySetInnerHTML={{
-						__html: `(function(){function r(n){n.style.setProperty("bottom","72px","important");n.style.setProperty("transform","scale(0.8)","important");n.style.setProperty("transform-origin","bottom right","important")}function rc(n){n.style.setProperty("bottom","140px","important");n.style.setProperty("transform","scale(0.9)","important");n.style.setProperty("transform-origin","bottom right","important")}var o=new MutationObserver(function(){var l=document.getElementById("da-embed-launcher");var c=document.getElementById("da-embed-container");if(l)r(l);if(c)rc(c)});o.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["style"]})})()`,
-					}}
 				/>
 			</head>
 			<body

@@ -1,14 +1,12 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
-import QrCodeDisplay from "@/components/institution/qr-code-display";
-import Share from "@/components/share";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatDateBM } from "@/lib/ramadhan";
 import { cn } from "@/lib/utils";
 import type { RamadhanCampaignDay } from "../_lib/queries";
+import { buildRamadhanShareMessage } from "../_lib/share-message";
+import { RamadhanCampaignCtaRow } from "./ramadhan-campaign-cta-row";
+import { RamadhanQrMedia } from "./ramadhan-qr-media";
 
 type RamadhanDayDetailPanelProps = {
 	day: RamadhanCampaignDay;
@@ -21,10 +19,16 @@ export function RamadhanDayDetailPanel({
 	dayNumber,
 	baseUrl,
 }: RamadhanDayDetailPanelProps) {
-	const customMessage = `QR Hari ke-${dayNumber}/30 Ramadan! 🌙\n\n${day.institutionName} (${day.institutionState})\n\n${baseUrl}/${day.institutionCategory}/${day.institutionSlug}\n\n#SedekahJe #30Hari30QR`;
+	const institutionUrl = `${baseUrl}/${day.institutionCategory}/${day.institutionSlug}`;
+	const customMessage = buildRamadhanShareMessage({
+		headline: `QR Hari ke-${dayNumber}/30 Ramadan`,
+		institutionName: day.institutionName,
+		institutionState: day.institutionState,
+		url: institutionUrl,
+	});
 
 	return (
-		<Card className="mt-4 border-2 border-primary/20 bg-accent/20">
+		<Card className="mt-4 border-primary/15 bg-primary/5">
 			<CardContent className="p-6">
 				<div className="space-y-4">
 					<div className="flex items-start gap-4">
@@ -37,51 +41,25 @@ export function RamadhanDayDetailPanel({
 								{day.institutionCity}, {day.institutionState}
 							</p>
 						</div>
-						<div
-							className={cn(
+						<RamadhanQrMedia
+							day={day}
+							size={110}
+							imageClassName="rounded object-contain"
+							wrapperClassName={cn(
 								"flex-shrink-0 flex items-center justify-center",
 								"w-[120px] h-[120px] rounded-lg border border-border bg-background p-1",
 							)}
-						>
-							{day.qrContent ? (
-								<QrCodeDisplay
-									qrContent={day.qrContent}
-									supportedPayment={
-										(day.supportedPayment ?? undefined) as
-											| ("duitnow" | "tng" | "boost" | "toyyibpay")[]
-											| undefined
-									}
-									size={110}
-								/>
-							) : day.qrImage ? (
-								<Image
-									src={day.qrImage}
-									alt={`QR ${day.institutionName}`}
-									width={110}
-									height={110}
-									className="rounded object-contain"
-								/>
-							) : null}
-						</div>
+						/>
 					</div>
 					{day.caption && (
 						<p className="text-sm text-muted-foreground">{day.caption}</p>
 					)}
-					<div className="flex flex-wrap gap-2">
-						<Button asChild size="default">
-							<Link href={`/${day.institutionCategory}/${day.institutionSlug}`}>
-								Lihat institusi & derma
-							</Link>
-						</Button>
-						<Share
-							data={{
-								category: day.institutionCategory,
-								name: day.institutionName,
-								slug: day.institutionSlug,
-								customMessage,
-							}}
-						/>
-					</div>
+					<RamadhanCampaignCtaRow
+						institutionCategory={day.institutionCategory}
+						institutionSlug={day.institutionSlug}
+						institutionName={day.institutionName}
+						customMessage={customMessage}
+					/>
 				</div>
 			</CardContent>
 		</Card>

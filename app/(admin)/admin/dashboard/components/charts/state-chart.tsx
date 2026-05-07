@@ -1,11 +1,6 @@
 "use client";
 
 import {
-	ChartContainer,
-	ChartTooltip,
-	ChartTooltipContent,
-} from "@/components/ui/chart";
-import {
 	Bar,
 	BarChart,
 	Cell,
@@ -13,6 +8,11 @@ import {
 	XAxis,
 	YAxis,
 } from "recharts";
+import {
+	ChartContainer,
+	ChartTooltip,
+	ChartTooltipContent,
+} from "@/components/ui/chart";
 
 const STATE_COLORS = [
 	"#10b981",
@@ -47,7 +47,7 @@ export function StateChart({ data }: StateChartProps) {
 			config={{
 				count: {
 					label: "Count",
-					color: "hsl(var(--chart-2))",
+					color: "oklch(var(--chart-2))",
 				},
 			}}
 		>
@@ -62,7 +62,7 @@ export function StateChart({ data }: StateChartProps) {
 					/>
 					<YAxis />
 					<Bar dataKey="count" radius={[4, 4, 0, 0]}>
-						{data.map((entry, index) => (
+						{data.map((_entry, index) => (
 							<Cell
 								key={`cell-${index}`}
 								fill={STATE_COLORS[index % STATE_COLORS.length]}

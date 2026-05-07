@@ -31,7 +31,11 @@ const PageHeader = ({
 				</BreadcrumbList>
 			</Breadcrumb>
 
-			{showHeader && <h2 className="text-lg font-bold pt-4">{pageTitle}</h2>}
+			{showHeader && (
+				<h2 className="pt-4 text-lg font-semibold text-foreground">
+					{pageTitle}
+				</h2>
+			)}
 		</div>
 	);
 };

@@ -1,10 +1,10 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { calculateSunsetTime } from "@/lib/utils/sunset";
-import { type Location, getUserLocation } from "@/lib/utils/timezone";
 import moment from "moment-hijri";
 import { useEffect, useMemo, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { calculateSunsetTime } from "@/lib/utils/sunset";
+import { getUserLocation, type Location } from "@/lib/utils/timezone";
 
 type RamadanStatus = {
 	isRamadan: boolean;
@@ -150,24 +150,32 @@ export default function RamadhanCountdown() {
 
 	// Show countdown before Ramadan
 	return (
-		<Card className="relative overflow-hidden bg-gradient-to-r from-emerald-400 to-teal-800 text-white shadow-lg">
-			<div className="absolute inset-0 opacity-30 ramadhan-bg" />
-			<CardContent className="relative p-4 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
-				<span className="text-lg sm:text-xl">🌙</span>
-				<span className="font-semibold text-sm sm:text-base">
+		<Card className="relative overflow-hidden border-accent/40 bg-accent/15">
+			<div className="absolute inset-0 opacity-20 ramadhan-bg" />
+			<CardContent className="relative p-4 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6">
+				<span className="text-sm text-muted-foreground">
 					Ramadan bermula dalam:
 				</span>
-				<div className="flex items-center gap-2 sm:gap-4">
+				<div className="flex items-center gap-4 sm:gap-6">
 					{status.days > 0 && (
-						<span className="font-bold text-sm sm:text-base">
-							{status.days} {status.days === 1 ? "hari" : "hari"}
+						<span className="flex items-baseline gap-1">
+							<span className="text-2xl font-bold tabular-nums text-foreground sm:text-3xl">
+								{status.days}
+							</span>
+							<span className="text-xs text-muted-foreground">hari</span>
 						</span>
 					)}
-					<span className="font-bold text-sm sm:text-base">
-						{status.hours} {status.hours === 1 ? "jam" : "jam"}
+					<span className="flex items-baseline gap-1">
+						<span className="text-2xl font-bold tabular-nums text-foreground sm:text-3xl">
+							{status.hours}
+						</span>
+						<span className="text-xs text-muted-foreground">jam</span>
 					</span>
-					<span className="font-bold text-sm sm:text-base">
-						{status.minutes} {status.minutes === 1 ? "minit" : "minit"}
+					<span className="flex items-baseline gap-1">
+						<span className="text-2xl font-bold tabular-nums text-foreground sm:text-3xl">
+							{status.minutes}
+						</span>
+						<span className="text-xs text-muted-foreground">minit</span>
 					</span>
 				</div>
 			</CardContent>

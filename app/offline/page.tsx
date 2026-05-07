@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 export default function OfflinePage() {
 	const router = useRouter();
@@ -14,13 +15,9 @@ export default function OfflinePage() {
 				<p className="text-muted-foreground">
 					Tiada sambungan internet. Sila semak sambungan anda dan cuba lagi.
 				</p>
-				<button
-					type="button"
-					onClick={() => router.refresh()}
-					className="rounded-md bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90"
-				>
+				<Button type="button" onClick={() => router.refresh()}>
 					Cuba Lagi
-				</button>
+				</Button>
 			</div>
 		</div>
 	);

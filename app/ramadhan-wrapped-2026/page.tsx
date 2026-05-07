@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { unstable_cache } from "next/cache";
+import Link from "next/link";
 import { Header } from "@/components/shared/header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -109,23 +110,6 @@ export default async function RamadhanWrappedPage({ searchParams }: Props) {
 						)}
 					>
 						<div
-							className={cn(
-								"pointer-events-none absolute -right-12 -top-12 size-[12rem]",
-								"rounded-full bg-primary/[0.08] blur-3xl dark:bg-primary/[0.12]",
-								"sm:-right-20 sm:-top-20 sm:size-[16rem]",
-								"md:-right-24 md:-top-24 md:size-[20rem]",
-							)}
-							aria-hidden
-						/>
-						<div
-							className={cn(
-								"pointer-events-none absolute -bottom-8 -left-8 size-[8rem]",
-								"rounded-full bg-primary/[0.04] blur-3xl dark:bg-primary/[0.06]",
-								"sm:size-[10rem]",
-							)}
-							aria-hidden
-						/>
-						<div
 							className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 opacity-[0.03] dark:opacity-[0.06] sm:right-8 md:right-12"
 							aria-hidden
 						>
@@ -151,18 +135,18 @@ export default async function RamadhanWrappedPage({ searchParams }: Props) {
 									Sedekah Je
 								</span>
 								<span className="text-[0.65rem] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-									Live stats
+									Data langsung
 								</span>
 							</div>
 							<h1 className="mt-4 font-heading text-3xl font-bold tracking-tight text-foreground sm:mt-5 sm:text-4xl md:text-5xl">
 								Ramadhan Wrapped {RAMADHAN_WRAPPED_CONFIG.year}
 							</h1>
 							<p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:mt-4 sm:text-base">
-								Community snapshot for {range.label}. Figures are computed live
-								from the Sedekah Je database.
+								Ringkasan komuniti untuk {range.label}. Angka dikira langsung
+								dari pangkalan data Sedekah Je.
 							</p>
 							<p className="mt-4 text-xs text-muted-foreground/80">
-								Last updated:{" "}
+								Dikemaskini:{" "}
 								<span className="tabular-nums text-foreground/70">
 									{new Date(stats.generatedAt).toLocaleString("en-GB", {
 										timeZone: range.timezone,
@@ -171,114 +155,116 @@ export default async function RamadhanWrappedPage({ searchParams }: Props) {
 							</p>
 							{!posterMode && (
 								<Button asChild variant="outline" size="sm" className="mt-4">
-									<a href="/ramadhan-wrapped-2026?poster=1">View poster</a>
+									<Link href="/ramadhan-wrapped-2026?poster=1">
+										Lihat poster
+									</Link>
 								</Button>
 							)}
 						</div>
 					</header>
 
-					<SectionLabel>Overview</SectionLabel>
+					<SectionLabel>Gambaran Keseluruhan</SectionLabel>
 					<section className="grid grid-cols-1 gap-2.5 sm:grid-cols-3 sm:gap-4">
 						<StatCard
-							title="New users"
+							title="Pengguna baharu"
 							value={formatNumber(kpis.newUsers)}
-							description="Accounts registered in the period"
+							description="Akaun baharu dalam tempoh"
 							size="hero"
 						/>
 						<StatCard
-							title="Institutions submitted"
+							title="Institusi dihantar"
 							value={formatNumber(kpis.totalSubmissions)}
-							description="All submissions (any status)"
+							description="Semua penyerahan dalam tempoh"
 							size="hero"
 						/>
 						<StatCard
-							title="Unique contributors"
+							title="Penyumbang aktif"
 							value={formatNumber(kpis.uniqueContributors)}
-							description="Distinct contributors in the window"
+							description="Penyumbang berbeza dalam tempoh"
 							size="hero"
 						/>
 					</section>
 
 					{umamiStats && (
 						<>
-							<SectionLabel className="mt-6 sm:mt-8">Site Traffic</SectionLabel>
+							<SectionLabel className="mt-6 sm:mt-8">Trafik Laman</SectionLabel>
 							<section className="grid grid-cols-1 gap-2.5 sm:grid-cols-3 sm:gap-4">
 								<StatCard
-									title="Total pageviews"
+									title="Jumlah paparan"
 									value={formatNumber(umamiStats.kpis.totalPageviews)}
-									description="All page loads during the campaign"
+									description="Semua muatan halaman sepanjang kempen"
 									size="hero"
 								/>
 								<StatCard
-									title="Unique visitors"
+									title="Pelawat unik"
 									value={formatNumber(umamiStats.kpis.uniqueVisits)}
-									description="Distinct visits in the window"
+									description="Lawatan berbeza dalam tempoh"
 									size="hero"
 								/>
 								<StatCard
-									title="Peak day"
+									title="Hari puncak"
 									value={formatNumber(umamiStats.kpis.peakDayViews)}
-									description={`${umamiStats.kpis.peakDayLabel} — highest single-day traffic`}
+									description={`${umamiStats.kpis.peakDayLabel} — trafik tertinggi satu hari`}
 									size="hero"
 								/>
 							</section>
 						</>
 					)}
 
-					<SectionLabel className="mt-6 sm:mt-8">Status breakdown</SectionLabel>
+					<SectionLabel className="mt-6 sm:mt-8">Pecahan Status</SectionLabel>
 					<section className="grid grid-cols-1 gap-2.5 sm:grid-cols-3 sm:gap-4">
 						<StatCard
 							variant="success"
-							title="Approved"
+							title="Diluluskan"
 							value={formatNumber(kpis.approvedSubmissions)}
-							description="Submissions marked approved"
+							description="Penyerahan diluluskan"
 						/>
 						<StatCard
 							variant="warning"
-							title="Pending"
+							title="Menunggu"
 							value={formatNumber(kpis.pendingSubmissions)}
-							description="Submissions awaiting review"
+							description="Penyerahan menunggu semakan"
 						/>
 						<StatCard
 							variant="destructive"
-							title="Rejected"
+							title="Ditolak"
 							value={formatNumber(kpis.rejectedSubmissions)}
-							description="Submissions marked rejected"
+							description="Penyerahan ditolak"
 						/>
 					</section>
 
-					<SectionLabel className="mt-6 sm:mt-8">Campaign</SectionLabel>
+					<SectionLabel className="mt-6 sm:mt-8">Kempen</SectionLabel>
 					<section className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-4">
 						<StatCard
-							title="Approved in window"
+							title="Diluluskan dalam tempoh"
 							value={formatNumber(kpis.approvedInWindow)}
-							description="Reviewed and approved during the campaign range"
+							description="Disemak dan diluluskan dalam tempoh kempen"
 						/>
 						<StatCard
-							title="Busiest day"
+							title="Hari paling sibuk"
 							value={formatNumber(strongestDay?.submissions ?? 0)}
-							description={`${strongestDay?.label ?? "-"} — most submissions in a single day`}
+							description={`${strongestDay?.label ?? "-"} — penyerahan terbanyak satu hari`}
 						/>
 					</section>
 
-					<SectionLabel className="mt-6 sm:mt-8">Leaderboard</SectionLabel>
+					<SectionLabel className="mt-6 sm:mt-8">Papan Pemimpin</SectionLabel>
 					<section className="grid grid-cols-1 gap-2.5 sm:gap-4 lg:grid-cols-3">
 						<RankingCard
-							title="Top 5 contributors"
+							title="5 Penyumbang Teratas"
 							items={rankings.topContributors.map((row) => ({
 								label: row.name,
 								value: formatNumber(row.submissions),
 							}))}
 						/>
 						<RankingCard
-							title="Top states"
+							title="Negeri Teratas"
 							items={rankings.topStates.map((row) => ({
 								label: row.state,
 								value: formatNumber(row.submissions),
 							}))}
 						/>
 						<RankingCard
-							title="Top categories"
+							title="Kategori Teratas"
 							items={rankings.topCategories.map((row) => ({
 								label: row.category,
 								value: formatNumber(row.submissions),
@@ -289,18 +275,18 @@ export default async function RamadhanWrappedPage({ searchParams }: Props) {
 					{umamiStats && (
 						<>
 							<SectionLabel className="mt-6 sm:mt-8">
-								Traffic Insights
+								Maklumat Trafik
 							</SectionLabel>
 							<section className="grid grid-cols-1 gap-2.5 sm:gap-4 lg:grid-cols-2">
 								<RankingCard
-									title="Top pages"
+									title="Halaman Teratas"
 									items={umamiStats.rankings.topPages.map((row) => ({
 										label: row.path,
 										value: formatNumber(row.views),
 									}))}
 								/>
 								<RankingCard
-									title="Traffic sources"
+									title="Sumber Trafik"
 									items={umamiStats.rankings.topReferrers.map((row) => ({
 										label: row.domain,
 										value: formatNumber(row.views),
@@ -310,16 +296,16 @@ export default async function RamadhanWrappedPage({ searchParams }: Props) {
 						</>
 					)}
 
-					<SectionLabel className="mt-6 sm:mt-8">Activity</SectionLabel>
+					<SectionLabel className="mt-6 sm:mt-8">Aktiviti</SectionLabel>
 					<section className="grid grid-cols-1 gap-2.5 sm:gap-4 lg:grid-cols-2">
 						<Card className="rounded-xl border-border/60 shadow-sm sm:rounded-2xl dark:border-border/80 dark:shadow-none">
 							<CardContent className="p-4 pt-5 sm:p-5 sm:pt-6">
 								<div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
 									<h2 className="font-heading text-base font-semibold tracking-tight text-foreground sm:text-lg">
-										Daily trend
+										Trend Harian
 									</h2>
 									<p className="text-xs text-muted-foreground">
-										Submissions per day
+										Penyerahan sehari
 									</p>
 								</div>
 								<div className="mt-4">
@@ -334,12 +320,12 @@ export default async function RamadhanWrappedPage({ searchParams }: Props) {
 						<Card className="rounded-xl border-border/60 shadow-sm sm:rounded-2xl dark:border-border/80 dark:shadow-none">
 							<CardContent className="p-4 pt-5 sm:p-5 sm:pt-6">
 								<h2 className="font-heading text-base font-semibold tracking-tight text-foreground sm:text-lg">
-									Highlight
+									Sorotan
 								</h2>
 								<div className="mt-5 space-y-4">
 									<div className="rounded-xl border border-primary/20 bg-primary/[0.04] px-4 py-3 dark:bg-primary/[0.06]">
 										<p className="text-[0.65rem] font-semibold uppercase tracking-widest text-muted-foreground">
-											Busiest day
+											Hari paling sibuk
 										</p>
 										<p className="mt-1.5 flex items-baseline gap-2 text-sm leading-relaxed">
 											<span className="font-semibold text-foreground">
@@ -349,22 +335,22 @@ export default async function RamadhanWrappedPage({ searchParams }: Props) {
 											<span className="text-lg font-bold tabular-nums text-primary sm:text-xl">
 												{formatNumber(strongestDay?.submissions ?? 0)}
 											</span>
-											<span className="text-muted-foreground">submissions</span>
+											<span className="text-muted-foreground">penyerahan</span>
 										</p>
 									</div>
 									<p className="text-pretty text-[0.8125rem] leading-relaxed text-muted-foreground sm:text-sm">
-										Campaign days without content:{" "}
+										Hari kempen tanpa kandungan:{" "}
 										<span className="font-medium tabular-nums text-foreground">
 											{campaignProgress.missingDays.length}
 										</span>{" "}
 										<span className="break-words text-muted-foreground/90">
-											({campaignProgress.missingDays.join(", ") || "none"})
+											({campaignProgress.missingDays.join(", ") || "tiada"})
 										</span>
 									</p>
 								</div>
 								{!umamiStats && (
 									<p className="mt-6 border-t border-border/50 pt-4 text-xs text-muted-foreground">
-										Umami analytics are not available.
+										Analitik Umami tidak tersedia.
 									</p>
 								)}
 							</CardContent>
@@ -374,17 +360,17 @@ export default async function RamadhanWrappedPage({ searchParams }: Props) {
 					{umamiStats && (
 						<>
 							<SectionLabel className="mt-6 sm:mt-8">
-								Daily Pageviews
+								Paparan Harian
 							</SectionLabel>
 							<section>
 								<Card className="rounded-xl border-border/60 shadow-sm sm:rounded-2xl dark:border-border/80 dark:shadow-none">
 									<CardContent className="p-4 pt-5 sm:p-5 sm:pt-6">
 										<div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
 											<h2 className="font-heading text-base font-semibold tracking-tight text-foreground sm:text-lg">
-												Pageviews trend
+												Trend paparan halaman
 											</h2>
 											<p className="text-xs text-muted-foreground">
-												Daily pageviews during the campaign
+												Paparan harian sepanjang kempen
 											</p>
 										</div>
 										<div className="mt-4">
@@ -399,17 +385,17 @@ export default async function RamadhanWrappedPage({ searchParams }: Props) {
 								</Card>
 							</section>
 
-							<SectionLabel className="mt-6 sm:mt-8">Audience</SectionLabel>
+							<SectionLabel className="mt-6 sm:mt-8">Audiens</SectionLabel>
 							<section className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-4">
 								<StatCard
-									title="Mobile traffic"
+									title="Trafik mudah alih"
 									value={`${umamiStats.kpis.mobilePercent}%`}
-									description="Visitors on mobile devices"
+									description="Pelawat menggunakan peranti mudah alih"
 								/>
 								<StatCard
-									title="Peak hour"
+									title="Waktu puncak"
 									value={`${umamiStats.kpis.peakHour}:00`}
-									description={`Most active hour during Ramadhan (${formatNumber(umamiStats.kpis.peakHourViews)} views)`}
+									description={`Waktu paling aktif semasa Ramadhan (${formatNumber(umamiStats.kpis.peakHourViews)} paparan)`}
 								/>
 							</section>
 						</>
@@ -417,22 +403,24 @@ export default async function RamadhanWrappedPage({ searchParams }: Props) {
 
 					{githubStats && (
 						<>
-							<SectionLabel className="mt-6 sm:mt-8">Open Source</SectionLabel>
+							<SectionLabel className="mt-6 sm:mt-8">
+								Sumber Terbuka
+							</SectionLabel>
 							<section className="grid grid-cols-1 gap-2.5 sm:grid-cols-3 sm:gap-4">
 								<StatCard
-									title="Commits"
+									title="Komit"
 									value={formatNumber(githubStats.commits)}
-									description="Code commits during the campaign"
+									description="Komit kod sepanjang kempen"
 								/>
 								<StatCard
-									title="Pull requests merged"
+									title="Pull request digabung"
 									value={formatNumber(githubStats.mergedPRs)}
-									description={`${formatNumber(githubStats.pullRequests)} PRs total`}
+									description={`${formatNumber(githubStats.pullRequests)} PR keseluruhan`}
 								/>
 								<StatCard
-									title="Issues opened"
+									title="Isu dibuka"
 									value={formatNumber(githubStats.issues)}
-									description="Bug reports and feature requests"
+									description="Laporan pepijat dan permintaan ciri"
 								/>
 							</section>
 						</>
@@ -441,13 +429,13 @@ export default async function RamadhanWrappedPage({ searchParams }: Props) {
 					{!posterMode && (
 						<footer className="mt-6 rounded-xl border border-dashed border-border/60 bg-muted/25 px-3 py-3 text-sm text-muted-foreground sm:mt-8 sm:rounded-2xl sm:px-4 dark:border-border/80 dark:bg-muted/15">
 							<span className="block sm:inline">
-								Tip: use{" "}
+								Tip: gunakan{" "}
 								<code className="mt-1 inline-block max-w-full break-all rounded-md border border-border bg-background px-1.5 py-0.5 font-mono text-[0.6875rem] text-foreground sm:mt-0 sm:inline sm:max-w-none sm:break-normal sm:text-xs">
 									/ramadhan-wrapped-2026?poster=1
 								</code>{" "}
 							</span>
 							<span className="block sm:inline">
-								for a poster-friendly screenshot layout.
+								untuk susun atur poster ramah tangkap skrin.
 							</span>
 						</footer>
 					)}
@@ -481,28 +469,12 @@ type StatVariant =
 	| "destructive"
 	| "celebration";
 
-const VARIANT_STYLES: Record<
-	StatVariant,
-	{ bar: string; value: string; card?: string }
-> = {
-	default: {
-		bar: "h-1 from-primary/0 via-primary/45 to-primary/0 opacity-80 dark:via-primary/50",
-		value: "text-foreground",
-	},
-	success: {
-		bar: "h-1 from-emerald-500/0 via-emerald-500/60 to-emerald-500/0 dark:via-emerald-400/60",
-		value: "text-emerald-700 dark:text-emerald-400",
-	},
-	warning: {
-		bar: "h-1 from-amber-500/0 via-amber-500/60 to-amber-500/0 dark:via-amber-400/60",
-		value: "text-amber-700 dark:text-amber-400",
-	},
-	destructive: {
-		bar: "h-1 from-red-500/0 via-red-500/40 to-red-500/0 dark:via-red-400/40",
-		value: "text-red-600/80 dark:text-red-400/80",
-	},
+const VARIANT_STYLES: Record<StatVariant, { value: string; card?: string }> = {
+	default: { value: "text-foreground" },
+	success: { value: "text-emerald-700 dark:text-emerald-400" },
+	warning: { value: "text-amber-700 dark:text-amber-400" },
+	destructive: { value: "text-red-600/80 dark:text-red-400/80" },
 	celebration: {
-		bar: "h-1.5 from-primary/0 via-primary/70 to-primary/0 dark:via-primary/80",
 		value: "text-primary",
 		card: "border-primary/20 dark:border-primary/30",
 	},
@@ -528,17 +500,13 @@ function StatCard({
 	return (
 		<Card
 			className={cn(
-				"group relative overflow-hidden rounded-xl border-border/60 shadow-sm",
+				"rounded-xl border-border/60 shadow-sm",
 				"sm:rounded-2xl",
 				"dark:border-border/80 dark:shadow-none",
 				styles.card,
 				className,
 			)}
 		>
-			<div
-				className={cn("absolute inset-x-0 top-0 bg-gradient-to-r", styles.bar)}
-				aria-hidden
-			/>
 			<CardContent className="p-4 pt-5 sm:p-5 sm:pt-6">
 				<p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
 					{title}

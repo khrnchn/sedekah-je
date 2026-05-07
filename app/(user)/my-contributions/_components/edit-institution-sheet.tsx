@@ -1,5 +1,14 @@
 "use client";
 
+import {
+	lazy,
+	Suspense,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from "react";
+import { toast } from "sonner";
 import { updateRejectedInstitution } from "@/app/(user)/my-contributions/_lib/actions";
 import type { InstitutionForEdit } from "@/app/(user)/my-contributions/_lib/queries";
 import { Button } from "@/components/ui/button";
@@ -13,15 +22,6 @@ import {
 	SheetTitle,
 } from "@/components/ui/sheet";
 import { Spinner } from "@/components/ui/spinner";
-import {
-	Suspense,
-	lazy,
-	useCallback,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
-import { toast } from "sonner";
 
 const QRExtractionFeature = lazy(
 	() => import("@/app/(user)/contribute/_components/qr-extraction-feature"),
@@ -47,7 +47,7 @@ export function EditInstitutionSheet({
 	const [qrContent, setQrContent] = useState<string | null>(
 		institution?.qrContent ?? null,
 	);
-	const [qrStatus, setQrStatus] = useState({
+	const [, setQrStatus] = useState({
 		qrExtracting: false,
 		qrExtractionFailed: false,
 		hasAttemptedExtraction: false,
@@ -100,7 +100,7 @@ export function EditInstitutionSheet({
 
 			if (result.status === "success") {
 				toast.success("Berjaya dikemaskini!", {
-					description: "Sumbangan anda telah dihantar semula untuk disemak.",
+					description: "Submission anda telah dihantar semula untuk disemak.",
 				});
 				onOpenChange(false);
 				onSuccess?.();
@@ -127,7 +127,7 @@ export function EditInstitutionSheet({
 		<Sheet open={open} onOpenChange={onOpenChange}>
 			<SheetContent side="bottom" className="max-h-[90vh] overflow-y-auto">
 				<SheetHeader>
-					<SheetTitle>Edit Sumbangan Ditolak</SheetTitle>
+					<SheetTitle>Edit Submission Ditolak</SheetTitle>
 					<SheetDescription>
 						{isLoading
 							? "Memuatkan maklumat institusi..."

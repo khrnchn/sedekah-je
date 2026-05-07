@@ -1,10 +1,10 @@
 "use server";
 
+import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { institutions, ramadhanCampaigns } from "@/db/schema";
 import { requireAdminSession } from "@/lib/auth-helpers";
 import { getInstitutions } from "@/lib/queries/institutions";
-import { eq } from "drizzle-orm";
 
 export type AdminCampaignDay = {
 	dayNumber: number;

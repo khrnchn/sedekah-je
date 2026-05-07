@@ -1,6 +1,7 @@
 import { QRCodeSVG } from "qrcode.react";
 import type { PaymentOption } from "@/app/types/institutions";
 import SedekahjeLogo from "@/components/sedekahje-logo";
+import { paymentBrands } from "@/lib/payment-brands";
 import { getInstitutionBySlug } from "@/lib/queries/institutions";
 import { cn } from "@/lib/utils";
 
@@ -11,25 +12,6 @@ type Props = {
 		compact?: string;
 	}>;
 };
-
-const paymentTheme = {
-	duitnow: {
-		color: "#ED2C66",
-		label: "DuitNow",
-	},
-	boost: {
-		color: "#EE2E24",
-		label: "Boost",
-	},
-	tng: {
-		color: "#015ABF",
-		label: "Touch 'n Go",
-	},
-	toyyibpay: {
-		color: "#00847F",
-		label: "ToyyibPay",
-	},
-} satisfies Record<PaymentOption, { color: string; label: string }>;
 
 export default async function EmbedPage(props: Props) {
 	const [params, searchParams] = await Promise.all([
@@ -51,14 +33,14 @@ export default async function EmbedPage(props: Props) {
 	const payment =
 		(institution.supportedPayment?.[0] as PaymentOption | undefined) ??
 		"duitnow";
-	const accent = paymentTheme[payment] ?? paymentTheme.duitnow;
+	const accent = paymentBrands[payment] ?? paymentBrands.duitnow;
 	const qrSize = isCompact ? 180 : 240;
 
 	return (
 		<main
 			className={cn(
-				"flex min-h-screen items-center justify-center p-4",
-				isDark ? "bg-zinc-950 text-white" : "bg-white text-zinc-950",
+				"flex min-h-screen items-center justify-center p-4 bg-background text-foreground",
+				isDark && "dark",
 			)}
 		>
 			<section
@@ -78,6 +60,7 @@ export default async function EmbedPage(props: Props) {
 						backgroundColor: accent.color,
 					}}
 				>
+					{/* bg-white is intentional: QR scanners require a white background */}
 					<div className="rounded bg-white p-3">
 						<QRCodeSVG
 							value={institution.qrContent}
@@ -92,25 +75,13 @@ export default async function EmbedPage(props: Props) {
 					<h1 className="text-balance text-base font-semibold leading-snug">
 						{institution.name}
 					</h1>
-					<p
-						className={cn(
-							"text-xs",
-							isDark ? "text-zinc-300" : "text-zinc-600",
-						)}
-					>
+					<p className="text-xs text-muted-foreground">
 						{institution.city}, {institution.state} · {accent.label}
 					</p>
 				</div>
 
-				<p
-					className={cn(
-						"rounded-full border px-3 py-1 text-xs font-medium",
-						isDark
-							? "border-zinc-700 text-zinc-200"
-							: "border-zinc-200 text-zinc-700",
-					)}
-				>
-					Verified by sedekah.je
+				<p className="rounded-md border border-primary/30 bg-primary/8 px-3 py-1 text-xs font-medium text-primary">
+					Disahkan oleh sedekah.je
 				</p>
 			</section>
 		</main>

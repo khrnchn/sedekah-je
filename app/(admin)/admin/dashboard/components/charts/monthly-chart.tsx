@@ -1,11 +1,11 @@
 "use client";
 
+import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 import {
 	ChartContainer,
 	ChartTooltip,
 	ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Line, LineChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
 
 interface MonthlyData {
 	month: string;
@@ -25,15 +25,15 @@ export function MonthlyChart({ data }: MonthlyChartProps) {
 			config={{
 				total: {
 					label: "Total",
-					color: "hsl(var(--chart-1))",
+					color: "oklch(var(--chart-1))",
 				},
 				approved: {
 					label: "Approved",
-					color: "hsl(var(--chart-2))",
+					color: "oklch(var(--chart-2))",
 				},
 				pending: {
 					label: "Pending",
-					color: "hsl(var(--chart-3))",
+					color: "oklch(var(--chart-3))",
 				},
 			}}
 		>
@@ -44,21 +44,21 @@ export function MonthlyChart({ data }: MonthlyChartProps) {
 					<Line
 						type="monotone"
 						dataKey="total"
-						stroke="hsl(var(--chart-1))"
+						stroke="oklch(var(--chart-1))"
 						strokeWidth={2}
 						name="Total"
 					/>
 					<Line
 						type="monotone"
 						dataKey="approved"
-						stroke="hsl(var(--chart-2))"
+						stroke="oklch(var(--chart-2))"
 						strokeWidth={2}
 						name="Approved"
 					/>
 					<Line
 						type="monotone"
 						dataKey="pending"
-						stroke="hsl(var(--chart-3))"
+						stroke="oklch(var(--chart-3))"
 						strokeWidth={2}
 						name="Pending"
 					/>

@@ -6,10 +6,10 @@ interface FormSkeletonProps {
 	showActions?: boolean;
 }
 
-export function FormSkeleton({ 
-	fields, 
-	showTitle = true, 
-	showActions = true 
+export function FormSkeleton({
+	fields,
+	showTitle = true,
+	showActions = true,
 }: FormSkeletonProps) {
 	return (
 		<div className="space-y-6">

@@ -1,11 +1,12 @@
 "use client";
 
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { findNearest, getDistance } from "geolib";
 import type { GeolibInputCoordinates } from "geolib/es/types";
 import { debounce } from "lodash-es";
-import { Filter, HelpCircle, MapIcon } from "lucide-react";
+import { Filter, LocateFixed, MapIcon, RotateCcw } from "lucide-react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Institution as OldInstitution } from "@/app/types/institutions";
 import FilterCategory from "@/components/filter-category";
@@ -21,18 +22,20 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
 	Drawer,
+	DrawerClose,
 	DrawerContent,
+	DrawerDescription,
 	DrawerFooter,
 	DrawerHeader,
 	DrawerTitle,
 	DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { Institution } from "@/db/schema";
 import {
 	type CanonicalInstitutionCategory,
 	normalizeInstitutionCategory,
 } from "@/lib/institution-categories";
+import type { PublicInstitution } from "@/lib/queries/institutions";
 
 type SearchParams = {
 	search?: string;
@@ -42,23 +45,46 @@ type SearchParams = {
 };
 
 type Props = {
-	initialInstitutions: Institution[];
+	initialResult: InstitutionsApiResult;
 	initialSearchParams: SearchParams;
 };
 
-const limit = 15;
+const limit = 50;
+
+/** If set in sessionStorage, automatic nearest lookup will not re-run after the user denies location. */
+const GEO_SKIP_AUTO_SESSION_KEY = "sedekah-je-geo-skip-auto";
+
 type NormalizedInstitution = Omit<OldInstitution, "category"> & {
 	category: CanonicalInstitutionCategory;
 };
 
-export function PageClient({
-	initialInstitutions,
-	initialSearchParams,
-}: Props) {
-	const router = useRouter();
-	const _searchParams = useSearchParams();
+type InstitutionsApiResult = {
+	institutions: PublicInstitution[];
+	pagination: {
+		page: number;
+		limit: number;
+		total: number;
+		hasMore: boolean;
+		totalPages: number;
+	};
+	facets: {
+		categoryCounts: Partial<Record<CanonicalInstitutionCategory, number>>;
+	};
+};
 
-	// URL state
+type InstitutionListRequest = {
+	query: string;
+	categories: CanonicalInstitutionCategory[];
+	state: string;
+	page: number;
+};
+
+export function PageClient({ initialResult, initialSearchParams }: Props) {
+	const router = useRouter();
+	/** Reset when any filter is applied so clearing filters can trigger auto-locate again. */
+	const autoLocateEligibleRef = useRef(false);
+
+	// Display state — updates immediately on input
 	const [query, setQuery] = useState<string>(initialSearchParams.search || "");
 	const [selectedCategories, setSelectedCategories] = useState<
 		CanonicalInstitutionCategory[]
@@ -72,28 +98,21 @@ export function PageClient({
 		initialSearchParams.state || "",
 	);
 
-	// Component state
-	const [institutions, _setInstitutions] =
-		useState<Institution[]>(initialInstitutions);
-	const [isLoading, _setIsLoading] = useState<boolean>(false);
-	const [isLoadingMore, _setIsLoadingMore] = useState<boolean>(false);
-	const [offset, setOffset] = useState<number>(0);
-	const [allItemsLoaded, setAllItemsLoaded] = useState<boolean>(false);
-	const [currentUserCoordinate, setCurrentUserCoordinate] =
-		useState<GeolibInputCoordinates | null>(null);
+	// committedQuery is the debounced version of query used in the TQ queryKey
+	const [committedQuery, setCommittedQuery] = useState<string>(
+		initialSearchParams.search || "",
+	);
+
+	const [isLocating, setIsLocating] = useState(false);
+	const [locationError, setLocationError] = useState<string | null>(null);
 	const [closestInstitution, setClosestInstitution] = useState<
 		(NormalizedInstitution & { distanceToCurrentUserInMeter: number }) | null
 	>(null);
 
-	// Map
 	const [isMapVisible, setIsMapVisible] = useState(false);
-	const toggleMap = () => {
-		setIsMapVisible(!isMapVisible);
-	};
 
-	// Convert database Institution to component-compatible format
-	const adaptedInstitutions = useMemo(() => {
-		return institutions.map((inst) => ({
+	const adaptInstitutions = useCallback((items: PublicInstitution[]) => {
+		return items.map((inst) => ({
 			...inst,
 			category: normalizeInstitutionCategory(inst.category),
 			description: inst.description || undefined,
@@ -101,26 +120,8 @@ export function PageClient({
 			coords: inst.coords || undefined,
 			qrImage: inst.qrImage || "",
 		})) as NormalizedInstitution[];
-	}, [institutions]);
+	}, []);
 
-	// Filter institutions client-side for now
-	const filteredInstitutions = useMemo(() => {
-		return adaptedInstitutions.filter((institution) => {
-			if (!institution.name) return false;
-			const lowercaseQuery = query.toLowerCase();
-			const matchesQuery = institution.name
-				.toLowerCase()
-				.includes(lowercaseQuery);
-			const matchesCategory =
-				selectedCategories.length === 0 ||
-				selectedCategories.includes(institution.category);
-			const matchesState =
-				!selectedState || institution.state === selectedState;
-			return matchesQuery && matchesCategory && matchesState;
-		});
-	}, [adaptedInstitutions, query, selectedCategories, selectedState]);
-
-	// Update URL when filters change
 	const updateURL = useCallback(
 		(newQuery: string, newCategories: string[], newState: string) => {
 			const params = new URLSearchParams();
@@ -136,11 +137,129 @@ export function PageClient({
 		[router],
 	);
 
-	const debouncedUpdateURL = useMemo(
+	const buildInstitutionsUrl = useCallback(
+		({
+			query: nextQuery,
+			categories,
+			state,
+			page,
+			mode,
+		}: InstitutionListRequest & { mode?: "page" | "markers" }) => {
+			const params = new URLSearchParams();
+			if (nextQuery) params.set("search", nextQuery);
+			if (categories.length > 0) params.set("category", categories.join(","));
+			if (state) params.set("state", state);
+			if (mode) params.set("mode", mode);
+			params.set("page", String(page));
+			params.set("limit", String(limit));
+			return `/api/institutions?${params.toString()}`;
+		},
+		[],
+	);
+
+	const initialCategories = useMemo(
+		() =>
+			initialSearchParams.category
+				?.split(",")
+				.filter(Boolean)
+				.map((category) => normalizeInstitutionCategory(category)) || [],
+		[initialSearchParams.category],
+	);
+	const canUseInitialResult =
+		committedQuery === (initialSearchParams.search ?? "") &&
+		selectedState === (initialSearchParams.state ?? "") &&
+		selectedCategories.length === initialCategories.length &&
+		selectedCategories.every(
+			(category, index) => category === initialCategories[index],
+		);
+
+	const infiniteQuery = useInfiniteQuery({
+		queryKey: [
+			"institutions",
+			{
+				query: committedQuery,
+				categories: selectedCategories,
+				state: selectedState,
+			},
+		],
+		queryFn: async ({ pageParam }) => {
+			const url = buildInstitutionsUrl({
+				query: committedQuery,
+				categories: selectedCategories,
+				state: selectedState,
+				page: pageParam as number,
+			});
+			const res = await fetch(url);
+			if (!res.ok) throw new Error("Failed to fetch institutions");
+			return res.json() as Promise<InstitutionsApiResult>;
+		},
+		initialPageParam: 1,
+		getNextPageParam: (lastPage) =>
+			lastPage.pagination.hasMore ? lastPage.pagination.page + 1 : undefined,
+		initialData: canUseInitialResult
+			? {
+					pages: [initialResult],
+					pageParams: [1],
+				}
+			: undefined,
+	});
+
+	const institutions =
+		infiniteQuery.data?.pages.flatMap((p) => p.institutions) ?? [];
+	const pagination =
+		infiniteQuery.data?.pages.at(-1)?.pagination ?? initialResult.pagination;
+	const categoryCounts =
+		infiniteQuery.data?.pages[0]?.facets.categoryCounts ??
+		initialResult.facets.categoryCounts;
+	const isLoading = infiniteQuery.isLoading;
+	const isLoadingMore = infiniteQuery.isFetchingNextPage;
+
+	const markersQuery = useQuery({
+		queryKey: [
+			"institution-markers",
+			{
+				query: committedQuery,
+				categories: selectedCategories,
+				state: selectedState,
+			},
+		],
+		queryFn: async () => {
+			const url = buildInstitutionsUrl({
+				query: committedQuery,
+				categories: selectedCategories,
+				state: selectedState,
+				page: 1,
+				mode: "markers",
+			});
+			const res = await fetch(url);
+			if (!res.ok) throw new Error("Failed to fetch map institutions");
+			return res.json() as Promise<PublicInstitution[]>;
+		},
+		enabled: false,
+	});
+
+	const mapInstitutions = useMemo(
+		() => (markersQuery.data ? adaptInstitutions(markersQuery.data) : []),
+		[markersQuery.data, adaptInstitutions],
+	);
+	const isMapLoading = markersQuery.isFetching;
+
+	const adaptedInstitutions = useMemo(
+		() => adaptInstitutions(institutions),
+		[institutions, adaptInstitutions],
+	);
+
+	const debouncedSearch = useMemo(
 		() =>
 			debounce(
-				(newQuery: string, newCategories: string[], newState: string) => {
-					updateURL(newQuery, newCategories, newState);
+				(
+					nextQuery: string,
+					categories: CanonicalInstitutionCategory[],
+					state: string,
+				) => {
+					updateURL(nextQuery, categories, state);
+					setCommittedQuery(nextQuery);
+					setClosestInstitution(null);
 				},
 				500,
 			),
@@ -150,174 +269,303 @@ export function PageClient({
 	const handleSearch = useCallback(
 		(newQuery: string) => {
 			setQuery(newQuery);
-			setOffset(0);
-			setAllItemsLoaded(false);
-			debouncedUpdateURL(newQuery, selectedCategories, selectedState);
+			debouncedSearch(newQuery, selectedCategories, selectedState);
 		},
-		[debouncedUpdateURL, selectedCategories, selectedState],
+		[debouncedSearch, selectedCategories, selectedState],
 	);
 
 	const handleStateChange = useCallback(
 		(state: string) => {
+			debouncedSearch.cancel();
+			setCommittedQuery(query);
 			setSelectedState(state);
-			setOffset(0);
-			setAllItemsLoaded(false);
-			debouncedUpdateURL(query, selectedCategories, state);
+			updateURL(query, selectedCategories, state);
+			setClosestInstitution(null);
 		},
-		[debouncedUpdateURL, query, selectedCategories],
+		[debouncedSearch, query, selectedCategories, updateURL],
 	);
 
 	const handleCategoryChange = useCallback(
 		(categories: string[]) => {
-			setSelectedCategories(
-				categories.map((category) => normalizeInstitutionCategory(category)),
+			debouncedSearch.cancel();
+			setCommittedQuery(query);
+			const normalizedCategories = categories.map((category) =>
+				normalizeInstitutionCategory(category),
 			);
-			setOffset(0);
-			setAllItemsLoaded(false);
-			debouncedUpdateURL(
-				query,
-				categories.map((category) => normalizeInstitutionCategory(category)),
-				selectedState,
-			);
+			setSelectedCategories(normalizedCategories);
+			updateURL(query, normalizedCategories, selectedState);
+			setClosestInstitution(null);
 		},
-		[debouncedUpdateURL, query, selectedState],
+		[debouncedSearch, query, selectedState, updateURL],
 	);
+
+	const clearFilters = useCallback(() => {
+		debouncedSearch.cancel();
+		setQuery("");
+		setCommittedQuery("");
+		setSelectedCategories([]);
+		setSelectedState("");
+		updateURL("", [], "");
+		setClosestInstitution(null);
+	}, [debouncedSearch, updateURL]);
 
 	const observer = useRef<IntersectionObserver | null>(null);
 
 	const lastPostElementRef = useCallback(
 		(node: HTMLDivElement) => {
-			if (isLoading) return;
+			if (isLoading || isLoadingMore || !pagination.hasMore) return;
 			if (observer.current) observer.current.disconnect();
 
 			observer.current = new IntersectionObserver((entries) => {
-				if (entries[0].isIntersecting) {
-					setOffset((prevOffset) => prevOffset + limit);
+				if (entries[0].isIntersecting && infiniteQuery.hasNextPage) {
+					void infiniteQuery.fetchNextPage();
 				}
 			});
 
 			if (node) observer.current.observe(node);
 		},
-		[isLoading],
+		[isLoading, isLoadingMore, infiniteQuery, pagination.hasMore],
 	);
 
-	const displayedInstitutions = filteredInstitutions.slice(0, offset + limit);
+	const displayedInstitutions = adaptedInstitutions;
 	const isFiltered = useMemo(
 		() => query !== "" || selectedCategories.length > 0 || selectedState !== "",
 		[query, selectedCategories, selectedState],
 	);
 	const activeFilterCount = useMemo(
-		() => (selectedState !== "" ? 1 : 0) + selectedCategories.length,
-		[selectedState, selectedCategories],
+		() =>
+			(query !== "" ? 1 : 0) +
+			(selectedState !== "" ? 1 : 0) +
+			selectedCategories.length,
+		[query, selectedCategories, selectedState],
 	);
 	const filteredInstitutionsContainsClosest = useMemo(
 		() =>
-			filteredInstitutions.findIndex((i) => i.id === closestInstitution?.id) !==
+			adaptedInstitutions.findIndex((i) => i.id === closestInstitution?.id) !==
 			-1,
-		[filteredInstitutions, closestInstitution],
+		[adaptedInstitutions, closestInstitution],
 	);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: run once on mount for geolocation
-	useEffect(() => {
-		getLocation();
+	const filteredDisplayedInstitutions = useMemo(
+		() =>
+			displayedInstitutions.filter((i) =>
+				filteredInstitutionsContainsClosest && closestInstitution
+					? i.id !== closestInstitution.id
+					: true,
+			),
+		[
+			displayedInstitutions,
+			filteredInstitutionsContainsClosest,
+			closestInstitution,
+		],
+	);
+
+	const resolveClosestInstitution = useCallback(
+		async (coordinate: GeolibInputCoordinates) => {
+			const result = await markersQuery.refetch();
+			if (!result.data) {
+				setLocationError("Data peta tidak dapat dimuatkan. Cuba sekali lagi.");
+				return;
+			}
+			const filteredWithCoords = adaptInstitutions(result.data);
+			const listOfCoords: (NormalizedInstitution & {
+				latitude: number;
+				longitude: number;
+			})[] = [];
+
+			for (const institution of filteredWithCoords) {
+				if (
+					institution.coords &&
+					Array.isArray(institution.coords) &&
+					institution.coords.length === 2
+				) {
+					listOfCoords.push({
+						...institution,
+						latitude: institution.coords[0],
+						longitude: institution.coords[1],
+					});
+				}
+			}
+
+			if (listOfCoords.length === 0) {
+				setLocationError("Tiada institusi dengan lokasi untuk tapisan ini.");
+				return;
+			}
+
+			const closestCoordinate = findNearest(coordinate, listOfCoords);
+			const distanceToCurrentUserInMeter = getDistance(
+				coordinate,
+				closestCoordinate,
+			);
+
+			setClosestInstitution({
+				...closestCoordinate,
+				distanceToCurrentUserInMeter,
+			} as unknown as NormalizedInstitution & {
+				distanceToCurrentUserInMeter: number;
+			});
+		},
+		[markersQuery, adaptInstitutions],
+	);
+
+	const toggleMap = useCallback(() => {
+		setIsMapVisible((current) => !current);
 	}, []);
 
-	async function getLocation() {
-		navigator.geolocation.getCurrentPosition((p) => {
-			setCurrentUserCoordinate({
-				latitude: p.coords.latitude,
-				longitude: p.coords.longitude,
-			});
-		});
-	}
+	const getLocation = useCallback(
+		(opts?: { fromAuto?: boolean }) => {
+			const fromAuto = opts?.fromAuto ?? false;
 
-	useEffect(() => {
-		if (isFiltered || !currentUserCoordinate || closestInstitution) return;
-
-		const listOfCoords: { latitude: number; longitude: number; id: number }[] =
-			[];
-
-		for (const i of filteredInstitutions) {
-			if (i.coords && Array.isArray(i.coords) && i.coords.length === 2) {
-				listOfCoords.push({
-					latitude: i.coords[0],
-					longitude: i.coords[1],
-					...i,
-				});
+			if (!("geolocation" in navigator)) {
+				setLocationError("Lokasi tidak disokong oleh pelayar ini.");
+				return;
 			}
-		}
 
-		if (listOfCoords.length === 0) return;
+			setIsLocating(true);
+			setLocationError(null);
 
-		const closestCoordinate = findNearest(currentUserCoordinate, listOfCoords);
-		const distanceToCurrentUserInMeter = getDistance(
-			currentUserCoordinate,
-			closestCoordinate,
-		);
+			navigator.geolocation.getCurrentPosition(
+				(p) => {
+					const coordinate = {
+						latitude: p.coords.latitude,
+						longitude: p.coords.longitude,
+					};
+					void resolveClosestInstitution(coordinate).finally(() => {
+						setIsLocating(false);
+					});
+				},
+				(err) => {
+					setIsLocating(false);
+					if (err.code === err.PERMISSION_DENIED) {
+						if (fromAuto && typeof window !== "undefined") {
+							try {
+								sessionStorage.setItem(GEO_SKIP_AUTO_SESSION_KEY, "1");
+							} catch {
+								/* private / blocked storage */
+							}
+						}
+						setLocationError(
+							"Kebenaran lokasi ditolak. Aktifkan lokasi dalam tetapan pelayar untuk cari institusi terdekat.",
+						);
+					} else if (err.code === err.POSITION_UNAVAILABLE) {
+						setLocationError(
+							"Lokasi tidak tersedia buat masa ini. Cuba sekali lagi.",
+						);
+					} else if (err.code === err.TIMEOUT) {
+						setLocationError("Permintaan lokasi tamat masa. Cuba sekali lagi.");
+					} else {
+						setLocationError(
+							"Lokasi tidak dapat diakses. Semak kebenaran lokasi.",
+						);
+					}
+				},
+				{ enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 },
+			);
+		},
+		[resolveClosestInstitution],
+	);
 
-		const c = {
-			...closestCoordinate,
-			distanceToCurrentUserInMeter,
-		} as unknown as NormalizedInstitution & {
-			distanceToCurrentUserInMeter: number;
-		};
-
-		setClosestInstitution(c);
-	}, [
-		currentUserCoordinate,
-		filteredInstitutions,
-		isFiltered,
-		closestInstitution,
-	]);
-
-	// Check if we've loaded all items
 	useEffect(() => {
-		if (filteredInstitutions.length <= offset + limit) {
-			setAllItemsLoaded(true);
-		} else {
-			setAllItemsLoaded(false);
+		if (typeof window === "undefined") return;
+		if (!("geolocation" in navigator)) return;
+
+		const noFilters =
+			query === "" && selectedCategories.length === 0 && selectedState === "";
+
+		if (!noFilters) {
+			autoLocateEligibleRef.current = false;
+			return;
 		}
-	}, [filteredInstitutions, offset]);
+
+		try {
+			if (sessionStorage.getItem(GEO_SKIP_AUTO_SESSION_KEY)) return;
+		} catch {
+			return;
+		}
+
+		if (autoLocateEligibleRef.current) return;
+		autoLocateEligibleRef.current = true;
+
+		getLocation({ fromAuto: true });
+	}, [query, selectedCategories, selectedState, getLocation]);
+
+	useEffect(() => {
+		return () => debouncedSearch.cancel();
+	}, [debouncedSearch]);
+
+	useEffect(() => {
+		if (!isMapVisible || markersQuery.isFetching || markersQuery.data) return;
+		void markersQuery.refetch();
+	}, [isMapVisible, markersQuery]);
 
 	return (
-		<PageSection>
-			{/* Desktop (sm+): keep current stacked filter UI */}
-			<div className="hidden sm:block sticky top-0 z-40 pt-2 pb-2 space-y-4">
+		<PageSection className="pb-28 sm:pb-32 lg:pb-36">
+			{/* Desktop (sm+): stacked filter bar with integrated actions */}
+			<div className="sticky top-0 z-40 hidden rounded-b-lg border border-border/20 bg-card/85 px-3 py-3 shadow-[0_1px_2px_oklch(var(--foreground)/0.03)] backdrop-blur supports-[backdrop-filter]:bg-card/75 sm:block">
 				<FilterCategory
 					onCategoryChange={handleCategoryChange}
 					selectedState={selectedState}
 					institutions={adaptedInstitutions}
 					initialCategories={selectedCategories}
+					categoryCounts={categoryCounts}
 				/>
 
-				<div className="space-y-4">
-					<div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 w-full">
-						<div className="w-full sm:w-1/5">
+				<div className="mt-3 space-y-2">
+					<div className="flex w-full items-center gap-2">
+						<div className="w-56 shrink-0">
 							<FilterState
 								onStateChange={handleStateChange}
 								className="w-full"
 								initialState={selectedState}
 							/>
 						</div>
-						<div className="w-full sm:w-4/5">
+						<div className="flex-1">
 							<Search
 								onSearchChange={handleSearch}
 								className="w-full"
 								initialValue={query}
 							/>
 						</div>
+						{isFiltered && (
+							<Button
+								type="button"
+								variant="ghost"
+								size="icon"
+								onClick={clearFilters}
+								className="shrink-0 text-muted-foreground hover:text-primary"
+								aria-label="Set semula tapisan"
+							>
+								<RotateCcw className="h-4 w-4" />
+							</Button>
+						)}
+						<Button
+							onClick={() => getLocation()}
+							variant="ghost"
+							size="icon"
+							disabled={isLocating}
+							className="shrink-0 text-muted-foreground hover:text-primary"
+							aria-label={isLocating ? "Mencari..." : "Cari institusi terdekat"}
+						>
+							<LocateFixed className="h-4 w-4" />
+						</Button>
+						<Button
+							onClick={toggleMap}
+							variant="ghost"
+							size="icon"
+							className="shrink-0 text-muted-foreground hover:text-primary"
+							aria-label={isMapVisible ? "Sembunyikan peta" : "Tunjukkan peta"}
+						>
+							<MapIcon className="h-4 w-4" />
+						</Button>
 					</div>
 
-					{/* Rendered only when there are filters applied */}
-					{(selectedState !== "" || selectedCategories.length > 0) && (
-						<FilteredCount count={filteredInstitutions.length} />
-					)}
+					{isFiltered && <FilteredCount count={pagination.total} />}
 				</div>
 			</div>
 
 			{/* Mobile (<sm): compact sticky row + filter drawer */}
-			<div className="sm:hidden sticky top-0 z-40 pt-4 pb-4">
-				<div className="flex items-center gap-2 w-full">
+			<div className="sticky top-0 z-40 py-3 sm:hidden">
+				<div className="flex w-full items-center gap-2 rounded-lg border border-border/24 bg-card/85 p-2 shadow-[0_1px_2px_oklch(var(--foreground)/0.03)] backdrop-blur supports-[backdrop-filter]:bg-card/75">
 					<div className="flex-1 min-w-0">
 						<Search
 							onSearchChange={handleSearch}
@@ -331,7 +579,7 @@ export function PageClient({
 							<Button
 								variant="outline"
 								size="icon"
-								className="shrink-0"
+								className="relative shrink-0"
 								aria-label="Tapis"
 							>
 								<Filter className="h-4 w-4" />
@@ -348,6 +596,9 @@ export function PageClient({
 						<DrawerContent className="max-h-[85vh] flex flex-col">
 							<DrawerHeader>
 								<DrawerTitle>Filter</DrawerTitle>
+								<DrawerDescription>
+									Pilih negeri atau kategori untuk kecilkan senarai QR.
+								</DrawerDescription>
 							</DrawerHeader>
 							<div className="flex-1 overflow-y-auto px-4 pb-4 space-y-4">
 								<FilterState
@@ -360,15 +611,43 @@ export function PageClient({
 									selectedState={selectedState}
 									institutions={adaptedInstitutions}
 									initialCategories={selectedCategories}
+									categoryCounts={categoryCounts}
 								/>
 							</div>
-							{(selectedState !== "" || selectedCategories.length > 0) && (
-								<DrawerFooter>
-									<FilteredCount count={filteredInstitutions.length} />
-								</DrawerFooter>
-							)}
+							<DrawerFooter>
+								{isFiltered && <FilteredCount count={pagination.total} />}
+								<div className="grid grid-cols-2 gap-2">
+									<Button
+										type="button"
+										variant="outline"
+										onClick={clearFilters}
+										disabled={!isFiltered}
+										className="gap-2"
+									>
+										<RotateCcw className="h-4 w-4" />
+										Set semula
+									</Button>
+									<DrawerClose asChild>
+										<Button type="button">Selesai</Button>
+									</DrawerClose>
+								</div>
+							</DrawerFooter>
 						</DrawerContent>
 					</Drawer>
+					<Button
+						onClick={() => getLocation()}
+						variant="outline"
+						size="icon"
+						disabled={isLocating}
+						className="shrink-0"
+						aria-label={
+							isLocating
+								? "Mencari institusi terdekat"
+								: "Cari institusi terdekat"
+						}
+					>
+						<LocateFixed className="h-4 w-4" />
+					</Button>
 					<Button
 						onClick={toggleMap}
 						variant="outline"
@@ -381,39 +660,26 @@ export function PageClient({
 				</div>
 			</div>
 
-			<div className="hidden sm:flex justify-end gap-2 mt-0 pb-4">
-				<Button
-					onClick={toggleMap}
-					variant="outline"
-					className="bg-gradient-to-br from-orange-500 to-orange-300 border border-orange-400 rounded-full hover:from-orange-600 hover:to-orange-400 transition-colors"
-				>
-					<MapIcon className="mr-2 h-5 w-5" />
-					<span className="hidden sm:inline">
-						{isMapVisible ? "Sembunyikan Peta" : "Tunjukkan Peta"}
-					</span>
-					<span className="sm:hidden">Peta</span>
-				</Button>
-
-				<Link href="/faq" passHref>
-					<Button
-						variant="outline"
-						className="bg-gradient-to-br from-blue-500 to-blue-300 border border-blue-400 rounded-full hover:from-blue-700 hover:to-blue-500 transition-colors"
-					>
-						<HelpCircle className="mr-2 h-5 w-5" />
-						<span className="hidden sm:inline ml-2">Soalan Lazim</span>
-						<span className="sm:hidden">FAQ</span>
-					</Button>
-				</Link>
-			</div>
-
 			<CollapsibleCustomMap
 				isVisible={isMapVisible}
 				showAll={true}
-				filteredInstitutions={filteredInstitutions}
+				filteredInstitutions={mapInstitutions}
 			/>
 
+			{isMapLoading && isMapVisible && (
+				<div className="mb-4 rounded-lg border border-border/25 bg-card px-4 py-3 text-sm text-muted-foreground">
+					Peta sedang memuatkan institusi...
+				</div>
+			)}
+
+			{locationError && (
+				<div className="mb-4 rounded-lg border border-border/25 bg-card px-4 py-3 text-sm text-muted-foreground">
+					{locationError}
+				</div>
+			)}
+
 			{isLoading ? (
-				<div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+				<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6">
 					{Array.from({ length: limit }).map((_, idx) => (
 						<Card key={idx} className="aspect-square w-full">
 							<Skeleton className="min-h-full min-w-full" />
@@ -421,44 +687,57 @@ export function PageClient({
 					))}
 				</div>
 			) : displayedInstitutions.length === 0 ? (
-				<div className="flex flex-wrap justify-center">
-					<p className="text-lg text-gray-500">Tiada institusi dijumpai.</p>
+				<div className="flex min-h-48 flex-col items-center justify-center gap-4 rounded-lg border border-border/25 bg-card p-6 text-center">
+					<div className="space-y-1">
+						<p className="text-sm font-semibold text-foreground">
+							Tiada institusi dijumpai.
+						</p>
+						<p className="max-w-sm text-sm text-muted-foreground">
+							Cuba kosongkan carian atau tapis semula senarai QR.
+						</p>
+					</div>
+					<div className="flex flex-wrap justify-center gap-2">
+						<Button type="button" variant="outline" onClick={clearFilters}>
+							Set semula carian
+						</Button>
+						<Link href="/contribute">
+							<Button type="button" variant="outline">
+								Sumbang QR
+							</Button>
+						</Link>
+					</div>
 				</div>
 			) : (
-				<div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-					{closestInstitution && filteredInstitutionsContainsClosest && (
+				<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6">
+					{closestInstitution && (
 						<InstitutionCard
 							key={closestInstitution.id}
 							{...closestInstitution}
 							ref={
-								displayedInstitutions.length === 1 ? lastPostElementRef : null
+								filteredDisplayedInstitutions.length === 0
+									? lastPostElementRef
+									: null
 							}
 							isClosest
 						/>
 					)}
-					{displayedInstitutions
-						.filter((i) =>
-							filteredInstitutionsContainsClosest && closestInstitution
-								? i.id !== closestInstitution.id
-								: true,
-						)
-						.map((institution, i) => (
-							<InstitutionCard
-								key={institution.id}
-								{...institution}
-								ref={
-									displayedInstitutions.length === i + 1
-										? lastPostElementRef
-										: null
-								}
-							/>
-						))}
+					{filteredDisplayedInstitutions.map((institution, i) => (
+						<InstitutionCard
+							key={institution.id}
+							{...institution}
+							ref={
+								filteredDisplayedInstitutions.length === i + 1
+									? lastPostElementRef
+									: null
+							}
+						/>
+					))}
 				</div>
 			)}
 
-			{isLoadingMore && !allItemsLoaded && (
-				<div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-					{Array.from({ length: 6 }).map((_, idx) => (
+			{isLoadingMore && pagination.hasMore && (
+				<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6">
+					{Array.from({ length: 9 }).map((_, idx) => (
 						<Card key={idx} className="aspect-square w-full">
 							<Skeleton className="min-h-full min-w-full" />
 						</Card>

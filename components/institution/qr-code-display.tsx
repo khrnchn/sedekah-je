@@ -1,126 +1,123 @@
-import { cva } from "class-variance-authority";
 import Image from "next/image";
 import { QRCodeSVG } from "qrcode.react";
 import { type ButtonHTMLAttributes, forwardRef } from "react";
-import type { Institution } from "@/app/types/institutions";
+import type { Institution, PaymentOption } from "@/app/types/institutions";
+import { paymentBrands } from "@/lib/payment-brands";
 import { cn } from "@/lib/utils";
-
-const labelVariants = cva(
-	"relative flex flex-col items-center justify-center rounded-lg",
-	{
-		variants: {
-			supportedPayment: {
-				duitnow: "bg-[#ED2C67]",
-				tng: "bg-[#015ABF]",
-				boost: "bg-[#FF3333]",
-				toyyibpay: "bg-[#00847F]",
-			},
-		},
-	},
-);
 
 type Props = Pick<Institution, "qrContent" | "supportedPayment"> & {
 	size?: number;
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
 const QrCodeDisplay = forwardRef<HTMLButtonElement, Props>((props, ref) => {
-	if (!props.qrContent) {
+	const {
+		qrContent,
+		supportedPayment,
+		size = 160,
+		className,
+		style,
+		...buttonProps
+	} = props;
+
+	if (!qrContent) {
 		console.warn("No QR content provided");
 		return null;
 	}
+
+	const payment = supportedPayment?.[0] as PaymentOption | undefined;
+	const brand = payment ? paymentBrands[payment] : undefined;
 
 	return (
 		<button
 			type="button"
 			style={{
-				width: props.size || 160,
-				height: props.size || 160,
-				padding: (props.size || 160) * 0.05,
-				paddingTop: (props.size || 160) * 0.1,
+				width: size,
+				height: size,
+				padding: size * 0.05,
+				paddingTop: size * 0.1,
+				backgroundColor: brand?.color ?? "#e5e7eb",
+				...style,
 			}}
 			className={cn(
-				labelVariants({
-					supportedPayment: props.supportedPayment?.[0] as
-						| "duitnow"
-						| "tng"
-						| "boost"
-						| "toyyibpay"
-						| undefined,
-				}),
+				"relative flex flex-col items-center justify-center rounded-lg",
+				className,
 			)}
-			onClick={props.onClick}
 			ref={ref}
+			{...buttonProps}
 		>
+			{/* bg-white is intentional: QR scanners require a white background for reliable reads */}
 			<div className="bg-white rounded flex flex-col items-center justify-center w-full h-full">
-				{props.supportedPayment?.[0] === "duitnow" && (
+				{supportedPayment?.[0] === "duitnow" && (
 					<div
 						style={{
-							width: (props.size || 160) * 0.2,
-							height: (props.size || 160) * 0.2,
+							width: size * 0.2,
+							height: size * 0.2,
+							backgroundColor: brand?.color,
 						}}
-						className="absolute top-0 flex items-center justify-center bg-[#ED2C67] rounded-full border-4 border-white"
+						className="absolute top-0 flex items-center justify-center rounded-full border-4 border-white"
 					>
 						<Image
 							src="/icons/duitnow.png"
 							fill
+							sizes={`${size * 0.2}px`}
 							alt="DuitNow"
 							className="object-contain"
 						/>
 					</div>
 				)}
-				{props.supportedPayment?.[0] === "tng" && (
+				{supportedPayment?.[0] === "tng" && (
 					<div
 						style={{
-							width: (props.size || 160) * 0.2,
-							height: (props.size || 160) * 0.2,
+							width: size * 0.2,
+							height: size * 0.2,
 						}}
 						className="absolute top-0 flex items-center justify-center"
 					>
 						<Image
 							src="/icons/tng.png"
 							fill
+							sizes={`${size * 0.2}px`}
 							alt="TNG"
 							className="object-contain"
 						/>
 					</div>
 				)}
-				{props.supportedPayment?.[0] === "boost" && (
+				{supportedPayment?.[0] === "boost" && (
 					<div
 						style={{
-							width: (props.size || 160) * 0.2,
-							height: (props.size || 160) * 0.2,
+							width: size * 0.2,
+							height: size * 0.2,
+							backgroundColor: brand?.color,
 						}}
-						className="absolute top-0 flex items-center justify-center bg-[#EE2E24] rounded-full border-4 border-white"
+						className="absolute top-0 flex items-center justify-center rounded-full border-4 border-white"
 					>
 						<Image
 							src="/icons/boost.png"
 							fill
+							sizes={`${size * 0.2}px`}
 							alt="Boost"
 							className="object-contain rounded-full"
 						/>
 					</div>
 				)}
-				{props.supportedPayment?.[0] === "toyyibpay" && (
+				{supportedPayment?.[0] === "toyyibpay" && (
 					<div
 						style={{
-							width: (props.size || 160) * 0.34,
-							height: (props.size || 160) * 0.2,
+							width: size * 0.34,
+							height: size * 0.2,
 						}}
 						className="absolute top-0 flex items-center justify-center"
 					>
 						<Image
 							src="/icons/toyyibpay-wordmark.png"
 							fill
+							sizes={`${size * 0.34}px`}
 							alt="ToyyibPay"
 							className="object-contain"
 						/>
 					</div>
 				)}
-				<QRCodeSVG
-					value={props.qrContent}
-					level="M"
-					size={(props.size || 160) * 0.7}
-				/>
+				<QRCodeSVG value={qrContent} level="M" size={size * 0.7} />
 			</div>
 		</button>
 	);

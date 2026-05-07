@@ -8,19 +8,19 @@ import { AsyncYourRank } from "./_components/async-your-rank";
 import { TopContributorsSkeleton } from "./_components/loading-skeletons";
 
 export const metadata: Metadata = {
-	title: "Papan Pendahulu",
+	title: "Carta Penghantar QR",
 	description:
-		"Lihat pengguna paling aktif menghantar QR institusi ke sedekah.je. Papan pendahulu ini berdasarkan jumlah submission QR, bukan jumlah wang yang didermakan.",
+		"Lihat pengguna paling aktif menghantar QR institusi ke sedekah.je. Carta ini berdasarkan QR yang diluluskan, bukan jumlah wang sedekah.",
 	openGraph: {
-		title: "Papan Pendahulu | Sedekah Je",
+		title: "Carta Penghantar QR | Sedekah Je",
 		description:
-			"Lihat pengguna paling aktif menghantar QR institusi ke sedekah.je. Papan pendahulu ini berdasarkan jumlah submission QR, bukan jumlah wang yang didermakan.",
+			"Lihat pengguna paling aktif menghantar QR institusi ke sedekah.je. Carta ini berdasarkan QR yang diluluskan, bukan jumlah wang sedekah.",
 		url: "https://sedekah.je/leaderboard",
 	},
 	twitter: {
-		title: "Papan Pendahulu | Sedekah Je",
+		title: "Carta Penghantar QR | Sedekah Je",
 		description:
-			"Lihat pengguna paling aktif menghantar QR institusi ke sedekah.je. Papan pendahulu ini berdasarkan jumlah submission QR, bukan jumlah wang yang didermakan.",
+			"Lihat pengguna paling aktif menghantar QR institusi ke sedekah.je. Carta ini berdasarkan QR yang diluluskan, bukan jumlah wang sedekah.",
 	},
 	alternates: {
 		canonical: "https://sedekah.je/leaderboard",
@@ -30,8 +30,8 @@ export const metadata: Metadata = {
 export default function LeaderboardPage() {
 	return (
 		<UserLayout
-			title="Papan Pendahulu"
-			description="Kedudukan pengguna berdasarkan jumlah submission QR institusi, bukan jumlah sumbangan wang"
+			title="Carta Penghantar QR"
+			description="Kedudukan komuniti berdasarkan QR institusi yang dihantar dan diluluskan. Ini bukan carta jumlah wang sedekah."
 		>
 			<div className="space-y-8">
 				<Suspense fallback={<StatsGrid cols={4} loading={true} />}>

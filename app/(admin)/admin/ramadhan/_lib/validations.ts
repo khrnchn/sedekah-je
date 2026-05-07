@@ -1,5 +1,5 @@
-import { getRamadhanDate } from "@/lib/ramadhan";
 import { z } from "zod";
+import { getRamadhanDate } from "@/lib/ramadhan";
 
 export const campaignDaySchema = z.object({
 	dayNumber: z.number().min(1).max(30),

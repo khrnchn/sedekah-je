@@ -9,6 +9,7 @@ import {
 	Loader2,
 	MapPin,
 	QrCode,
+	RotateCcw,
 } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useMemo, useRef, useState } from "react";
@@ -89,6 +90,9 @@ export function RawakClient({ initialInstitutions }: Props) {
 		});
 	}, [institutions, selectedCategories, selectedState]);
 
+	const hasFilteredMatches = filteredInstitutions.length > 0;
+	const noMatchWithFilters = activeFilterCount > 0 && !hasFilteredMatches;
+
 	const getInstitutionSlug = useCallback((inst: NormalizedInstitution) => {
 		return inst.slug ?? slugify(inst.name);
 	}, []);
@@ -127,6 +131,13 @@ export function RawakClient({ initialInstitutions }: Props) {
 		toast.success("Peta dibuka dalam tab baru.");
 	}, [randomInstitution]);
 
+	const resetFilters = useCallback(() => {
+		setSelectedCategories([]);
+		setSelectedState("");
+		setRandomInstitution(null);
+		setUrl("");
+	}, []);
+
 	return (
 		<>
 			<Header />
@@ -138,12 +149,12 @@ export function RawakClient({ initialInstitutions }: Props) {
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}
-						className="fixed inset-0 h-full w-full z-50 bg-black/50 flex flex-col items-center justify-center"
+						className="fixed inset-0 z-50 flex h-full w-full flex-col items-center justify-center bg-foreground/50"
 					>
-						<div className="bg-card rounded-lg p-6 max-w-xs w-full flex flex-col items-center gap-4 border shadow-lg">
+						<div className="flex w-full max-w-xs flex-col items-center gap-4 rounded-lg border bg-card p-6 shadow-lg">
 							<div className="h-10 w-10 animate-spin rounded-full border-4 border-primary border-t-transparent" />
 							<p className="text-center font-medium">Memuat turun kod QR...</p>
-							<p className="text-center text-sm text-gray-500 dark:text-gray-400">
+							<p className="text-center text-sm text-muted-foreground">
 								{downloadStage || "Sila tunggu sebentar"}
 							</p>
 						</div>
@@ -152,10 +163,10 @@ export function RawakClient({ initialInstitutions }: Props) {
 			</AnimatePresence>
 
 			<PageSection className="bg-background transition-colors duration-200 ease-in-out">
-				<PageHeader pageTitle="Sedekah Rawak" showHeader={false} />
+				<PageHeader pageTitle="Sedekah Rawak" showHeader={true} />
 
 				{/* Desktop (sm+): inline filter UI */}
-				<div className="hidden sm:block space-y-4">
+				<div className="hidden rounded-lg border bg-background/95 p-3 sm:block">
 					<FilterCategory
 						onCategoryChange={(categories) => {
 							setSelectedCategories(
@@ -167,43 +178,86 @@ export function RawakClient({ initialInstitutions }: Props) {
 						}}
 						selectedState={selectedState}
 						institutions={institutions}
+						initialCategories={[...selectedCategories]}
 					/>
-					<div className="flex flex-row items-center gap-4 w-full">
+					<div className="mt-3 flex w-full flex-row items-center gap-3">
 						<div className="w-2/5">
 							<FilterState
 								onStateChange={(state) => {
 									setSelectedState(state);
 									setRandomInstitution(null);
 								}}
+								initialState={selectedState}
 							/>
 						</div>
 						<div className="w-3/5">
 							<Button
 								onClick={generateRandomNumber}
-								className="w-full bg-green-500 text-white px-6 py-3 hover:bg-green-600 transition-colors duration-300 shadow-md focus:outline-none"
-								disabled={isDownloading}
+								className="w-full gap-2"
+								disabled={isDownloading || !hasFilteredMatches}
 							>
-								🎲 Jana QR Secara Rawak
+								<QrCode className="h-4 w-4" />
+								Jana QR Rawak
 							</Button>
 						</div>
 					</div>
 					{(selectedState !== "" || selectedCategories.length > 0) && (
-						<FilteredCount count={filteredInstitutions.length} />
+						<div className="mt-3">
+							<FilteredCount count={filteredInstitutions.length} />
+						</div>
+					)}
+					{noMatchWithFilters && (
+						<p className="mt-2 text-center text-sm text-muted-foreground">
+							Tiada institusi sepadan pilihan.
+						</p>
+					)}
+					{activeFilterCount > 0 && (
+						<div className="mt-2 flex justify-end">
+							<Button
+								type="button"
+								variant="ghost"
+								size="sm"
+								className="h-8 gap-1.5 text-muted-foreground"
+								onClick={resetFilters}
+							>
+								<RotateCcw className="h-3.5 w-3.5" aria-hidden />
+								Set semula filter
+							</Button>
+						</div>
 					)}
 				</div>
 
 				{/* Mobile (<sm): compact row + filter drawer */}
-				<div className="sm:hidden space-y-2">
-					<div className="flex items-center gap-2 w-full">
+				<div className="space-y-2 sm:hidden">
+					{noMatchWithFilters && (
+						<p className="px-1 text-center text-sm text-muted-foreground">
+							Tiada institusi sepadan pilihan.
+						</p>
+					)}
+					<div className="flex w-full items-center gap-2 rounded-lg border bg-background/95 p-2">
 						<div className="flex-1 min-w-0">
 							<Button
 								onClick={generateRandomNumber}
-								className="w-full bg-green-500 text-white px-6 py-3 hover:bg-green-600 transition-colors duration-300 shadow-md focus:outline-none"
-								disabled={isDownloading}
+								className="w-full gap-2"
+								disabled={isDownloading || !hasFilteredMatches}
 							>
-								🎲 Jana QR Secara Rawak
+								<QrCode className="h-4 w-4" />
+								Jana QR Rawak
 							</Button>
 						</div>
+						{activeFilterCount > 0 && (
+							<Button
+								type="button"
+								variant="ghost"
+								size="icon"
+								className="shrink-0 text-muted-foreground"
+								onClick={resetFilters}
+								aria-label="Set semula filter"
+								title="Set semula filter"
+							>
+								<RotateCcw className="h-4 w-4" />
+							</Button>
+						)}
 						<Drawer>
 							<DrawerTrigger asChild>
 								<Button
@@ -233,6 +287,7 @@ export function RawakClient({ initialInstitutions }: Props) {
 											setSelectedState(state);
 											setRandomInstitution(null);
 										}}
+										initialState={selectedState}
 									/>
 									<FilterCategory
 										onCategoryChange={(categories) => {
@@ -245,11 +300,21 @@ export function RawakClient({ initialInstitutions }: Props) {
 										}}
 										selectedState={selectedState}
 										institutions={institutions}
+										initialCategories={[...selectedCategories]}
 									/>
 								</div>
 								{(selectedState !== "" || selectedCategories.length > 0) && (
-									<DrawerFooter>
+									<DrawerFooter className="gap-2">
 										<FilteredCount count={filteredInstitutions.length} />
+										<Button
+											type="button"
+											variant="outline"
+											className="w-full gap-2"
+											onClick={resetFilters}
+										>
+											<RotateCcw className="h-4 w-4" aria-hidden />
+											Set semula filter
+										</Button>
 									</DrawerFooter>
 								)}
 							</DrawerContent>
@@ -257,8 +322,8 @@ export function RawakClient({ initialInstitutions }: Props) {
 					</div>
 				</div>
 
-				<div className="flex flex-col md:flex-row gap-8 pb-4">
-					<Card className="w-full">
+				<div className="flex flex-col gap-8 pb-4 md:flex-row">
+					<Card className="w-full border-border/80 bg-card">
 						{randomInstitution ? (
 							<div className="flex flex-col items-center p-6">
 								<div className="mb-6">
@@ -284,15 +349,24 @@ export function RawakClient({ initialInstitutions }: Props) {
 									<h3 className="text-xl font-semibold mb-2 text-center">
 										{randomInstitution.name}
 									</h3>
-									<div className="flex items-center justify-center text-sm text-gray-600 dark:text-gray-400 mb-4">
+									<div className="mb-4 flex items-center justify-center text-sm text-muted-foreground">
 										<MapPin className="w-4 h-4 mr-1" />
 										<span>
 											{randomInstitution.city}, {randomInstitution.state}
 										</span>
 									</div>
-									<div className="flex justify-between space-x-2 w-full mt-4">
+									{url ? (
+										<p
+											className="mb-3 w-full min-w-0 max-w-full truncate text-center text-xs text-muted-foreground"
+											title={url}
+										>
+											{url}
+										</p>
+									) : null}
+									<div className="mt-4 flex w-full justify-between gap-2">
 										<Button
-											className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 px-3 py-2 rounded-md transition-all duration-200 ease-in-out flex items-center justify-center"
+											variant="outline"
+											className="flex-1"
 											// onClick={handleDownload}
 											disabled={isDownloading}
 											onClick={async (e) => {
@@ -409,7 +483,8 @@ export function RawakClient({ initialInstitutions }: Props) {
 											</span>
 										</Button>
 										<Button
-											className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 px-3 py-2 rounded-md transition-all duration-200 ease-in-out flex items-center justify-center"
+											variant="outline"
+											className="flex-1"
 											onClick={handleCopy}
 											disabled={isDownloading}
 										>
@@ -417,7 +492,8 @@ export function RawakClient({ initialInstitutions }: Props) {
 											<span className="text-xs font-medium">Salin</span>
 										</Button>
 										<Button
-											className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 px-3 py-2 rounded-md transition-all duration-200 ease-in-out flex items-center justify-center"
+											variant="outline"
+											className="flex-1"
 											onClick={handleMapOpen}
 											disabled={isDownloading}
 										>
@@ -428,9 +504,9 @@ export function RawakClient({ initialInstitutions }: Props) {
 								</div>
 							</div>
 						) : (
-							<div className="flex flex-col items-center justify-center h-full min-h-[300px] bg-muted rounded-lg p-8 transition-colors duration-200">
+							<div className="flex h-full min-h-[300px] flex-col items-center justify-center rounded-lg bg-muted/60 p-8 transition-colors duration-200">
 								<QrCode size={48} className="text-muted-foreground/70 mb-4" />
-								<p className="text-muted-foreground text-lg mb-6 text-center">
+								<p className="mb-6 text-center text-base text-muted-foreground">
 									Klik butang untuk menjana kod QR rawak.
 								</p>
 							</div>

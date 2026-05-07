@@ -41,12 +41,8 @@ export function InstitutionPageClient({ institution }: Props) {
 				adaptedInstitution.coords.length === 2 && (
 					<>
 						<div className="flex justify-end">
-							<Button
-								onClick={toggleMap}
-								variant="outline"
-								className="bg-gradient-to-br from-orange-500 to-orange-300 border border-orange-400 rounded-full hover:from-orange-600 hover:to-orange-400 transition-colors"
-							>
-								<MapIcon className="mr-2 h-5 w-5" />
+							<Button onClick={toggleMap} variant="outline" className="gap-2">
+								<MapIcon className="h-4 w-4 text-primary" />
 								<span className="hidden sm:inline">
 									{isMapVisible ? "Sembunyikan Peta" : "Tunjukkan Peta"}
 								</span>

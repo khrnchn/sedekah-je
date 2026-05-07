@@ -21,6 +21,12 @@ const Search = ({
 }: SearchProps) => {
 	const [searchValue, setSearchValue] = useState(initialValue || "");
 	const [isMac, setIsMac] = useState(false);
+	const [isFocused, setIsFocused] = useState(false);
+	const showShortcut = !hideShortcut && !isFocused && searchValue.length === 0;
+
+	useEffect(() => {
+		setSearchValue(initialValue || "");
+	}, [initialValue]);
 
 	useEffect(() => {
 		// Detect if user is on macOS
@@ -52,13 +58,15 @@ const Search = ({
 				type="search"
 				placeholder="Cari masjid/surau/institusi..."
 				className={cn(
-					"w-full rounded-lg bg-background text-sm border shadow-md",
-					hideShortcut ? "pr-3" : "pr-16",
+					"w-full rounded-md text-sm",
+					showShortcut ? "pr-16" : "pr-3",
 				)}
 				value={searchValue}
 				onChange={handleSearchChange}
+				onFocus={() => setIsFocused(true)}
+				onBlur={() => setIsFocused(false)}
 			/>
-			{!hideShortcut && (
+			{showShortcut && (
 				<div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 pointer-events-none">
 					<Kbd variant="outline">{isMac ? "⌘" : "Ctrl"}</Kbd>
 					<Kbd variant="outline">K</Kbd>

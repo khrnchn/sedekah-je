@@ -1,7 +1,7 @@
-import { Spinner } from "@/components/ui/spinner";
 import { useRouter } from "next/navigation";
 // hooks/use-navigation-loading.ts
 import { useCallback, useState } from "react";
+import { Spinner } from "@/components/ui/spinner";
 
 interface NavigateOptions {
 	showOverlay?: boolean;

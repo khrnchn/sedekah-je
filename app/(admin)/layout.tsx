@@ -1,9 +1,9 @@
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { GlobalCommand } from "@/components/global-command";
 import { Toaster } from "@/components/ui/sonner";
 import { getAdminUser } from "@/lib/queries/users";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 
 export default async function AdminLayout({
 	children,
