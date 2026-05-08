@@ -35,6 +35,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/hooks/use-auth";
+import { validateAndCompressImage } from "@/lib/image-utils";
 import {
 	categories as CATEGORY_OPTIONS,
 	states as STATE_OPTIONS,
@@ -331,7 +332,29 @@ export default function InstitutionFormOptimized() {
 			const qrFile =
 				qrImageInput?.files?.[0] ?? qrImageGalleryInput?.files?.[0];
 			if (qrFile) {
-				formData.append("qrImage", qrFile);
+				// Keep QR extraction on the original file, then shrink the upload payload
+				// only at submit time if the browser can produce a smaller image.
+				let uploadFile = qrFile;
+				try {
+					const result = await validateAndCompressImage(qrFile, {
+						maxWidth: 1600,
+						maxHeight: 1600,
+						quality: 0.88,
+						maxFileSizeMB: 5,
+					});
+
+					if (
+						result.isValid &&
+						result.compressedFile &&
+						result.compressedFile.size < qrFile.size
+					) {
+						uploadFile = result.compressedFile;
+					}
+				} catch (compressionError) {
+					console.warn("QR compression skipped:", compressionError);
+				}
+
+				formData.append("qrImage", uploadFile);
 			}
 
 			const result = await submitInstitution(undefined, formData);
