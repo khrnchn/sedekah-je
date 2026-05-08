@@ -4,6 +4,10 @@ import { type NextRequest, NextResponse } from "next/server";
 export async function proxy(request: NextRequest) {
 	const sessionCookie = getSessionCookie(request);
 	const { pathname } = request.nextUrl;
+	const authReasonByPath: Record<string, string> = {
+		"/contribute": "submit_qr",
+		"/my-contributions": "view_submissions",
+	};
 
 	// Add pathname to headers for layouts
 	const requestHeaders = new Headers(request.headers);
@@ -21,9 +25,17 @@ export async function proxy(request: NextRequest) {
 
 	// User route protection
 	const userProtectedPaths = ["/contribute", "/my-contributions"];
-	if (userProtectedPaths.some((path) => pathname.startsWith(path))) {
+	const matchedProtectedPath = userProtectedPaths.find((path) =>
+		pathname.startsWith(path),
+	);
+	if (matchedProtectedPath) {
 		if (!sessionCookie) {
-			return NextResponse.redirect(new URL("/auth", request.url));
+			const authUrl = new URL("/auth", request.url);
+			const nextPath = `${pathname}${request.nextUrl.search}`;
+			const reason = authReasonByPath[matchedProtectedPath] ?? "login_required";
+			authUrl.searchParams.set("next", nextPath);
+			authUrl.searchParams.set("reason", reason);
+			return NextResponse.redirect(authUrl);
 		}
 		requestHeaders.set("x-requires-auth", "true");
 	}

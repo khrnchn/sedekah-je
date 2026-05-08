@@ -64,7 +64,13 @@ const links = [
 
 const publicLinks = [
 	{ name: "Laman Utama", href: "/", icon: Home },
-	{ name: "Hantar QR", href: "/contribute", icon: HeartHandshake },
+	{
+		name: "Hantar QR",
+		href: "/contribute",
+		icon: HeartHandshake,
+		requiresAuth: true,
+		authReason: "submit_qr",
+	},
 	{ name: "Carta Penghantar QR", href: "/leaderboard", icon: BarChart },
 	{ name: "Ramadhan", href: "/ramadhan", icon: Moon },
 ];
@@ -73,18 +79,31 @@ interface HeaderProps {
 	compactMobileBrand?: boolean;
 }
 
+interface NavLinkItem {
+	name: string;
+	href: string;
+	icon: typeof Home;
+	requiresAuth?: boolean;
+	authReason?: string;
+}
+
 export const Header = (_props: HeaderProps = {}) => {
 	const isMobile = useIsMobile();
 	const { user, isAuthenticated, isAdmin, signOut, isLoading } = useAuth();
 	const pathname = usePathname();
 	const [open, setOpen] = useState(false);
 	const showRamadhanLink = isCurrentGregorianYearRamadhanActive();
-	const mobileLinks = (isAuthenticated ? links : publicLinks).filter(
+	const mobileLinks: NavLinkItem[] = (isAuthenticated ? links : publicLinks)
+		.map((link) => link as NavLinkItem)
+		.filter((link) => showRamadhanLink || link.href !== "/ramadhan");
+	const desktopPublicLinks: NavLinkItem[] = publicLinks.filter(
 		(link) => showRamadhanLink || link.href !== "/ramadhan",
 	);
-	const desktopPublicLinks = publicLinks.filter(
-		(link) => showRamadhanLink || link.href !== "/ramadhan",
-	);
+	const getGuestHref = (link: NavLinkItem) => {
+		if (!link.requiresAuth) return link.href;
+		const reason = link.authReason ?? "login_required";
+		return `/auth?next=${encodeURIComponent(link.href)}&reason=${reason}`;
+	};
 
 	const handleSignOut = async () => {
 		setOpen(false);
@@ -121,7 +140,7 @@ export const Header = (_props: HeaderProps = {}) => {
 				{mobileLinks.map((link) => (
 					<Link
 						key={link.href}
-						href={link.href}
+						href={isAuthenticated ? link.href : getGuestHref(link)}
 						onClick={() => setOpen(false)}
 						className={cn(
 							"flex flex-col items-center justify-center rounded-lg p-3 transition-colors hover:bg-primary/10 hover:text-primary",
@@ -262,7 +281,10 @@ export const Header = (_props: HeaderProps = {}) => {
 									const Icon = link.icon;
 									const isActive = pathname === link.href;
 									return (
-										<Link key={link.href} href={link.href}>
+										<Link
+											key={link.href}
+											href={isAuthenticated ? link.href : getGuestHref(link)}
+										>
 											<div
 												className={cn(
 													"flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",

@@ -37,16 +37,16 @@ const userNavItems: NavItem[] = [
 		description: "Kembali ke laman utama",
 	},
 	{
-		title: "Tambah Institusi",
+		title: "Hantar QR",
 		href: "/contribute",
 		icon: Plus,
-		description: "Tambah institusi baru",
+		description: "Hantar QR institusi baru",
 	},
 	{
-		title: "Leaderboard",
+		title: "Leaderboard QR",
 		href: "/leaderboard",
 		icon: Trophy,
-		description: "Lihat carta",
+		description: "Lihat carta penghantar QR",
 	},
 	{
 		title: "Submission Saya",
