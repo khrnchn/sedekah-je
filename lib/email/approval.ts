@@ -1,5 +1,3 @@
-"use server";
-
 import { EmailParams, MailerSend, Recipient, Sender } from "mailersend";
 import { env } from "@/env";
 
