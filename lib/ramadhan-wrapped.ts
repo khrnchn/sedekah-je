@@ -192,10 +192,22 @@ function toTimezoneDayOfWeek(date: Date, timezone: string): number {
 function toTimezoneHour(date: Date, timezone: string): number {
 	const formatter = new Intl.DateTimeFormat("en-US", {
 		timeZone: timezone,
-		hour: "numeric",
-		hour12: false,
+		hour: "2-digit",
+		hourCycle: "h23",
 	});
-	return Number(formatter.format(date));
+	const value = Number(formatter.format(date));
+	return Number.isFinite(value) ? value % 24 : 0;
+}
+
+function median(values: number[], decimals?: number): number {
+	if (values.length === 0) return 0;
+	const middle = Math.floor(values.length / 2);
+	const value =
+		values.length % 2 === 1
+			? values[middle]
+			: (values[middle - 1] + values[middle]) / 2;
+
+	return decimals === undefined ? value : Number(value.toFixed(decimals));
 }
 
 function aggregateByDayOfWeek(
@@ -369,7 +381,7 @@ export async function getRamadhanWrappedStats(): Promise<RamadhanWrappedStats> {
 			),
 		db
 			.select({
-				name: sql<string>`COALESCE(NULLIF(${users.name}, ''), NULLIF(${users.username}, ''), ${users.email}, 'Anonymous')`,
+				name: sql<string>`COALESCE(NULLIF(${users.name}, ''), NULLIF(${users.username}, ''), 'Anonymous')`,
 				submissions: count(),
 			})
 			.from(institutions)
@@ -382,11 +394,11 @@ export async function getRamadhanWrappedStats(): Promise<RamadhanWrappedStats> {
 				),
 			)
 			.groupBy(
-				sql`COALESCE(NULLIF(${users.name}, ''), NULLIF(${users.username}, ''), ${users.email}, 'Anonymous')`,
+				sql`COALESCE(NULLIF(${users.name}, ''), NULLIF(${users.username}, ''), 'Anonymous')`,
 			)
 			.orderBy(
 				sql`count(*) DESC`,
-				sql`COALESCE(NULLIF(${users.name}, ''), NULLIF(${users.username}, ''), ${users.email}, 'Anonymous') ASC`,
+				sql`COALESCE(NULLIF(${users.name}, ''), NULLIF(${users.username}, ''), 'Anonymous') ASC`,
 			)
 			.limit(5),
 		db
@@ -640,10 +652,7 @@ export async function getRamadhanWrappedStats(): Promise<RamadhanWrappedStats> {
 	const tenPlusContributors = contributorSubmissionCounts.filter(
 		(value) => value >= 10,
 	).length;
-	const medianSubmissions =
-		contributorCount > 0
-			? contributorSubmissionCounts[Math.floor((contributorCount - 1) / 2)]
-			: 0;
+	const medianSubmissions = median(contributorSubmissionCounts, 1);
 	const avgSubmissions =
 		contributorCount > 0
 			? Number(
@@ -666,10 +675,7 @@ export async function getRamadhanWrappedStats(): Promise<RamadhanWrappedStats> {
 					).toFixed(1),
 				)
 			: 0;
-	const medianReviewHours =
-		reviewedCount > 0
-			? Number(reviewHours[Math.floor(reviewedCount / 2)].toFixed(1))
-			: 0;
+	const medianReviewHours = median(reviewHours, 1);
 	const p90ReviewHours =
 		reviewedCount > 0
 			? Number(

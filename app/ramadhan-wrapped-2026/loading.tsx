@@ -1,6 +1,7 @@
 import { Header } from "@/components/shared/header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { ChapterSkeleton } from "./_components/loading-skeletons";
 
 export default function RamadhanWrappedLoading() {
 	return (
@@ -29,29 +30,5 @@ export default function RamadhanWrappedLoading() {
 				</div>
 			</main>
 		</>
-	);
-}
-
-function ChapterSkeleton() {
-	return (
-		<section className="mt-14 sm:mt-18 md:mt-22">
-			<Skeleton className="mb-2 h-3 w-20" />
-			<Skeleton className="mb-3 h-7 w-64 sm:h-8 md:h-10" />
-			<Skeleton className="mb-6 h-4 w-full max-w-lg" />
-			<div className="space-y-4">
-				<div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-					<div>
-						<Skeleton className="mb-2 h-3 w-24" />
-						<Skeleton className="h-12 w-32 sm:h-14 md:h-16" />
-					</div>
-					<div className="space-y-4">
-						<div>
-							<Skeleton className="mb-2 h-3 w-24" />
-							<Skeleton className="h-8 w-24" />
-						</div>
-					</div>
-				</div>
-			</div>
-		</section>
 	);
 }

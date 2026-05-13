@@ -37,7 +37,8 @@ export async function UmamiSections({
 		(a, b) => b.views - a.views,
 	)[0];
 
-	const topMosqueSlugs = stats.rankings.topMosquePages.map((p) => p.slug);
+	const topMosquePages = stats.rankings?.topMosquePages ?? [];
+	const topMosqueSlugs = topMosquePages.slice(0, 5).map((p) => p.slug);
 	const [institutionsByName] = await Promise.all([
 		topMosqueSlugs.length > 0
 			? db
@@ -238,7 +239,7 @@ export async function UmamiSections({
 				</div>
 			)}
 
-			{stats.rankings.topMosquePages.length > 0 && (
+			{topMosquePages.length > 0 && (
 				<div className="mt-10">
 					<h3 className="font-heading text-base font-semibold tracking-tight text-foreground sm:text-lg">
 						Most visited mosques
@@ -247,7 +248,7 @@ export async function UmamiSections({
 						The top 5 masjids people looked up during Ramadhan.
 					</StoryProse>
 					<ul className="mt-3 space-y-2">
-						{stats.rankings.topMosquePages.map((row, i) => {
+						{topMosquePages.slice(0, 5).map((row, i) => {
 							const name = slugToName.get(row.slug) ?? row.slug;
 							return (
 								<li key={row.slug} className="flex items-center gap-3 text-sm">

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 
 export function ShareButton() {
@@ -11,8 +12,9 @@ export function ShareButton() {
 			await navigator.clipboard.writeText(window.location.href);
 			setCopied(true);
 			setTimeout(() => setCopied(false), 2000);
-		} catch {
-			// ignore
+		} catch (err) {
+			console.error("Failed to copy Ramadhan Wrapped link", err);
+			toast.error("Could not copy link. Please copy it from the address bar.");
 		}
 	};
 

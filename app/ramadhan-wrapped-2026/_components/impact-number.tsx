@@ -55,10 +55,7 @@ export function ImpactNumber({
 	useEffect(() => {
 		if (!isInView) return;
 		const end = value;
-		if (end === 0) {
-			setDisplayed(0);
-			return;
-		}
+		if (end === 0) return;
 		const startTime = performance.now();
 		const ms = duration * 1000;
 
