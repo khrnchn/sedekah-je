@@ -68,7 +68,34 @@ export async function submitInstitution(
 		Array.from(formData.entries()),
 	);
 
-	// --- Extract raw values
+	// --- Authentication check (server-side, not client-submitted)
+	const hdrs = await headers();
+	const session = await auth.api.getSession({ headers: hdrs });
+	if (!session?.user?.id) {
+		return {
+			status: "error",
+			errors: {
+				general: [
+					"Anda mesti log masuk untuk menghantar submission. Sila log masuk dan cuba lagi.",
+				],
+			},
+		};
+	}
+
+	const contributorId = session.user.id;
+
+	// --- Validate user exists
+	const user = await getUserById(contributorId);
+	if (!user) {
+		return {
+			status: "error",
+			errors: {
+				general: ["Pengguna tidak sah. Sila log masuk semula dan cuba lagi."],
+			},
+		};
+	}
+
+	// --- Extract raw values (contributorId comes from session, not form data)
 	const rawFromForm = {
 		name:
 			typeof formData.get("name") === "string"
@@ -86,33 +113,9 @@ export async function submitInstitution(
 				: formData.get("address"),
 		contributorRemarks: formData.get("contributorRemarks"),
 		sourceUrl: formData.get("sourceUrl"),
-		contributorId: formData.get("contributorId"),
+		contributorId,
 		qrContent: formData.get("qrContent"),
 	};
-
-	// --- Authentication check
-	const contributorId = formData.get("contributorId") as string | null;
-	if (!contributorId || contributorId.trim() === "") {
-		return {
-			status: "error",
-			errors: {
-				general: [
-					"Anda mesti log masuk untuk menghantar submission. Sila log masuk dan cuba lagi.",
-				],
-			},
-		};
-	}
-
-	// --- Validate contributorId is a valid user
-	const user = await getUserById(contributorId);
-	if (!user) {
-		return {
-			status: "error",
-			errors: {
-				general: ["Pengguna tidak sah. Sila log masuk semula dan cuba lagi."],
-			},
-		};
-	}
 
 	// --- Rate limit check (3 submissions per day)
 	if (user.role !== "admin") {

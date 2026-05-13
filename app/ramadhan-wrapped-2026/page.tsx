@@ -1,18 +1,41 @@
 import type { Metadata } from "next";
 import { unstable_cache } from "next/cache";
 import Link from "next/link";
+import { Suspense } from "react";
 import { Header } from "@/components/shared/header";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
 	getRamadhanWrappedStats,
 	RAMADHAN_WRAPPED_CONFIG,
 } from "@/lib/ramadhan-wrapped";
-import { getGitHubWrappedStats } from "@/lib/ramadhan-wrapped-github";
-import { getUmamiWrappedStats } from "@/lib/ramadhan-wrapped-umami";
 import { cn } from "@/lib/utils";
-import { DailyPageviewsChart } from "./_components/daily-pageviews-chart";
+import { ApprovalBar } from "./_components/approval-bar";
+import { CityBarList } from "./_components/city-bar-list";
+import {
+	type CommunityInsight,
+	CommunityInsights,
+} from "./_components/community-insights";
+import { ContributorSpotlight } from "./_components/contributor-spotlight";
 import { DailySubmissionsChart } from "./_components/daily-submissions-chart";
+import { DayCalendar } from "./_components/day-calendar";
+import { DayOfWeekChart } from "./_components/day-of-week-chart";
+import { AsyncGitHubSection } from "./_components/github-section";
+import { HourlyChart } from "./_components/hourly-chart";
+import { ImpactNumber } from "./_components/impact-number";
+import {
+	GitHubSectionSkeleton,
+	UmamiSectionsSkeleton,
+} from "./_components/loading-skeletons";
+import { ShareButton } from "./_components/share-button";
+import { formatNumber, formatPercent } from "./_components/shared";
+import { CategoryPills, StateBarList } from "./_components/state-bar-list";
+import {
+	ChapterSubtitle,
+	ChapterTitle,
+	StoryChapter,
+	StoryProse,
+} from "./_components/story-chapter";
+import { AsyncUmamiSections } from "./_components/umami-sections";
 
 export const metadata: Metadata = {
 	title: "Ramadhan Wrapped 2026 | Sedekah Je",
@@ -36,95 +59,165 @@ type Props = {
 
 const getWrappedStatsCached = unstable_cache(
 	async () => getRamadhanWrappedStats(),
-	["ramadhan-wrapped-2026-public"],
+	["ramadhan-wrapped-2026-v4"],
 	{
 		revalidate: 300,
 		tags: ["ramadhan-wrapped-2026"],
 	},
 );
 
-const getUmamiStatsCached = unstable_cache(
-	async () => getUmamiWrappedStats(),
-	["ramadhan-wrapped-2026-umami"],
-	{
-		revalidate: 300,
-		tags: ["ramadhan-wrapped-2026-umami"],
-	},
-);
-
-const getGitHubStatsCached = unstable_cache(
-	async () => getGitHubWrappedStats(),
-	["ramadhan-wrapped-2026-github"],
-	{
-		revalidate: 300,
-		tags: ["ramadhan-wrapped-2026-github"],
-	},
-);
-
-function formatNumber(value: number): string {
-	return new Intl.NumberFormat("en-GB").format(value);
-}
-
 export default async function RamadhanWrappedPage({ searchParams }: Props) {
 	const params = await searchParams;
 	const posterMode = params.poster === "1" || params.poster === "true";
-	const [stats, umamiStats, githubStats] = await Promise.all([
-		getWrappedStatsCached(),
-		getUmamiStatsCached(),
-		getGitHubStatsCached(),
-	]);
-	const { kpis, rankings, campaignProgress, range } = stats;
+	const stats = await getWrappedStatsCached();
+	const kpis = {
+		...stats.kpis,
+		firstTimeContributors: stats.kpis.firstTimeContributors ?? 0,
+		approvalRate: stats.kpis.approvalRate ?? 0,
+		avgSubmissionsPerDay: stats.kpis.avgSubmissionsPerDay ?? 0,
+	};
+	const rankings = stats.rankings;
+	const campaignProgress = stats.campaignProgress;
+	const growthMomentum = stats.growthMomentum ?? {
+		firstHalf: 0,
+		secondHalf: 0,
+		changePercent: 0,
+	};
+	const totalSubs = kpis.totalSubmissions;
 
 	const strongestDay = [...stats.dailyTrend].sort(
 		(a, b) => b.submissions - a.submissions || a.date.localeCompare(b.date),
 	)[0];
+	const strongestDayShare =
+		strongestDay && totalSubs > 0
+			? Number(((strongestDay.submissions / totalSubs) * 100).toFixed(1))
+			: 0;
 
 	const chartPoints = stats.dailyTrend.map((row) => ({
 		label: row.label,
 		submissions: row.submissions,
 	}));
 
+	const topState = rankings.topStates[0];
+	const topStateShare =
+		topState && totalSubs > 0
+			? Math.round((topState.submissions / totalSubs) * 100)
+			: 0;
+	const topCategoryState = rankings.topCategoryStates?.[0];
+	const topCategoryStateShare =
+		topCategoryState && totalSubs > 0
+			? Math.round((topCategoryState.submissions / totalSubs) * 100)
+			: 0;
+	const topContributor = rankings.topContributors[0];
+	const topContributorShare =
+		topContributor && totalSubs > 0
+			? Math.round((topContributor.submissions / totalSubs) * 100)
+			: 0;
+	const growthDirection =
+		growthMomentum.changePercent > 0
+			? "up"
+			: growthMomentum.changePercent < 0
+				? "down"
+				: "flat";
+
+	const { dayOfWeekActivity, hourlyActivity } = stats;
+	const topCity = rankings.topCities[0];
+	const topCityShare =
+		topCity && totalSubs > 0
+			? Math.round((topCity.submissions / totalSubs) * 100)
+			: 0;
+	const busiestWeekday = [...dayOfWeekActivity].sort(
+		(a, b) => b.submissions - a.submissions,
+	)[0];
+	const busiestHour = [...hourlyActivity].sort(
+		(a, b) => b.submissions - a.submissions,
+	)[0];
+	const firstTimeContributorShare =
+		kpis.firstTimeContributors > 0 && kpis.uniqueContributors > 0
+			? Math.round((kpis.firstTimeContributors / kpis.uniqueContributors) * 100)
+			: 0;
+	const communityInsights = buildCommunityInsights({
+		firstTimeContributors: kpis.firstTimeContributors,
+		firstTimeContributorShare,
+		growthDirection,
+		growthChangePercent: growthMomentum.changePercent,
+		topState: topState
+			? {
+					name: topState.state,
+					share: topStateShare,
+					submissions: topState.submissions,
+				}
+			: null,
+		topCity: topCity
+			? {
+					name: topCity.city,
+					state: topCity.state,
+					share: topCityShare,
+					submissions: topCity.submissions,
+				}
+			: null,
+		busiestWeekday,
+		busiestHour,
+		approvalRate: kpis.approvalRate,
+		contributorShape: stats.contributorShape,
+		dataCompleteness: stats.dataCompleteness,
+		reviewSpeed: stats.reviewSpeed,
+		directoryScale: stats.directoryScale,
+		strongestDay: strongestDay
+			? {
+					label: strongestDay.label,
+					submissions: strongestDay.submissions,
+					share: strongestDayShare,
+					avgMultiple:
+						kpis.avgSubmissionsPerDay > 0
+							? Number(
+									(
+										strongestDay.submissions / kpis.avgSubmissionsPerDay
+									).toFixed(1),
+								)
+							: 0,
+				}
+			: null,
+		topCategoryState: topCategoryState
+			? {
+					category: topCategoryState.category,
+					state: topCategoryState.state,
+					share: topCategoryStateShare,
+					submissions: topCategoryState.submissions,
+				}
+			: null,
+	});
+
 	return (
 		<>
 			{!posterMode && <Header compactMobileBrand />}
-			<main
-				className={cn(
-					"min-h-screen bg-background bg-gradient-to-b",
-					"from-muted/35 via-background to-background",
-					"dark:from-muted/15 dark:via-background dark:to-background",
-				)}
-			>
+			<main className={cn("min-h-screen bg-background", "dark:bg-background")}>
 				<div
 					className={cn(
-						"mx-auto w-full max-w-6xl px-3 pt-6",
+						"mx-auto w-full max-w-3xl px-4 pt-12",
 						"pb-[calc(2rem+env(safe-area-inset-bottom,0px))]",
-						"sm:px-4 sm:pt-8",
-						"md:px-6 md:pt-10 md:pb-[calc(2.5rem+env(safe-area-inset-bottom,0px))]",
+						"sm:px-6 sm:pt-16 md:pt-20",
+						"md:pb-[calc(2.5rem+env(safe-area-inset-bottom,0px))]",
 					)}
 				>
-					<header
-						className={cn(
-							"relative mb-8 overflow-hidden rounded-xl border border-border/60",
-							"bg-card p-5 shadow-sm sm:mb-10 sm:rounded-2xl sm:p-8 md:p-10",
-							"dark:border-border/80 dark:shadow-none",
-						)}
-					>
-						<div
-							className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 opacity-[0.03] dark:opacity-[0.06] sm:right-8 md:right-12"
-							aria-hidden
-						>
-							<svg
-								viewBox="0 0 160 160"
-								fill="none"
-								className="size-24 sm:size-32 md:size-40"
+					{/* ── Prologue ── */}
+					<StoryChapter>
+						<div className="relative mb-4 overflow-hidden rounded-3xl border border-primary/10 bg-gradient-to-br from-primary/[0.07] via-card to-accent/[0.06] p-6 shadow-sm sm:mb-6 sm:p-8 md:p-10 dark:from-primary/[0.12] dark:via-card dark:to-accent/[0.08]">
+							<div
+								className="pointer-events-none absolute -right-4 -top-4 opacity-[0.04] sm:right-2 sm:top-2"
+								aria-hidden
 							>
-								<circle cx="80" cy="80" r="70" className="fill-primary" />
-								<circle cx="100" cy="65" r="58" className="fill-card" />
-								<circle cx="42" cy="28" r="5" className="fill-primary" />
-							</svg>
-						</div>
-						<div className="relative">
-							<div className="flex flex-wrap items-center gap-2">
+								<svg
+									viewBox="0 0 160 160"
+									fill="none"
+									className="size-32 sm:size-40 md:size-48"
+								>
+									<circle cx="80" cy="80" r="70" className="fill-primary" />
+									<circle cx="100" cy="65" r="58" className="fill-card" />
+									<circle cx="42" cy="28" r="5" className="fill-primary" />
+								</svg>
+							</div>
+							<div className="relative">
 								<span
 									className={cn(
 										"inline-flex items-center rounded-full border border-primary/30",
@@ -134,454 +227,705 @@ export default async function RamadhanWrappedPage({ searchParams }: Props) {
 								>
 									Sedekah Je
 								</span>
-								<span className="text-[0.65rem] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-									Data langsung
-								</span>
+								<h1 className="mt-4 font-heading text-3xl font-bold tracking-tight text-foreground sm:mt-5 sm:text-4xl md:text-5xl">
+									Ramadhan Wrapped {RAMADHAN_WRAPPED_CONFIG.year}
+								</h1>
+								<StoryProse className="mt-4">
+									30 days of community, generosity, and open-source
+									collaboration. Here is what the Sedekah Je community
+									accomplished between {stats.range.label}.
+								</StoryProse>
 							</div>
-							<h1 className="mt-4 font-heading text-3xl font-bold tracking-tight text-foreground sm:mt-5 sm:text-4xl md:text-5xl">
-								Ramadhan Wrapped {RAMADHAN_WRAPPED_CONFIG.year}
-							</h1>
-							<p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground sm:mt-4 sm:text-base">
-								Ringkasan komuniti untuk {range.label}. Angka dikira langsung
-								dari pangkalan data Sedekah Je.
+						</div>
+					</StoryChapter>
+
+					{/* ── The Count ── */}
+					<StoryChapter className="mt-14 sm:mt-18 md:mt-22">
+						<ChapterSubtitle>The count</ChapterSubtitle>
+						<ChapterTitle>
+							{kpis.totalSubmissions > 0
+								? "This Ramadhan, the community showed up"
+								: "A quiet start"}
+						</ChapterTitle>
+						<StoryProse className="mt-3">
+							{kpis.totalSubmissions > 0 ? (
+								<>
+									{kpis.totalSubmissions.toLocaleString("en-GB")} institutions
+									were submitted in 30 days. That is{" "}
+									<Strong>{kpis.avgSubmissionsPerDay}</Strong> per day on
+									average.
+								</>
+							) : (
+								"No institutions were submitted during this Ramadhan period."
+							)}
+						</StoryProse>
+
+						<div className="mt-10 sm:mt-12">
+							<ImpactNumber
+								value={kpis.totalSubmissions}
+								label="Institutions submitted"
+								suffix="total"
+								size="large"
+							/>
+						</div>
+
+						<div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+							<div className="rounded-2xl border border-border/60 bg-card p-4 shadow-sm sm:p-5 dark:border-border/80 dark:shadow-none">
+								<p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+									New users
+								</p>
+								<p className="mt-2 font-heading text-2xl font-bold tabular-nums tracking-tight text-foreground sm:text-3xl">
+									{formatNumber(kpis.newUsers)}
+								</p>
+							</div>
+							<div className="rounded-2xl border border-border/60 bg-card p-4 shadow-sm sm:p-5 dark:border-border/80 dark:shadow-none">
+								<p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+									Contributors
+								</p>
+								<p className="mt-2 font-heading text-2xl font-bold tabular-nums tracking-tight text-foreground sm:text-3xl">
+									{formatNumber(kpis.uniqueContributors)}
+								</p>
+							</div>
+							<div className="rounded-2xl border border-border/60 bg-card p-4 shadow-sm sm:p-5 dark:border-border/80 dark:shadow-none">
+								<p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+									Avg per day
+								</p>
+								<p className="mt-2 font-heading text-2xl font-bold tabular-nums tracking-tight text-foreground sm:text-3xl">
+									{kpis.avgSubmissionsPerDay}
+								</p>
+							</div>
+							<div className="rounded-2xl border border-border/60 bg-card p-4 shadow-sm sm:p-5 dark:border-border/80 dark:shadow-none">
+								<p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+									Approval rate
+								</p>
+								<p className="mt-2 font-heading text-2xl font-bold tabular-nums tracking-tight text-foreground sm:text-3xl">
+									{formatPercent(kpis.approvalRate)}
+								</p>
+							</div>
+						</div>
+
+						{kpis.totalSubmissions > 0 && (
+							<div className="mt-10">
+								<h3 className="font-heading text-lg font-semibold tracking-tight text-foreground sm:text-xl">
+									Approval breakdown
+								</h3>
+								<StoryProse className="mt-2">
+									<Strong>{formatPercent(kpis.approvalRate)}</Strong> of
+									submissions were approved. Here is the full split.
+								</StoryProse>
+								<div className="mt-5">
+									<ApprovalBar
+										approved={kpis.approvedSubmissions}
+										pending={kpis.pendingSubmissions}
+										rejected={kpis.rejectedSubmissions}
+										total={kpis.totalSubmissions}
+									/>
+								</div>
+							</div>
+						)}
+					</StoryChapter>
+
+					{/* ── The People ── */}
+					<StoryChapter className="mt-14 sm:mt-18 md:mt-22">
+						<ChapterSubtitle>The people</ChapterSubtitle>
+						<ChapterTitle>Behind every submission</ChapterTitle>
+						<StoryProse className="mt-3">
+							{kpis.firstTimeContributors > 0 ? (
+								<>
+									<Strong>{kpis.firstTimeContributors}</Strong> contributors
+									made their first-ever submission during this Ramadhan.
+									{kpis.uniqueContributors > 0 &&
+										` ${kpis.uniqueContributors} unique contributors kept the directory growing.`}
+									{topContributor && topContributorShare > 0 && (
+										<>
+											{" "}
+											<Strong>{topContributor.name}</Strong> led the charge with{" "}
+											<Strong>{topContributor.submissions}</Strong> submissions
+											, <Strong>{topContributorShare}%</Strong> of the total.
+										</>
+									)}
+								</>
+							) : (
+								"Every submission comes from someone in the community."
+							)}
+						</StoryProse>
+
+						{rankings.topContributors.length > 0 && (
+							<div className="mt-8">
+								<h3 className="font-heading text-base font-semibold tracking-tight text-foreground sm:text-lg">
+									Top contributors
+								</h3>
+								<div className="mt-4">
+									<ContributorSpotlight
+										contributors={rankings.topContributors}
+									/>
+								</div>
+							</div>
+						)}
+					</StoryChapter>
+
+					{/* ── 30 Days, 30 QRs ── */}
+					<StoryChapter className="mt-14 sm:mt-18 md:mt-22">
+						<ChapterSubtitle>The campaign</ChapterSubtitle>
+						<ChapterTitle>30 Days, 30 QRs</ChapterTitle>
+						<StoryProse className="mt-3">
+							{(campaignProgress.featuredDays?.length ?? 0) > 0 ? (
+								<>
+									Every day of Ramadhan highlighted a different institution.
+									{campaignProgress.completionRate >= 100
+										? " From masjids to suraus across the country, here is every institution that was featured."
+										: ` ${campaignProgress.filledDays} out of ${campaignProgress.targetDays} days were featured.`}
+								</>
+							) : (
+								"Every day of Ramadhan highlighted a different institution."
+							)}
+						</StoryProse>
+
+						<div className="mt-8">
+							<DayCalendar featuredDays={campaignProgress.featuredDays ?? []} />
+						</div>
+					</StoryChapter>
+
+					{/* ── The Pulse ── */}
+					<StoryChapter className="mt-14 sm:mt-18 md:mt-22">
+						<ChapterSubtitle>Activity</ChapterSubtitle>
+						<ChapterTitle>The pulse of Ramadhan</ChapterTitle>
+						<StoryProse className="mt-3">
+							Submissions ebbed and flowed with the days.
+							{strongestDay && (
+								<>
+									{" "}
+									The busiest day was <Strong>{strongestDay.label}</Strong> with{" "}
+									<Strong>{formatNumber(strongestDay.submissions)}</Strong>{" "}
+									submissions.
+								</>
+							)}
+							{growthDirection !== "flat" && (
+								<>
+									{" "}
+									Submissions in the second half were{" "}
+									<Strong>
+										{growthDirection === "up" ? "up" : "down"}{" "}
+										{formatNumber(Math.abs(growthMomentum.changePercent))}%
+									</Strong>{" "}
+									compared to the first half.
+								</>
+							)}
+						</StoryProse>
+
+						<div className="mt-8">
+							<div className="overflow-hidden rounded-xl border border-border/60 bg-card shadow-sm sm:rounded-2xl dark:border-border/80 dark:shadow-none">
+								<div className="p-4 pt-5 sm:p-5 sm:pt-6">
+									<h3 className="font-heading text-base font-semibold tracking-tight text-foreground sm:text-lg">
+										Daily submissions
+									</h3>
+									<p className="text-xs text-muted-foreground">
+										Each bar is one day of Ramadhan
+									</p>
+									<div className="mt-4">
+										<DailySubmissionsChart
+											data={chartPoints}
+											seriesColor="primary"
+										/>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div className="mt-5 grid grid-cols-2 gap-3 sm:gap-4">
+							<div className="rounded-xl border border-border/60 bg-card p-4 shadow-sm sm:rounded-2xl sm:p-5 dark:border-border/80 dark:shadow-none">
+								<p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+									Avg per day
+								</p>
+								<p className="mt-2 font-heading text-xl font-bold tabular-nums tracking-tight text-foreground sm:text-2xl">
+									{kpis.avgSubmissionsPerDay}
+								</p>
+							</div>
+							<div className="rounded-xl border border-border/60 bg-card p-4 shadow-sm sm:rounded-2xl sm:p-5 dark:border-border/80 dark:shadow-none">
+								<p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+									Busiest day
+								</p>
+								<p className="mt-2 font-heading text-xl font-bold tabular-nums tracking-tight text-foreground sm:text-2xl">
+									{formatNumber(strongestDay?.submissions ?? 0)}
+								</p>
+								<p className="mt-0.5 text-xs text-muted-foreground">
+									{strongestDay?.label ?? "-"}
+								</p>
+							</div>
+						</div>
+					</StoryChapter>
+
+					{/* ── Rhythm ── */}
+					<StoryChapter className="mt-14 sm:mt-18 md:mt-22">
+						<ChapterSubtitle>Rhythm</ChapterSubtitle>
+						<ChapterTitle>When the community showed up</ChapterTitle>
+						<StoryProse className="mt-3">
+							Patterns emerged across the days and hours.
+							{busiestWeekday && (
+								<>
+									{" "}
+									<Strong>{busiestWeekday.day}</Strong> was the most active day
+									of the week with{" "}
+									<Strong>{formatNumber(busiestWeekday.submissions)}</Strong>{" "}
+									submissions.
+								</>
+							)}
+							{busiestHour && busiestHour.submissions > 0 && (
+								<>
+									{" "}
+									Peak submission time? <Strong>{busiestHour.label}</Strong>.
+								</>
+							)}
+						</StoryProse>
+
+						<div className="mt-8">
+							<h3 className="font-heading text-base font-semibold tracking-tight text-foreground sm:text-lg">
+								By day of week
+							</h3>
+							<p className="text-xs text-muted-foreground">
+								Total submissions per weekday during Ramadhan
 							</p>
-							<p className="mt-4 text-xs text-muted-foreground/80">
-								Dikemaskini:{" "}
-								<span className="tabular-nums text-foreground/70">
+							<div className="mt-4">
+								<div className="overflow-hidden rounded-xl border border-border/60 bg-card shadow-sm sm:rounded-2xl dark:border-border/80 dark:shadow-none">
+									<div className="p-4 pt-5 sm:p-5 sm:pt-6">
+										<DayOfWeekChart
+											data={dayOfWeekActivity}
+											dataKey="submissions"
+											label="Submissions"
+										/>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div className="mt-8">
+							<h3 className="font-heading text-base font-semibold tracking-tight text-foreground sm:text-lg">
+								By time of day
+							</h3>
+							<p className="text-xs text-muted-foreground">
+								Submission volume by hour (MYT)
+							</p>
+							<div className="mt-4">
+								<div className="overflow-hidden rounded-xl border border-border/60 bg-card shadow-sm sm:rounded-2xl dark:border-border/80 dark:shadow-none">
+									<div className="p-4 pt-5 sm:p-5 sm:pt-6">
+										<HourlyChart
+											data={hourlyActivity}
+											dataKey="submissions"
+											label="Submissions"
+										/>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div className="mt-5 grid grid-cols-2 gap-3 sm:gap-4">
+							<div className="rounded-xl border border-border/60 bg-card p-4 shadow-sm sm:rounded-2xl sm:p-5 dark:border-border/80 dark:shadow-none">
+								<p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+									Busiest weekday
+								</p>
+								<p className="mt-2 font-heading text-xl font-bold tabular-nums tracking-tight text-foreground sm:text-2xl">
+									{busiestWeekday?.day ?? "-"}
+								</p>
+								<p className="mt-0.5 text-xs text-muted-foreground">
+									{formatNumber(busiestWeekday?.submissions ?? 0)} submissions
+								</p>
+							</div>
+							<div className="rounded-xl border border-border/60 bg-card p-4 shadow-sm sm:rounded-2xl sm:p-5 dark:border-border/80 dark:shadow-none">
+								<p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+									Peak hour
+								</p>
+								<p className="mt-2 font-heading text-xl font-bold tabular-nums tracking-tight text-foreground sm:text-2xl">
+									{busiestHour?.label ?? "-"}
+								</p>
+								<p className="mt-0.5 text-xs text-muted-foreground">
+									{formatNumber(busiestHour?.submissions ?? 0)} submissions
+								</p>
+							</div>
+						</div>
+					</StoryChapter>
+
+					{/* ── Where It Happened ── */}
+					<StoryChapter className="mt-14 sm:mt-18 md:mt-22">
+						<ChapterSubtitle>Distribution</ChapterSubtitle>
+						<ChapterTitle>Where it happened</ChapterTitle>
+						<StoryProse className="mt-3">
+							From the heart of Kuala Lumpur to the coasts of Sabah, submissions
+							came from across Malaysia.
+							{topState && topStateShare > 0 && (
+								<>
+									{" "}
+									<Strong>{topState.state}</Strong> alone accounted for{" "}
+									<Strong>{topStateShare}%</Strong> of all submissions.
+								</>
+							)}
+						</StoryProse>
+
+						<div className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
+							<div>
+								<h3 className="font-heading text-base font-semibold tracking-tight text-foreground sm:text-lg">
+									Top states
+								</h3>
+								<div className="mt-4">
+									<StateBarList
+										states={rankings.topStates}
+										totalSubmissions={totalSubs}
+									/>
+								</div>
+							</div>
+							<div>
+								<h3 className="font-heading text-base font-semibold tracking-tight text-foreground sm:text-lg">
+									Top categories
+								</h3>
+								<div className="mt-4">
+									<CategoryPills
+										categories={rankings.topCategories}
+										totalSubmissions={totalSubs}
+									/>
+								</div>
+							</div>
+						</div>
+
+						{rankings.topCities.length > 0 && (
+							<div className="mt-8">
+								<h3 className="font-heading text-base font-semibold tracking-tight text-foreground sm:text-lg">
+									Top cities
+								</h3>
+								<StoryProse className="mt-2">
+									{topCity && (
+										<>
+											<Strong>{topCity.city}</Strong> led with{" "}
+											<Strong>{formatNumber(topCity.submissions)}</Strong>{" "}
+											submissions
+											{topCity.state !== topCity.city && (
+												<> from {topCity.state}</>
+											)}
+											.
+										</>
+									)}
+								</StoryProse>
+								<div className="mt-4">
+									<CityBarList
+										cities={rankings.topCities}
+										totalSubmissions={totalSubs}
+									/>
+								</div>
+							</div>
+						)}
+					</StoryChapter>
+
+					{communityInsights.length > 0 && (
+						<StoryChapter className="mt-14 sm:mt-18 md:mt-22">
+							<ChapterSubtitle>Insights</ChapterSubtitle>
+							<ChapterTitle>What the community patterns showed</ChapterTitle>
+							<StoryProse className="mt-3">
+								These are the strongest signals behind the month, filtered to
+								avoid filler when the data is thin.
+							</StoryProse>
+							<CommunityInsights
+								insights={communityInsights}
+								className="mt-8"
+							/>
+						</StoryChapter>
+					)}
+					<StoryChapter className="mt-14 sm:mt-18 md:mt-22">
+						<Suspense fallback={<UmamiSectionsSkeleton />}>
+							<AsyncUmamiSections />
+						</Suspense>
+					</StoryChapter>
+
+					{/* ── Open Source ── */}
+					<StoryChapter className="mt-14 sm:mt-18 md:mt-22">
+						<Suspense fallback={<GitHubSectionSkeleton />}>
+							<AsyncGitHubSection />
+						</Suspense>
+					</StoryChapter>
+
+					{/* ── Closing ── */}
+					<StoryChapter className="mt-14 sm:mt-18 md:mt-22">
+						<div className="relative overflow-hidden rounded-3xl border border-primary/10 bg-gradient-to-br from-primary/[0.07] via-muted/25 to-accent/[0.06] px-6 py-10 text-center sm:px-8 sm:py-14 dark:from-primary/[0.12] dark:via-muted/15 dark:to-accent/[0.08]">
+							<h2 className="font-heading text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+								That is a wrap.
+							</h2>
+							<StoryProse className="mx-auto mt-3 max-w-md text-center">
+								Thank you to every contributor, reviewer, and visitor who made
+								this Ramadhan meaningful.
+							</StoryProse>
+							{!posterMode && (
+								<div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center sm:gap-4">
+									<Button asChild variant="outline" size="sm">
+										<Link href="/ramadhan-wrapped-2026?poster=1">
+											View poster
+										</Link>
+									</Button>
+									<ShareButton />
+								</div>
+							)}
+							<p className="mt-6 text-xs text-muted-foreground/70">
+								Updated{" "}
+								<span className="tabular-nums">
 									{new Date(stats.generatedAt).toLocaleString("en-GB", {
-										timeZone: range.timezone,
+										timeZone: stats.range.timezone,
 									})}
 								</span>
 							</p>
-							{!posterMode && (
-								<Button asChild variant="outline" size="sm" className="mt-4">
-									<Link href="/ramadhan-wrapped-2026?poster=1">
-										Lihat poster
-									</Link>
-								</Button>
-							)}
 						</div>
-					</header>
-
-					<SectionLabel>Gambaran Keseluruhan</SectionLabel>
-					<section className="grid grid-cols-1 gap-2.5 sm:grid-cols-3 sm:gap-4">
-						<StatCard
-							title="Pengguna baharu"
-							value={formatNumber(kpis.newUsers)}
-							description="Akaun baharu dalam tempoh"
-							size="hero"
-						/>
-						<StatCard
-							title="Institusi dihantar"
-							value={formatNumber(kpis.totalSubmissions)}
-							description="Semua penyerahan dalam tempoh"
-							size="hero"
-						/>
-						<StatCard
-							title="Penyumbang aktif"
-							value={formatNumber(kpis.uniqueContributors)}
-							description="Penyumbang berbeza dalam tempoh"
-							size="hero"
-						/>
-					</section>
-
-					{umamiStats && (
-						<>
-							<SectionLabel className="mt-6 sm:mt-8">Trafik Laman</SectionLabel>
-							<section className="grid grid-cols-1 gap-2.5 sm:grid-cols-3 sm:gap-4">
-								<StatCard
-									title="Jumlah paparan"
-									value={formatNumber(umamiStats.kpis.totalPageviews)}
-									description="Semua muatan halaman sepanjang kempen"
-									size="hero"
-								/>
-								<StatCard
-									title="Pelawat unik"
-									value={formatNumber(umamiStats.kpis.uniqueVisits)}
-									description="Lawatan berbeza dalam tempoh"
-									size="hero"
-								/>
-								<StatCard
-									title="Hari puncak"
-									value={formatNumber(umamiStats.kpis.peakDayViews)}
-									description={`${umamiStats.kpis.peakDayLabel} — trafik tertinggi satu hari`}
-									size="hero"
-								/>
-							</section>
-						</>
-					)}
-
-					<SectionLabel className="mt-6 sm:mt-8">Pecahan Status</SectionLabel>
-					<section className="grid grid-cols-1 gap-2.5 sm:grid-cols-3 sm:gap-4">
-						<StatCard
-							variant="success"
-							title="Diluluskan"
-							value={formatNumber(kpis.approvedSubmissions)}
-							description="Penyerahan diluluskan"
-						/>
-						<StatCard
-							variant="warning"
-							title="Menunggu"
-							value={formatNumber(kpis.pendingSubmissions)}
-							description="Penyerahan menunggu semakan"
-						/>
-						<StatCard
-							variant="destructive"
-							title="Ditolak"
-							value={formatNumber(kpis.rejectedSubmissions)}
-							description="Penyerahan ditolak"
-						/>
-					</section>
-
-					<SectionLabel className="mt-6 sm:mt-8">Kempen</SectionLabel>
-					<section className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-4">
-						<StatCard
-							title="Diluluskan dalam tempoh"
-							value={formatNumber(kpis.approvedInWindow)}
-							description="Disemak dan diluluskan dalam tempoh kempen"
-						/>
-						<StatCard
-							title="Hari paling sibuk"
-							value={formatNumber(strongestDay?.submissions ?? 0)}
-							description={`${strongestDay?.label ?? "-"} — penyerahan terbanyak satu hari`}
-						/>
-					</section>
-
-					<SectionLabel className="mt-6 sm:mt-8">Papan Pemimpin</SectionLabel>
-					<section className="grid grid-cols-1 gap-2.5 sm:gap-4 lg:grid-cols-3">
-						<RankingCard
-							title="5 Penyumbang Teratas"
-							items={rankings.topContributors.map((row) => ({
-								label: row.name,
-								value: formatNumber(row.submissions),
-							}))}
-						/>
-						<RankingCard
-							title="Negeri Teratas"
-							items={rankings.topStates.map((row) => ({
-								label: row.state,
-								value: formatNumber(row.submissions),
-							}))}
-						/>
-						<RankingCard
-							title="Kategori Teratas"
-							items={rankings.topCategories.map((row) => ({
-								label: row.category,
-								value: formatNumber(row.submissions),
-							}))}
-						/>
-					</section>
-
-					{umamiStats && (
-						<>
-							<SectionLabel className="mt-6 sm:mt-8">
-								Maklumat Trafik
-							</SectionLabel>
-							<section className="grid grid-cols-1 gap-2.5 sm:gap-4 lg:grid-cols-2">
-								<RankingCard
-									title="Halaman Teratas"
-									items={umamiStats.rankings.topPages.map((row) => ({
-										label: row.path,
-										value: formatNumber(row.views),
-									}))}
-								/>
-								<RankingCard
-									title="Sumber Trafik"
-									items={umamiStats.rankings.topReferrers.map((row) => ({
-										label: row.domain,
-										value: formatNumber(row.views),
-									}))}
-								/>
-							</section>
-						</>
-					)}
-
-					<SectionLabel className="mt-6 sm:mt-8">Aktiviti</SectionLabel>
-					<section className="grid grid-cols-1 gap-2.5 sm:gap-4 lg:grid-cols-2">
-						<Card className="rounded-xl border-border/60 shadow-sm sm:rounded-2xl dark:border-border/80 dark:shadow-none">
-							<CardContent className="p-4 pt-5 sm:p-5 sm:pt-6">
-								<div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
-									<h2 className="font-heading text-base font-semibold tracking-tight text-foreground sm:text-lg">
-										Trend Harian
-									</h2>
-									<p className="text-xs text-muted-foreground">
-										Penyerahan sehari
-									</p>
-								</div>
-								<div className="mt-4">
-									<DailySubmissionsChart
-										data={chartPoints}
-										seriesColor="primary"
-									/>
-								</div>
-							</CardContent>
-						</Card>
-
-						<Card className="rounded-xl border-border/60 shadow-sm sm:rounded-2xl dark:border-border/80 dark:shadow-none">
-							<CardContent className="p-4 pt-5 sm:p-5 sm:pt-6">
-								<h2 className="font-heading text-base font-semibold tracking-tight text-foreground sm:text-lg">
-									Sorotan
-								</h2>
-								<div className="mt-5 space-y-4">
-									<div className="rounded-xl border border-primary/20 bg-primary/[0.04] px-4 py-3 dark:bg-primary/[0.06]">
-										<p className="text-[0.65rem] font-semibold uppercase tracking-widest text-muted-foreground">
-											Hari paling sibuk
-										</p>
-										<p className="mt-1.5 flex items-baseline gap-2 text-sm leading-relaxed">
-											<span className="font-semibold text-foreground">
-												{strongestDay?.label ?? "-"}
-											</span>
-											<span className="text-muted-foreground/60">·</span>
-											<span className="text-lg font-bold tabular-nums text-primary sm:text-xl">
-												{formatNumber(strongestDay?.submissions ?? 0)}
-											</span>
-											<span className="text-muted-foreground">penyerahan</span>
-										</p>
-									</div>
-									<p className="text-pretty text-[0.8125rem] leading-relaxed text-muted-foreground sm:text-sm">
-										Hari kempen tanpa kandungan:{" "}
-										<span className="font-medium tabular-nums text-foreground">
-											{campaignProgress.missingDays.length}
-										</span>{" "}
-										<span className="break-words text-muted-foreground/90">
-											({campaignProgress.missingDays.join(", ") || "tiada"})
-										</span>
-									</p>
-								</div>
-								{!umamiStats && (
-									<p className="mt-6 border-t border-border/50 pt-4 text-xs text-muted-foreground">
-										Analitik Umami tidak tersedia.
-									</p>
-								)}
-							</CardContent>
-						</Card>
-					</section>
-
-					{umamiStats && (
-						<>
-							<SectionLabel className="mt-6 sm:mt-8">
-								Paparan Harian
-							</SectionLabel>
-							<section>
-								<Card className="rounded-xl border-border/60 shadow-sm sm:rounded-2xl dark:border-border/80 dark:shadow-none">
-									<CardContent className="p-4 pt-5 sm:p-5 sm:pt-6">
-										<div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
-											<h2 className="font-heading text-base font-semibold tracking-tight text-foreground sm:text-lg">
-												Trend paparan halaman
-											</h2>
-											<p className="text-xs text-muted-foreground">
-												Paparan harian sepanjang kempen
-											</p>
-										</div>
-										<div className="mt-4">
-											<DailyPageviewsChart
-												data={umamiStats.dailyPageviews.map((d) => ({
-													label: d.label,
-													views: d.views,
-												}))}
-											/>
-										</div>
-									</CardContent>
-								</Card>
-							</section>
-
-							<SectionLabel className="mt-6 sm:mt-8">Audiens</SectionLabel>
-							<section className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-4">
-								<StatCard
-									title="Trafik mudah alih"
-									value={`${umamiStats.kpis.mobilePercent}%`}
-									description="Pelawat menggunakan peranti mudah alih"
-								/>
-								<StatCard
-									title="Waktu puncak"
-									value={`${umamiStats.kpis.peakHour}:00`}
-									description={`Waktu paling aktif semasa Ramadhan (${formatNumber(umamiStats.kpis.peakHourViews)} paparan)`}
-								/>
-							</section>
-						</>
-					)}
-
-					{githubStats && (
-						<>
-							<SectionLabel className="mt-6 sm:mt-8">
-								Sumber Terbuka
-							</SectionLabel>
-							<section className="grid grid-cols-1 gap-2.5 sm:grid-cols-3 sm:gap-4">
-								<StatCard
-									title="Komit"
-									value={formatNumber(githubStats.commits)}
-									description="Komit kod sepanjang kempen"
-								/>
-								<StatCard
-									title="Pull request digabung"
-									value={formatNumber(githubStats.mergedPRs)}
-									description={`${formatNumber(githubStats.pullRequests)} PR keseluruhan`}
-								/>
-								<StatCard
-									title="Isu dibuka"
-									value={formatNumber(githubStats.issues)}
-									description="Laporan pepijat dan permintaan ciri"
-								/>
-							</section>
-						</>
-					)}
-
-					{!posterMode && (
-						<footer className="mt-6 rounded-xl border border-dashed border-border/60 bg-muted/25 px-3 py-3 text-sm text-muted-foreground sm:mt-8 sm:rounded-2xl sm:px-4 dark:border-border/80 dark:bg-muted/15">
-							<span className="block sm:inline">
-								Tip: gunakan{" "}
-								<code className="mt-1 inline-block max-w-full break-all rounded-md border border-border bg-background px-1.5 py-0.5 font-mono text-[0.6875rem] text-foreground sm:mt-0 sm:inline sm:max-w-none sm:break-normal sm:text-xs">
-									/ramadhan-wrapped-2026?poster=1
-								</code>{" "}
-							</span>
-							<span className="block sm:inline">
-								untuk susun atur poster ramah tangkap skrin.
-							</span>
-						</footer>
-					)}
+					</StoryChapter>
 				</div>
 			</main>
 		</>
 	);
 }
 
-function SectionLabel({
-	children,
-	className,
-}: {
-	children: React.ReactNode;
-	className?: string;
-}) {
-	return (
-		<div className={cn("mb-3 flex items-center gap-3 sm:mb-4", className)}>
-			<p className="shrink-0 text-[0.6rem] font-bold uppercase tracking-[0.2em] text-muted-foreground/60 sm:text-[0.65rem]">
-				{children}
-			</p>
-			<div className="h-px flex-1 bg-border/30 dark:bg-border/40" />
-		</div>
-	);
+function Strong({ children }: { children: React.ReactNode }) {
+	return <strong className="font-semibold text-foreground">{children}</strong>;
 }
 
-type StatVariant =
-	| "default"
-	| "success"
-	| "warning"
-	| "destructive"
-	| "celebration";
-
-const VARIANT_STYLES: Record<StatVariant, { value: string; card?: string }> = {
-	default: { value: "text-foreground" },
-	success: { value: "text-emerald-700 dark:text-emerald-400" },
-	warning: { value: "text-amber-700 dark:text-amber-400" },
-	destructive: { value: "text-red-600/80 dark:text-red-400/80" },
-	celebration: {
-		value: "text-primary",
-		card: "border-primary/20 dark:border-primary/30",
-	},
-};
-
-function StatCard({
-	title,
-	value,
-	description,
-	className,
-	variant = "default",
-	size = "default",
+function buildCommunityInsights({
+	firstTimeContributors,
+	firstTimeContributorShare,
+	growthDirection,
+	growthChangePercent,
+	topState,
+	topCity,
+	busiestWeekday,
+	busiestHour,
+	approvalRate,
+	contributorShape,
+	dataCompleteness,
+	reviewSpeed,
+	directoryScale,
+	strongestDay,
+	topCategoryState,
 }: {
-	title: string;
-	value: string;
-	description: string;
-	className?: string;
-	variant?: StatVariant;
-	size?: "default" | "hero";
-}) {
-	const styles = VARIANT_STYLES[variant];
+	firstTimeContributors: number;
+	firstTimeContributorShare: number;
+	growthDirection: "up" | "down" | "flat";
+	growthChangePercent: number;
+	topState: { name: string; share: number; submissions: number } | null;
+	topCity: {
+		name: string;
+		state: string;
+		share: number;
+		submissions: number;
+	} | null;
+	busiestWeekday?: { day: string; submissions: number };
+	busiestHour?: { label: string; submissions: number };
+	approvalRate: number;
+	contributorShape?: {
+		oneSubmissionContributors: number;
+		fivePlusContributors: number;
+		tenPlusContributors: number;
+		medianSubmissions: number;
+		avgSubmissions: number;
+		topContributorSubmissions: number;
+	};
+	dataCompleteness?: {
+		withQr: number;
+		withCoords: number;
+		withSource: number;
+		withRemarks: number;
+		qrPercent: number;
+		coordsPercent: number;
+		sourcePercent: number;
+		remarksPercent: number;
+	};
+	reviewSpeed?: {
+		reviewed: number;
+		avgHours: number;
+		medianHours: number;
+		p90Hours: number;
+	};
+	directoryScale?: {
+		allInstitutions: number;
+		ramadhanSharePercent: number;
+		statesCovered: number;
+		citiesCovered: number;
+		categoriesCovered: number;
+		withSocial: number;
+		socialPercent: number;
+	};
+	strongestDay: {
+		label: string;
+		submissions: number;
+		share: number;
+		avgMultiple: number;
+	} | null;
+	topCategoryState: {
+		category: string;
+		state: string;
+		share: number;
+		submissions: number;
+	} | null;
+}): CommunityInsight[] {
+	const insights: CommunityInsight[] = [];
 
-	return (
-		<Card
-			className={cn(
-				"rounded-xl border-border/60 shadow-sm",
-				"sm:rounded-2xl",
-				"dark:border-border/80 dark:shadow-none",
-				styles.card,
-				className,
-			)}
-		>
-			<CardContent className="p-4 pt-5 sm:p-5 sm:pt-6">
-				<p className="text-[0.65rem] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-					{title}
-				</p>
-				<p
-					className={cn(
-						"mt-2 font-heading font-bold tabular-nums tracking-tight sm:mt-3",
-						styles.value,
-						size === "hero"
-							? "text-2xl sm:text-3xl md:text-4xl"
-							: "text-xl sm:text-2xl md:text-3xl",
-					)}
-				>
-					{value}
-				</p>
-				<p className="mt-1.5 text-[0.8125rem] leading-snug text-muted-foreground sm:mt-2 sm:text-sm">
-					{description}
-				</p>
-			</CardContent>
-		</Card>
-	);
+	if (firstTimeContributors > 0 && firstTimeContributorShare > 0) {
+		insights.push({
+			title: "New contributors carried the month",
+			metric: `${firstTimeContributorShare}%`,
+			description: `${formatNumber(firstTimeContributors)} contributors made their first submission during Ramadhan, a strong signal that the campaign brought new people into the directory work.`,
+			tone: "success",
+		});
+	}
+
+	if (
+		contributorShape &&
+		contributorShape.oneSubmissionContributors > 0 &&
+		firstTimeContributors > 0
+	) {
+		insights.push({
+			title: "Most people helped once, and that was the point",
+			metric: formatNumber(contributorShape.oneSubmissionContributors),
+			description: `${formatNumber(contributorShape.oneSubmissionContributors)} contributors submitted exactly once. The directory grew because many people added one useful QR, not because the work depended only on a small core team.`,
+			tone: "success",
+		});
+	}
+
+	if (directoryScale && directoryScale.ramadhanSharePercent > 0) {
+		insights.push({
+			title: "Ramadhan reshaped a big part of the directory",
+			metric: `${formatPercent(directoryScale.ramadhanSharePercent)}`,
+			description: `Ramadhan submissions made up ${formatPercent(directoryScale.ramadhanSharePercent)} of the current ${formatNumber(directoryScale.allInstitutions)} institution directory, so the campaign changed a visible share of the public dataset.`,
+			tone: "primary",
+		});
+	}
+
+	if (
+		directoryScale &&
+		directoryScale.statesCovered > 0 &&
+		directoryScale.citiesCovered > 0
+	) {
+		insights.push({
+			title: "The coverage spread wider than a single viral pocket",
+			metric: `${formatNumber(directoryScale.citiesCovered)} cities`,
+			description: `Submissions came from ${formatNumber(directoryScale.statesCovered)} states and federal territories across ${formatNumber(directoryScale.citiesCovered)} cities, covering all ${formatNumber(directoryScale.categoriesCovered)} institution categories used by the directory.`,
+			tone: "success",
+		});
+	}
+
+	if (growthDirection !== "flat" && Math.abs(growthChangePercent) >= 1) {
+		const absChange = formatNumber(Math.abs(growthChangePercent));
+		insights.push({
+			title:
+				growthDirection === "up"
+					? "Momentum built later in the month"
+					: "The early push did most of the work",
+			metric: `${absChange}%`,
+			description:
+				growthDirection === "up"
+					? `The second half had ${absChange}% more submissions than the first half, suggesting the campaign became more visible as Ramadhan progressed.`
+					: `The second half had ${absChange}% fewer submissions than the first half, which makes the early campaign push the clearest driver.`,
+			tone: growthDirection === "up" ? "primary" : "warm",
+		});
+	}
+
+	if (strongestDay && strongestDay.share > 0) {
+		insights.push({
+			title: "One final push changed the shape of the month",
+			metric: formatNumber(strongestDay.submissions),
+			description: `${strongestDay.label} brought in ${formatNumber(strongestDay.submissions)} submissions, ${formatPercent(strongestDay.share)} of the month and ${strongestDay.avgMultiple}x the daily average.`,
+			tone: "warm",
+		});
+	}
+
+	if (dataCompleteness && dataCompleteness.qrPercent > 0) {
+		insights.push({
+			title: "The submissions were donation-ready",
+			metric: `${formatPercent(dataCompleteness.qrPercent)}`,
+			description: `${formatNumber(dataCompleteness.withQr)} submissions included QR data, and ${formatNumber(dataCompleteness.withCoords)} had map coordinates. That turns community activity into entries people can actually find and use.`,
+			tone: "primary",
+		});
+	}
+
+	if (dataCompleteness && dataCompleteness.sourcePercent > 0) {
+		insights.push({
+			title: "A meaningful share came with proof trails",
+			metric: `${formatPercent(dataCompleteness.sourcePercent)}`,
+			description: `${formatNumber(dataCompleteness.withSource)} submissions included source links and ${formatNumber(dataCompleteness.withRemarks)} included contributor remarks, adding context for reviewers without exposing private contributor data.`,
+			tone: "muted",
+		});
+	}
+
+	if (directoryScale && directoryScale.socialPercent > 0) {
+		insights.push({
+			title: "Many entries were more than a QR",
+			metric: `${formatPercent(directoryScale.socialPercent)}`,
+			description: `${formatNumber(directoryScale.withSocial)} Ramadhan submissions included social or web links, making the directory feel connected to real public institution footprints.`,
+			tone: "muted",
+		});
+	}
+
+	if (reviewSpeed && reviewSpeed.reviewed > 0 && reviewSpeed.medianHours > 0) {
+		insights.push({
+			title: "Review moved quickly enough to keep up",
+			metric: formatDurationHours(reviewSpeed.medianHours),
+			description: `${formatNumber(reviewSpeed.reviewed)} submissions were reviewed during the campaign. The median review took ${formatDurationHours(reviewSpeed.medianHours)}, with 90% reviewed within ${formatDurationHours(reviewSpeed.p90Hours)}.`,
+			tone: "warm",
+		});
+	}
+
+	if (topState && topState.share > 0) {
+		const placeText =
+			topCity && topCity.share > 0
+				? `${topCity.name}, ${topCity.state} led the city list while ${topState.name} led the state view.`
+				: `${topState.name} was the clearest geographic signal.`;
+		insights.push({
+			title: "The map had a center of gravity",
+			metric: `${topState.share}%`,
+			description: `${placeText} ${topState.name} accounted for ${topState.share}% of all submissions.`,
+			tone: "primary",
+		});
+	}
+
+	if (topCategoryState && topCategoryState.share > 0) {
+		insights.push({
+			title: "One local pattern stood out",
+			metric: `${topCategoryState.share}%`,
+			description: `${formatCategory(topCategoryState.category)} in ${topCategoryState.state} contributed ${formatNumber(topCategoryState.submissions)} submissions, the clearest category-and-place cluster of the month.`,
+			tone: "muted",
+		});
+	}
+
+	if (
+		busiestWeekday &&
+		busiestHour &&
+		busiestWeekday.submissions > 0 &&
+		busiestHour.submissions > 0
+	) {
+		insights.push({
+			title: "Contribution followed a visible rhythm",
+			metric: busiestHour.label,
+			description: `${busiestWeekday.day} was the busiest weekday, and ${busiestHour.label} was the peak hour. That gives the community a practical window for future calls to contribute.`,
+			tone: "warm",
+		});
+	}
+
+	if (approvalRate > 0 && insights.length < 3) {
+		insights.push({
+			title: "Most submissions moved through review",
+			metric: `${approvalRate.toFixed(1)}%`,
+			description: `The approval rate gives useful context to the community count, because it separates raw activity from entries that became usable in the directory.`,
+			tone: "muted",
+		});
+	}
+
+	return insights.slice(0, 12);
 }
 
-type RankItem = {
-	label: string;
-	value: string;
-};
+function formatDurationHours(hours: number): string {
+	if (hours < 1) return "<1h";
+	if (hours < 24) return `${Number(hours.toFixed(1))}h`;
+	const days = hours / 24;
+	return `${Number(days.toFixed(1))}d`;
+}
 
-const MEDAL_STYLES = [
-	"bg-amber-500/[0.15] text-amber-600 ring-1 ring-inset ring-amber-500/25 dark:text-amber-400 dark:bg-amber-500/20",
-	"bg-zinc-400/10 text-zinc-500 ring-1 ring-inset ring-zinc-400/20 dark:text-zinc-300 dark:bg-zinc-400/[0.15]",
-	"bg-orange-500/10 text-orange-700 ring-1 ring-inset ring-orange-500/20 dark:text-orange-400 dark:bg-orange-500/[0.15]",
-];
-
-function RankingCard({ title, items }: { title: string; items: RankItem[] }) {
-	return (
-		<Card className="rounded-xl border-border/60 shadow-sm sm:rounded-2xl dark:border-border/80 dark:shadow-none">
-			<CardContent className="p-4 pt-5 sm:p-5 sm:pt-6">
-				<h2 className="font-heading text-base font-semibold tracking-tight text-foreground sm:text-lg">
-					{title}
-				</h2>
-				<ul className="mt-3 sm:mt-4">
-					{items.length > 0 ? (
-						items.map((item, i) => (
-							<li
-								key={`${title}-${i}-${item.label}`}
-								className={cn(
-									"flex min-h-11 items-center gap-3 border-border/50 py-2.5",
-									"dark:border-border/60 sm:min-h-0 sm:py-3",
-									i > 0 && "border-t",
-								)}
-							>
-								<span
-									className={cn(
-										"flex size-8 shrink-0 items-center justify-center rounded-full",
-										"text-xs font-bold tabular-nums",
-										i < 3 && MEDAL_STYLES[i],
-										i >= 3 && "bg-muted text-muted-foreground dark:bg-muted/80",
-									)}
-								>
-									{i + 1}
-								</span>
-								<span className="min-w-0 flex-1 truncate text-sm leading-snug text-foreground/90">
-									{item.label}
-								</span>
-								<span className="shrink-0 text-sm font-semibold tabular-nums text-muted-foreground">
-									{item.value}
-								</span>
-							</li>
-						))
-					) : (
-						<li className="py-3 text-sm text-muted-foreground">-</li>
-					)}
-				</ul>
-			</CardContent>
-		</Card>
-	);
+function formatCategory(category: string): string {
+	const labels: Record<string, string> = {
+		masjid: "Masjids",
+		surau: "Suraus",
+		tahfiz: "Tahfiz institutions",
+		kebajikan: "Welfare organisations",
+		"lain-lain": "Other institutions",
+	};
+	return labels[category] ?? category;
 }

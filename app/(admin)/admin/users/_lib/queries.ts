@@ -6,6 +6,7 @@ import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
 import { db } from "@/db";
 import { institutions } from "@/db/schema";
+import { requireAdminSession } from "@/lib/auth-helpers";
 import { getAuthClientFromCookie } from "./client";
 
 function normalizeParam(v: string | string[] | undefined): string {
@@ -17,6 +18,8 @@ function normalizeParam(v: string | string[] | undefined): string {
 export async function getUsers(searchParams: {
 	[key: string]: string | string[] | undefined;
 }) {
+	await requireAdminSession();
+
 	const headersList = await headers();
 	const cookie = headersList.get("cookie") ?? "";
 	const forwardedProto = headersList.get("x-forwarded-proto");
