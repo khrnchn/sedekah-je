@@ -1,7 +1,6 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import html2canvas from "html2canvas";
 import { DownloadIcon, Eye, MapPin, Share2, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -390,79 +389,6 @@ const InstitutionCard = forwardRef<
 
 			return canvas;
 		};
-
-		const renderBrandedQrPageToCanvas = async (
-			onStage?: (stage: string) => void,
-		) => {
-			const iframe = document.createElement("iframe");
-			iframe.style.visibility = "hidden";
-			iframe.style.position = "fixed";
-			iframe.style.right = "0";
-			iframe.style.bottom = "0";
-			iframe.width = "600px";
-			iframe.height = "600px";
-
-			const waitForIframe = new Promise<void>((resolve, reject) => {
-				const timeoutId = window.setTimeout(() => {
-					reject(new Error("QR page load timed out"));
-				}, 8000);
-
-				iframe.onload = () => {
-					window.clearTimeout(timeoutId);
-					onStage?.("Memuatkan halaman kod QR...");
-					setTimeout(resolve, 1000);
-				};
-
-				iframe.onerror = () => {
-					window.clearTimeout(timeoutId);
-					reject(new Error("QR page failed to load"));
-				};
-			});
-
-			try {
-				document.body.appendChild(iframe);
-				iframe.src = `${window.location.origin}/qr/${resolvedSlug}`;
-				await waitForIframe;
-
-				const documentBody = iframe.contentDocument?.body;
-				if (!documentBody) {
-					throw new Error("QR page unavailable");
-				}
-
-				const style = iframe.contentDocument.createElement("style");
-				style.textContent = `
-					html, body {
-						width: 600px !important;
-						height: 600px !important;
-						margin: 0 !important;
-						background: #ffffff !important;
-						color: #111827 !important;
-					}
-					*, ::before, ::after {
-						color: #111827 !important;
-						border-color: transparent !important;
-						box-shadow: none !important;
-						text-shadow: none !important;
-					}
-				`;
-				iframe.contentDocument.head.appendChild(style);
-
-				onStage?.("Mengambil gambar kod QR...");
-				return html2canvas(documentBody, {
-					useCORS: true,
-					allowTaint: true,
-					backgroundColor: "#ffffff",
-					scale: 2,
-					width: 600,
-					height: 600,
-					windowWidth: 600,
-					windowHeight: 600,
-				});
-			} finally {
-				iframe.remove();
-			}
-		};
-
 		const copyToClipboard = async (pngBlob: Blob | null) => {
 			if (!pngBlob) return;
 			try {
@@ -808,10 +734,7 @@ const InstitutionCard = forwardRef<
 														let canvas: HTMLCanvasElement;
 
 														if (qrContent) {
-															canvas =
-																await renderBrandedQrPageToCanvas(
-																	setDownloadStage,
-																);
+															canvas = await renderQrContentToCanvas();
 														} else {
 															setDownloadStage("Mengambil gambar kod QR...");
 															const imageEl = createImage({ src: qrImage });
