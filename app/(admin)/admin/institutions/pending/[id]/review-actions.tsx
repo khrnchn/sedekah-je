@@ -39,7 +39,7 @@ import { REJECTION_TEMPLATES } from "@/lib/admin-templates";
 import { approveInstitution, rejectInstitution } from "../../_lib/actions";
 import {
 	getNextPendingInstitutionId,
-	getNextToReviewAfterApproving,
+	getNextToReviewAfterDecision,
 } from "../../_lib/navigation";
 import type { ReviewFormHandle } from "./institution-review-form";
 
@@ -82,6 +82,15 @@ export default function ReviewActions({
 		}
 		setDialog(null);
 		startTransition(async () => {
+			let nextPendingId: number | null = null;
+			if (action === "reject") {
+				try {
+					nextPendingId = await getNextPendingInstitutionId(institutionId);
+				} catch (e) {
+					console.error("[next-navigation]", e);
+				}
+			}
+
 			const promise =
 				action === "approve"
 					? approveInstitution(institutionId, user.id, notes)
@@ -89,12 +98,30 @@ export default function ReviewActions({
 
 			toast.promise(promise, {
 				loading: "Submitting...",
-				success: () => {
-					router.push("/admin/institutions/pending");
-					return `${institutionName} has been ${action === "approve" ? "approved" : "rejected"}.`;
-				},
+				success: `${institutionName} has been ${action === "approve" ? "approved" : "rejected"}.`,
 				error: (err) => `Action failed: ${err.message}`,
 			});
+
+			try {
+				await promise;
+				if (action === "reject") {
+					if (nextPendingId != null) {
+						router.push(`/admin/institutions/pending/${nextPendingId}`);
+						return;
+					}
+
+					const nextToReview =
+						await getNextToReviewAfterDecision(institutionId);
+					if (nextToReview != null) {
+						router.push(`/admin/institutions/pending/${nextToReview}`);
+						return;
+					}
+				}
+
+				router.push("/admin/institutions/pending");
+			} catch {
+				// toast.promise displays the action error.
+			}
 		});
 	}
 
@@ -129,7 +156,7 @@ export default function ReviewActions({
 			if (nextId != null) {
 				router.push(`/admin/institutions/pending/${nextId}`);
 			} else {
-				const nextToReview = await getNextToReviewAfterApproving(institutionId);
+				const nextToReview = await getNextToReviewAfterDecision(institutionId);
 				if (nextToReview != null) {
 					router.push(`/admin/institutions/pending/${nextToReview}`);
 				} else {
