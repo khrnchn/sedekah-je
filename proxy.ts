@@ -5,7 +5,6 @@ export async function proxy(request: NextRequest) {
 	const sessionCookie = getSessionCookie(request);
 	const { pathname } = request.nextUrl;
 	const authReasonByPath: Record<string, string> = {
-		"/contribute": "submit_qr",
 		"/my-contributions": "view_submissions",
 	};
 
@@ -24,7 +23,7 @@ export async function proxy(request: NextRequest) {
 	}
 
 	// User route protection
-	const userProtectedPaths = ["/contribute", "/my-contributions"];
+	const userProtectedPaths = ["/my-contributions"];
 	const matchedProtectedPath = userProtectedPaths.find((path) =>
 		pathname.startsWith(path),
 	);
@@ -51,10 +50,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-	matcher: [
-		"/admin/:path*",
-		"/contribute/:path*",
-		"/my-contributions/:path*",
-		"/auth",
-	],
+	matcher: ["/admin/:path*", "/my-contributions/:path*", "/auth"],
 };

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import InstitutionFormOptimized from "@/app/(user)/contribute/_components/institution-form-optimized";
+import { AuthGateOverlay } from "@/components/auth/auth-gate-overlay";
 import { UserLayout } from "@/components/layout/user-layout";
 
 export const metadata: Metadata = {
@@ -28,7 +29,9 @@ export default function ContributePage() {
 			title="Tambah Institusi"
 			description="Sumbang kepada komuniti sedekah.je dengan menambah institusi baru"
 		>
-			<InstitutionFormOptimized />
+			<AuthGateOverlay callbackURL="/contribute" reason="submit_qr">
+				<InstitutionFormOptimized />
+			</AuthGateOverlay>
 		</UserLayout>
 	);
 }
