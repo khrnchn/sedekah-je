@@ -12,15 +12,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { signInWithGoogle } from "@/lib/auth-client";
-
-const reasonCopyMap: Record<string, string> = {
-	submit_qr:
-		"Untuk hantar QR, tengok leaderboard, dan uruskan submission anda.",
-	view_submissions:
-		"Untuk hantar QR, tengok leaderboard, dan uruskan submission anda.",
-	login_required:
-		"Untuk hantar QR, tengok leaderboard, dan uruskan submission anda.",
-};
+import { AUTH_REASON_COPY } from "@/lib/auth-messages";
 
 const getSafeInternalPath = (path: string | null) => {
 	if (!path || !path.startsWith("/")) {
@@ -41,7 +33,9 @@ export default function AuthForm() {
 		getSafeInternalPath(searchParams.get("redirect")) ||
 		"/contribute";
 	const reason = searchParams.get("reason") || "login_required";
-	const reasonCopy = reasonCopyMap[reason] || reasonCopyMap.login_required;
+	const reasonCopy =
+		AUTH_REASON_COPY[reason as keyof typeof AUTH_REASON_COPY] ||
+		AUTH_REASON_COPY.login_required;
 
 	const handleGoogleSignIn = async () => {
 		try {
