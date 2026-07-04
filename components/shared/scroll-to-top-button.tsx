@@ -34,6 +34,9 @@ export function ScrollToTopButton({
 
 	const scrollToTop = useCallback(() => {
 		window.scrollTo({ top: 0, behavior: "smooth" });
+		if (document.activeElement instanceof HTMLElement) {
+			document.activeElement.blur();
+		}
 	}, []);
 
 	if (!isMobile) return null;
@@ -41,12 +44,12 @@ export function ScrollToTopButton({
 	return (
 		<Button
 			type="button"
-			variant="secondary"
+			variant="outline"
 			size="icon"
 			onClick={scrollToTop}
 			aria-label="Tatal ke atas"
 			className={cn(
-				"fixed right-4 z-40 size-11 rounded-full shadow-lg ring-1 ring-border/60 transition-all duration-300",
+				"fixed right-4 z-40 size-11 rounded-full border-border/24 bg-card/90 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-card/75 transition-all duration-300",
 				visible
 					? "translate-y-0 opacity-100"
 					: "pointer-events-none translate-y-2 opacity-0",
