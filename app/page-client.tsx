@@ -17,6 +17,7 @@ import CollapsibleCustomMap from "@/components/map/custom-map";
 import RawakFooter from "@/components/rawak-footer";
 import Search from "@/components/search";
 import PageSection from "@/components/shared/page-section";
+import { ScrollToTopButton } from "@/components/shared/scroll-to-top-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -744,6 +745,7 @@ export function PageClient({ initialResult, initialSearchParams }: Props) {
 					))}
 				</div>
 			)}
+			<ScrollToTopButton />
 			<RawakFooter />
 		</PageSection>
 	);
