@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ReusableDataTable } from "@/components/reusable-data-table";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Dialog,
 	DialogContent,
@@ -12,6 +13,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import {
 	Select,
 	SelectContent,
@@ -37,6 +39,7 @@ export type PendingInstitution = {
 	city: string;
 	contributorName: string | null;
 	contributorId: string | null;
+	sourceUrl: string | null;
 	createdAt: Date;
 };
 
@@ -106,6 +109,7 @@ export default function PendingInstitutionsTable({
 	const [selectedIds, setSelectedIds] = useState<number[]>([]);
 	const [category, setCategory] = useState<CategoryFilter>(ALL);
 	const [state, setState] = useState<StateFilter>(ALL);
+	const [hideAutomated, setHideAutomated] = useState(true);
 	const [actionDialog, setActionDialog] = useState<{
 		isOpen: boolean;
 		type: "approve" | "reject" | null;
@@ -123,9 +127,16 @@ export default function PendingInstitutionsTable({
 		setInstitutions(initialData);
 	}, [initialData]);
 
+	const automatedCount = institutions.filter(
+		(inst) => inst.sourceUrl && !inst.sourceUrl.startsWith("http"),
+	).length;
+
 	const filteredData = institutions.filter((inst) => {
 		if (category !== ALL && inst.category !== category) return false;
 		if (state !== ALL && inst.state !== state) return false;
+		if (hideAutomated && inst.sourceUrl && !inst.sourceUrl.startsWith("http")) {
+			return false;
+		}
 		return true;
 	});
 
@@ -202,6 +213,19 @@ export default function PendingInstitutionsTable({
 					))}
 				</SelectContent>
 			</Select>
+
+			{automatedCount > 0 && (
+				<div className="flex items-center gap-2">
+					<Checkbox
+						id="hide-automated"
+						checked={hideAutomated}
+						onCheckedChange={(value) => setHideAutomated(!!value)}
+					/>
+					<Label htmlFor="hide-automated" className="whitespace-nowrap">
+						Hide automated imports ({automatedCount})
+					</Label>
+				</div>
+			)}
 		</>
 	);
 

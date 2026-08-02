@@ -34,6 +34,7 @@ const getPendingInstitutionsInternal = unstable_cache(
 				city: institutions.city,
 				contributorName: users.name,
 				contributorId: users.id,
+				sourceUrl: institutions.sourceUrl,
 				createdAt: institutions.createdAt,
 			})
 			.from(institutions)

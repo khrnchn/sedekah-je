@@ -39,6 +39,7 @@ type PendingInstitution = {
 	city: string;
 	contributorName: string | null;
 	contributorId: string | null;
+	sourceUrl: string | null;
 	createdAt: Date;
 };
 
