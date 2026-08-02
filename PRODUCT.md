@@ -1,9 +1,5 @@
 # Product
 
-## Register
-
-product
-
 ## Users
 
 Malaysians who want a quick, trusted way to find verified DuitNow QR codes for mosques, suraus, and Islamic institutions. The main public context is mobile-first discovery: search, filter by category or state, inspect a QR code, and donate through familiar Malaysian payment rails. Contributors and maintainers also use the product to submit, review, and keep QR data accurate.

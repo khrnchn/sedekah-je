@@ -25,7 +25,7 @@ everyone is welcomed to contribute! fork the repo and start cooking. you may als
 
 1. thank you [altaf](https://x.com/danielminho_?s=21&t=uaExBAqkDxtuY8KYLJBCLQ) for sponsoring 3 domains: `sedekah.je`, `sedekahje.com`, and `sedekah-je.com`.
 2. thank you [farhan helmy](https://www.farhanhelmy.com/) for sponsoring [analytics](https://analytics.farhanhelmy.com/teams/bf87f5c8-4fa1-4348-a453-6047a0c00636/websites/c2f79734-cbe5-4b9d-afd0-75e063e0aadb).
-3. thank you [rempah](https://https://rz.my/) for sponsoring railway bill for ramadhan 2026.
+3. thank you [rempah](https://rz.my/) for sponsoring railway bill for ramadhan 2026.
 
 ## contributors
 

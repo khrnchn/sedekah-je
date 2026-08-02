@@ -1,175 +1,140 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code when working in this repository.
 
 ## Project Overview
 
-sedekah.je is a directory of QR codes for mosques, suraus, and other religious institutions in Malaysia. It's a community-driven platform built with Next.js 14, TypeScript, PostgreSQL (Drizzle ORM), and Better Auth.
+sedekah.je is a community-driven Malaysian directory of donation QR codes for
+mosques, suraus, tahfiz schools, charities, and other Islamic institutions.
 
-## Development Commands
+The application uses Next.js 16, React 19, TypeScript, PostgreSQL with Drizzle
+ORM, Better Auth, Cloudflare R2, Tailwind CSS, and shadcn/ui. Bun is the only
+supported package manager and runtime.
+
+## Commands
 
 ```bash
 # Development
-bun dev                    # Start development server
-bun build                  # Production build
-bun start                  # Production server
+bun dev
+bun build
+bun start
 
-# Code Quality
-bun run check              # Run Biome lint + format
-bun run lint               # Lint only
-bun run format             # Format code
-bun run type-check         # TypeScript checking
+# Quality
+bun run check
+bun run lint
+bun run format
+bun run type-check
+bun test
 
 # Database
-bun run db:seed            # Seed database
-bun run db:truncate        # Clear database
-
-# Utilities
-bun run clean              # Remove node_modules, .next, locks
-bun run import:walter-qrs  # Bulk QR import from scripts/data (see script header)
-bun run match:walter-institutions  # Read-only Walter vs existing similarity audit (see script header)
-bun run review:walter-medium       # GPT-4o-mini review of nameMatchesMedium (OPENAI_API_KEY; see script header)
+bun run db:seed
+bun run db:truncate
 ```
 
-**Important**: This project uses Bun as the package manager and runtime. Always use `bun` instead of `npm` or `yarn`.
+Use the named scripts in `package.json` for imports, matching, reviews,
+backfills, and campaign generation. Read a script before running it because
+several utilities mutate production data.
 
 ## Architecture
 
-### App Router Structure (Next.js 13+)
-- `/app/(admin)/` - Admin dashboard with role-based access
-- `/app/(user)/` - User-facing features
-- `/app/api/` - API routes and server actions
-- `/app/[institution]/[slug]/` - Dynamic institution pages
+- `app/` contains Next.js App Router pages, layouts, and route handlers.
+- `app/(admin)/` contains role-protected administration features.
+- `app/(user)/` contains contributor-facing features.
+- `app/api/` contains public integrations, authentication, and MCP routes.
+- `components/` contains shared components; `components/ui/` contains
+  shadcn/ui primitives.
+- `lib/` contains shared services, queries, integrations, and utilities.
+- `db/` contains Drizzle table definitions, the schema barrel, and migrations.
+- `hooks/` contains shared client hooks.
 
-### Key Directories
-- `/components/` - React components (uses shadcn/ui)
-- `/lib/` - Utilities, database queries, server actions
-- `/db/` - Database schema and migrations (Drizzle ORM)
-- `/hooks/` - Custom React hooks
+Prefer feature-local `_components/` and `_lib/` directories. Reuse the
+organization of the closest existing feature rather than forcing every route
+into an identical template.
 
-### Database Schema
-Core entities:
-- **users** - Authentication and profiles
-- **institutions** - QR codes, locations, approval status
-- **auth sessions/accounts** - Better Auth tables
+Use Server Components by default. Fetch initial data on the server instead of
+using `useEffect`. Use Server Actions for authenticated mutations and Route
+Handlers for public APIs or integration protocols.
 
-Workflow: Institutions go through Pending → Approved/Rejected states.
+## Code Quality
 
-## Technology Stack
+- Keep TypeScript strict; do not introduce `any`.
+- Use Biome for formatting and linting.
+- Use absolute `@/` imports.
+- Prefer named exports for shared symbols.
+- Use object or tuple constants instead of PostgreSQL enums.
+- Treat this as a public repository: do not expose credentials, tokens,
+  private user data, or operational secrets.
+- Preserve Malaysian terminology and use Bahasa Malaysia for public product
+  copy where the surrounding feature does.
 
-- **Framework**: Next.js 14 with App Router
-- **Database**: PostgreSQL with Drizzle ORM
-- **Auth**: Better Auth with Google OAuth
-- **Styling**: Tailwind CSS + shadcn/ui components
-- **Code Quality**: Biome (replaces ESLint + Prettier)
-- **State**: TanStack React Query + URL state (nuqs)
-- **Storage**: Cloudflare R2 for images
-- **Security**: Cloudflare Turnstile
+## Authentication and Authorization
 
-## Development Guidelines
+Better Auth provides Google OAuth and session management.
 
-### Code Quality
-- Use Biome for all formatting and linting (tabs, 80 chars, configured in `biome.json`)
-- TypeScript strict mode - NO `any` types, proper inference
-- Run `bun run check` before committing
-- Follow Malaysian context for UI/UX (Bahasa Malaysia, payment systems)
+- `proxy.ts` performs the initial cookie-based checks for `/admin`,
+  `/my-contributions`, and `/auth`.
+- `app/(admin)/layout.tsx` verifies the session and the database-backed admin
+  role after the proxy check.
+- Server code should await `headers()` before passing the result to
+  `auth.api.getSession`.
+- Client components should use the existing `useAuth()` hook.
+- Authentication is not authorization. Server mutations must verify ownership
+  or the required role.
 
-### File Organization & Architecture
-**Feature-Based Structure** (avoid file type grouping):
+Example:
+
+```typescript
+const headersList = await headers();
+const session = await auth.api.getSession({ headers: headersList });
 ```
-app/(user)/feature/
-├── _lib/
-│   ├── queries.ts     # Server queries (cached with unstable_cache)
-│   ├── actions.ts     # Server actions (mutations)
-│   ├── validations.ts # Zod schemas
-│   └── types.ts       # TypeScript types
-├── _components/       # Private components
-└── page.tsx          # Route page
-```
 
-### Key Principles
-1. **Server Actions First** - Use server actions instead of API routes
-2. **Avoid pg enums** - Use object constants for easier production management
-3. **No useEffect for data fetching** - Fetch at server component, pass as props
-4. **Server Components by Default** - Only use "use client" when needed
+## Database and Caching
 
-### Authentication (Better Auth)
-- Layout-based route protection: `/app/(user)/layout.tsx` and `/app/(admin)/layout.tsx`
-- Server-side: `const session = await auth.api.getSession({ headers: headers() })`
-- Client-side: `useAuth()` hook for user state
-- Roles: "user" (contributors) and "admin" (approval rights)
+- Runtime institution data is PostgreSQL-backed.
+- `app/data/institutions.ts` is a legacy migration/maintenance source, not a
+  runtime data source.
+- Use Drizzle for database access and export table types with `$inferSelect`
+  and `$inferInsert`.
+- Authenticate private queries and mutations. Public institution queries are
+  intentionally unauthenticated but must return approved records only.
+- Use SQL aggregation and batch operations rather than fetching data to count
+  it or issuing query loops.
+- Follow nearby cache lifetimes and tags. Current Next.js invalidation calls
+  use a cache profile, for example `revalidateTag("institutions", "max")`.
 
-### Database Patterns (Drizzle ORM)
-- **Performance**: Wrap queries with `unstable_cache` for caching
-- **Batch Operations**: Use `inArray()` instead of Promise.all loops
-- **Counting**: Use Drizzle `count()` function, not `.length`
-- **Cache Invalidation**: Use `revalidateTag()` for targeted invalidation
-- **Schema**: Export types with `$inferSelect` and `$inferInsert`
+## Forms and Uploads
 
-### Form Handling Pattern
-1. Zod schema in `_lib/validations.ts`
-2. Server action in `_lib/actions.ts` with proper validation
-3. React Hook Form + useFormState for client component
-4. Always validate on server, handle authentication
-5. Use `revalidatePath()` after mutations
-
-### Performance Optimizations
-- **UI Streaming**: Break complex pages into async components with `<Suspense>`
-- **Caching**: Use `unstable_cache` with appropriate TTL (300s for dynamic, 900s for stable)
-- **Server Components**: Fetch data at server level, minimize client-side requests
+- Define Zod validation in the feature's `_lib/` directory.
+- Validate input, authentication, authorization, and ownership on the server.
+- Use React Hook Form where the existing feature does; use React 19
+  `useActionState` for action-state flows.
+- Upload QR and blog images through the existing R2 storage service. Do not
+  write uploads into `public/`.
+- Institution submission requires a QR image, applies rate limits, validates
+  the upload, and checks decoded payment content for duplicates when available.
 
 ## Testing
 
-No formal testing framework is currently set up. Consider this when making changes that require testing.
+Run `bun test` for the Bun test suite. Existing tests include Friday campaign
+behavior and onboarding-tour step selection. Add tests for new observable
+business behavior when existing coverage does not protect it.
 
-## Business Context (Malaysian Focus)
+## Business Constants
 
-### Institution Types & Themes
-- `mosque` (masjid) - Blue theme color
-- `surau` - Green theme color  
-- `others` (lain-lain) - Violet theme color
+Source category, state, payment, and status values from
+`lib/institution-constants.ts`.
 
-### Payment Methods
-- `duitnow` - Malaysian instant payment system
-- `tng` - Touch 'n Go eWallet
-- `boost` - Boost eWallet
+- Categories: `masjid`, `surau`, `tahfiz`, `kebajikan`, `lain-lain`
+- Payments: `duitnow`, `tng`, `boost`, `toyyibpay`
+- Statuses: `pending`, `approved`, `rejected`
+- Roles: `user`, `admin`
 
-### Institution Workflow
-- `pending` - Awaiting admin approval (default for new submissions)
-- `approved` - Approved by admin and visible to public
-- `rejected` - Rejected by admin with reason
+Only approved institutions are public. New submissions are pending until an
+admin approves or rejects them.
 
-### Data Sources
-- **Static Data**: Historical institutions in `app/data/institutions.ts`
-- **Dynamic Data**: User-contributed institutions in PostgreSQL
-- **Combined Display**: Both sources shown together on maps and listings
+## Product Context
 
-## Special Features
-
-- **QR Code Processing**: Automatic extraction and validation of payment QR codes
-- **Geolocation**: Institution mapping with Malaysian state-based filtering
-- **PWA**: Progressive Web App configuration
-- **Telegram Integration**: Logging for new user registrations and institution submissions
-- **Workflow Management**: Institution approval system with admin controls
-- **Malaysian States**: All 16 states and federal territories with flag support
-
-## Common Tasks
-
-### Adding New Institution Fields
-1. Update schema in `/db/schema/institutions.ts`
-2. Create migration with Drizzle
-3. Update form components in `/components/`
-4. Update validation schemas
-
-### Adding New API Endpoints
-1. Create route in `/app/api/`
-2. Use server actions for mutations
-3. Add queries in `/lib/queries/`
-4. Update React Query hooks
-
-### Database Operations
-- Connection configured through `DATABASE_URL`
-- Optional `DIRECT_URL` for connection pooling
-- Schema changes require migrations via Drizzle
-
-Remember: This is a community project focused on Malaysian religious institutions. Maintain respect for the cultural context and ensure all QR codes are legitimate donation channels.
+The primary experience is mobile-first discovery and verification of Malaysian
+donation QR codes. Keep search, filters, QR previews, maps, sharing, and
+contribution workflows fast and direct. Treat QR legitimacy, contributor
+privacy, and admin authorization as security-sensitive.

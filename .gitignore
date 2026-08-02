@@ -23,6 +23,9 @@ yarn.lock
 # Claude Code (local)
 .claude/
 
+# Browser tooling
+.playwright-mcp/
+
 # misc
 .DS_Store
 *.pem

@@ -84,12 +84,7 @@ paths:
           description: Filter by category. Supports comma-separated values.
           schema:
             type: string
-            enum:
-              - masjid
-              - surau
-              - tahfiz
-              - kebajikan
-              - lain-lain
+            description: One or more of masjid, surau, tahfiz, kebajikan, or lain-lain
             example: "masjid,surau"
         - name: state
           in: query
@@ -114,6 +109,13 @@ paths:
               - W.P. Labuan
               - W.P. Putrajaya
             example: "Selangor"
+        - name: mode
+          in: query
+          description: Return a paginated page or all matching map markers
+          schema:
+            type: string
+            enum: [page, markers]
+            default: page
         - name: page
           in: query
           description: Page number (starts at 1)
@@ -123,15 +125,15 @@ paths:
             default: 1
         - name: limit
           in: query
-          description: Results per page (max 50)
+          description: Results per page (max 100; ignored in markers mode)
           schema:
             type: integer
             minimum: 1
-            maximum: 50
+            maximum: 100
             default: 15
       responses:
         "200":
-          description: Paginated list of institutions
+          description: Paginated result, or an institution array in markers mode
           headers:
             Cache-Control:
               schema:
@@ -140,14 +142,26 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  institutions:
-                    type: array
+                oneOf:
+                  - type: object
+                    properties:
+                      institutions:
+                        type: array
+                        items:
+                          $ref: "#/components/schemas/Institution"
+                      pagination:
+                        $ref: "#/components/schemas/Pagination"
+                      facets:
+                        type: object
+                        properties:
+                          categoryCounts:
+                            type: object
+                            additionalProperties:
+                              type: integer
+                  - type: array
+                    description: Returned when mode is markers
                     items:
                       $ref: "#/components/schemas/Institution"
-                  pagination:
-                    $ref: "#/components/schemas/Pagination"
               example:
                 institutions:
                   - id: 1
@@ -167,6 +181,11 @@ paths:
                   total: 120
                   hasMore: true
                   totalPages: 8
+                facets:
+                  categoryCounts:
+                    masjid: 72
+                    surau: 36
+                    tahfiz: 12
         "500":
           description: Server error
           content:
@@ -368,6 +387,11 @@ components:
             type: number
           minItems: 2
           maxItems: 2
+        contributorId:
+          type: string
+          nullable: true
+        claimable:
+          type: boolean
 
     InstitutionCompact:
       type: object
