@@ -153,8 +153,8 @@ export function ReusableDataTable<TData, TValue>({
 
 	return (
 		<div className="space-y-4">
-			<div className="flex items-center justify-between">
-				<div className="flex items-center space-x-2">
+			<div className="flex flex-wrap items-center justify-between gap-2">
+				<div className="flex flex-wrap items-center gap-2">
 					{searchKey && (
 						<div className="w-[150px] lg:w-[250px]">
 							<Input
@@ -180,7 +180,7 @@ export function ReusableDataTable<TData, TValue>({
 					)}
 					{leftToolbarContent}
 				</div>
-				<div className="flex items-center space-x-2">
+				<div className="flex flex-wrap items-center gap-2">
 					{rightToolbarContent}
 					{enableColumnVisibility && (
 						<DropdownMenu>
