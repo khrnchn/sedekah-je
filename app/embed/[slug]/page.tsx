@@ -1,16 +1,21 @@
-import { QRCodeSVG } from "qrcode.react";
-import type { PaymentOption } from "@/app/types/institutions";
-import SedekahjeLogo from "@/components/sedekahje-logo";
-import { paymentBrands } from "@/lib/payment-brands";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { parseEmbedSize, parseEmbedTheme } from "@/lib/embed";
 import { getInstitutionBySlug } from "@/lib/queries/institutions";
-import { cn } from "@/lib/utils";
+import { EmbedCard } from "./_components/embed-card";
 
 type Props = {
 	params: Promise<{ slug: string }>;
 	searchParams: Promise<{
 		theme?: string;
+		size?: string;
+		/** Legacy flag kept for embeds published before `size` existed. */
 		compact?: string;
 	}>;
+};
+
+export const metadata: Metadata = {
+	robots: { index: false, follow: false },
 };
 
 export default async function EmbedPage(props: Props) {
@@ -20,70 +25,46 @@ export default async function EmbedPage(props: Props) {
 	]);
 	const institution = await getInstitutionBySlug(params.slug);
 
-	if (!institution?.qrContent) {
+	if (!institution) notFound();
+
+	if (!institution.qrContent && !institution.qrImage) {
 		return (
-			<main className="flex min-h-screen items-center justify-center bg-background p-4 text-center text-sm text-muted-foreground">
-				QR not available.
+			<main className="flex min-h-dvh items-center justify-center p-4 text-center text-xs text-muted-foreground">
+				Kod QR tidak tersedia.
 			</main>
 		);
 	}
 
-	const isDark = searchParams.theme === "dark";
-	const isCompact = searchParams.compact === "true";
-	const payment =
-		(institution.supportedPayment?.[0] as PaymentOption | undefined) ??
-		"duitnow";
-	const accent = paymentBrands[payment] ?? paymentBrands.duitnow;
-	const qrSize = isCompact ? 180 : 240;
+	const theme = parseEmbedTheme(searchParams.theme);
+	const size = parseEmbedSize(searchParams.size, searchParams.compact);
+	// Relative on purpose: it resolves against the iframe's own origin, so the
+	// banner links home correctly regardless of deployment URL.
+	const institutionUrl = `/${institution.category}/${institution.slug}?utm_source=embed&utm_medium=iframe`;
 
 	return (
-		<main
-			className={cn(
-				"flex min-h-screen items-center justify-center p-4 bg-background text-foreground",
-				isDark && "dark",
-			)}
-		>
-			<section
-				className={cn(
-					"flex w-full max-w-[360px] flex-col items-center text-center",
-					isCompact ? "gap-3" : "gap-4",
-				)}
-			>
-				<div className="flex items-center gap-2">
-					<SedekahjeLogo width="28" height="28" />
-					<span className="text-sm font-semibold">sedekah.je</span>
-				</div>
-
-				<div
-					className="rounded-md p-3"
-					style={{
-						backgroundColor: accent.color,
+		<>
+			{theme === "auto" && (
+				<script
+					// Mirrors the host site's colour scheme; Tailwind reads `.dark`
+					// from any ancestor, so stamping <html> is enough.
+					dangerouslySetInnerHTML={{
+						__html:
+							"if(window.matchMedia('(prefers-color-scheme: dark)').matches)document.documentElement.classList.add('dark')",
 					}}
-				>
-					{/* bg-white is intentional: QR scanners require a white background */}
-					<div className="rounded bg-white p-3">
-						<QRCodeSVG
-							value={institution.qrContent}
-							size={qrSize}
-							level="M"
-							fgColor={accent.color}
-						/>
-					</div>
-				</div>
-
-				<div className="space-y-1">
-					<h1 className="text-balance text-base font-semibold leading-snug">
-						{institution.name}
-					</h1>
-					<p className="text-xs text-muted-foreground">
-						{institution.city}, {institution.state} · {accent.label}
-					</p>
-				</div>
-
-				<p className="rounded-md border border-primary/30 bg-primary/8 px-3 py-1 text-xs font-medium text-primary">
-					Disahkan oleh sedekah.je
-				</p>
-			</section>
-		</main>
+				/>
+			)}
+			<EmbedCard
+				name={institution.name}
+				city={institution.city}
+				state={institution.state}
+				qrContent={institution.qrContent}
+				qrImage={institution.qrImage}
+				supportedPayment={institution.supportedPayment}
+				isVerified={institution.isVerified}
+				institutionUrl={institutionUrl}
+				theme={theme}
+				size={size}
+			/>
+		</>
 	);
 }
