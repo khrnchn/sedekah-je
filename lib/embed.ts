@@ -44,7 +44,9 @@ export function parseEmbedSize(
 	value: string | undefined,
 	compact?: string,
 ): EmbedSize {
-	if (value && value in EMBED_SIZES) return value as EmbedSize;
+	// `Object.hasOwn`, not `in`: `in` walks the prototype chain, so a crafted
+	// `?size=constructor` would pass and blow up on the dimension lookup.
+	if (value && Object.hasOwn(EMBED_SIZES, value)) return value as EmbedSize;
 	if (compact === "true") return "sm";
 	return DEFAULT_EMBED_SIZE;
 }
