@@ -3,8 +3,8 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDownIcon, MoreHorizontalIcon } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { type ReactNode, useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,11 @@ import { useAuth } from "@/hooks/use-auth";
 import { formatDateTime } from "@/lib/date-utils";
 import type { categories, states } from "@/lib/institution-constants";
 import { approveInstitution, rejectInstitution } from "../_lib/actions";
+import {
+	getPendingReviewHref,
+	INCLUDE_AUTOMATED_QUERY,
+	shouldIncludeAutomated,
+} from "../_lib/pending-review-scope";
 
 type PendingInstitution = {
 	id: number;
@@ -42,6 +47,30 @@ type PendingInstitution = {
 	sourceUrl: string | null;
 	createdAt: Date;
 };
+
+function PendingInstitutionLink({
+	id,
+	children,
+	className,
+}: {
+	id: number;
+	children: ReactNode;
+	className?: string;
+}) {
+	const searchParams = useSearchParams();
+	const includeAutomated = shouldIncludeAutomated(
+		searchParams.get(INCLUDE_AUTOMATED_QUERY) ?? undefined,
+	);
+
+	return (
+		<Link
+			href={getPendingReviewHref(id, includeAutomated)}
+			className={className}
+		>
+			{children}
+		</Link>
+	);
+}
 
 type ActionDialogProps = {
 	isOpen: boolean;
@@ -166,12 +195,12 @@ export const columns: ColumnDef<PendingInstitution>[] = [
 			);
 		},
 		cell: ({ row }) => (
-			<Link
-				href={`/admin/institutions/pending/${row.getValue("id")}`}
+			<PendingInstitutionLink
+				id={row.getValue("id")}
 				className="font-medium hover:underline"
 			>
 				{row.getValue("name")}
-			</Link>
+			</PendingInstitutionLink>
 		),
 	},
 	{
@@ -322,9 +351,9 @@ export const columns: ColumnDef<PendingInstitution>[] = [
 							</DropdownMenuItem>
 							<DropdownMenuSeparator />
 							<DropdownMenuItem asChild>
-								<Link href={`/admin/institutions/pending/${institution.id}`}>
+								<PendingInstitutionLink id={institution.id}>
 									View details
-								</Link>
+								</PendingInstitutionLink>
 							</DropdownMenuItem>
 							{/* <DropdownMenuItem
 								onClick={() =>

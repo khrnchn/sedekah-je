@@ -1,9 +1,32 @@
 "use server";
 
-import { and, asc, count, desc, eq, gt, lt, ne, or, sql } from "drizzle-orm";
+import {
+	and,
+	asc,
+	count,
+	desc,
+	eq,
+	gt,
+	isNull,
+	like,
+	lt,
+	ne,
+	or,
+	sql,
+} from "drizzle-orm";
 import { db } from "@/db";
 import { institutions } from "@/db/schema";
 import { requireAdminSession } from "@/lib/auth-helpers";
+
+function getPendingScopeCondition(includeAutomated: boolean) {
+	return includeAutomated
+		? sql`true`
+		: or(
+				isNull(institutions.sourceUrl),
+				eq(institutions.sourceUrl, ""),
+				like(institutions.sourceUrl, "http%"),
+			);
+}
 
 /**
  * Get the next pending institution ID in canonical order (createdAt DESC, id DESC).
@@ -11,6 +34,7 @@ import { requireAdminSession } from "@/lib/auth-helpers";
  */
 export async function getNextPendingInstitutionId(
 	currentId: number,
+	includeAutomated: boolean,
 ): Promise<number | null> {
 	await requireAdminSession();
 
@@ -39,6 +63,7 @@ export async function getNextPendingInstitutionId(
 		.where(
 			and(
 				eq(institutions.status, "pending"),
+				getPendingScopeCondition(includeAutomated),
 				ne(institutions.id, currentId),
 				nextCondition,
 			),
@@ -55,6 +80,7 @@ export async function getNextPendingInstitutionId(
  */
 export async function getPrevPendingInstitutionId(
 	currentId: number,
+	includeAutomated: boolean,
 ): Promise<number | null> {
 	await requireAdminSession();
 
@@ -83,6 +109,7 @@ export async function getPrevPendingInstitutionId(
 		.where(
 			and(
 				eq(institutions.status, "pending"),
+				getPendingScopeCondition(includeAutomated),
 				ne(institutions.id, currentId),
 				prevCondition,
 			),
@@ -100,6 +127,7 @@ export async function getPrevPendingInstitutionId(
  */
 export async function getNextToReviewAfterDecision(
 	reviewedId: number,
+	includeAutomated: boolean,
 ): Promise<number | null> {
 	await requireAdminSession();
 
@@ -123,7 +151,13 @@ export async function getNextToReviewAfterDecision(
 	const [prev] = await db
 		.select({ id: institutions.id })
 		.from(institutions)
-		.where(and(eq(institutions.status, "pending"), prevCondition))
+		.where(
+			and(
+				eq(institutions.status, "pending"),
+				getPendingScopeCondition(includeAutomated),
+				prevCondition,
+			),
+		)
 		.orderBy(asc(institutions.createdAt), asc(institutions.id))
 		.limit(1);
 
@@ -135,6 +169,7 @@ export async function getNextToReviewAfterDecision(
  */
 export async function getPendingInstitutionPosition(
 	currentId: number,
+	includeAutomated: boolean,
 ): Promise<{
 	position: number;
 	total: number;
@@ -145,7 +180,11 @@ export async function getPendingInstitutionPosition(
 		.select({ id: institutions.id, createdAt: institutions.createdAt })
 		.from(institutions)
 		.where(
-			and(eq(institutions.id, currentId), eq(institutions.status, "pending")),
+			and(
+				eq(institutions.id, currentId),
+				eq(institutions.status, "pending"),
+				getPendingScopeCondition(includeAutomated),
+			),
 		)
 		.limit(1);
 
@@ -166,6 +205,7 @@ export async function getPendingInstitutionPosition(
 			.where(
 				and(
 					eq(institutions.status, "pending"),
+					getPendingScopeCondition(includeAutomated),
 					ne(institutions.id, currentId),
 					prevCondition,
 				),
@@ -173,7 +213,12 @@ export async function getPendingInstitutionPosition(
 		db
 			.select({ count: count() })
 			.from(institutions)
-			.where(eq(institutions.status, "pending")),
+			.where(
+				and(
+					eq(institutions.status, "pending"),
+					getPendingScopeCondition(includeAutomated),
+				),
+			),
 	]);
 
 	const countBefore = countBeforeResult[0]?.count ?? 0;

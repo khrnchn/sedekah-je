@@ -41,6 +41,10 @@ import {
 	getNextPendingInstitutionId,
 	getNextToReviewAfterDecision,
 } from "../../_lib/navigation";
+import {
+	getPendingListHref,
+	getPendingReviewHref,
+} from "../../_lib/pending-review-scope";
 import type { ReviewFormHandle } from "./institution-review-form";
 
 type Props = {
@@ -52,6 +56,7 @@ type Props = {
 	nextId: number | null;
 	position: number;
 	total: number;
+	includeAutomated: boolean;
 };
 
 export default function ReviewActions({
@@ -63,6 +68,7 @@ export default function ReviewActions({
 	nextId,
 	position,
 	total,
+	includeAutomated,
 }: Props) {
 	const { user } = useAuth();
 	const router = useRouter();
@@ -85,7 +91,10 @@ export default function ReviewActions({
 			let nextPendingId: number | null = null;
 			if (action === "reject") {
 				try {
-					nextPendingId = await getNextPendingInstitutionId(institutionId);
+					nextPendingId = await getNextPendingInstitutionId(
+						institutionId,
+						includeAutomated,
+					);
 				} catch (e) {
 					console.error("[next-navigation]", e);
 				}
@@ -106,19 +115,21 @@ export default function ReviewActions({
 				await promise;
 				if (action === "reject") {
 					if (nextPendingId != null) {
-						router.push(`/admin/institutions/pending/${nextPendingId}`);
+						router.push(getPendingReviewHref(nextPendingId, includeAutomated));
 						return;
 					}
 
-					const nextToReview =
-						await getNextToReviewAfterDecision(institutionId);
+					const nextToReview = await getNextToReviewAfterDecision(
+						institutionId,
+						includeAutomated,
+					);
 					if (nextToReview != null) {
-						router.push(`/admin/institutions/pending/${nextToReview}`);
+						router.push(getPendingReviewHref(nextToReview, includeAutomated));
 						return;
 					}
 				}
 
-				router.push("/admin/institutions/pending");
+				router.push(getPendingListHref(includeAutomated));
 			} catch {
 				// toast.promise displays the action error.
 			}
@@ -147,20 +158,26 @@ export default function ReviewActions({
 		}
 		let nextId: number | null = null;
 		try {
-			nextId = await getNextPendingInstitutionId(institutionId);
+			nextId = await getNextPendingInstitutionId(
+				institutionId,
+				includeAutomated,
+			);
 		} catch (e) {
 			console.error("[next-navigation]", e);
 		}
 		try {
 			await approveInstitution(institutionId, user.id);
 			if (nextId != null) {
-				router.push(`/admin/institutions/pending/${nextId}`);
+				router.push(getPendingReviewHref(nextId, includeAutomated));
 			} else {
-				const nextToReview = await getNextToReviewAfterDecision(institutionId);
+				const nextToReview = await getNextToReviewAfterDecision(
+					institutionId,
+					includeAutomated,
+				);
 				if (nextToReview != null) {
-					router.push(`/admin/institutions/pending/${nextToReview}`);
+					router.push(getPendingReviewHref(nextToReview, includeAutomated));
 				} else {
-					router.push("/admin/institutions/pending");
+					router.push(getPendingListHref(includeAutomated));
 					toast.success("Approved. No more pending institutions");
 				}
 			}
@@ -170,7 +187,7 @@ export default function ReviewActions({
 		} finally {
 			setIsSaving(false);
 		}
-	}, [user?.id, institutionId, router, formRef]);
+	}, [user?.id, institutionId, includeAutomated, router, formRef]);
 
 	useEffect(() => {
 		const down = (e: KeyboardEvent) => {
@@ -201,7 +218,7 @@ export default function ReviewActions({
 					</span>
 					{prevId != null ? (
 						<Button variant="outline" size="icon" asChild>
-							<Link href={`/admin/institutions/pending/${prevId}`}>
+							<Link href={getPendingReviewHref(prevId, includeAutomated)}>
 								<ChevronLeft className="h-4 w-4" />
 							</Link>
 						</Button>
@@ -212,7 +229,7 @@ export default function ReviewActions({
 					)}
 					{nextId != null ? (
 						<Button variant="outline" size="icon" asChild>
-							<Link href={`/admin/institutions/pending/${nextId}`}>
+							<Link href={getPendingReviewHref(nextId, includeAutomated)}>
 								<ChevronRight className="h-4 w-4" />
 							</Link>
 						</Button>
