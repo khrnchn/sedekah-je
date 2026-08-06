@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { DownloadIcon, Eye, MapPin, Share2, User } from "lucide-react";
+import { Code2, DownloadIcon, Eye, MapPin, Share2, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { forwardRef, useEffect, useRef, useState } from "react";
@@ -34,6 +34,7 @@ import {
 import { paymentBrands } from "@/lib/payment-brands";
 import { cn, slugify } from "@/lib/utils";
 import { ClaimModal } from "./claim-modal";
+import { EmbedDialog } from "./embed-dialog";
 import QrCodeDisplay from "./qr-code-display";
 
 // power do atif
@@ -107,6 +108,7 @@ const InstitutionCard = forwardRef<
 		const [isDownloading, setIsDownloading] = useState(false);
 		const [downloadStage, setDownloadStage] = useState<string>("");
 		const [showClaimModal, setShowClaimModal] = useState(false);
+		const [showEmbedDialog, setShowEmbedDialog] = useState(false);
 		const innerRef = useRef<HTMLDivElement>(null);
 		const printRef = useRef<HTMLButtonElement>(null);
 
@@ -834,6 +836,13 @@ const InstitutionCard = forwardRef<
 											>
 												Salin QR
 											</DropdownMenuItem>
+											<DropdownMenuItem
+												className="gap-2"
+												onSelect={() => setShowEmbedDialog(true)}
+											>
+												<Code2 className="h-5 w-5" />
+												<span>Sematkan di laman web</span>
+											</DropdownMenuItem>
 											<DropdownMenuSeparator />
 											<DropdownMenuItem>
 												<Share data={{ category, name }} platform="WHATSAPP" />
@@ -877,6 +886,14 @@ const InstitutionCard = forwardRef<
 					onOpenChange={setShowClaimModal}
 					institutionId={id}
 					institutionName={name}
+				/>
+
+				{/* Embed Dialog */}
+				<EmbedDialog
+					slug={resolvedSlug}
+					name={capitalizedName}
+					open={showEmbedDialog}
+					onOpenChange={setShowEmbedDialog}
 				/>
 			</>
 		);

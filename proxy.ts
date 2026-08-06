@@ -50,5 +50,11 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-	matcher: ["/admin/:path*", "/my-contributions/:path*", "/auth"],
+	// `/embed` is matched only so the root layout can read `x-pathname`.
+	matcher: [
+		"/admin/:path*",
+		"/my-contributions/:path*",
+		"/auth",
+		"/embed/:path*",
+	],
 };

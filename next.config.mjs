@@ -60,6 +60,16 @@ const nextConfig = {
 				],
 			},
 			{
+				// Public QR embeds are meant to be framed by any site.
+				source: "/embed/:path*",
+				headers: [
+					{
+						key: "Content-Security-Policy",
+						value: "frame-ancestors *",
+					},
+				],
+			},
+			{
 				source: "/manifest.json",
 				headers: [
 					{

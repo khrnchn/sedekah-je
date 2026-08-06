@@ -148,6 +148,17 @@ export default async function RootLayout({
 		);
 	}
 
+	// opt out default layout for /embed/:slug so host sites get no site chrome
+	if (pathname?.startsWith("/embed/")) {
+		return (
+			<html lang="ms" suppressHydrationWarning>
+				<body className={cn("bg-transparent", poppins.className)}>
+					{children}
+				</body>
+			</html>
+		);
+	}
+
 	return (
 		<html lang="ms" suppressHydrationWarning>
 			<head>
