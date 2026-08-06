@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ReusableDataTable } from "@/components/reusable-data-table";
 import { Button } from "@/components/ui/button";
@@ -23,12 +23,15 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import { useAuth } from "@/hooks/use-auth";
 import { categories, states } from "@/lib/institution-constants";
 import {
 	batchApproveInstitutions,
 	batchRejectInstitutions,
 } from "../_lib/batch-actions";
+import {
+	INCLUDE_AUTOMATED_QUERY,
+	shouldIncludeAutomated,
+} from "../_lib/pending-review-scope";
 import { columns } from "./columns";
 
 export type PendingInstitution = {
@@ -109,7 +112,11 @@ export default function PendingInstitutionsTable({
 	const [selectedIds, setSelectedIds] = useState<number[]>([]);
 	const [category, setCategory] = useState<CategoryFilter>(ALL);
 	const [state, setState] = useState<StateFilter>(ALL);
-	const [hideAutomated, setHideAutomated] = useState(true);
+	const pathname = usePathname();
+	const searchParams = useSearchParams();
+	const hideAutomated = !shouldIncludeAutomated(
+		searchParams.get(INCLUDE_AUTOMATED_QUERY) ?? undefined,
+	);
 	const [actionDialog, setActionDialog] = useState<{
 		isOpen: boolean;
 		type: "approve" | "reject" | null;
@@ -119,7 +126,6 @@ export default function PendingInstitutionsTable({
 	});
 
 	const { toast } = useToast();
-	const { user } = useAuth();
 	const router = useRouter();
 
 	// Refresh data on client navigation if needed
@@ -139,6 +145,19 @@ export default function PendingInstitutionsTable({
 		}
 		return true;
 	});
+
+	const setAutomatedVisibility = (hide: boolean) => {
+		const params = new URLSearchParams(searchParams.toString());
+		if (hide) {
+			params.delete(INCLUDE_AUTOMATED_QUERY);
+		} else {
+			params.set(INCLUDE_AUTOMATED_QUERY, "true");
+		}
+		const query = params.toString();
+		router.replace(query ? `${pathname}?${query}` : pathname, {
+			scroll: false,
+		});
+	};
 
 	const doBulk = async (action: "approve" | "reject", notes: string) => {
 		try {
@@ -219,7 +238,7 @@ export default function PendingInstitutionsTable({
 					<Checkbox
 						id="hide-automated"
 						checked={hideAutomated}
-						onCheckedChange={(value) => setHideAutomated(!!value)}
+						onCheckedChange={(value) => setAutomatedVisibility(!!value)}
 					/>
 					<Label htmlFor="hide-automated" className="whitespace-nowrap">
 						Hide automated imports ({automatedCount})

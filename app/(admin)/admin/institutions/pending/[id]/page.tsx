@@ -9,15 +9,26 @@ import {
 	getPendingInstitutionPosition,
 	getPrevPendingInstitutionId,
 } from "../../_lib/navigation";
+import {
+	getPendingListHref,
+	shouldIncludeAutomated,
+} from "../../_lib/pending-review-scope";
 import { getPendingInstitutionById } from "../../_lib/queries";
 import ClientSection from "./client-section";
 
 interface Props {
 	params: Promise<{ id: string }>;
+	searchParams: Promise<{ includeAutomated?: string | string[] }>;
 }
 
 export default async function PendingInstitutionReviewPage(props: Props) {
-	const params = await props.params;
+	const [params, searchParams] = await Promise.all([
+		props.params,
+		props.searchParams,
+	]);
+	const includeAutomated = shouldIncludeAutomated(
+		searchParams.includeAutomated,
+	);
 	const idNum = Number(params.id);
 	if (Number.isNaN(idNum)) {
 		notFound();
@@ -25,9 +36,9 @@ export default async function PendingInstitutionReviewPage(props: Props) {
 
 	const [results, prevId, nextId, positionData] = await Promise.all([
 		getPendingInstitutionById(idNum),
-		getPrevPendingInstitutionId(idNum),
-		getNextPendingInstitutionId(idNum),
-		getPendingInstitutionPosition(idNum),
+		getPrevPendingInstitutionId(idNum, includeAutomated),
+		getNextPendingInstitutionId(idNum, includeAutomated),
+		getPendingInstitutionPosition(idNum, includeAutomated),
 	]);
 	const institution = results[0];
 
@@ -45,7 +56,10 @@ export default async function PendingInstitutionReviewPage(props: Props) {
 					breadcrumbs={[
 						{ label: "Dashboard", href: "/admin/dashboard" },
 						{ label: "Institutions", href: "/admin/institutions" },
-						{ label: "Pending", href: "/admin/institutions/pending" },
+						{
+							label: "Pending",
+							href: getPendingListHref(includeAutomated),
+						},
 						{ label: `#${institution.id}` },
 					]}
 				>
@@ -55,6 +69,7 @@ export default async function PendingInstitutionReviewPage(props: Props) {
 						nextId={nextId}
 						position={positionData.position}
 						total={positionData.total}
+						includeAutomated={includeAutomated}
 					/>
 				</AdminLayout>
 			</SidebarInset>

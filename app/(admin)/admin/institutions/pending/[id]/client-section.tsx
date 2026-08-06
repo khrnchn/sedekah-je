@@ -37,6 +37,7 @@ type Props = {
 	nextId: number | null;
 	position: number;
 	total: number;
+	includeAutomated: boolean;
 };
 
 export default function ClientSection({
@@ -45,6 +46,7 @@ export default function ClientSection({
 	nextId,
 	position,
 	total,
+	includeAutomated,
 }: Props) {
 	const router = useRouter();
 	const formRef = useRef<ReviewFormHandle | null>(null);
@@ -221,6 +223,7 @@ export default function ClientSection({
 					nextId={nextId}
 					position={position}
 					total={total}
+					includeAutomated={includeAutomated}
 				/>
 			</div>
 
