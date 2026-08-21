@@ -1,51 +1,29 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
+# dependencies (legacy app)
 /node_modules
 /.pnp
 .pnp.js
-.yarn/install-state.gz
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
-
+bun.lock
 
 # testing
 /coverage
 
-# next.js
+# next.js (legacy)
 /.next/
 /out/
 
 # production
 /build
 
-# Claude Code (local)
-.claude/
+# local env files
+.env
+.env.local
 
-# Browser tooling
-.playwright-mcp/
+# Rust
+/target
 
 # misc
 .DS_Store
 *.pem
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# local env files
-.env*.local
-
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
-
-.env
-
-# Script data (downloaded datasets)
-scripts/data/

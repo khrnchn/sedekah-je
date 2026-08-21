@@ -1,0 +1,62 @@
+[package]
+name = "sedekah-je"
+version = "0.1.0"
+edition = "2021"
+description = "sedekah.je — directory of QR sedekah codes for mosques, suraus and islamic institutions in Malaysia, rewritten in Rust"
+default-run = "sedekahje"
+license = "MIT"
+
+[lib]
+name = "sedekahje"
+path = "src/lib.rs"
+
+[[bin]]
+name = "sedekahje"
+path = "src/main.rs"
+
+[[bin]]
+name = "seed-quest-mosques"
+path = "src/bin/seed_quest_mosques.rs"
+
+[[bin]]
+name = "geocode-quest-mosques"
+path = "src/bin/geocode_quest_mosques.rs"
+
+[[bin]]
+name = "ramadhan-wrapped-report"
+path = "src/bin/ramadhan_wrapped_report.rs"
+
+[dependencies]
+axum = { version = "0.8", features = ["multipart"] }
+tokio = { version = "1", features = ["full"] }
+tower = "0.5"
+tower-http = { version = "0.6", features = ["fs", "cors", "trace", "set-header", "timeout", "compression-gzip"] }
+http = "1"
+sqlx = { version = "0.8", features = ["runtime-tokio", "tls-rustls", "postgres", "chrono", "json", "uuid", "macros"] }
+chrono = { version = "0.4", features = ["serde", "clock"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+rand = "0.8"
+sha2 = "0.10"
+hmac = "0.12"
+hex = "0.4"
+base64 = "0.22"
+time = { version = "0.3", features = ["formatting"] }
+reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false }
+urlencoding = "2"
+percent-encoding = "2"
+dotenvy = "0.15"
+anyhow = "1"
+object_store = { version = "0.12", features = ["aws"] }
+qrcode = { version = "0.14", default-features = false, features = ["svg", "image"] }
+image = { version = "0.25", default-features = false, features = ["png"] }
+font8x8 = "0.3"
+futures = "0.3"
+async-trait = "0.1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+[profile.release]
+opt-level = 2
+lto = "thin"
