@@ -1,14 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import {
-	ChevronRight,
-	Code2,
-	DownloadIcon,
-	MapPin,
-	Share2,
-	User,
-} from "lucide-react";
+import { Code2, DownloadIcon, Eye, MapPin, Share2, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { forwardRef, useEffect, useRef, useState } from "react";
@@ -661,13 +654,11 @@ const InstitutionCard = forwardRef<
 										)}
 									</div>
 								)}
-								<Link
-									href={href}
+								<div
 									className={cn(
-										"mb-2 flex w-full flex-col items-center gap-1 rounded-md px-2 py-1 transition-colors hover:bg-muted/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+										"mb-2 flex w-full flex-col items-center gap-1 px-2 py-1",
 										isClosest && "pt-2",
 									)}
-									aria-label={`Lihat butiran ${capitalizedName}`}
 								>
 									<motion.div>
 										<Image
@@ -712,11 +703,7 @@ const InstitutionCard = forwardRef<
 									>
 										{getInstitutionCategoryLabel(category)}
 									</span>
-									<span className="mt-1 inline-flex h-8 items-center gap-1 text-xs font-semibold text-primary">
-										Lihat butiran
-										<ChevronRight className="h-4 w-4" aria-hidden="true" />
-									</span>
-								</Link>
+								</div>
 								<motion.div
 									layoutId={`image-${name}-${id}`}
 									className="flex flex-col items-center gap-2 rounded-lg bg-muted/25 p-2.5 shadow-none"
@@ -779,9 +766,7 @@ const InstitutionCard = forwardRef<
 												) : (
 													<DownloadIcon className="h-5 w-5" />
 												)}
-												<span className="text-xs font-medium">
-													Muat turun QR
-												</span>
+												<span className="text-xs font-medium">Muat turun</span>
 											</Button>
 										</TooltipTrigger>
 										<TooltipContent side="top">
@@ -853,6 +838,17 @@ const InstitutionCard = forwardRef<
 											</DropdownMenuItem>
 										</DropdownMenuContent>
 									</DropdownMenu>
+									<Button
+										asChild
+										size="sm"
+										variant="ghost"
+										className="h-11 gap-1.5 px-2.5 transition-colors duration-200 ease-out hover:bg-primary/10 hover:text-primary"
+									>
+										<Link href={href} aria-label={`Butiran ${capitalizedName}`}>
+											<Eye className="h-5 w-5" aria-hidden="true" />
+											<span className="text-xs font-medium">Butiran</span>
+										</Link>
+									</Button>
 								</div>
 							</CardContent>
 						</Card>
