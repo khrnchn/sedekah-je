@@ -36,6 +36,13 @@ function getScopeCondition(scope: TelegramReviewScope) {
 			);
 }
 
+function getTelegramReviewableCondition() {
+	return and(
+		not(isNull(institutions.qrContent)),
+		sql`trim(${institutions.qrContent}) <> ''`,
+	);
+}
+
 async function hydrateCandidate(
 	row: Omit<
 		TelegramReviewCandidate,
@@ -65,6 +72,7 @@ async function hydrateCandidate(
 				and(
 					eq(institutions.status, "pending"),
 					scopeCondition,
+					getTelegramReviewableCondition(),
 					or(
 						lt(institutions.createdAt, row.createdAt),
 						and(
@@ -77,7 +85,13 @@ async function hydrateCandidate(
 		db
 			.select({ value: count() })
 			.from(institutions)
-			.where(and(eq(institutions.status, "pending"), scopeCondition)),
+			.where(
+				and(
+					eq(institutions.status, "pending"),
+					scopeCondition,
+					getTelegramReviewableCondition(),
+				),
+			),
 	]);
 
 	return {
@@ -117,6 +131,7 @@ export async function getTelegramReviewCandidate(
 				eq(institutions.id, institutionId),
 				eq(institutions.status, "pending"),
 				getScopeCondition(scope),
+				getTelegramReviewableCondition(),
 			),
 		)
 		.limit(1);
@@ -153,6 +168,7 @@ export async function getNextTelegramReviewCandidate(
 			and(
 				eq(institutions.status, "pending"),
 				getScopeCondition(scope),
+				getTelegramReviewableCondition(),
 				afterCondition,
 			),
 		)
@@ -162,15 +178,21 @@ export async function getNextTelegramReviewCandidate(
 }
 
 export async function getTelegramQueueCounts() {
+	const reviewable = getTelegramReviewableCondition();
 	const [row] = await db
 		.select({
-			all: count(),
+			totalPending: count(),
+			all: sql<number>`count(*) filter (where ${reviewable})`.mapWith(Number),
 			community:
-				sql<number>`count(*) filter (where ${getScopeCondition("community")})`.mapWith(
+				sql<number>`count(*) filter (where ${and(reviewable, getScopeCondition("community"))})`.mapWith(
 					Number,
 				),
 			imports:
-				sql<number>`count(*) filter (where ${getScopeCondition("imports")})`.mapWith(
+				sql<number>`count(*) filter (where ${and(reviewable, getScopeCondition("imports"))})`.mapWith(
+					Number,
+				),
+			needsExtraction:
+				sql<number>`count(*) filter (where not (${reviewable}))`.mapWith(
 					Number,
 				),
 		})
@@ -180,6 +202,8 @@ export async function getTelegramQueueCounts() {
 		all: row?.all ?? 0,
 		community: row?.community ?? 0,
 		imports: row?.imports ?? 0,
+		needsExtraction: row?.needsExtraction ?? 0,
+		totalPending: row?.totalPending ?? 0,
 	};
 }
 

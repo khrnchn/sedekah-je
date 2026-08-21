@@ -85,7 +85,13 @@ function createDependencies(
 	return {
 		getCandidate: async () => candidate,
 		getNextCandidate: async () => null,
-		getQueueCounts: async () => ({ all: 1, community: 1, imports: 0 }),
+		getQueueCounts: async () => ({
+			all: 1,
+			community: 1,
+			imports: 0,
+			needsExtraction: 0,
+			totalPending: 1,
+		}),
 		getSession: async () => null,
 		saveSession: async () => {},
 		reviewInstitution: async () => candidate,
@@ -245,6 +251,31 @@ describe("Telegram review orchestration", () => {
 				}),
 			}),
 		);
+		assert.ok(resumed.calls.some((call) => call.method === "sendPhoto"));
+	});
+
+	test("resume skips a saved cursor that is no longer Telegram-reviewable", async () => {
+		const resumed = createHarness();
+		const nextCalls: unknown[] = [];
+		await resumeReview(
+			resumed.client,
+			config,
+			createDependencies({
+				getSession: async () => ({
+					scope: "community",
+					cursorInstitutionId: 41,
+				}),
+				getCandidate: async () => null,
+				getNextCandidate: async (scope, afterInstitutionId) => {
+					nextCalls.push({ scope, afterInstitutionId });
+					return candidate;
+				},
+			}),
+		);
+
+		assert.deepEqual(nextCalls, [
+			{ scope: "community", afterInstitutionId: 41 },
+		]);
 		assert.ok(resumed.calls.some((call) => call.method === "sendPhoto"));
 	});
 });
