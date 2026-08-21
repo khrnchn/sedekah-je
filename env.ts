@@ -19,6 +19,19 @@ export const env = createEnv({
 		MAILERSEND_FROM_NAME: z.string().optional(),
 		MAILERSEND_APPROVAL_TEMPLATE_ID: z.string().min(1).optional(),
 
+		// Telegram review bot (optional; all values are server-only)
+		TELEGRAM_BOT_TOKEN: z.string().min(1).optional(),
+		TELEGRAM_CHAT_ID: z
+			.string()
+			.regex(/^-?\d+$/)
+			.optional(),
+		TELEGRAM_WEBHOOK_SECRET: z
+			.string()
+			.regex(/^[A-Za-z0-9_-]{16,256}$/)
+			.optional(),
+		TELEGRAM_REVIEWER_USER_ID: z.string().min(1).optional(),
+		TELEGRAM_ADMIN_BASE_URL: z.string().url().optional(),
+
 		// Google Geocoding (optional, for backfill scripts)
 		GOOGLE_GEOCODING_API_KEY: z.string().min(1).optional(),
 
@@ -58,6 +71,11 @@ export const env = createEnv({
 		GOOGLE_GEOCODING_API_KEY: process.env.GOOGLE_GEOCODING_API_KEY,
 		OPENAI_API_KEY: process.env.OPENAI_API_KEY,
 		BULK_IMPORT_CONTRIBUTOR_ID: process.env.BULK_IMPORT_CONTRIBUTOR_ID,
+		TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
+		TELEGRAM_CHAT_ID: process.env.TELEGRAM_CHAT_ID,
+		TELEGRAM_WEBHOOK_SECRET: process.env.TELEGRAM_WEBHOOK_SECRET,
+		TELEGRAM_REVIEWER_USER_ID: process.env.TELEGRAM_REVIEWER_USER_ID,
+		TELEGRAM_ADMIN_BASE_URL: process.env.TELEGRAM_ADMIN_BASE_URL,
 		NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
 		NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
 		NEXT_PUBLIC_GOOGLE_MAPS_API_KEY:

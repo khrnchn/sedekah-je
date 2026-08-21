@@ -11,7 +11,7 @@ import {
 } from "@/lib/institution-constants";
 import { geocodeInstitutionWithFallback } from "@/lib/integrations/geocode";
 import { r2Storage } from "@/lib/integrations/r2-client";
-import { logNewInstitution } from "@/lib/integrations/telegram";
+import { notifyInstitutionSubmission } from "@/lib/integrations/telegram/review-bot";
 import { isToyyibpay } from "@/lib/qr-utils";
 import { slugify } from "@/lib/utils";
 
@@ -236,15 +236,7 @@ export async function POST(request: NextRequest) {
 
 		// Log to Telegram
 		try {
-			await logNewInstitution({
-				id: newId.toString(),
-				name,
-				category,
-				state,
-				city,
-				contributorName: user.name || "Unknown",
-				contributorEmail: user.email,
-			});
+			await notifyInstitutionSubmission(newId);
 		} catch (telegramError) {
 			console.error("Telegram log failed:", telegramError);
 		}

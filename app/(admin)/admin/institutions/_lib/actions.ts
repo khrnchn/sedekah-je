@@ -2,12 +2,10 @@
 
 import { and, eq, ne } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { after } from "next/server";
 import { db } from "@/db";
-import { institutions, questMosques, users } from "@/db/schema";
+import { institutions, users } from "@/db/schema";
 import { requireAdminSession } from "@/lib/auth-helpers";
-import { sendInstitutionApprovalEmail } from "@/lib/email/approval";
-import { buildInstitutionApproveLink } from "@/lib/email/approval-link";
+import { reviewPendingInstitution } from "@/lib/features/institution-review/review";
 import { normalizeInstitutionCategory } from "@/lib/institution-categories";
 import { reverseGeocodeInstitution } from "@/lib/integrations/geocode";
 import { slugify } from "@/lib/utils";
@@ -52,78 +50,13 @@ export async function approveInstitution(
 	adminNotes?: string,
 ) {
 	const { session } = await requireAdminSession();
-	const reviewerId = session.user.id;
-	const result = await db
-		.update(institutions)
-		.set({
-			status: "approved",
-			reviewedBy: reviewerId,
-			reviewedAt: new Date(),
-			adminNotes,
-		})
-		.where(and(eq(institutions.id, id), eq(institutions.status, "pending")))
-		.returning();
-
-	if (!result[0]) {
-		throw new Error("Institution not found or not pending");
-	}
-
-	// Revalidate relevant pages to update the UI
-	revalidatePath("/admin/institutions/pending", "page");
-	revalidatePath("/admin/institutions/approved", "page");
-	revalidatePath("/admin/dashboard", "page");
-
-	// Revalidate cached data and counts
-	revalidateTag("pending-institutions", "max");
-	revalidateTag("approved-institutions", "max");
-	revalidateTag("institutions-count", "max");
-	revalidateTag("institutions", "max"); // Homepage cache
-	revalidateTag("leaderboard", "max");
-
-	// Schedule approval email after response is sent (avoids serverless killing the request)
-	const row = result[0];
-	const contributorId = row?.contributorId ?? null;
-	if (contributorId && row) {
-		const payload = {
-			contributorId,
-			category: row.category,
-			slug: row.slug,
-			name: row.name,
-			state: row.state ?? "",
-			city: row.city ?? "",
-		};
-		after(async () => {
-			try {
-				const [contributor] = await db
-					.select({ email: users.email, name: users.name })
-					.from(users)
-					.where(eq(users.id, payload.contributorId))
-					.limit(1);
-				if (contributor?.email) {
-					const approveLink = buildInstitutionApproveLink(
-						payload.category,
-						payload.slug,
-					);
-					const send = await sendInstitutionApprovalEmail({
-						recipientEmail: contributor.email,
-						recipientName: contributor.name ?? null,
-						approveLink,
-						city: payload.city,
-						state: payload.state,
-						category: payload.category,
-						institutionName: payload.name,
-					});
-					if (!send.ok) {
-						console.error("[approval email]", send.error);
-					}
-				}
-			} catch (err) {
-				console.error("[approval email]", err);
-			}
-		});
-	}
-
-	return result;
+	const row = await reviewPendingInstitution({
+		institutionId: id,
+		reviewerId: session.user.id,
+		decision: "approved",
+		adminNotes,
+	});
+	return [row];
 }
 
 /**
@@ -135,44 +68,13 @@ export async function rejectInstitution(
 	adminNotes?: string,
 ) {
 	const { session } = await requireAdminSession();
-	const reviewerId = session.user.id;
-	const result = await db.transaction(async (tx) => {
-		const updated = await tx
-			.update(institutions)
-			.set({
-				status: "rejected",
-				reviewedBy: reviewerId,
-				reviewedAt: new Date(),
-				adminNotes,
-			})
-			.where(and(eq(institutions.id, id), eq(institutions.status, "pending")))
-			.returning();
-
-		if (!updated[0]) {
-			throw new Error("Institution not found or not pending");
-		}
-
-		// Auto-unlock quest mosque: clear institution_id so quest mosque becomes resubmittable
-		await tx
-			.update(questMosques)
-			.set({ institutionId: null })
-			.where(eq(questMosques.institutionId, id));
-
-		return updated;
+	const row = await reviewPendingInstitution({
+		institutionId: id,
+		reviewerId: session.user.id,
+		decision: "rejected",
+		adminNotes,
 	});
-
-	// Revalidate relevant pages to update the UI
-	revalidatePath("/admin/institutions/pending", "page");
-	revalidatePath("/admin/institutions/rejected", "page");
-	revalidatePath("/admin/dashboard", "page");
-
-	// Revalidate cached data and counts
-	revalidateTag("pending-institutions", "max");
-	revalidateTag("rejected-institutions", "max");
-	revalidateTag("institutions-count", "max");
-	revalidateTag("quest-mosques", "max");
-
-	return result;
+	return [row];
 }
 
 /**

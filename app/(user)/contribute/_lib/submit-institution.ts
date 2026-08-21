@@ -13,10 +13,8 @@ import {
 	reverseGeocodeWithGoogle,
 } from "@/lib/integrations/geocode";
 import { r2Storage } from "@/lib/integrations/r2-client";
-import {
-	logInstitutionSubmissionFailure,
-	logNewInstitution,
-} from "@/lib/integrations/telegram";
+import { logInstitutionSubmissionFailure } from "@/lib/integrations/telegram";
+import { notifyInstitutionSubmission } from "@/lib/integrations/telegram/review-bot";
 import { decodeQrFromBuffer } from "@/lib/qr-decode";
 import { isToyyibpay } from "@/lib/qr-utils";
 import { getUserById } from "@/lib/queries/users";
@@ -401,15 +399,7 @@ export async function submitInstitution(
 		// Log to Telegram
 		if (user) {
 			try {
-				await logNewInstitution({
-					id: newId.toString(),
-					name: parsed.data.name,
-					category: parsed.data.category,
-					state: parsed.data.state,
-					city: parsed.data.city,
-					contributorName: user.name || "Unknown",
-					contributorEmail: user.email,
-				});
+				await notifyInstitutionSubmission(newId);
 			} catch (telegramError) {
 				console.error(
 					"Failed to log new institution to Telegram:",

@@ -7,7 +7,7 @@ import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions, questMosques } from "@/db/schema";
 import { r2Storage } from "@/lib/integrations/r2-client";
-import { logNewInstitution } from "@/lib/integrations/telegram";
+import { notifyInstitutionSubmission } from "@/lib/integrations/telegram/review-bot";
 import { isToyyibpay } from "@/lib/qr-utils";
 import { slugify } from "@/lib/utils";
 
@@ -282,15 +282,7 @@ export async function submitQuestContribution(
 
 		// 9. Telegram notification
 		try {
-			await logNewInstitution({
-				id: String(newId),
-				name: questMosque.name,
-				category: "masjid",
-				state: "Selangor",
-				city: questMosque.district,
-				contributorName: session.user.name || "Unknown",
-				contributorEmail: "redacted",
-			});
+			await notifyInstitutionSubmission(newId);
 		} catch (telegramError) {
 			console.error("Failed to log to Telegram:", telegramError);
 		}
