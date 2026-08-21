@@ -1,7 +1,14 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Code2, DownloadIcon, Eye, MapPin, Share2, User } from "lucide-react";
+import {
+	ChevronRight,
+	Code2,
+	DownloadIcon,
+	MapPin,
+	Share2,
+	User,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { forwardRef, useEffect, useRef, useState } from "react";
@@ -10,6 +17,14 @@ import type { Institution } from "@/app/types/institutions";
 import Share from "@/components/share";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -24,7 +39,6 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/use-auth";
-import { useOutsideClick } from "@/hooks/use-outside-click";
 import {
 	getInstitutionCategoryIcon,
 	getInstitutionCategoryIconDimensions,
@@ -87,14 +101,12 @@ const InstitutionCard = forwardRef<
 			id,
 			name,
 			slug,
-			description,
 			state,
 			city,
 			qrImage,
 			qrContent,
 			supportedPayment,
 			category,
-			coords,
 			isClosest,
 			distanceToCurrentUserInMeter,
 			contributorId,
@@ -103,13 +115,12 @@ const InstitutionCard = forwardRef<
 		},
 		ref,
 	) => {
-		const [active, setActive] = useState<boolean | null>(false);
+		const [active, setActive] = useState(false);
 		const [hasMounted, setHasMounted] = useState(false);
 		const [isDownloading, setIsDownloading] = useState(false);
 		const [downloadStage, setDownloadStage] = useState<string>("");
 		const [showClaimModal, setShowClaimModal] = useState(false);
 		const [showEmbedDialog, setShowEmbedDialog] = useState(false);
-		const innerRef = useRef<HTMLDivElement>(null);
 		const printRef = useRef<HTMLButtonElement>(null);
 
 		const { isAuthenticated, isLoading } = useAuth();
@@ -140,25 +151,6 @@ const InstitutionCard = forwardRef<
 		useEffect(() => {
 			setHasMounted(true);
 		}, []);
-
-		useEffect(() => {
-			function onKeyDown(event: KeyboardEvent) {
-				if (event.key === "Escape") {
-					setActive(false);
-				}
-			}
-
-			if (active) {
-				document.body.style.overflow = "hidden";
-			} else {
-				document.body.style.overflow = "auto";
-			}
-
-			window.addEventListener("keydown", onKeyDown);
-			return () => window.removeEventListener("keydown", onKeyDown);
-		}, [active]);
-
-		useOutsideClick(innerRef, () => setActive(false));
 
 		const createImage = (options: { src: string }) => {
 			const img = document.createElement("img");
@@ -443,19 +435,54 @@ const InstitutionCard = forwardRef<
 			return;
 		};
 
+		const handleDownload = async () => {
+			setIsDownloading(true);
+			setDownloadStage("Menyediakan kod QR...");
+			try {
+				let canvas: HTMLCanvasElement;
+
+				if (qrContent) {
+					canvas = await renderQrContentToCanvas();
+				} else {
+					setDownloadStage("Mengambil gambar kod QR...");
+					const imageEl = createImage({ src: qrImage });
+					const { promise, resolve, reject } = Promise.withResolvers<
+						Event | string
+					>();
+					imageEl.onload = resolve;
+					imageEl.onerror = reject;
+					await promise;
+					const imageCanvas = document.createElement("canvas");
+					imageCanvas.width = imageEl.naturalWidth;
+					imageCanvas.height = imageEl.naturalHeight;
+					const ctx = imageCanvas.getContext("2d");
+					if (!ctx) {
+						throw new Error("Canvas context unavailable");
+					}
+					ctx.drawImage(imageEl, 0, 0);
+					canvas = imageCanvas;
+				}
+
+				setDownloadStage("Menyediakan fail untuk dimuat turun...");
+				const data = canvas.toDataURL("image/png");
+				const link = document.createElement("a");
+				link.href = data;
+				link.download = `sedekahje-${resolvedSlug}.png`;
+				document.body.appendChild(link);
+				link.click();
+				document.body.removeChild(link);
+				toast.success("Berjaya memuat turun kod QR.");
+			} catch (error) {
+				console.error("Download error:", error);
+				toast.error("Gagal memuat turun kod QR. Cuba lagi.");
+			} finally {
+				setIsDownloading(false);
+				setDownloadStage("");
+			}
+		};
+
 		return (
 			<>
-				<AnimatePresence>
-					{active && (
-						<motion.div
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							exit={{ opacity: 0 }}
-							className="fixed inset-0 z-10 h-full w-full bg-transparent md:bg-foreground/20"
-						/>
-					)}
-				</AnimatePresence>
-
 				{/* Loading Overlay for Mobile */}
 				<AnimatePresence>
 					{isDownloading && (
@@ -478,105 +505,111 @@ const InstitutionCard = forwardRef<
 					)}
 				</AnimatePresence>
 
-				<AnimatePresence>
-					{active ? (
-						<div className="fixed inset-0 z-[100] grid place-items-center px-3 py-3 sm:px-4 sm:py-4">
-							<motion.button
-								key={`button-${name}-${id}`}
-								layout
-								initial={{ opacity: 0 }}
-								animate={{ opacity: 1 }}
-								exit={{ opacity: 0, transition: { duration: 0.05 } }}
-								className="absolute right-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-md border bg-card lg:hidden"
-								onClick={(e) => {
-									e.stopPropagation();
-									setActive(null);
-								}}
-							>
-								<CloseIcon />
-							</motion.button>
-							<motion.div
-								layoutId={`card-${name}-${id}`}
-								ref={innerRef}
-								drag
-								onDragEnd={(e) => {
-									e.stopPropagation();
-									setActive(null);
-								}}
-								whileDrag={{ scale: 1.05 }}
-								className="flex max-h-[calc(100dvh-1.5rem)] w-full max-w-[460px] flex-col overflow-auto rounded-lg border bg-card p-5 shadow-lg sm:max-h-[calc(100dvh-2rem)] lg:overflow-hidden"
-							>
-								<motion.div
-									layoutId={`image-${name}-${id}`}
-									className="flex items-center justify-center rounded-lg border bg-muted/40 p-3"
-								>
-									{qrContent ? (
-										<QrCodeDisplay
-											qrContent={qrContent}
-											supportedPayment={supportedPayment}
-											size={300}
-										/>
-									) : (
-										<Image
-											priority
-											width={300}
-											height={300}
-											src={qrImage}
-											alt={name}
-											className="aspect-square w-full max-w-[300px] rounded-xl object-cover object-top"
-										/>
-									)}
-								</motion.div>
+				<Dialog open={active} onOpenChange={setActive}>
+					<DialogContent
+						className="flex max-h-[calc(100dvh-1rem)] w-[calc(100%-1rem)] max-w-[460px] flex-col gap-4 overflow-y-auto rounded-xl p-4 sm:max-h-[calc(100dvh-2rem)] sm:p-6"
+						closeButtonClassName="right-2 top-2 flex h-12 w-12 items-center justify-center rounded-md hover:bg-accent sm:right-3 sm:top-3"
+						closeLabel="Tutup"
+						onCloseAutoFocus={(event) => {
+							event.preventDefault();
+							printRef.current?.focus();
+						}}
+					>
+						<DialogHeader className="pr-10 text-left">
+							<DialogTitle>Kod QR {capitalizedName}</DialogTitle>
+							<DialogDescription>
+								{capitalizedCity}, {capitalizedState}
+							</DialogDescription>
+						</DialogHeader>
 
-								<div className="mt-4">
-									<div className="flex justify-between items-start p-4">
-										<div className="flex-1">
-											<motion.h3
-												layoutId={`title-${name}-${id}`}
-												className="text-base font-semibold text-foreground"
-											>
-												{capitalizedName}
-											</motion.h3>
-											<motion.p
-												layoutId={`location-${city}-${state}-${id}`}
-												className="text-base text-muted-foreground"
-											>
-												{capitalizedCity}, {capitalizedState}
-											</motion.p>
-										</div>
-										<motion.a
-											layout
-											initial={{ opacity: 0 }}
-											animate={{ opacity: 1 }}
-											exit={{ opacity: 0 }}
-											href={`https://www.google.com/maps/search/?api=1&query=${
-												coords ? coords.join(",") : encodeURIComponent(name)
-											}`}
-											target="_blank"
-											className="rounded-md bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
-											rel="noreferrer"
-										>
-											Cari di peta
-										</motion.a>
-									</div>
-									{description ? (
-										<div className="pt-4 relative px-4">
-											<motion.div
-												layout
-												initial={{ opacity: 0 }}
-												animate={{ opacity: 1 }}
-												exit={{ opacity: 0 }}
-												className="flex max-h-40 flex-col items-start gap-4 overflow-auto pb-10 text-xs text-muted-foreground [mask:linear-gradient(to_bottom,white,white,transparent)] [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-overflow-scrolling:touch] md:max-h-60 md:text-sm lg:max-h-80 lg:text-base"
-											>
-												{description}
-											</motion.div>
-										</div>
-									) : null}
-								</div>
-							</motion.div>
+						<div className="flex items-center justify-center rounded-lg border bg-muted/40 p-3">
+							{qrContent ? (
+								<QrCodeDisplay
+									qrContent={qrContent}
+									supportedPayment={supportedPayment}
+									size={300}
+									disabled
+									tabIndex={-1}
+									aria-hidden="true"
+									className="cursor-default"
+								/>
+							) : (
+								<Image
+									priority
+									width={300}
+									height={300}
+									src={qrImage}
+									alt={`Kod QR untuk ${capitalizedName}`}
+									className="aspect-square w-full max-w-[300px] rounded-xl object-cover object-top"
+								/>
+							)}
 						</div>
-					) : null}
-				</AnimatePresence>
+
+						<DialogFooter className="grid grid-cols-2 gap-2 sm:grid-cols-2 sm:space-x-0">
+							<Button
+								type="button"
+								disabled={isDownloading}
+								onClick={handleDownload}
+								className="h-11 gap-2"
+							>
+								{isDownloading ? (
+									<div className="h-5 w-5 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
+								) : (
+									<DownloadIcon className="h-5 w-5" />
+								)}
+								Muat turun QR
+							</Button>
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<Button
+										type="button"
+										variant="outline"
+										disabled={isDownloading}
+										className="h-11 gap-2"
+									>
+										<Share2 className="h-5 w-5" />
+										Kongsi
+									</Button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent className="animate-in fade-in zoom-in-95">
+									<DropdownMenuItem
+										onClick={async () => {
+											if (!qrContent) {
+												await copyImg(qrImage);
+												return;
+											}
+
+											const toastId = toast.loading("Menyalin kod QR...");
+											try {
+												const canvas = await renderQrContentToCanvas();
+												await copyCanvasToClipboard(canvas);
+												toast.success(
+													"Berjaya menyalin kod QR ke papan klip.",
+													{ id: toastId },
+												);
+											} catch (error) {
+												console.error("Copy QR error:", error);
+												toast.error(
+													"Gagal menyalin kod QR. Muat turun imej sebagai alternatif.",
+													{ id: toastId },
+												);
+											}
+										}}
+									>
+										Salin QR
+									</DropdownMenuItem>
+									<DropdownMenuSeparator />
+									<DropdownMenuItem>
+										<Share data={{ category, name }} platform="WHATSAPP" />
+									</DropdownMenuItem>
+									<DropdownMenuItem>
+										<Share data={{ category, name }} platform="X" />
+									</DropdownMenuItem>
+								</DropdownMenuContent>
+							</DropdownMenu>
+						</DialogFooter>
+					</DialogContent>
+				</Dialog>
 
 				<TooltipProvider>
 					<motion.div
@@ -631,10 +664,10 @@ const InstitutionCard = forwardRef<
 								<Link
 									href={href}
 									className={cn(
-										"mb-2 flex w-full flex-col items-center gap-1 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+										"mb-2 flex w-full flex-col items-center gap-1 rounded-md px-2 py-1 transition-colors hover:bg-muted/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
 										isClosest && "pt-2",
 									)}
-									aria-label={`Buka halaman ${capitalizedName}`}
+									aria-label={`Lihat butiran ${capitalizedName}`}
 								>
 									<motion.div>
 										<Image
@@ -679,10 +712,14 @@ const InstitutionCard = forwardRef<
 									>
 										{getInstitutionCategoryLabel(category)}
 									</span>
+									<span className="mt-1 inline-flex h-8 items-center gap-1 text-xs font-semibold text-primary">
+										Lihat butiran
+										<ChevronRight className="h-4 w-4" aria-hidden="true" />
+									</span>
 								</Link>
 								<motion.div
 									layoutId={`image-${name}-${id}`}
-									className="cursor-pointer rounded-lg bg-muted/25 p-2.5 shadow-none"
+									className="flex flex-col items-center gap-2 rounded-lg bg-muted/25 p-2.5 shadow-none"
 								>
 									{qrContent ? (
 										<div className="flex aspect-square w-40 items-center justify-center">
@@ -700,6 +737,7 @@ const InstitutionCard = forwardRef<
 										</div>
 									) : (
 										<button
+											ref={printRef}
 											type="button"
 											className="block aspect-square w-40 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
 											aria-label={`Perbesarkan kod QR untuk ${capitalizedName}`}
@@ -710,13 +748,16 @@ const InstitutionCard = forwardRef<
 										>
 											<Image
 												src={qrImage}
-												alt={`QR Code for ${name}`}
+												alt={`Kod QR untuk ${capitalizedName}`}
 												width={160}
 												height={160}
 												className="h-full w-full rounded-md object-cover"
 											/>
 										</button>
 									)}
+									<p className="text-xs font-medium text-muted-foreground">
+										Tekan QR untuk besarkan
+									</p>
 								</motion.div>
 								<div className="mt-auto flex w-full justify-center gap-1.5">
 									{/* Download Button */}
@@ -728,52 +769,9 @@ const InstitutionCard = forwardRef<
 												className="h-11 gap-1.5 px-2.5 hover:bg-primary/10 hover:text-primary transition-colors duration-200 ease-out"
 												disabled={isDownloading}
 												aria-label={`Muat turun kod QR untuk ${capitalizedName}`}
-												onClick={async (e) => {
+												onClick={(e) => {
 													e.stopPropagation();
-													setIsDownloading(true);
-													setDownloadStage("Menyediakan kod QR...");
-													try {
-														let canvas: HTMLCanvasElement;
-
-														if (qrContent) {
-															canvas = await renderQrContentToCanvas();
-														} else {
-															setDownloadStage("Mengambil gambar kod QR...");
-															const imageEl = createImage({ src: qrImage });
-															await new Promise((resolve, reject) => {
-																imageEl.onload = resolve;
-																imageEl.onerror = reject;
-															});
-															const imageCanvas =
-																document.createElement("canvas");
-															imageCanvas.width = imageEl.naturalWidth;
-															imageCanvas.height = imageEl.naturalHeight;
-															const ctx = imageCanvas.getContext("2d");
-															if (!ctx) {
-																throw new Error("Canvas context unavailable");
-															}
-															ctx.drawImage(imageEl, 0, 0);
-															canvas = imageCanvas;
-														}
-
-														setDownloadStage(
-															"Menyediakan fail untuk dimuat turun...",
-														);
-														const data = canvas.toDataURL("image/png");
-														const link = document.createElement("a");
-														link.href = data;
-														link.download = `sedekahje-${resolvedSlug}.png`;
-														document.body.appendChild(link);
-														link.click();
-														document.body.removeChild(link);
-														toast.success("Berjaya memuat turun kod QR.");
-													} catch (error) {
-														console.error("Download error:", error);
-														toast.error("Gagal memuat turun kod QR.");
-													} finally {
-														setIsDownloading(false);
-														setDownloadStage("");
-													}
+													void handleDownload();
 												}}
 											>
 												{isDownloading ? (
@@ -781,7 +779,9 @@ const InstitutionCard = forwardRef<
 												) : (
 													<DownloadIcon className="h-5 w-5" />
 												)}
-												<span className="text-xs font-medium">Muat turun</span>
+												<span className="text-xs font-medium">
+													Muat turun QR
+												</span>
 											</Button>
 										</TooltipTrigger>
 										<TooltipContent side="top">
@@ -823,14 +823,15 @@ const InstitutionCard = forwardRef<
 														const canvas = await renderQrContentToCanvas();
 														await copyCanvasToClipboard(canvas);
 														toast.success(
-															"Berjaya menyalin kod QR ke papan klipboard.",
+															"Berjaya menyalin kod QR ke papan klip.",
 															{ id: toastId },
 														);
 													} catch (error) {
 														console.error("Copy QR error:", error);
-														toast.error("Gagal menyalin kod QR.", {
-															id: toastId,
-														});
+														toast.error(
+															"Gagal menyalin kod QR. Muat turun imej sebagai alternatif.",
+															{ id: toastId },
+														);
 													}
 												}}
 											>
@@ -852,28 +853,6 @@ const InstitutionCard = forwardRef<
 											</DropdownMenuItem>
 										</DropdownMenuContent>
 									</DropdownMenu>
-
-									{/* Expand Button */}
-									<Tooltip>
-										<TooltipTrigger asChild>
-											<Button
-												size="sm"
-												variant="ghost"
-												className="h-11 gap-1.5 px-2.5 hover:bg-primary/10 hover:text-primary transition-colors duration-200 ease-out"
-												aria-label={`Perbesarkan kod QR untuk ${capitalizedName}`}
-												onClick={async (e) => {
-													e.stopPropagation();
-													setActive(true);
-												}}
-											>
-												<Eye className="h-5 w-5" />
-												<span className="text-xs font-medium">QR</span>
-											</Button>
-										</TooltipTrigger>
-										<TooltipContent side="top">
-											<p>Perbesarkan kod QR</p>
-										</TooltipContent>
-									</Tooltip>
 								</div>
 							</CardContent>
 						</Card>
@@ -901,30 +880,5 @@ const InstitutionCard = forwardRef<
 );
 
 InstitutionCard.displayName = "InstitutionCard";
-
-export const CloseIcon = () => {
-	return (
-		<motion.svg
-			name="close-icon"
-			initial={{ opacity: 0 }}
-			animate={{ opacity: 1 }}
-			exit={{ opacity: 0, transition: { duration: 0.05 } }}
-			xmlns="http://www.w3.org/2000/svg"
-			width="24"
-			height="24"
-			viewBox="0 0 24 24"
-			fill="none"
-			stroke="currentColor"
-			strokeWidth="2"
-			strokeLinecap="round"
-			strokeLinejoin="round"
-			className="h-4 w-4 text-foreground"
-		>
-			<path stroke="none" d="M0 0h24v24H0z" fill="none" />
-			<path d="M18 6l-12 12" />
-			<path d="M6 6l12 12" />
-		</motion.svg>
-	);
-};
 
 export default InstitutionCard;
