@@ -11,6 +11,7 @@ export type ReviewCallback = {
 		| "reject-template-confirm"
 		| "reject-custom"
 		| "reject-custom-confirm"
+		| "reject-custom-edit"
 		| "cancel"
 		| "next";
 	scope: TelegramReviewScope;
@@ -56,6 +57,7 @@ const CALLBACK_ACTION_CODES = {
 	"reject-template-confirm": "T",
 	"reject-custom": "c",
 	"reject-custom-confirm": "C",
+	"reject-custom-edit": "e",
 	cancel: "x",
 	next: "n",
 } as const satisfies Record<ReviewCallback["action"], string>;
@@ -85,14 +87,17 @@ const MAX_PHOTO_CAPTION_LENGTH = 1024;
 export const TELEGRAM_MENU_BUTTONS = {
 	reviewNext: "▶️ Review next",
 	queue: "📊 Queue",
+	resume: "↩️ Resume review",
+	all: "📥 All pending",
 	community: "👤 Community submissions",
-	imports: "🤖 Akrimi imports",
+	imports: "🤖 Bulk imports",
 	openAdmin: "🌐 Open web admin",
 } as const;
 
 export const TELEGRAM_REVIEW_MENU = {
 	keyboard: [
 		[TELEGRAM_MENU_BUTTONS.reviewNext, TELEGRAM_MENU_BUTTONS.queue],
+		[TELEGRAM_MENU_BUTTONS.resume, TELEGRAM_MENU_BUTTONS.all],
 		[TELEGRAM_MENU_BUTTONS.community, TELEGRAM_MENU_BUTTONS.imports],
 		[TELEGRAM_MENU_BUTTONS.openAdmin],
 	],
@@ -169,6 +174,7 @@ export function decodeReviewCallback(value: string): ReviewCallback | null {
 	if (
 		reviewMessageId &&
 		action !== "reject-custom-confirm" &&
+		action !== "reject-custom-edit" &&
 		action !== "cancel"
 	) {
 		return null;
@@ -201,6 +207,18 @@ export function escapeTelegramHtml(value: string): string {
 		.replaceAll("&", "&amp;")
 		.replaceAll("<", "&lt;")
 		.replaceAll(">", "&gt;");
+}
+
+export function buildReviewedCardStatus(input: {
+	institutionId: number;
+	decision: "approved" | "rejected";
+	reviewerName: string | null;
+}): string {
+	const approved = input.decision === "approved";
+	return [
+		`${approved ? "✅" : "❌"} <b>${approved ? "APPROVED" : "REJECTED"} · #${input.institutionId}</b>`,
+		`Reviewed by ${escapeTelegramHtml(input.reviewerName || "configured admin")}`,
+	].join("\n");
 }
 
 export function getReviewBlockers(
@@ -258,7 +276,7 @@ export function buildReviewCard(
 	const blockers = getReviewBlockers(candidate);
 	const isImport =
 		Boolean(candidate.sourceUrl) && !candidate.sourceUrl?.startsWith("http");
-	const label = isImport ? "AKRIMI IMPORT" : "COMMUNITY SUBMISSION";
+	const label = isImport ? "BULK IMPORT" : "COMMUNITY SUBMISSION";
 	const submittedAt = candidate.createdAt.toLocaleString("en-MY", {
 		timeZone: "Asia/Kuala_Lumpur",
 		dateStyle: "medium",
@@ -275,7 +293,7 @@ export function buildReviewCard(
 		`Address: ${escapeTelegramHtml(candidate.address || "Not provided")}`,
 		`Payment: ${escapeTelegramHtml(payments)}`,
 		`Submitted: ${escapeTelegramHtml(submittedAt)}`,
-		`Contributor: ${escapeTelegramHtml(candidate.contributorName || (isImport ? "Akrimi Nasir" : "Unknown"))}`,
+		`Contributor: ${escapeTelegramHtml(candidate.contributorName || (isImport ? "Automated import" : "Unknown"))}`,
 		"",
 		blockers.length === 0
 			? "✅ <b>Ready for quick review</b>"
@@ -456,6 +474,17 @@ export function buildCustomReasonConfirmation(
 							...(reviewMessageId ? { reviewMessageId } : {}),
 						}),
 					},
+					{
+						text: "✏️ Edit reason",
+						callback_data: encodeReviewCallback({
+							action: "reject-custom-edit",
+							scope,
+							institutionId,
+							...(reviewMessageId ? { reviewMessageId } : {}),
+						}),
+					},
+				],
+				[
 					{
 						text: "↩️ Cancel",
 						callback_data: encodeReviewCallback({

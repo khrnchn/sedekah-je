@@ -64,6 +64,13 @@
 			"when": 1777636800000,
 			"tag": "0008_friday_campaigns",
 			"breakpoints": true
+		},
+		{
+			"idx": 9,
+			"version": "7",
+			"when": 1787326553175,
+			"tag": "0009_silent_yellowjacket",
+			"breakpoints": true
 		}
 	]
 }

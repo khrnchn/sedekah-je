@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { createTelegramBotClient } from "./bot-api";
+import { createTelegramBotClient } from "@/lib/integrations/telegram/bot-api";
 
 test("Telegram photo delivery rejects untrusted image origins before fetching", async () => {
 	const client = createTelegramBotClient("000000:fake-token", {

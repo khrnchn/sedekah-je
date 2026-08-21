@@ -1,4 +1,4 @@
-import type { TelegramInlineKeyboard } from "./review-ui";
+import type { TelegramInlineKeyboard } from "@/lib/integrations/telegram/review-ui";
 
 export type TelegramChat = {
 	id: number;

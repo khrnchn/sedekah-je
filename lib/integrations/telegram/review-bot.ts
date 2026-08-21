@@ -10,19 +10,22 @@ import {
 	type TelegramCallbackQuery,
 	type TelegramMessage,
 	type TelegramUpdate,
-} from "./bot-api";
+} from "@/lib/integrations/telegram/bot-api";
 import {
 	getNextTelegramReviewCandidate,
 	getTelegramQueueCounts,
 	getTelegramReviewCandidate,
-} from "./review-repository";
-import { isAuthorizedTelegramActor } from "./review-security";
+	getTelegramReviewSession,
+	saveTelegramReviewSession,
+} from "@/lib/integrations/telegram/review-repository";
+import { isAuthorizedTelegramActor } from "@/lib/integrations/telegram/review-security";
 import {
 	buildApprovalConfirmation,
 	buildCustomReasonConfirmation,
 	buildCustomReasonPrompt,
 	buildRejectionMenu,
 	buildReviewCard,
+	buildReviewedCardStatus,
 	buildTemplateRejectionConfirmation,
 	decodeReviewCallback,
 	escapeTelegramHtml,
@@ -34,7 +37,7 @@ import {
 	TELEGRAM_REVIEW_MENU,
 	type TelegramReviewCandidate,
 	type TelegramReviewScope,
-} from "./review-ui";
+} from "@/lib/integrations/telegram/review-ui";
 
 const REJECTION_REASONS: Record<RejectionTemplateKey, string> = {
 	unclear: REJECTION_TEMPLATES[0].value,
@@ -42,10 +45,34 @@ const REJECTION_REASONS: Record<RejectionTemplateKey, string> = {
 	duplicate: REJECTION_TEMPLATES[2].value,
 };
 
-type ReviewBotConfig = {
+export type ReviewBotConfig = {
 	chatId: string;
 	reviewerUserId: string;
+	reviewerName: string | null;
 	adminBaseUrl: string | null;
+};
+
+export type ReviewBotDependencies = {
+	getCandidate: typeof getTelegramReviewCandidate;
+	getNextCandidate: typeof getNextTelegramReviewCandidate;
+	getQueueCounts: typeof getTelegramQueueCounts;
+	getSession: typeof getTelegramReviewSession;
+	saveSession: typeof saveTelegramReviewSession;
+	reviewInstitution: (input: {
+		institutionId: number;
+		reviewerId: string;
+		decision: "approved" | "rejected";
+		adminNotes?: string;
+	}) => Promise<unknown>;
+};
+
+const defaultDependencies: ReviewBotDependencies = {
+	getCandidate: getTelegramReviewCandidate,
+	getNextCandidate: getNextTelegramReviewCandidate,
+	getQueueCounts: getTelegramQueueCounts,
+	getSession: getTelegramReviewSession,
+	saveSession: saveTelegramReviewSession,
+	reviewInstitution: reviewPendingInstitution,
 };
 
 function getTelegramClient(): TelegramBotClient | null {
@@ -59,17 +86,27 @@ function getTelegramClient(): TelegramBotClient | null {
 async function getReviewBotConfig(): Promise<ReviewBotConfig | null> {
 	if (!env.TELEGRAM_CHAT_ID) return null;
 	let reviewerUserId = env.TELEGRAM_REVIEWER_USER_ID;
+	let reviewerName: string | null = null;
 	if (!reviewerUserId) {
 		const activeAdmins = await db
-			.select({ id: users.id, banned: users.banned })
+			.select({ id: users.id, name: users.name, banned: users.banned })
 			.from(users)
 			.where(and(eq(users.role, "admin"), eq(users.isActive, true)))
 			.limit(3);
 		const eligibleAdmins = activeAdmins.filter((admin) => !admin.banned);
 		if (eligibleAdmins.length !== 1) return null;
 		reviewerUserId = eligibleAdmins[0]?.id;
+		reviewerName = eligibleAdmins[0]?.name ?? null;
 	}
 	if (!reviewerUserId) return null;
+	if (env.TELEGRAM_REVIEWER_USER_ID) {
+		const [reviewer] = await db
+			.select({ name: users.name })
+			.from(users)
+			.where(eq(users.id, reviewerUserId))
+			.limit(1);
+		reviewerName = reviewer?.name ?? null;
+	}
 	const rawAdminBaseUrl =
 		env.TELEGRAM_ADMIN_BASE_URL ?? process.env.BETTER_AUTH_URL;
 	let adminBaseUrl: string | null = null;
@@ -86,6 +123,7 @@ async function getReviewBotConfig(): Promise<ReviewBotConfig | null> {
 	return {
 		chatId: env.TELEGRAM_CHAT_ID,
 		reviewerUserId,
+		reviewerName,
 		adminBaseUrl,
 	};
 }
@@ -137,25 +175,107 @@ async function sendCandidate(
 	return sent;
 }
 
-async function sendNextCandidate(
+export async function sendNextCandidate(
 	client: TelegramBotClient,
 	config: ReviewBotConfig,
 	scope: TelegramReviewScope,
 	afterInstitutionId?: number,
+	dependencies: ReviewBotDependencies = defaultDependencies,
 ) {
-	const candidate = await getNextTelegramReviewCandidate(
+	const candidate = await dependencies.getNextCandidate(
 		scope,
 		afterInstitutionId,
 	);
 	if (!candidate) {
 		await client.sendMessage({
 			chatId: config.chatId,
-			text: `✅ No more pending ${scope === "imports" ? "Akrimi imports" : scope === "community" ? "community submissions" : "institutions"} in this review run.`,
+			text: `✅ No more pending ${scope === "imports" ? "bulk imports" : scope === "community" ? "community submissions" : "institutions"} in this review run.`,
 			replyMarkup: TELEGRAM_REVIEW_MENU,
 		});
 		return;
 	}
 	await sendCandidate(client, config, candidate, scope);
+	await dependencies.saveSession({
+		telegramChatId: config.chatId,
+		scope,
+		cursorInstitutionId: candidate.id,
+	});
+}
+
+export async function resumeReview(
+	client: TelegramBotClient,
+	config: ReviewBotConfig,
+	dependencies: ReviewBotDependencies = defaultDependencies,
+) {
+	const session = await dependencies.getSession(config.chatId);
+	if (!session?.cursorInstitutionId) {
+		await client.sendMessage({
+			chatId: config.chatId,
+			text: "There is no saved review session yet. Choose a queue to begin.",
+			replyMarkup: TELEGRAM_REVIEW_MENU,
+		});
+		return;
+	}
+	const current = await dependencies.getCandidate(
+		session.cursorInstitutionId,
+		session.scope,
+	);
+	if (current) {
+		await sendCandidate(client, config, current, session.scope);
+		return;
+	}
+	await sendNextCandidate(
+		client,
+		config,
+		session.scope,
+		session.cursorInstitutionId,
+		dependencies,
+	);
+}
+
+async function markReviewMessage(input: {
+	client: TelegramBotClient;
+	config: ReviewBotConfig;
+	chatId: number;
+	messageId: number;
+	institutionId: number;
+	decision: "approved" | "rejected";
+	knownPhotoMessage: boolean | null;
+}) {
+	const status = buildReviewedCardStatus({
+		institutionId: input.institutionId,
+		decision: input.decision,
+		reviewerName: input.config.reviewerName,
+	});
+	if (input.knownPhotoMessage === true) {
+		await input.client.editMessageCaption({
+			chatId: input.chatId,
+			messageId: input.messageId,
+			caption: status,
+		});
+		return;
+	}
+	if (input.knownPhotoMessage === false) {
+		await input.client.editMessageText({
+			chatId: input.chatId,
+			messageId: input.messageId,
+			text: status,
+		});
+		return;
+	}
+	try {
+		await input.client.editMessageCaption({
+			chatId: input.chatId,
+			messageId: input.messageId,
+			caption: status,
+		});
+	} catch {
+		await input.client.editMessageText({
+			chatId: input.chatId,
+			messageId: input.messageId,
+			text: status,
+		});
+	}
 }
 
 async function restoreReviewButtons(
@@ -165,8 +285,9 @@ async function restoreReviewButtons(
 	messageId: number,
 	institutionId: number,
 	scope: TelegramReviewScope,
+	dependencies: ReviewBotDependencies,
 ) {
-	const candidate = await getTelegramReviewCandidate(institutionId, scope);
+	const candidate = await dependencies.getCandidate(institutionId, scope);
 	if (!candidate) {
 		await client.editMessageReplyMarkup({ chatId, messageId });
 		return false;
@@ -198,6 +319,7 @@ async function handleMenuMessage(
 	client: TelegramBotClient,
 	config: ReviewBotConfig,
 	message: TelegramMessage,
+	dependencies: ReviewBotDependencies = defaultDependencies,
 ): Promise<void> {
 	const text = message.text?.trim();
 	const repliedPrompt = message.reply_to_message?.text
@@ -223,36 +345,56 @@ async function handleMenuMessage(
 	if (text === "/start" || text === "/menu") {
 		await client.sendMessage({
 			chatId: config.chatId,
-			text: "Institution review is ready. Community submissions are the default; Akrimi imports stay in a separate queue.",
+			text: "Institution review is ready. Community submissions are the default; bulk imports stay in a separate queue.",
 			replyMarkup: TELEGRAM_REVIEW_MENU,
 		});
 		return;
 	}
 	if (text === TELEGRAM_MENU_BUTTONS.reviewNext) {
-		await sendNextCandidate(client, config, "community");
+		await sendNextCandidate(
+			client,
+			config,
+			"community",
+			undefined,
+			dependencies,
+		);
 		return;
 	}
 	if (text === TELEGRAM_MENU_BUTTONS.community) {
-		await sendNextCandidate(client, config, "community");
+		await sendNextCandidate(
+			client,
+			config,
+			"community",
+			undefined,
+			dependencies,
+		);
 		return;
 	}
 	if (text === TELEGRAM_MENU_BUTTONS.imports) {
-		await sendNextCandidate(client, config, "imports");
+		await sendNextCandidate(client, config, "imports", undefined, dependencies);
 		return;
 	}
 	if (text === TELEGRAM_MENU_BUTTONS.queue) {
-		const counts = await getTelegramQueueCounts();
+		const counts = await dependencies.getQueueCounts();
 		await client.sendMessage({
 			chatId: config.chatId,
 			text: [
 				"<b>Pending review</b>",
 				`Community submissions: <b>${counts.community}</b>`,
-				`Akrimi imports: <b>${counts.imports}</b>`,
+				`Bulk imports: <b>${counts.imports}</b>`,
 				`Total: <b>${counts.all}</b>`,
 			].join("\n"),
 			parseMode: "HTML",
 			replyMarkup: TELEGRAM_REVIEW_MENU,
 		});
+		return;
+	}
+	if (text === TELEGRAM_MENU_BUTTONS.resume) {
+		await resumeReview(client, config, dependencies);
+		return;
+	}
+	if (text === TELEGRAM_MENU_BUTTONS.all) {
+		await sendNextCandidate(client, config, "all", undefined, dependencies);
 		return;
 	}
 	if (text === TELEGRAM_MENU_BUTTONS.openAdmin) {
@@ -274,10 +416,11 @@ async function handleMenuMessage(
 	});
 }
 
-async function handleReviewCallback(
+export async function handleReviewCallback(
 	client: TelegramBotClient,
 	config: ReviewBotConfig,
 	callback: TelegramCallbackQuery,
+	dependencies: ReviewBotDependencies = defaultDependencies,
 ): Promise<void> {
 	const message = callback.message;
 	const parsed = callback.data ? decodeReviewCallback(callback.data) : null;
@@ -292,7 +435,7 @@ async function handleReviewCallback(
 
 	const chatId = message.chat.id;
 	if (parsed.action === "approve") {
-		const candidate = await getTelegramReviewCandidate(
+		const candidate = await dependencies.getCandidate(
 			parsed.institutionId,
 			parsed.scope,
 		);
@@ -377,6 +520,33 @@ async function handleReviewCallback(
 		return;
 	}
 
+	if (parsed.action === "reject-custom-edit") {
+		const reviewMessageId = parsed.reviewMessageId ?? message.message_id;
+		await client.sendMessage({
+			chatId,
+			text: buildCustomReasonPrompt(
+				parsed.institutionId,
+				parsed.scope,
+				reviewMessageId,
+			),
+			replyMarkup: {
+				force_reply: true,
+				selective: true,
+				input_field_placeholder: "Edit the rejection reason",
+			},
+			replyToMessageId: reviewMessageId,
+		});
+		await client.editMessageReplyMarkup({
+			chatId,
+			messageId: message.message_id,
+		});
+		await client.answerCallbackQuery({
+			callbackQueryId: callback.id,
+			text: "Reply with the edited reason",
+		});
+		return;
+	}
+
 	if (parsed.action === "cancel") {
 		const reviewMessageId = parsed.reviewMessageId ?? message.message_id;
 		await restoreReviewButtons(
@@ -386,6 +556,7 @@ async function handleReviewCallback(
 			reviewMessageId,
 			parsed.institutionId,
 			parsed.scope,
+			dependencies,
 		);
 		if (message.message_id !== reviewMessageId) {
 			await client.editMessageReplyMarkup({
@@ -402,7 +573,13 @@ async function handleReviewCallback(
 
 	if (parsed.action === "next") {
 		await client.answerCallbackQuery({ callbackQueryId: callback.id });
-		await sendNextCandidate(client, config, parsed.scope, parsed.institutionId);
+		await sendNextCandidate(
+			client,
+			config,
+			parsed.scope,
+			parsed.institutionId,
+			dependencies,
+		);
 		return;
 	}
 
@@ -431,7 +608,7 @@ async function handleReviewCallback(
 	if (!decision) return;
 
 	if (decision === "approved") {
-		const candidate = await getTelegramReviewCandidate(
+		const candidate = await dependencies.getCandidate(
 			parsed.institutionId,
 			parsed.scope,
 		);
@@ -446,7 +623,7 @@ async function handleReviewCallback(
 	}
 
 	try {
-		await reviewPendingInstitution({
+		await dependencies.reviewInstitution({
 			institutionId: parsed.institutionId,
 			reviewerId: config.reviewerUserId,
 			decision,
@@ -472,7 +649,23 @@ async function handleReviewCallback(
 	}
 
 	const reviewMessageId = parsed.reviewMessageId ?? message.message_id;
-	await client.editMessageReplyMarkup({ chatId, messageId: reviewMessageId });
+	try {
+		await markReviewMessage({
+			client,
+			config,
+			chatId,
+			messageId: reviewMessageId,
+			institutionId: parsed.institutionId,
+			decision,
+			knownPhotoMessage:
+				message.message_id === reviewMessageId
+					? Boolean(message.photo?.length)
+					: null,
+		});
+	} catch (error) {
+		console.error("[telegram review] could not mark review card", error);
+		await client.editMessageReplyMarkup({ chatId, messageId: reviewMessageId });
+	}
 	if (message.message_id !== reviewMessageId) {
 		await client.editMessageReplyMarkup({
 			chatId,
@@ -491,7 +684,13 @@ async function handleReviewCallback(
 		callbackQueryId: callback.id,
 		text: decision === "approved" ? "Approved" : "Rejected",
 	});
-	await sendNextCandidate(client, config, parsed.scope, parsed.institutionId);
+	await sendNextCandidate(
+		client,
+		config,
+		parsed.scope,
+		parsed.institutionId,
+		dependencies,
+	);
 }
 
 export async function handleTelegramReviewUpdate(

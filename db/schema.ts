@@ -7,4 +7,5 @@ export * from "./friday_campaigns";
 export * from "./institutions";
 export * from "./quest_mosques";
 export * from "./ramadhan_campaigns";
+export * from "./telegram_review_sessions";
 export * from "./users";

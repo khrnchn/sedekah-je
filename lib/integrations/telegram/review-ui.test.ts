@@ -5,13 +5,14 @@ import {
 	buildCustomReasonPrompt,
 	buildRejectionMenu,
 	buildReviewCard,
+	buildReviewedCardStatus,
 	decodeReviewCallback,
 	encodeReviewCallback,
 	extractCustomReason,
 	getReviewBlockers,
 	parseCustomReasonPrompt,
 	type TelegramReviewCandidate,
-} from "./review-ui";
+} from "@/lib/integrations/telegram/review-ui";
 
 const candidate: TelegramReviewCandidate = {
 	id: 42,
@@ -151,5 +152,24 @@ describe("Telegram institution review UI", () => {
 			institutionId: 42,
 			reviewMessageId: 9001,
 		});
+		const editCallback = confirmation.replyMarkup.inline_keyboard[0]?.[1];
+		assert.ok(editCallback?.callback_data);
+		assert.deepEqual(decodeReviewCallback(editCallback.callback_data), {
+			action: "reject-custom-edit",
+			scope: "imports",
+			institutionId: 42,
+			reviewMessageId: 9001,
+		});
+	});
+
+	test("builds a final, escaped review status for the original card", () => {
+		assert.equal(
+			buildReviewedCardStatus({
+				institutionId: 42,
+				decision: "approved",
+				reviewerName: "Admin <One>",
+			}),
+			"✅ <b>APPROVED · #42</b>\nReviewed by Admin &lt;One&gt;",
+		);
 	});
 });

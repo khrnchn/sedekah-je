@@ -3,7 +3,7 @@ import { describe, test } from "node:test";
 import {
 	isAuthorizedTelegramActor,
 	telegramSecretsMatch,
-} from "./review-security";
+} from "@/lib/integrations/telegram/review-security";
 
 describe("Telegram review security", () => {
 	test("requires both the configured private chat and Telegram sender", () => {

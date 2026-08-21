@@ -14,8 +14,11 @@ import {
 	sql,
 } from "drizzle-orm";
 import { db } from "@/db";
-import { institutions, users } from "@/db/schema";
-import type { TelegramReviewCandidate, TelegramReviewScope } from "./review-ui";
+import { institutions, telegramReviewSessions, users } from "@/db/schema";
+import type {
+	TelegramReviewCandidate,
+	TelegramReviewScope,
+} from "@/lib/integrations/telegram/review-ui";
 
 function getScopeCondition(scope: TelegramReviewScope) {
 	if (scope === "all") return sql`true`;
@@ -178,4 +181,43 @@ export async function getTelegramQueueCounts() {
 		community: row?.community ?? 0,
 		imports: row?.imports ?? 0,
 	};
+}
+
+export async function saveTelegramReviewSession(input: {
+	telegramChatId: string;
+	scope: TelegramReviewScope;
+	cursorInstitutionId: number;
+}) {
+	await db
+		.insert(telegramReviewSessions)
+		.values({
+			telegramChatId: input.telegramChatId,
+			scope: input.scope,
+			cursorInstitutionId: input.cursorInstitutionId,
+		})
+		.onConflictDoUpdate({
+			target: telegramReviewSessions.telegramChatId,
+			set: {
+				scope: input.scope,
+				cursorInstitutionId: input.cursorInstitutionId,
+				updatedAt: new Date(),
+			},
+		});
+}
+
+export async function getTelegramReviewSession(
+	telegramChatId: string,
+): Promise<{
+	scope: TelegramReviewScope;
+	cursorInstitutionId: number | null;
+} | null> {
+	const [session] = await db
+		.select({
+			scope: telegramReviewSessions.scope,
+			cursorInstitutionId: telegramReviewSessions.cursorInstitutionId,
+		})
+		.from(telegramReviewSessions)
+		.where(eq(telegramReviewSessions.telegramChatId, telegramChatId))
+		.limit(1);
+	return session ?? null;
 }

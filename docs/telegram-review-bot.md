@@ -1,7 +1,8 @@
 # Telegram institution review bot
 
 The Telegram bot provides a private, button-driven review queue for pending
-institutions. Community submissions and Akrimi imports are separate queues.
+institutions. Community submissions and automated bulk imports are separate
+queues.
 
 ## Configuration
 
