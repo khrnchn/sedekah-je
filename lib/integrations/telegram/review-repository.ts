@@ -6,7 +6,6 @@ import {
 	gt,
 	isNull,
 	like,
-	lt,
 	lte,
 	ne,
 	not,
@@ -73,13 +72,7 @@ async function hydrateCandidate(
 					eq(institutions.status, "pending"),
 					scopeCondition,
 					getTelegramReviewableCondition(),
-					or(
-						lt(institutions.createdAt, row.createdAt),
-						and(
-							eq(institutions.createdAt, row.createdAt),
-							lte(institutions.id, row.id),
-						),
-					),
+					lte(institutions.id, row.id),
 				),
 			),
 		db
@@ -142,23 +135,8 @@ export async function getNextTelegramReviewCandidate(
 	scope: TelegramReviewScope,
 	afterInstitutionId?: number,
 ): Promise<TelegramReviewCandidate | null> {
-	let cursor: { id: number; createdAt: Date } | undefined;
-	if (afterInstitutionId) {
-		[cursor] = await db
-			.select({ id: institutions.id, createdAt: institutions.createdAt })
-			.from(institutions)
-			.where(eq(institutions.id, afterInstitutionId))
-			.limit(1);
-	}
-
-	const afterCondition = cursor
-		? or(
-				gt(institutions.createdAt, cursor.createdAt),
-				and(
-					eq(institutions.createdAt, cursor.createdAt),
-					gt(institutions.id, cursor.id),
-				),
-			)
+	const afterCondition = afterInstitutionId
+		? gt(institutions.id, afterInstitutionId)
 		: sql`true`;
 	const [row] = await db
 		.select(candidateSelection)
@@ -172,7 +150,7 @@ export async function getNextTelegramReviewCandidate(
 				afterCondition,
 			),
 		)
-		.orderBy(asc(institutions.createdAt), asc(institutions.id))
+		.orderBy(asc(institutions.id))
 		.limit(1);
 	return row ? hydrateCandidate(row, scope) : null;
 }
