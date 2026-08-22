@@ -81,6 +81,58 @@ function workAfterResponse(work: () => Promise<void>): void {
 	}
 }
 
+export async function undoInstitutionReview(input: {
+	institutionId: number;
+	reviewerId: string;
+}): Promise<typeof institutions.$inferSelect | null> {
+	const [reviewer] = await db
+		.select({
+			role: users.role,
+			isActive: users.isActive,
+			banned: users.banned,
+		})
+		.from(users)
+		.where(eq(users.id, input.reviewerId))
+		.limit(1);
+	if (
+		!reviewer ||
+		reviewer.role !== "admin" ||
+		!reviewer.isActive ||
+		reviewer.banned
+	) {
+		throw new Error("Unauthorized: Active admin access required");
+	}
+
+	return db.transaction(async (tx) => {
+		const [current] = await tx
+			.select({ status: institutions.status })
+			.from(institutions)
+			.where(eq(institutions.id, input.institutionId))
+			.limit(1);
+		if (!current || current.status === "pending") return null;
+
+		const [reverted] = await tx
+			.update(institutions)
+			.set({
+				status: "pending",
+				reviewedBy: null,
+				reviewedAt: null,
+				adminNotes: null,
+			})
+			.where(
+				and(
+					eq(institutions.id, input.institutionId),
+					eq(institutions.status, current.status),
+				),
+			)
+			.returning();
+		if (!reverted) return null;
+
+		runReviewSideEffects(current.status as InstitutionReviewDecision);
+		return reverted;
+	});
+}
+
 export const reviewPendingInstitution = createInstitutionReviewModule({
 	store: {
 		async findReviewer(reviewerId) {

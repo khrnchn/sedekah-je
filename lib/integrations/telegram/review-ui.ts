@@ -14,7 +14,8 @@ export type ReviewCallback = {
 		| "reject-custom-edit"
 		| "cancel"
 		| "next"
-		| "find-address";
+		| "find-address"
+		| "undo";
 	scope: TelegramReviewScope;
 	institutionId: number;
 	template?: RejectionTemplateKey;
@@ -62,6 +63,7 @@ const CALLBACK_ACTION_CODES = {
 	cancel: "x",
 	next: "n",
 	"find-address": "f",
+	undo: "u",
 } as const satisfies Record<ReviewCallback["action"], string>;
 
 const ACTIONS_BY_CODE = Object.fromEntries(
@@ -269,7 +271,7 @@ function callbackButton(
 export function buildReviewCard(
 	candidate: TelegramReviewCandidate,
 	scope: TelegramReviewScope,
-	options: { adminBaseUrl: string | null },
+	options: { adminBaseUrl: string | null; note?: string | null },
 ): {
 	caption: string;
 	qrFollowUpText: string | null;
@@ -300,6 +302,7 @@ export function buildReviewCard(
 		blockers.length === 0
 			? "✅ <b>Ready for quick review</b>"
 			: `⚠️ <b>Needs web review</b>\n${blockers.map((blocker) => `• ${escapeTelegramHtml(blocker)}`).join("\n")}`,
+		...(options.note ? [options.note] : []),
 		`Queue: ${candidate.position} of ${candidate.total}`,
 	];
 
@@ -381,6 +384,15 @@ export function buildRejectionMenu(
 			],
 			[callbackButton("↩️ Cancel", "cancel", scope, institutionId)],
 		],
+	};
+}
+
+export function buildUndoKeyboard(
+	institutionId: number,
+	scope: TelegramReviewScope,
+): TelegramInlineKeyboard {
+	return {
+		inline_keyboard: [[callbackButton("↩️ Undo", "undo", scope, institutionId)]],
 	};
 }
 

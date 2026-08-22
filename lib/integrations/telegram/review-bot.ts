@@ -3,7 +3,10 @@ import { db } from "@/db";
 import { users } from "@/db/schema";
 import { env } from "@/env";
 import { REJECTION_TEMPLATES } from "@/lib/admin-templates";
-import { reviewPendingInstitution } from "@/lib/features/institution-review/review";
+import {
+	reviewPendingInstitution,
+	undoInstitutionReview,
+} from "@/lib/features/institution-review/review";
 import { geocodeMalaysiaInstitutionByName } from "@/lib/integrations/geocode";
 import {
 	createTelegramBotClient,
@@ -18,6 +21,7 @@ import {
 	getTelegramReviewCandidate,
 	getTelegramReviewSession,
 	saveTelegramReviewSession,
+	searchTelegramReviewCandidates,
 	updateTelegramCandidateLocation,
 } from "@/lib/integrations/telegram/review-repository";
 import { isAuthorizedTelegramActor } from "@/lib/integrations/telegram/review-security";
@@ -29,6 +33,7 @@ import {
 	buildReviewCard,
 	buildReviewedCardStatus,
 	buildTemplateRejectionConfirmation,
+	buildUndoKeyboard,
 	decodeReviewCallback,
 	escapeTelegramHtml,
 	extractCustomReason,
@@ -62,6 +67,8 @@ export type ReviewBotDependencies = {
 	saveSession: typeof saveTelegramReviewSession;
 	geocodeByName: typeof geocodeMalaysiaInstitutionByName;
 	updateLocation: typeof updateTelegramCandidateLocation;
+	searchCandidates: typeof searchTelegramReviewCandidates;
+	undoReview: typeof undoInstitutionReview;
 	reviewInstitution: (input: {
 		institutionId: number;
 		reviewerId: string;
@@ -78,6 +85,8 @@ const defaultDependencies: ReviewBotDependencies = {
 	saveSession: saveTelegramReviewSession,
 	geocodeByName: geocodeMalaysiaInstitutionByName,
 	updateLocation: updateTelegramCandidateLocation,
+	searchCandidates: searchTelegramReviewCandidates,
+	undoReview: undoInstitutionReview,
 	reviewInstitution: reviewPendingInstitution,
 };
 
@@ -315,9 +324,11 @@ async function refreshReviewCard(
 	message: TelegramMessage,
 	candidate: TelegramReviewCandidate,
 	scope: TelegramReviewScope,
+	note?: string | null,
 ) {
 	const card = buildReviewCard(candidate, scope, {
 		adminBaseUrl: config.adminBaseUrl,
+		note,
 	});
 	if (message.photo?.length) {
 		await client.editMessageCaption({
@@ -348,7 +359,7 @@ async function acknowledgeUnauthorized(
 	});
 }
 
-async function handleMenuMessage(
+export async function handleMenuMessage(
 	client: TelegramBotClient,
 	config: ReviewBotConfig,
 	message: TelegramMessage,
@@ -438,6 +449,62 @@ async function handleMenuMessage(
 			text: config.adminBaseUrl
 				? `<a href="${escapeTelegramHtml(new URL("/admin/institutions/pending", config.adminBaseUrl).toString())}">Open pending institutions in the web admin</a>`
 				: "The web-admin URL is not configured.",
+			parseMode: "HTML",
+			replyMarkup: TELEGRAM_REVIEW_MENU,
+		});
+		return;
+	}
+
+	const findMatch = text?.match(/^\/find\s+(.+)$/i);
+	if (findMatch) {
+		const query = findMatch[1].trim();
+		const openCandidate = async (candidate: TelegramReviewCandidate) => {
+			await sendCandidate(client, config, candidate, "all");
+			await dependencies.saveSession({
+				telegramChatId: config.chatId,
+				scope: "all",
+				cursorInstitutionId: candidate.id,
+			});
+		};
+
+		if (/^\d+$/.test(query)) {
+			const candidate = await dependencies.getCandidate(Number(query), "all");
+			if (!candidate) {
+				await client.sendMessage({
+					chatId: config.chatId,
+					text: `No Telegram-reviewable pending institution #${query}. It may be missing QR content, already reviewed, or nonexistent — check the web admin.`,
+					replyMarkup: TELEGRAM_REVIEW_MENU,
+				});
+				return;
+			}
+			await openCandidate(candidate);
+			return;
+		}
+
+		const matches = await dependencies.searchCandidates(query);
+		if (matches.length === 0) {
+			await client.sendMessage({
+				chatId: config.chatId,
+				text: `No pending institutions match "${escapeTelegramHtml(query)}".`,
+				replyMarkup: TELEGRAM_REVIEW_MENU,
+			});
+			return;
+		}
+		if (matches.length === 1) {
+			const candidate = await dependencies.getCandidate(matches[0].id, "all");
+			if (candidate) {
+				await openCandidate(candidate);
+				return;
+			}
+		}
+		await client.sendMessage({
+			chatId: config.chatId,
+			text: [
+				`<b>Matches for "${escapeTelegramHtml(query)}"</b>`,
+				...matches.map((m) => `#${m.id} — ${escapeTelegramHtml(m.name)}`),
+				"",
+				"Reply with /find &lt;id&gt; to open one.",
+			].join("\n"),
 			parseMode: "HTML",
 			replyMarkup: TELEGRAM_REVIEW_MENU,
 		});
@@ -651,11 +718,58 @@ export async function handleReviewCallback(
 			parsed.scope,
 		);
 		if (updated) {
-			await refreshReviewCard(client, config, message, updated, parsed.scope);
+			await refreshReviewCard(
+				client,
+				config,
+				message,
+				updated,
+				parsed.scope,
+				geo.needsManualReview ? "⚠️ Auto-filled address — please verify" : null,
+			);
 		}
 		await client.answerCallbackQuery({
 			callbackQueryId: callback.id,
-			text: updated ? "Address updated" : "Institution no longer pending",
+			text: !updated
+				? "Institution no longer pending"
+				: geo.needsManualReview
+					? "Address filled — low confidence, please verify"
+					: "Address updated",
+			showAlert: Boolean(updated && geo.needsManualReview),
+		});
+		return;
+	}
+
+	if (parsed.action === "undo") {
+		let reverted: unknown = null;
+		try {
+			reverted = await dependencies.undoReview({
+				institutionId: parsed.institutionId,
+				reviewerId: config.reviewerUserId,
+			});
+		} catch (error) {
+			console.error("[telegram review] undo failed", error);
+		}
+		if (!reverted) {
+			await client.answerCallbackQuery({
+				callbackQueryId: callback.id,
+				text: "Nothing to undo — this institution has already changed.",
+				showAlert: true,
+			});
+			return;
+		}
+		await client.editMessageReplyMarkup({
+			chatId,
+			messageId: message.message_id,
+		});
+		await client.sendMessage({
+			chatId,
+			text: `↩️ Institution #${parsed.institutionId} reverted to pending.`,
+			replyToMessageId: message.message_id,
+			replyMarkup: TELEGRAM_REVIEW_MENU,
+		});
+		await client.answerCallbackQuery({
+			callbackQueryId: callback.id,
+			text: "Reverted",
 		});
 		return;
 	}
@@ -756,6 +870,7 @@ export async function handleReviewCallback(
 				? `✅ Institution #${parsed.institutionId} approved.`
 				: `❌ Institution #${parsed.institutionId} rejected.`,
 		replyToMessageId: reviewMessageId,
+		replyMarkup: buildUndoKeyboard(parsed.institutionId, parsed.scope),
 	});
 	await client.answerCallbackQuery({
 		callbackQueryId: callback.id,

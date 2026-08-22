@@ -6,6 +6,7 @@ import type {
 	TelegramMessage,
 } from "@/lib/integrations/telegram/bot-api";
 import {
+	handleMenuMessage,
 	handleReviewCallback,
 	type ReviewBotConfig,
 	type ReviewBotDependencies,
@@ -96,6 +97,8 @@ function createDependencies(
 		saveSession: async () => {},
 		geocodeByName: async () => null,
 		updateLocation: async () => {},
+		searchCandidates: async () => [],
+		undoReview: async () => null,
 		reviewInstitution: async () => candidate,
 		...overrides,
 	};
@@ -342,5 +345,158 @@ describe("Telegram review orchestration", () => {
 		);
 
 		assert.deepEqual(updates, [{ institutionId: 42, input: {} }]);
+	});
+
+	test("shows a low-confidence warning when the geocode result needs manual review", async () => {
+		const { calls, client, message } = createHarness();
+		const withoutAddress = { ...candidate, address: null, coords: null };
+		await handleReviewCallback(
+			client,
+			config,
+			callback(
+				{ action: "find-address", scope: "community", institutionId: 42 },
+				message,
+			),
+			createDependencies({
+				getCandidate: async () => withoutAddress,
+				geocodeByName: async () => ({
+					coords: [1.1, 1.1],
+					city: "Unknown",
+					state: "Selangor",
+					address: "Malaysia",
+					needsManualReview: true,
+				}),
+				updateLocation: async () => {},
+			}),
+		);
+
+		assert.ok(
+			calls.some(
+				(call) =>
+					call.method === "editMessageText" &&
+					JSON.stringify(call.input).includes("please verify"),
+			),
+		);
+		assert.ok(
+			calls.some(
+				(call) =>
+					call.method === "answerCallbackQuery" &&
+					JSON.stringify(call.input).includes("low confidence"),
+			),
+		);
+	});
+
+	test("undoes an approval and reverts the institution to pending", async () => {
+		const { calls, client, message } = createHarness();
+		const undoCalls: unknown[] = [];
+		await handleReviewCallback(
+			client,
+			config,
+			callback(
+				{ action: "undo", scope: "community", institutionId: 42 },
+				message,
+			),
+			createDependencies({
+				undoReview: async (input) => {
+					undoCalls.push(input);
+					return {} as Awaited<ReturnType<ReviewBotDependencies["undoReview"]>>;
+				},
+			}),
+		);
+
+		assert.deepEqual(undoCalls, [{ institutionId: 42, reviewerId: "admin-1" }]);
+		assert.ok(
+			calls.some(
+				(call) =>
+					call.method === "sendMessage" &&
+					JSON.stringify(call.input).includes("reverted to pending"),
+			),
+		);
+	});
+
+	test("treats undo as a no-op when the institution already changed", async () => {
+		const { calls, client, message } = createHarness();
+		await handleReviewCallback(
+			client,
+			config,
+			callback(
+				{ action: "undo", scope: "community", institutionId: 42 },
+				message,
+			),
+			createDependencies({ undoReview: async () => null }),
+		);
+
+		assert.ok(
+			calls.some(
+				(call) =>
+					call.method === "answerCallbackQuery" &&
+					JSON.stringify(call.input).includes("already changed"),
+			),
+		);
+		assert.ok(!calls.some((call) => call.method === "sendMessage"));
+	});
+
+	test("/find <id> opens a Telegram-reviewable institution directly", async () => {
+		const { calls, client, message } = createHarness();
+		message.text = "/find 42";
+		const saved: unknown[] = [];
+		await handleMenuMessage(
+			client,
+			config,
+			message,
+			createDependencies({
+				getCandidate: async (id) => (id === 42 ? candidate : null),
+				saveSession: async (input) => {
+					saved.push(input);
+				},
+			}),
+		);
+
+		assert.deepEqual(saved, [
+			{ telegramChatId: "123", scope: "all", cursorInstitutionId: 42 },
+		]);
+		assert.ok(calls.some((call) => call.method === "sendPhoto"));
+	});
+
+	test("/find <name> with one match opens it directly", async () => {
+		const { calls, client, message } = createHarness();
+		message.text = "/find amanah";
+		await handleMenuMessage(
+			client,
+			config,
+			message,
+			createDependencies({
+				searchCandidates: async () => [{ id: 42, name: "Masjid Amanah" }],
+				getCandidate: async () => candidate,
+			}),
+		);
+
+		assert.ok(calls.some((call) => call.method === "sendPhoto"));
+	});
+
+	test("/find <name> with multiple matches lists them instead of guessing", async () => {
+		const { calls, client, message } = createHarness();
+		message.text = "/find masjid";
+		await handleMenuMessage(
+			client,
+			config,
+			message,
+			createDependencies({
+				searchCandidates: async () => [
+					{ id: 42, name: "Masjid Amanah" },
+					{ id: 43, name: "Masjid Ikhlas" },
+				],
+			}),
+		);
+
+		assert.ok(!calls.some((call) => call.method === "sendPhoto"));
+		assert.ok(
+			calls.some(
+				(call) =>
+					call.method === "sendMessage" &&
+					JSON.stringify(call.input).includes("#42") &&
+					JSON.stringify(call.input).includes("#43"),
+			),
+		);
 	});
 });

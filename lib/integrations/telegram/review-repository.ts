@@ -199,6 +199,26 @@ export async function updateTelegramCandidateLocation(
 		.where(eq(institutions.id, institutionId));
 }
 
+export async function searchTelegramReviewCandidates(
+	query: string,
+	limit = 5,
+): Promise<Array<{ id: number; name: string }>> {
+	const trimmed = query.trim();
+	if (!trimmed) return [];
+	return db
+		.select({ id: institutions.id, name: institutions.name })
+		.from(institutions)
+		.where(
+			and(
+				eq(institutions.status, "pending"),
+				getTelegramReviewableCondition(),
+				sql`${institutions.name} ilike ${`%${trimmed}%`}`,
+			),
+		)
+		.orderBy(asc(institutions.id))
+		.limit(limit);
+}
+
 export async function saveTelegramReviewSession(input: {
 	telegramChatId: string;
 	scope: TelegramReviewScope;
