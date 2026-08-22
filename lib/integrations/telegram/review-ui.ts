@@ -13,7 +13,8 @@ export type ReviewCallback = {
 		| "reject-custom-confirm"
 		| "reject-custom-edit"
 		| "cancel"
-		| "next";
+		| "next"
+		| "find-address";
 	scope: TelegramReviewScope;
 	institutionId: number;
 	template?: RejectionTemplateKey;
@@ -60,6 +61,7 @@ const CALLBACK_ACTION_CODES = {
 	"reject-custom-edit": "e",
 	cancel: "x",
 	next: "n",
+	"find-address": "f",
 } as const satisfies Record<ReviewCallback["action"], string>;
 
 const ACTIONS_BY_CODE = Object.fromEntries(
@@ -328,10 +330,17 @@ export function buildReviewCard(
 	const adminUrl = buildAdminUrl(options.adminBaseUrl, candidate.id);
 	if (adminUrl) secondRow.push({ text: "✏️ Edit in admin", url: adminUrl });
 
+	const rows = [firstRow, secondRow];
+	if (!candidate.address?.trim() || !candidate.coords) {
+		rows.push([
+			callbackButton("📍 Find address", "find-address", scope, candidate.id),
+		]);
+	}
+
 	return {
 		caption,
 		qrFollowUpText,
-		replyMarkup: { inline_keyboard: [firstRow, secondRow] },
+		replyMarkup: { inline_keyboard: rows },
 	};
 }
 

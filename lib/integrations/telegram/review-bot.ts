@@ -4,6 +4,7 @@ import { users } from "@/db/schema";
 import { env } from "@/env";
 import { REJECTION_TEMPLATES } from "@/lib/admin-templates";
 import { reviewPendingInstitution } from "@/lib/features/institution-review/review";
+import { geocodeMalaysiaInstitutionByName } from "@/lib/integrations/geocode";
 import {
 	createTelegramBotClient,
 	type TelegramBotClient,
@@ -17,6 +18,7 @@ import {
 	getTelegramReviewCandidate,
 	getTelegramReviewSession,
 	saveTelegramReviewSession,
+	updateTelegramCandidateLocation,
 } from "@/lib/integrations/telegram/review-repository";
 import { isAuthorizedTelegramActor } from "@/lib/integrations/telegram/review-security";
 import {
@@ -58,6 +60,8 @@ export type ReviewBotDependencies = {
 	getQueueCounts: typeof getTelegramQueueCounts;
 	getSession: typeof getTelegramReviewSession;
 	saveSession: typeof saveTelegramReviewSession;
+	geocodeByName: typeof geocodeMalaysiaInstitutionByName;
+	updateLocation: typeof updateTelegramCandidateLocation;
 	reviewInstitution: (input: {
 		institutionId: number;
 		reviewerId: string;
@@ -72,6 +76,8 @@ const defaultDependencies: ReviewBotDependencies = {
 	getQueueCounts: getTelegramQueueCounts,
 	getSession: getTelegramReviewSession,
 	saveSession: saveTelegramReviewSession,
+	geocodeByName: geocodeMalaysiaInstitutionByName,
+	updateLocation: updateTelegramCandidateLocation,
 	reviewInstitution: reviewPendingInstitution,
 };
 
@@ -301,6 +307,33 @@ async function restoreReviewButtons(
 		replyMarkup: card.replyMarkup,
 	});
 	return true;
+}
+
+async function refreshReviewCard(
+	client: TelegramBotClient,
+	config: Pick<ReviewBotConfig, "adminBaseUrl">,
+	message: TelegramMessage,
+	candidate: TelegramReviewCandidate,
+	scope: TelegramReviewScope,
+) {
+	const card = buildReviewCard(candidate, scope, {
+		adminBaseUrl: config.adminBaseUrl,
+	});
+	if (message.photo?.length) {
+		await client.editMessageCaption({
+			chatId: message.chat.id,
+			messageId: message.message_id,
+			caption: card.caption,
+			replyMarkup: card.replyMarkup,
+		});
+		return;
+	}
+	await client.editMessageText({
+		chatId: message.chat.id,
+		messageId: message.message_id,
+		text: card.caption,
+		replyMarkup: card.replyMarkup,
+	});
 }
 
 async function acknowledgeUnauthorized(
@@ -582,6 +615,48 @@ export async function handleReviewCallback(
 			parsed.institutionId,
 			dependencies,
 		);
+		return;
+	}
+
+	if (parsed.action === "find-address") {
+		const candidate = await dependencies.getCandidate(
+			parsed.institutionId,
+			parsed.scope,
+		);
+		if (!candidate) {
+			await client.answerCallbackQuery({
+				callbackQueryId: callback.id,
+				text: "This institution is no longer available.",
+				showAlert: true,
+			});
+			return;
+		}
+		const geo = await dependencies.geocodeByName(candidate.name);
+		if (!geo) {
+			await client.answerCallbackQuery({
+				callbackQueryId: callback.id,
+				text: "No address found. Please use the web admin.",
+				showAlert: true,
+			});
+			return;
+		}
+		await dependencies.updateLocation(parsed.institutionId, {
+			...(candidate.address?.trim()
+				? {}
+				: { address: geo.address ?? undefined }),
+			...(candidate.coords ? {} : { coords: geo.coords }),
+		});
+		const updated = await dependencies.getCandidate(
+			parsed.institutionId,
+			parsed.scope,
+		);
+		if (updated) {
+			await refreshReviewCard(client, config, message, updated, parsed.scope);
+		}
+		await client.answerCallbackQuery({
+			callbackQueryId: callback.id,
+			text: updated ? "Address updated" : "Institution no longer pending",
+		});
 		return;
 	}
 

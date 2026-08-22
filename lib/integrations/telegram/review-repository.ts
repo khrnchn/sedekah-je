@@ -185,6 +185,20 @@ export async function getTelegramQueueCounts() {
 	};
 }
 
+export async function updateTelegramCandidateLocation(
+	institutionId: number,
+	updates: {
+		address?: string;
+		coords?: [number, number];
+	},
+): Promise<void> {
+	if (updates.address === undefined && updates.coords === undefined) return;
+	await db
+		.update(institutions)
+		.set(updates)
+		.where(eq(institutions.id, institutionId));
+}
+
 export async function saveTelegramReviewSession(input: {
 	telegramChatId: string;
 	scope: TelegramReviewScope;

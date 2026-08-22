@@ -94,6 +94,8 @@ function createDependencies(
 		}),
 		getSession: async () => null,
 		saveSession: async () => {},
+		geocodeByName: async () => null,
+		updateLocation: async () => {},
 		reviewInstitution: async () => candidate,
 		...overrides,
 	};
@@ -277,5 +279,68 @@ describe("Telegram review orchestration", () => {
 			{ scope: "community", afterInstitutionId: 41 },
 		]);
 		assert.ok(resumed.calls.some((call) => call.method === "sendPhoto"));
+	});
+
+	test("fills a missing address and coords from a name-only geocode lookup", async () => {
+		const { calls, client, message } = createHarness();
+		message.photo = [{}];
+		const withoutAddress = { ...candidate, address: null, coords: null };
+		const updates: unknown[] = [];
+		await handleReviewCallback(
+			client,
+			config,
+			callback(
+				{ action: "find-address", scope: "community", institutionId: 42 },
+				message,
+			),
+			createDependencies({
+				getCandidate: async () => withoutAddress,
+				geocodeByName: async () => ({
+					coords: [3.2, 101.7],
+					city: "Shah Alam",
+					state: "Selangor",
+					address: "Jalan Contoh 1",
+					needsManualReview: false,
+				}),
+				updateLocation: async (institutionId, input) => {
+					updates.push({ institutionId, input });
+				},
+			}),
+		);
+
+		assert.deepEqual(updates, [
+			{
+				institutionId: 42,
+				input: { address: "Jalan Contoh 1", coords: [3.2, 101.7] },
+			},
+		]);
+		assert.ok(calls.some((call) => call.method === "editMessageCaption"));
+	});
+
+	test("does not overwrite an existing address when finding a location", async () => {
+		const { client, message } = createHarness();
+		const updates: unknown[] = [];
+		await handleReviewCallback(
+			client,
+			config,
+			callback(
+				{ action: "find-address", scope: "community", institutionId: 42 },
+				message,
+			),
+			createDependencies({
+				geocodeByName: async () => ({
+					coords: [1, 1],
+					city: "Somewhere",
+					state: "Selangor",
+					address: "Should not be used",
+					needsManualReview: false,
+				}),
+				updateLocation: async (institutionId, input) => {
+					updates.push({ institutionId, input });
+				},
+			}),
+		);
+
+		assert.deepEqual(updates, [{ institutionId: 42, input: {} }]);
 	});
 });
