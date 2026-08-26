@@ -16,7 +16,7 @@ import InstitutionReviewForm, {
 } from "./institution-review-form";
 import QrImageToolbar from "./qr-image-toolbar";
 import QrReplacementUpload from "./qr-replacement-upload";
-import ReviewActions from "./review-actions";
+import ReviewActions, { type QrDuplicate } from "./review-actions";
 
 type Props = {
 	institution: {
@@ -38,6 +38,7 @@ type Props = {
 	position: number;
 	total: number;
 	includeAutomated: boolean;
+	duplicate: QrDuplicate | null;
 };
 
 export default function ClientSection({
@@ -47,6 +48,7 @@ export default function ClientSection({
 	position,
 	total,
 	includeAutomated,
+	duplicate,
 }: Props) {
 	const router = useRouter();
 	const formRef = useRef<ReviewFormHandle | null>(null);
@@ -224,6 +226,7 @@ export default function ClientSection({
 					position={position}
 					total={total}
 					includeAutomated={includeAutomated}
+					duplicate={duplicate}
 				/>
 			</div>
 
