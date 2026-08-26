@@ -1,32 +1,10 @@
 "use server";
 
-import {
-	and,
-	asc,
-	count,
-	desc,
-	eq,
-	gt,
-	isNull,
-	like,
-	lt,
-	ne,
-	or,
-	sql,
-} from "drizzle-orm";
+import { and, asc, count, desc, eq, gt, lt, ne, or, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { institutions } from "@/db/schema";
 import { requireAdminSession } from "@/lib/auth-helpers";
-
-function getPendingScopeCondition(includeAutomated: boolean) {
-	return includeAutomated
-		? sql`true`
-		: or(
-				isNull(institutions.sourceUrl),
-				eq(institutions.sourceUrl, ""),
-				like(institutions.sourceUrl, "http%"),
-			);
-}
+import { getPendingScopeCondition } from "./pending-scope-condition";
 
 /**
  * Get the next pending institution ID in canonical order (createdAt DESC, id DESC).
