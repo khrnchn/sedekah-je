@@ -1,6 +1,16 @@
 "use server";
 
-import { and, count, desc, eq, ilike, isNotNull, ne, sql } from "drizzle-orm";
+import {
+	and,
+	asc,
+	count,
+	desc,
+	eq,
+	ilike,
+	isNotNull,
+	ne,
+	sql,
+} from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { unstable_cache } from "next/cache";
 import { db } from "@/db";
@@ -51,7 +61,9 @@ const getPendingInstitutionsInternal = unstable_cache(
 			.from(institutions)
 			.leftJoin(users, eq(institutions.contributorId, users.id))
 			.where(eq(institutions.status, "pending"))
-			.orderBy(desc(institutions.createdAt))
+			// FIFO, matching the canonical review order in _lib/navigation.ts. With
+			// the cap this keeps the oldest submissions, which is the work to do.
+			.orderBy(asc(institutions.createdAt), asc(institutions.id))
 			.limit(1000); // Fetch up to 1000 records for client-side pagination
 	},
 	["pending-institutions-list"],

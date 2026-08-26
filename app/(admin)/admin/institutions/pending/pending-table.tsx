@@ -312,7 +312,7 @@ export default function PendingInstitutionsTable({
 
 	return (
 		<>
-			{/* Sorted newest first to match the canonical prev/next order in _lib/navigation.ts */}
+			{/* FIFO, matching the canonical prev/next order in _lib/navigation.ts */}
 			<ReusableDataTable
 				columns={columns}
 				data={filteredData}
@@ -325,7 +325,7 @@ export default function PendingInstitutionsTable({
 				}
 				leftToolbarContent={filterControls}
 				rightToolbarContent={bulkButtons}
-				initialSorting={[{ id: "createdAt", desc: true }]}
+				initialSorting={[{ id: "createdAt", desc: false }]}
 			/>
 
 			{/* Dialogs */}
