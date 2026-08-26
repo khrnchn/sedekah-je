@@ -33,23 +33,25 @@ import {
 	shouldIncludeAutomated,
 } from "../_lib/pending-review-scope";
 import { columns } from "./columns";
-
-export type PendingInstitution = {
-	id: number;
-	name: string;
-	category: (typeof categories)[number];
-	state: (typeof states)[number];
-	city: string;
-	contributorName: string | null;
-	contributorId: string | null;
-	sourceUrl: string | null;
-	createdAt: Date;
-};
+import type { PendingInstitutionRow } from "./pending-row";
 
 const ALL = "all" as const;
 
-type CategoryFilter = (typeof categories)[number] | typeof ALL;
-type StateFilter = (typeof states)[number] | typeof ALL;
+const CATEGORY_QUERY = "category";
+const STATE_QUERY = "state";
+const READINESS_QUERY = "readiness";
+
+const READINESS_VALUES = ["ready", "blocked"] as const;
+type ReadinessFilter = (typeof READINESS_VALUES)[number] | typeof ALL;
+
+function readParam<T extends string>(
+	value: string | null,
+	allowed: readonly T[],
+): T | typeof ALL {
+	return value && (allowed as readonly string[]).includes(value)
+		? (value as T)
+		: ALL;
+}
 
 type ActionDialogProps = {
 	isOpen: boolean;
@@ -71,6 +73,12 @@ function ActionDialog({
 	actionStyle = "success",
 }: ActionDialogProps) {
 	const [notes, setNotes] = useState("");
+
+	// Both dialogs stay mounted, so clear stale text instead of carrying it
+	// into the next decision.
+	useEffect(() => {
+		if (isOpen) setNotes("");
+	}, [isOpen]);
 
 	return (
 		<Dialog open={isOpen} onOpenChange={onClose}>
@@ -106,16 +114,22 @@ function ActionDialog({
 export default function PendingInstitutionsTable({
 	initialData,
 }: {
-	initialData: PendingInstitution[];
+	initialData: PendingInstitutionRow[];
 }) {
 	const [institutions, setInstitutions] = useState(initialData);
 	const [selectedIds, setSelectedIds] = useState<number[]>([]);
-	const [category, setCategory] = useState<CategoryFilter>(ALL);
-	const [state, setState] = useState<StateFilter>(ALL);
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
 	const hideAutomated = !shouldIncludeAutomated(
 		searchParams.get(INCLUDE_AUTOMATED_QUERY) ?? undefined,
+	);
+	// Filters live in the URL so they survive the router.refresh() that every
+	// bulk decision triggers, and so a filtered queue can be shared as a link.
+	const category = readParam(searchParams.get(CATEGORY_QUERY), categories);
+	const state = readParam(searchParams.get(STATE_QUERY), states);
+	const readiness = readParam(
+		searchParams.get(READINESS_QUERY),
+		READINESS_VALUES,
 	);
 	const [actionDialog, setActionDialog] = useState<{
 		isOpen: boolean;
@@ -140,23 +154,30 @@ export default function PendingInstitutionsTable({
 	const filteredData = institutions.filter((inst) => {
 		if (category !== ALL && inst.category !== category) return false;
 		if (state !== ALL && inst.state !== state) return false;
+		if (readiness === "ready" && inst.blockers.length > 0) return false;
+		if (readiness === "blocked" && inst.blockers.length === 0) return false;
 		if (hideAutomated && inst.sourceUrl && !inst.sourceUrl.startsWith("http")) {
 			return false;
 		}
 		return true;
 	});
 
-	const setAutomatedVisibility = (hide: boolean) => {
+	const setParam = (key: string, value: string | null) => {
 		const params = new URLSearchParams(searchParams.toString());
-		if (hide) {
-			params.delete(INCLUDE_AUTOMATED_QUERY);
+		if (value === null) {
+			params.delete(key);
 		} else {
-			params.set(INCLUDE_AUTOMATED_QUERY, "true");
+			params.set(key, value);
 		}
 		const query = params.toString();
 		router.replace(query ? `${pathname}?${query}` : pathname, {
 			scroll: false,
 		});
+		setSelectedIds([]);
+	};
+
+	const setAutomatedVisibility = (hide: boolean) => {
+		setParam(INCLUDE_AUTOMATED_QUERY, hide ? null : "true");
 	};
 
 	const doBulk = async (action: "approve" | "reject", notes: string) => {
@@ -200,8 +221,26 @@ export default function PendingInstitutionsTable({
 	const filterControls = (
 		<>
 			<Select
+				value={readiness}
+				onValueChange={(value: ReadinessFilter) =>
+					setParam(READINESS_QUERY, value === ALL ? null : value)
+				}
+			>
+				<SelectTrigger className="w-[180px]">
+					<SelectValue placeholder="Filter by readiness" />
+				</SelectTrigger>
+				<SelectContent>
+					<SelectItem value={ALL}>Any readiness</SelectItem>
+					<SelectItem value="ready">Ready to approve</SelectItem>
+					<SelectItem value="blocked">Needs attention</SelectItem>
+				</SelectContent>
+			</Select>
+
+			<Select
 				value={category}
-				onValueChange={(value: CategoryFilter) => setCategory(value)}
+				onValueChange={(value) =>
+					setParam(CATEGORY_QUERY, value === ALL ? null : value)
+				}
 			>
 				<SelectTrigger className="w-[180px]">
 					<SelectValue placeholder="Filter by category" />
@@ -218,7 +257,9 @@ export default function PendingInstitutionsTable({
 
 			<Select
 				value={state}
-				onValueChange={(value: StateFilter) => setState(value)}
+				onValueChange={(value) =>
+					setParam(STATE_QUERY, value === ALL ? null : value)
+				}
 			>
 				<SelectTrigger className="w-[180px]">
 					<SelectValue placeholder="Filter by state" />
@@ -271,6 +312,7 @@ export default function PendingInstitutionsTable({
 
 	return (
 		<>
+			{/* Sorted newest first to match the canonical prev/next order in _lib/navigation.ts */}
 			<ReusableDataTable
 				columns={columns}
 				data={filteredData}
@@ -278,12 +320,12 @@ export default function PendingInstitutionsTable({
 				searchPlaceholder="Search institutions..."
 				emptyStateMessage="All caught up! No pending institutions."
 				enableRowSelection
-				onSelectionChange={(rows: PendingInstitution[]) =>
+				onSelectionChange={(rows: PendingInstitutionRow[]) =>
 					setSelectedIds(rows.map((r) => r.id))
 				}
 				leftToolbarContent={filterControls}
 				rightToolbarContent={bulkButtons}
-				initialSorting={[{ id: "createdAt", desc: false }]}
+				initialSorting={[{ id: "createdAt", desc: true }]}
 			/>
 
 			{/* Dialogs */}
