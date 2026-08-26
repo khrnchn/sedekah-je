@@ -1,0 +1,27 @@
+services:
+  app:
+    image: ghcr.io/khrnchn/sedekah-je:latest
+    container_name: sedekahje
+    restart: unless-stopped
+    # Only exposed to the host; the existing reverse proxy fronts it.
+    ports:
+      - "127.0.0.1:3001:3000"
+    env_file:
+      - .env
+    deploy:
+      resources:
+        limits:
+          # This box also runs getdoa. Cap us so a leak here cannot starve it.
+          memory: 2G
+          cpus: "1.2"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/institutions').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      start_period: 40s
+      retries: 3

@@ -1,0 +1,13 @@
+node_modules
+.next
+.open-next
+.git
+.github
+.worktrees
+.env
+.env.*
+.dev.vars
+.impeccable
+.playwright-mcp
+*.md
+docs

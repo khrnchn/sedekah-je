@@ -1,0 +1,120 @@
+name: Deploy
+
+# Only on pushes to main. Never on pull_request: fork PRs must not reach secrets.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Never let two deploys race onto the same box.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+env:
+  IMAGE: ghcr.io/${{ github.repository }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - run: bun install --frozen-lockfile
+
+      - name: Check
+        run: |
+          bun run type-check
+          bun test
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Server-only values go in via a secret mount so they never reach an image
+      # layer. NEXT_PUBLIC_* are public by nature and are compiled into the
+      # client bundle, so they are ordinary build args.
+      - name: Write build secrets
+        run: |
+          install -m600 /dev/null build.env
+          cat >> build.env <<'EOF'
+          DATABASE_URL=${{ secrets.DATABASE_URL }}
+          R2_ENDPOINT=${{ secrets.R2_ENDPOINT }}
+          R2_ACCESS_KEY_ID=${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY=${{ secrets.R2_SECRET_ACCESS_KEY }}
+          R2_BUCKET_NAME=${{ secrets.R2_BUCKET_NAME }}
+          R2_PUBLIC_URL=${{ secrets.R2_PUBLIC_URL }}
+          BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }}
+          BETTER_AUTH_URL=${{ secrets.BETTER_AUTH_URL }}
+          GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+          CLOUDFLARE_TURNSTILE_SECRET_KEY=${{ secrets.CLOUDFLARE_TURNSTILE_SECRET_KEY }}
+          EOF
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:latest
+            ${{ env.IMAGE }}:${{ github.sha }}
+          secret-files: |
+            build_env=build.env
+          build-args: |
+            NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY=${{ secrets.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY }}
+            NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${{ secrets.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - run: rm -f build.env
+        if: always()
+
+      - uses: tailscale/github-action@v3
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          oauth-secret: ${{ secrets.TS_OAUTH_SECRET }}
+          tags: tag:ci
+
+      - name: Deploy
+        env:
+          SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          HOST: ${{ secrets.EC2_HOST }}
+          USER: ${{ secrets.EC2_USER }}
+          APP_DIR: ${{ secrets.EC2_APP_DIR }}
+          SHA: ${{ github.sha }}
+        run: |
+          install -m600 /dev/stdin ~/ssh_key <<< "$SSH_KEY"
+          ssh -i ~/ssh_key -o StrictHostKeyChecking=accept-new "$USER@$HOST" \
+            IMAGE="$IMAGE" SHA="$SHA" APP_DIR="$APP_DIR" bash -euo pipefail <<'EOF'
+            cd "$APP_DIR"
+            # The GHCR package is public, so no registry login is needed here.
+            docker compose pull
+            docker compose up -d --wait
+            # Keep the previous tag around so a rollback is one command.
+            docker image prune -f --filter "until=168h"
+          EOF
+
+      - name: Verify
+        env:
+          HEALTH_URL: ${{ secrets.HEALTH_URL }}
+        run: |
+          for i in $(seq 1 30); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 "$HEALTH_URL" || true)
+            [ "$code" = "200" ] && echo "healthy" && exit 0
+            sleep 5
+          done
+          echo "unhealthy; roll back on the box with:"
+          echo "  docker compose down && docker run ... ${IMAGE}:<previous-sha>"
+          exit 1

@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+	// Ship a self-contained server so the deploy target never has to build.
+	output: "standalone",
+
 	experimental: {
 		serverActions: {
 			bodySizeLimit: "5mb",
