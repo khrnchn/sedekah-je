@@ -5,10 +5,10 @@ import Image from "next/image";
 import { useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useQrExtractionLazy } from "@/hooks/use-qr-extraction-lazy";
+import { cn } from "@/lib/utils";
 import {
 	saveQrReplacement,
 	type UploadQrReplacementResult,
@@ -19,6 +19,14 @@ type Props = {
 	institutionId: number;
 	onSuccess?: () => void;
 };
+
+// Opacity-based tints so the same classes read correctly in light and dark.
+const TONE = {
+	muted: "border-border bg-muted",
+	success: "border-primary/40 bg-primary/5",
+	warning: "border-amber-500/40 bg-amber-500/10",
+	destructive: "border-destructive/40 bg-destructive/5",
+} as const;
 
 export default function QrReplacementUpload({
 	institutionId,
@@ -131,201 +139,165 @@ export default function QrReplacementUpload({
 	const canSave = uploadResult?.success && !isSaving;
 
 	return (
-		<Card className="w-full">
-			<CardHeader>
-				<CardTitle className="text-lg font-semibold flex items-center gap-2">
-					<Upload className="h-5 w-5" />
-					Replace QR Code
-				</CardTitle>
-			</CardHeader>
-			<CardContent className="space-y-4">
-				{/* File Input */}
-				<div className="space-y-2">
-					<Label htmlFor="qr-replacement">Select New QR Code Image</Label>
-					<Input
-						id="qr-replacement"
-						type="file"
-						accept="image/*"
-						capture="environment"
-						onChange={handleFileSelect}
-						ref={fileInputRef}
-						disabled={isUploading || isSaving}
-					/>
+		<div className="w-full space-y-4">
+			<div className="flex items-center gap-2 text-sm font-semibold">
+				<Upload className="h-4 w-4 text-muted-foreground" />
+				Replace QR code
+			</div>
+
+			<div className="space-y-2">
+				<Label htmlFor="qr-replacement" className="text-muted-foreground">
+					Select a new QR image
+				</Label>
+				<Input
+					id="qr-replacement"
+					type="file"
+					accept="image/*"
+					capture="environment"
+					onChange={handleFileSelect}
+					ref={fileInputRef}
+					disabled={isUploading || isSaving}
+				/>
+			</div>
+
+			{showPreview && (
+				<div className="space-y-3">
+					<div className="rounded-md border p-3">
+						<div className="mb-2 text-xs font-medium text-muted-foreground">
+							Preview
+						</div>
+						<div className="flex justify-center">
+							<Image
+								src={previewUrl}
+								alt="QR Code Preview"
+								width={200}
+								height={200}
+								className="rounded-md border"
+							/>
+						</div>
+					</div>
+
+					{/* Show only the final QR content - either from client extraction or server response */}
+					{isExtracting && (
+						<div
+							className={cn(
+								"flex items-center gap-2 rounded-md border p-3 text-sm",
+								TONE.muted,
+							)}
+						>
+							<Loader2 className="h-4 w-4 shrink-0 animate-spin" />
+							Extracting QR content...
+						</div>
+					)}
+
+					{!isExtracting && extractedData && !uploadResult && (
+						<output className={cn("block rounded-md border p-3", TONE.success)}>
+							<div className="flex items-center gap-2 text-sm font-medium">
+								<Check className="h-4 w-4 shrink-0 text-primary" />
+								QR content detected
+							</div>
+							<div className="mt-2 break-all rounded bg-background/60 p-2 font-mono text-xs">
+								{extractedData}
+							</div>
+						</output>
+					)}
+
+					{!isExtracting && !extractedData && !uploadResult && (
+						<div className={cn("rounded-md border p-3", TONE.warning)}>
+							<div className="flex items-center gap-2 text-sm font-medium">
+								<X className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+								QR content not detected
+							</div>
+							<p className="mt-1 text-xs text-muted-foreground">
+								Could not decode this image. You can still upload it and enter
+								the content manually.
+							</p>
+						</div>
+					)}
 				</div>
+			)}
 
-				{/* Preview Section */}
-				{showPreview && (
-					<div className="space-y-4">
-						<div className="border rounded-lg p-4">
-							<Label className="text-sm font-medium mb-2 block">Preview</Label>
-							<div className="flex justify-center">
-								<Image
-									src={previewUrl}
-									alt="QR Code Preview"
-									width={200}
-									height={200}
-									className="rounded-lg border"
-								/>
-							</div>
-						</div>
-
-						{/* Show only the final QR content - either from client extraction or server response */}
-						{isExtracting && (
-							<div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-md p-3">
-								<div className="flex items-center gap-2">
-									<Loader2 className="h-4 w-4 animate-spin" />
-									<span className="text-sm">Extracting QR content...</span>
-								</div>
-							</div>
-						)}
-
-						{!isExtracting && extractedData && !uploadResult && (
-							<div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-md p-3">
-								<div className="flex items-start gap-2">
-									<Check className="h-4 w-4 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
-									<div className="flex-1">
-										<div className="text-sm font-medium text-green-800 dark:text-green-200 mb-1">
-											QR Content Detected
-										</div>
-										<div className="text-xs text-green-700 dark:text-green-300 font-mono bg-green-100 dark:bg-green-900/50 p-2 rounded text-center break-all">
-											{extractedData}
-										</div>
-									</div>
-								</div>
-							</div>
-						)}
-
-						{!isExtracting && !extractedData && !uploadResult && (
-							<div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-md p-3">
-								<div className="flex items-start gap-2">
-									<X className="h-4 w-4 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
-									<div className="flex-1">
-										<div className="text-sm font-medium text-amber-800 dark:text-amber-200 mb-1">
-											QR Content Not Detected
-										</div>
-										<div className="text-xs text-amber-700 dark:text-amber-300">
-											QR code could not be detected from the image. You can
-											still upload it for manual processing.
-										</div>
-									</div>
-								</div>
-							</div>
-						)}
-					</div>
-				)}
-
-				{/* Upload Result */}
-				{uploadResult && (
-					<div
-						className={`border rounded-md p-3 ${
-							uploadResult.success
-								? "bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800"
-								: "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800"
-						}`}
-					>
-						<div className="flex items-start gap-2">
-							{uploadResult.success ? (
-								<Check className="h-4 w-4 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
-							) : (
-								<X className="h-4 w-4 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
-							)}
-							<div className="flex-1">
-								<div
-									className={`text-sm font-medium mb-1 ${
-										uploadResult.success
-											? "text-green-800 dark:text-green-200"
-											: "text-red-800 dark:text-red-200"
-									}`}
-								>
-									{uploadResult.success ? "Upload Successful" : "Upload Failed"}
-								</div>
-								<div
-									className={`text-xs ${
-										uploadResult.success
-											? "text-green-700 dark:text-green-300"
-											: "text-red-700 dark:text-red-300"
-									}`}
-								>
-									{uploadResult.message}
-								</div>
-								{uploadResult.success && uploadResult.qrContent && (
-									<div className="mt-2">
-										<div className="text-xs font-medium mb-1">
-											Final QR Content:
-										</div>
-										<div className="text-xs font-mono bg-green-100 dark:bg-green-900/50 p-2 rounded text-center break-all">
-											{uploadResult.qrContent}
-										</div>
-									</div>
-								)}
-							</div>
-						</div>
-					</div>
-				)}
-
-				{/* Action Buttons */}
-				<div className="flex flex-col sm:flex-row gap-2 pt-2">
-					{canUpload && (
-						<Button
-							onClick={handleUpload}
-							disabled={isUploading || isSaving}
-							className="flex-1 min-w-0"
-						>
-							{isUploading ? (
-								<>
-									<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-									Uploading...
-								</>
-							) : (
-								<>
-									<Upload className="mr-2 h-4 w-4" />
-									Upload QR Image
-								</>
-							)}
-						</Button>
+			{uploadResult && (
+				<output
+					className={cn(
+						"block rounded-md border p-3",
+						uploadResult.success ? TONE.success : TONE.destructive,
 					)}
-
-					{canSave && (
-						<Button
-							onClick={handleSave}
-							disabled={isSaving}
-							className="flex-1 min-w-0"
-						>
-							{isSaving ? (
-								<>
-									<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-									Saving...
-								</>
-							) : (
-								<>
-									<Check className="mr-2 h-4 w-4" />
-									Save
-								</>
-							)}
-						</Button>
+				>
+					<div className="flex items-center gap-2 text-sm font-medium">
+						{uploadResult.success ? (
+							<Check className="h-4 w-4 shrink-0 text-primary" />
+						) : (
+							<X className="h-4 w-4 shrink-0 text-destructive" />
+						)}
+						{uploadResult.success ? "Upload successful" : "Upload failed"}
+					</div>
+					<p className="mt-1 text-xs text-muted-foreground">
+						{uploadResult.message}
+					</p>
+					{uploadResult.success && uploadResult.qrContent && (
+						<div className="mt-2 break-all rounded bg-background/60 p-2 font-mono text-xs">
+							{uploadResult.qrContent}
+						</div>
 					)}
+				</output>
+			)}
 
+			<div className="flex flex-col gap-2 sm:flex-row">
+				{canUpload && (
 					<Button
-						variant="outline"
-						onClick={handleReset}
+						onClick={handleUpload}
 						disabled={isUploading || isSaving}
-						className="sm:w-auto w-full"
+						className="min-w-0 flex-1"
 					>
-						Reset
+						{isUploading ? (
+							<>
+								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+								Uploading...
+							</>
+						) : (
+							<>
+								<Upload className="mr-2 h-4 w-4" />
+								Upload
+							</>
+						)}
 					</Button>
-				</div>
+				)}
 
-				{/* Instructions */}
-				<div className="text-xs text-muted-foreground bg-muted p-3 rounded-md">
-					<strong>Instructions:</strong>
-					<ol className="mt-1 ml-4 space-y-1 list-decimal">
-						<li>Select a clear QR code image file</li>
-						<li>Click "Upload QR Image" to process the image</li>
-						<li>Review the extracted content (if any)</li>
-						<li>Click "Save QR Replacement" to apply the changes</li>
-					</ol>
-				</div>
-			</CardContent>
-		</Card>
+				{canSave && (
+					<Button
+						onClick={handleSave}
+						disabled={isSaving}
+						className="min-w-0 flex-1"
+					>
+						{isSaving ? (
+							<>
+								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+								Saving...
+							</>
+						) : (
+							<>
+								<Check className="mr-2 h-4 w-4" />
+								Save replacement
+							</>
+						)}
+					</Button>
+				)}
+
+				<Button
+					variant="outline"
+					onClick={handleReset}
+					disabled={isUploading || isSaving}
+					className="w-full sm:w-auto"
+				>
+					Reset
+				</Button>
+			</div>
+
+			<p className="text-xs text-muted-foreground">
+				Select an image, upload it to check whether the QR decodes, then save
+				the replacement.
+			</p>
+		</div>
 	);
 }

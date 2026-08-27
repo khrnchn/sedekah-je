@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, ScanQrCode } from "lucide-react";
+import { AlertTriangle, Loader2, ScanQrCode } from "lucide-react";
 import NextImage from "next/image";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
@@ -243,13 +243,14 @@ export default function ClientSection({
 				</div>
 				<div className="lg:col-span-1">
 					{/* DuitNow QR Section */}
-					<Card className="p-4 rounded-lg shadow-sm sticky top-4">
-						<CardHeader className="pb-4">
-							<CardTitle className="text-xl font-semibold flex items-center gap-2">
-								📱 DuitNow QR Code
+					<Card className="sticky top-4">
+						<CardHeader className="p-5 pb-4">
+							<CardTitle className="flex items-center gap-2 text-base font-semibold">
+								<ScanQrCode className="h-4 w-4 text-muted-foreground" />
+								DuitNow QR
 							</CardTitle>
 						</CardHeader>
-						<CardContent className="flex flex-col items-center gap-4">
+						<CardContent className="flex flex-col items-center gap-4 p-5 pt-0">
 							{institution.qrContent ? (
 								<>
 									<div className="flex justify-center">
@@ -262,19 +263,23 @@ export default function ClientSection({
 											size={280}
 										/>
 									</div>
-									<p className="text-sm text-muted-foreground text-center">
+									<p className="text-center text-sm text-muted-foreground">
 										Scan to verify recipient name
 									</p>
-									<div className="w-full bg-muted rounded-md p-3 break-all text-xs border">
-										<div className="font-medium text-sm mb-1">QR Content:</div>
-										{institution.qrContent}
+									<div className="w-full space-y-1.5">
+										<div className="text-xs font-medium text-muted-foreground">
+											QR content
+										</div>
+										<div className="break-all rounded-md border bg-muted p-3 font-mono text-xs">
+											{institution.qrContent}
+										</div>
 									</div>
 
 									{/* Original uploaded QR image */}
 									{institution.qrImage && (
-										<div className="w-full border-t pt-4">
-											<div className="text-sm font-medium mb-2">
-												Original Uploaded Image:
+										<div className="w-full space-y-2 border-t pt-4">
+											<div className="text-xs font-medium text-muted-foreground">
+												Original upload
 											</div>
 											<div className="flex justify-center">
 												<NextImage
@@ -282,18 +287,22 @@ export default function ClientSection({
 													alt="Original QR Code Upload"
 													width={200}
 													height={200}
-													className="rounded-lg border"
+													className="rounded-md border"
 												/>
 											</div>
+											<QrImageToolbar imageUrl={institution.qrImage} />
 										</div>
 									)}
 								</>
 							) : (
-								<div className="flex flex-col items-center gap-4 w-full">
-									<div className="text-sm text-muted-foreground p-4 bg-amber-50 border border-amber-200 rounded-md text-center">
-										QR code content could not be automatically extracted. Please
-										use the tools below to manually inspect and enter the QR
-										string, or upload a new QR code image.
+								<div className="flex w-full flex-col items-center gap-4">
+									<div className="flex w-full items-start gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-sm">
+										<AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+										<span>
+											Could not decode this QR automatically. Inspect the image
+											with the tools below and enter the content manually, or
+											upload a replacement.
+										</span>
 									</div>
 									<div className="flex justify-center">
 										<NextImage
@@ -301,7 +310,7 @@ export default function ClientSection({
 											alt="QR Code"
 											width={280}
 											height={280}
-											className="rounded-lg border"
+											className="rounded-md border"
 										/>
 									</div>
 									<Button
@@ -319,7 +328,7 @@ export default function ClientSection({
 										) : (
 											<>
 												<ScanQrCode className="mr-2 h-4 w-4" />
-												Extract QR from Original Image
+												Extract from image
 											</>
 										)}
 									</Button>
