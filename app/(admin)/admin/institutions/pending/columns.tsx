@@ -106,7 +106,8 @@ export const columns: ColumnDef<PendingInstitutionRow>[] = [
 			}
 			return (
 				<PendingInstitutionLink id={id} className="block h-10 w-10">
-					{/* images.unoptimized is on, so this renders a plain img with the R2 url */}
+					{/* The R2 host is in next.config remotePatterns, so the optimizer
+					    shrinks these full-size QR photos down to the thumbnail. */}
 					<Image
 						src={qrImage}
 						alt={`QR for ${name}`}

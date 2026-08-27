@@ -2,7 +2,7 @@
 	"$schema": "https://biomejs.dev/schemas/2.4.3/schema.json",
 	"files": {
 		"ignoreUnknown": true,
-		"includes": ["**", "!.next", "!node_modules"]
+		"includes": ["**", "!.next", "!.open-next", "!node_modules", "!.worktrees"]
 	},
 	"vcs": {
 		"enabled": false,
