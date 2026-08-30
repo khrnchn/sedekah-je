@@ -1,6 +1,8 @@
 name: sedekah-je
 
 services:
+  # The database remains hosted by Supabase. This deployment intentionally
+  # contains only the web application and connects outward via DATABASE_URL.
   app:
     image: ${SEDEKAHJE_IMAGE:?Set SEDEKAHJE_IMAGE to an immutable tag or digest}
     init: true
