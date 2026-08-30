@@ -5,7 +5,7 @@ services:
     image: ${SEDEKAHJE_IMAGE:?Set SEDEKAHJE_IMAGE to an immutable tag or digest}
     init: true
     restart: unless-stopped
-    pull_policy: always
+    pull_policy: missing
     ports:
       - name: http
         target: 3000
