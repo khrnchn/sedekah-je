@@ -4,6 +4,10 @@ import { db } from "@/db";
 import { blogPosts } from "@/db/schema";
 import { getInstitutions } from "@/lib/queries/institutions";
 
+// The sitemap reflects live institutions and posts. Keeping it dynamic avoids
+// coupling container builds to the production database.
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 	const institutions = await getInstitutions();
 	const institutionPages = institutions.map((inst) => ({

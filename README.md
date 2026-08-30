@@ -21,6 +21,8 @@ use the [contribution form](https://sedekah.je/contribute). click on "log masuk"
 
 everyone is welcomed to contribute! fork the repo and start cooking. you may also propose an idea by creating an issue.
 
+production deploys the web application to the shared ec2 host while the database remains on supabase. see the [ec2 deployment runbook](docs/ec2-deployment.md) for the architecture, required configuration, security controls, and rollback procedure.
+
 ## sponsor
 
 1. thank you [altaf](https://x.com/danielminho_?s=21&t=uaExBAqkDxtuY8KYLJBCLQ) for sponsoring 3 domains: `sedekah.je`, `sedekahje.com`, and `sedekah-je.com`.

@@ -56,3 +56,7 @@ next-env.d.ts
 
 # Script data (downloaded datasets)
 scripts/data/
+
+# build output
+.open-next/
+.wrangler/

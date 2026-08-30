@@ -39,7 +39,10 @@ export const auth = betterAuth({
 		}
 		return process.env.BETTER_AUTH_SECRET;
 	})(),
-	baseURL: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
+	baseURL:
+		process.env.BETTER_AUTH_URL ??
+		process.env.NEXT_PUBLIC_APP_URL ??
+		"http://localhost:3000",
 	trustedOrigins: [
 		"https://sedekah.je",
 		"https://sedekah-je-production.up.railway.app",
