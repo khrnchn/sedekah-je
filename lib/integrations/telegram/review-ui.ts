@@ -1,3 +1,8 @@
+import {
+	getReviewBlockerCodes,
+	type ReviewBlockerCode,
+} from "@/lib/features/institution-review/review-blockers";
+
 export type TelegramReviewScope = "community" | "imports" | "all";
 
 export type RejectionTemplateKey = "unclear" | "individual" | "duplicate";
@@ -225,23 +230,27 @@ export function buildReviewedCardStatus(input: {
 	].join("\n");
 }
 
+const BLOCKER_MESSAGES: Record<
+	Exclude<ReviewBlockerCode, "duplicate">,
+	string
+> = {
+	"qr-image": "QR image is missing",
+	"qr-content": "QR content is missing",
+	address: "address is missing",
+	coords: "coordinates are missing",
+};
+
 export function getReviewBlockers(
 	candidate: Pick<
 		TelegramReviewCandidate,
 		"qrImage" | "qrContent" | "address" | "coords" | "duplicateInstitutionId"
 	>,
 ): string[] {
-	const blockers: string[] = [];
-	if (!candidate.qrImage?.trim()) blockers.push("QR image is missing");
-	if (!candidate.qrContent?.trim()) blockers.push("QR content is missing");
-	if (!candidate.address?.trim()) blockers.push("address is missing");
-	if (!candidate.coords) blockers.push("coordinates are missing");
-	if (candidate.duplicateInstitutionId) {
-		blockers.push(
-			`QR content duplicates institution #${candidate.duplicateInstitutionId}`,
-		);
-	}
-	return blockers;
+	return getReviewBlockerCodes(candidate).map((blocker) =>
+		blocker.code === "duplicate"
+			? `QR content duplicates institution #${blocker.duplicateInstitutionId}`
+			: BLOCKER_MESSAGES[blocker.code],
+	);
 }
 
 function buildAdminUrl(baseUrl: string | null, institutionId: number) {

@@ -1,22 +1,15 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDownIcon, MoreHorizontalIcon } from "lucide-react";
+import { ArrowUpDownIcon, MoreHorizontalIcon, QrCodeIcon } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import { type ReactNode, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import type { ReactNode } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from "@/components/ui/dialog";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -25,27 +18,23 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Textarea } from "@/components/ui/textarea";
-import { useAuth } from "@/hooks/use-auth";
 import { formatDateTime } from "@/lib/date-utils";
-import type { categories, states } from "@/lib/institution-constants";
-import { approveInstitution, rejectInstitution } from "../_lib/actions";
+import type { ReviewBlockerCode } from "@/lib/features/institution-review/review-blockers";
 import {
 	getPendingReviewHref,
 	INCLUDE_AUTOMATED_QUERY,
 	shouldIncludeAutomated,
 } from "../_lib/pending-review-scope";
+import type { PendingInstitutionRow } from "./pending-row";
 
-type PendingInstitution = {
-	id: number;
-	name: string;
-	category: (typeof categories)[number];
-	state: (typeof states)[number];
-	city: string;
-	contributorName: string | null;
-	contributorId: string | null;
-	sourceUrl: string | null;
-	createdAt: Date;
+const BLOCKER_LABELS: Record<
+	Exclude<ReviewBlockerCode, "duplicate">,
+	string
+> = {
+	"qr-image": "No QR",
+	"qr-content": "No content",
+	address: "No address",
+	coords: "No coords",
 };
 
 function PendingInstitutionLink({
@@ -72,87 +61,7 @@ function PendingInstitutionLink({
 	);
 }
 
-type ActionDialogProps = {
-	isOpen: boolean;
-	onClose: () => void;
-	onConfirm: (notes: string) => void;
-	title: string;
-	description: string;
-	actionLabel: string;
-	actionStyle?: "success" | "destructive";
-};
-
-function ActionDialog({
-	isOpen,
-	onClose,
-	onConfirm,
-	title,
-	description,
-	actionLabel,
-	actionStyle = "success",
-}: ActionDialogProps) {
-	const [notes, setNotes] = useState("");
-
-	return (
-		<Dialog open={isOpen} onOpenChange={onClose}>
-			<DialogContent>
-				<DialogHeader>
-					<DialogTitle>{title}</DialogTitle>
-					<DialogDescription>{description}</DialogDescription>
-				</DialogHeader>
-				<div className="py-4">
-					<Textarea
-						placeholder="Enter any notes or comments about this decision..."
-						value={notes}
-						onChange={(e) => setNotes(e.target.value)}
-						className="min-h-[100px]"
-					/>
-				</div>
-				<DialogFooter>
-					<Button variant="outline" onClick={onClose}>
-						Cancel
-					</Button>
-					<Button
-						variant={actionStyle === "destructive" ? "destructive" : "default"}
-						onClick={() => onConfirm(notes)}
-					>
-						{actionLabel}
-					</Button>
-				</DialogFooter>
-			</DialogContent>
-		</Dialog>
-	);
-}
-
-async function handleApprove(
-	id: string,
-	reviewerId: string,
-	adminNotes?: string,
-) {
-	try {
-		await approveInstitution(Number(id), reviewerId, adminNotes);
-		return { success: true };
-	} catch (error) {
-		console.error("Failed to approve institution:", error);
-		return { success: false, error };
-	}
-}
-
-async function handleReject(
-	id: string,
-	reviewerId: string,
-	adminNotes?: string,
-) {
-	try {
-		await rejectInstitution(Number(id), reviewerId, adminNotes);
-		return { success: true };
-	} catch (error) {
-		console.error("Failed to reject institution:", error);
-		return { success: false, error };
-	}
-}
-
-export const columns: ColumnDef<PendingInstitution>[] = [
+export const columns: ColumnDef<PendingInstitutionRow>[] = [
 	{
 		id: "select",
 		header: ({ table }) => (
@@ -182,6 +91,35 @@ export const columns: ColumnDef<PendingInstitution>[] = [
 		),
 	},
 	{
+		id: "qr",
+		header: "QR",
+		enableSorting: false,
+		cell: ({ row }) => {
+			const { id, qrImage, name } = row.original;
+			if (!qrImage) {
+				return (
+					<div className="flex h-10 w-10 items-center justify-center rounded border bg-muted text-muted-foreground">
+						<QrCodeIcon className="h-4 w-4" />
+						<span className="sr-only">No QR image</span>
+					</div>
+				);
+			}
+			return (
+				<PendingInstitutionLink id={id} className="block h-10 w-10">
+					{/* The R2 host is in next.config remotePatterns, so the optimizer
+					    shrinks these full-size QR photos down to the thumbnail. */}
+					<Image
+						src={qrImage}
+						alt={`QR for ${name}`}
+						width={40}
+						height={40}
+						className="h-10 w-10 rounded border object-cover"
+					/>
+				</PendingInstitutionLink>
+			);
+		},
+	},
+	{
 		accessorKey: "name",
 		header: ({ column }) => {
 			return (
@@ -202,6 +140,46 @@ export const columns: ColumnDef<PendingInstitution>[] = [
 				{row.getValue("name")}
 			</PendingInstitutionLink>
 		),
+	},
+	{
+		id: "readiness",
+		header: "Readiness",
+		enableSorting: false,
+		cell: ({ row }) => {
+			const { blockers, duplicateOf } = row.original;
+			if (blockers.length === 0) {
+				return <Badge className="bg-green-600 hover:bg-green-700">Ready</Badge>;
+			}
+			return (
+				<div className="flex flex-wrap gap-1">
+					{blockers.map((blocker) =>
+						blocker.code === "duplicate" ? (
+							<Link
+								key={blocker.code}
+								href={
+									duplicateOf?.status === "pending"
+										? getPendingReviewHref(duplicateOf.id, false)
+										: `/admin/institutions/approved/${blocker.duplicateInstitutionId}`
+								}
+								className="hover:underline"
+							>
+								<Badge variant="destructive">
+									Dup #{blocker.duplicateInstitutionId}
+								</Badge>
+							</Link>
+						) : (
+							<Badge
+								key={blocker.code}
+								variant="outline"
+								className="border-yellow-500 text-yellow-600"
+							>
+								{BLOCKER_LABELS[blocker.code]}
+							</Badge>
+						),
+					)}
+				</div>
+			);
+		},
 	},
 	{
 		accessorKey: "category",
@@ -270,110 +248,35 @@ export const columns: ColumnDef<PendingInstitution>[] = [
 		enableHiding: false,
 		cell: ({ row }) => {
 			const institution = row.original;
-			const { user } = useAuth();
-			const router = useRouter();
-			const [actionDialog, setActionDialog] = useState<{
-				isOpen: boolean;
-				type: "approve" | "reject" | null;
-			}>({
-				isOpen: false,
-				type: null,
-			});
-
-			const onApprove = async (notes: string) => {
-				const result = await handleApprove(
-					institution.id.toString(),
-					user?.id || "",
-					notes,
-				);
-				if (result.success) {
-					toast.success(`Successfully approved ${institution.name}`);
-					router.refresh();
-				} else {
-					toast.error("Failed to approve institution");
-				}
-				setActionDialog({ isOpen: false, type: null });
-			};
-
-			const onReject = async (notes: string) => {
-				const result = await handleReject(
-					institution.id.toString(),
-					user?.id || "",
-					notes,
-				);
-				if (result.success) {
-					toast.success(`Successfully rejected ${institution.name}`);
-					router.refresh();
-				} else {
-					toast.error("Failed to reject institution");
-				}
-				setActionDialog({ isOpen: false, type: null });
-			};
 
 			return (
-				<>
-					<ActionDialog
-						isOpen={actionDialog.isOpen && actionDialog.type === "approve"}
-						onClose={() => setActionDialog({ isOpen: false, type: null })}
-						onConfirm={onApprove}
-						title="Approve Institution"
-						description={`Are you sure you want to approve ${institution.name}? Add any notes about your decision below.`}
-						actionLabel="Approve"
-						actionStyle="success"
-					/>
-					<ActionDialog
-						isOpen={actionDialog.isOpen && actionDialog.type === "reject"}
-						onClose={() => setActionDialog({ isOpen: false, type: null })}
-						onConfirm={onReject}
-						title="Reject Institution"
-						description={`Are you sure you want to reject ${institution.name}? Add any notes about your decision below.`}
-						actionLabel="Reject"
-						actionStyle="destructive"
-					/>
-					<DropdownMenu>
-						<DropdownMenuTrigger asChild>
-							<Button variant="ghost" className="h-8 w-8 p-0">
-								<span className="sr-only">Open menu</span>
-								<MoreHorizontalIcon className="h-4 w-4" />
-							</Button>
-						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end">
-							<DropdownMenuLabel>Actions</DropdownMenuLabel>
-							<DropdownMenuItem
-								onClick={() => {
-									navigator.clipboard.writeText(institution.id.toString());
-									toast.success("Institution ID copied to clipboard", {
-										description: "You can now paste it to the admin",
-									});
-								}}
-							>
-								Copy institution ID
-							</DropdownMenuItem>
-							<DropdownMenuSeparator />
-							<DropdownMenuItem asChild>
-								<PendingInstitutionLink id={institution.id}>
-									View details
-								</PendingInstitutionLink>
-							</DropdownMenuItem>
-							{/* <DropdownMenuItem
-								onClick={() =>
-									setActionDialog({ isOpen: true, type: "approve" })
-								}
-								className="text-green-600"
-							>
-								Approve
-							</DropdownMenuItem>
-							<DropdownMenuItem
-								onClick={() =>
-									setActionDialog({ isOpen: true, type: "reject" })
-								}
-								className="text-red-600"
-							>
-								Reject
-							</DropdownMenuItem> */}
-						</DropdownMenuContent>
-					</DropdownMenu>
-				</>
+				<DropdownMenu>
+					<DropdownMenuTrigger asChild>
+						<Button variant="ghost" className="h-8 w-8 p-0">
+							<span className="sr-only">Open menu</span>
+							<MoreHorizontalIcon className="h-4 w-4" />
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent align="end">
+						<DropdownMenuLabel>Actions</DropdownMenuLabel>
+						<DropdownMenuItem
+							onClick={() => {
+								navigator.clipboard.writeText(institution.id.toString());
+								toast.success("Institution ID copied to clipboard", {
+									description: "You can now paste it to the admin",
+								});
+							}}
+						>
+							Copy institution ID
+						</DropdownMenuItem>
+						<DropdownMenuSeparator />
+						<DropdownMenuItem asChild>
+							<PendingInstitutionLink id={institution.id}>
+								View details
+							</PendingInstitutionLink>
+						</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
 			);
 		},
 	},

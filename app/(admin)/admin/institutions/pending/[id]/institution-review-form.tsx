@@ -5,9 +5,12 @@ import {
 	Building2,
 	CaseSensitive,
 	ExternalLink,
+	Link2,
 	Loader2,
 	MapPin,
 	Search,
+	User,
+	Wallet,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import {
@@ -22,12 +25,13 @@ import { z } from "zod";
 import { AdminLocationMap } from "@/app/(admin)/admin/institutions/pending/[id]/_components/admin-location-map";
 import {
 	Field,
+	FieldDescription,
 	FieldError,
-	FieldGroup,
 	FieldLabel,
 } from "@/components/shared/field";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Dialog,
 	DialogContent,
@@ -60,7 +64,7 @@ import {
 	states as STATE_OPTIONS,
 } from "@/lib/institution-constants";
 import { geocodeInstitution } from "@/lib/integrations/geocode";
-import { toTitleCase } from "@/lib/utils";
+import { cn, toTitleCase } from "@/lib/utils";
 import {
 	reverseGeocodeInstitutionByAdmin,
 	updateInstitutionByAdmin,
@@ -219,39 +223,32 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 		const dynamicSchema = reviewSchema(institution);
 		type LocalFormData = z.infer<typeof dynamicSchema>;
 
-		const {
-			register,
-			handleSubmit,
-			getValues,
-			setValue,
-			trigger,
-			watch,
-			control,
-		} = useForm<LocalFormData>({
-			resolver: zodResolver(dynamicSchema),
-			defaultValues: {
-				name: institution.name ?? "",
-				category: normalizeInstitutionCategory(institution.category),
-				state: institution.state || STATE_OPTIONS[0],
-				city: institution.city ?? "",
-				address: institution.address ?? "",
-				lat:
-					institution.coords && Array.isArray(institution.coords)
-						? String(institution.coords[0])
-						: "",
-				lon:
-					institution.coords && Array.isArray(institution.coords)
-						? String(institution.coords[1])
-						: "",
-				facebook: institution.socialMedia?.facebook ?? "",
-				instagram: institution.socialMedia?.instagram ?? "",
-				website: institution.socialMedia?.website ?? "",
-				sourceUrl: institution.sourceUrl ?? "",
-				contributorRemarks: institution.contributorRemarks ?? "",
-				supportedPayment: institution.supportedPayment ?? ["duitnow"],
-				qrContent: institution.qrContent ?? "",
-			},
-		});
+		const { handleSubmit, getValues, setValue, trigger, watch, control } =
+			useForm<LocalFormData>({
+				resolver: zodResolver(dynamicSchema),
+				defaultValues: {
+					name: institution.name ?? "",
+					category: normalizeInstitutionCategory(institution.category),
+					state: institution.state || STATE_OPTIONS[0],
+					city: institution.city ?? "",
+					address: institution.address ?? "",
+					lat:
+						institution.coords && Array.isArray(institution.coords)
+							? String(institution.coords[0])
+							: "",
+					lon:
+						institution.coords && Array.isArray(institution.coords)
+							? String(institution.coords[1])
+							: "",
+					facebook: institution.socialMedia?.facebook ?? "",
+					instagram: institution.socialMedia?.instagram ?? "",
+					website: institution.socialMedia?.website ?? "",
+					sourceUrl: institution.sourceUrl ?? "",
+					contributorRemarks: institution.contributorRemarks ?? "",
+					supportedPayment: institution.supportedPayment ?? ["duitnow"],
+					qrContent: institution.qrContent ?? "",
+				},
+			});
 
 		const facebookUrl = watch("facebook");
 		const instagramUrl = watch("instagram");
@@ -271,6 +268,14 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 			latNum <= 90 &&
 			lonNum >= -180 &&
 			lonNum <= 180;
+
+		// Watched (not getValues) so the lookup buttons re-enable as the admin types.
+		const nameVal = watch("name")?.trim() ?? "";
+		const cityVal = watch("city")?.trim() ?? "";
+		const stateVal = watch("state") ?? "";
+		const hasLookupFields = Boolean(nameVal && cityVal && stateVal);
+		const lookupQuery = `${nameVal}, ${cityVal}, ${stateVal}`;
+		const searchQuery = `${nameVal} ${cityVal} ${stateVal}`;
 
 		const generateGoogleSearchUrl = (
 			platform: string,
@@ -357,476 +362,468 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 		}));
 
 		return (
-			<form onSubmit={handleSubmit(saveChanges)} className="space-y-6">
-				{/* Institution Info Section */}
-				<Card className="p-4 mb-6 rounded-lg shadow-sm">
-					<CardHeader className="pb-4">
-						<CardTitle className="text-xl font-semibold flex items-center gap-2">
-							📋 Institution Info
+			<form onSubmit={handleSubmit(saveChanges)} className="space-y-4">
+				<Card>
+					<CardHeader className="flex flex-row items-center justify-between gap-3 space-y-0 p-5 pb-4">
+						<CardTitle className="flex items-center gap-2 text-base font-semibold">
+							<Building2 className="h-4 w-4 text-muted-foreground" />
+							Institution
 						</CardTitle>
-						<div className="flex justify-end">
-							<Button
-								type="button"
-								variant="outline"
-								size="sm"
-								onClick={() => {
-									const name = getValues("name");
-									const city = getValues("city");
-									const address = getValues("address");
-									if (name) setValue("name", toTitleCase(name));
-									if (city) setValue("city", toTitleCase(city));
-									if (address) setValue("address", toTitleCase(address));
-								}}
-							>
-								<CaseSensitive className="mr-2 h-4 w-4" />
-								Capitalize All
-							</Button>
-						</div>
+						<Button
+							type="button"
+							variant="outline"
+							size="sm"
+							onClick={() => {
+								const name = getValues("name");
+								const city = getValues("city");
+								const address = getValues("address");
+								if (name) setValue("name", toTitleCase(name));
+								if (city) setValue("city", toTitleCase(city));
+								if (address) setValue("address", toTitleCase(address));
+							}}
+						>
+							<CaseSensitive className="mr-2 h-4 w-4" />
+							Capitalize
+						</Button>
 					</CardHeader>
-					<CardContent className="space-y-4">
-						<FieldGroup>
+					<CardContent className="space-y-5 p-5 pt-0">
+						<Controller
+							name="name"
+							control={control}
+							render={({ field, fieldState }) => (
+								<Field>
+									<FieldLabel htmlFor="name">Name</FieldLabel>
+									<div className="flex gap-2">
+										<Input
+											{...field}
+											id="name"
+											className="flex-1"
+											aria-invalid={fieldState.invalid}
+											placeholder="Nama Institusi"
+										/>
+										<Popover
+											open={checkExistingOpen}
+											onOpenChange={(open) => {
+												setCheckExistingOpen(open);
+												if (!open) {
+													setCheckExistingResults([]);
+													setCheckExistingQuery("");
+													setHasSearchedExisting(false);
+												} else {
+													setCheckExistingQuery(
+														getValues("name")?.trim() ?? "",
+													);
+												}
+											}}
+										>
+											<PopoverTrigger asChild>
+												<Button
+													type="button"
+													variant="outline"
+													size="icon"
+													className="shrink-0"
+													aria-label="Check for an existing institution"
+													title="Check for an existing institution"
+												>
+													<Search className="h-4 w-4" />
+												</Button>
+											</PopoverTrigger>
+											<PopoverContent
+												className="max-h-80 w-96 overflow-y-auto"
+												align="end"
+											>
+												<div className="space-y-3">
+													<div className="text-sm font-medium">
+														Check for an existing institution
+													</div>
+													<div className="flex gap-2">
+														<Input
+															placeholder="Partial name, city, etc."
+															value={checkExistingQuery}
+															onChange={(e) =>
+																setCheckExistingQuery(e.target.value)
+															}
+															onKeyDown={(e) => {
+																if (e.key === "Enter") {
+																	e.preventDefault();
+																	runCheckExistingSearch();
+																}
+															}}
+															className="h-9 flex-1"
+														/>
+														<Button
+															type="button"
+															size="sm"
+															className="h-9"
+															disabled={
+																!checkExistingQuery.trim() || isCheckingExisting
+															}
+															onClick={runCheckExistingSearch}
+															aria-label="Search approved institutions"
+														>
+															{isCheckingExisting ? (
+																<Loader2 className="h-4 w-4 animate-spin" />
+															) : (
+																<Search className="h-4 w-4" />
+															)}
+														</Button>
+													</div>
+													{isCheckingExisting ? (
+														<p className="flex items-center gap-2 py-2 text-sm text-muted-foreground">
+															<Loader2 className="h-4 w-4 animate-spin" />
+															Searching...
+														</p>
+													) : hasSearchedExisting &&
+														checkExistingResults.length === 0 ? (
+														<p className="rounded-md border border-dashed py-4 text-center text-sm text-muted-foreground">
+															No matches found
+														</p>
+													) : checkExistingResults.length > 0 ? (
+														<ul className="-mx-1 space-y-0.5">
+															{checkExistingResults.map((inst) => (
+																<li key={inst.id}>
+																	<a
+																		href={`/${inst.category}/${inst.slug}`}
+																		target="_blank"
+																		rel="noopener noreferrer"
+																		className="flex items-center gap-2 rounded-md p-2 text-sm transition-colors hover:bg-muted"
+																	>
+																		<Building2 className="h-4 w-4 shrink-0 text-muted-foreground" />
+																		<div className="min-w-0 flex-1">
+																			<div className="truncate font-medium">
+																				{inst.name}
+																			</div>
+																			<div className="text-xs text-muted-foreground">
+																				{inst.city}
+																				{inst.state ? `, ${inst.state}` : ""}
+																			</div>
+																		</div>
+																		<ExternalLink className="h-3 w-3 shrink-0 text-muted-foreground" />
+																	</a>
+																</li>
+															))}
+														</ul>
+													) : null}
+													{checkExistingQuery.trim() && (
+														<a
+															href={`/?search=${encodeURIComponent(checkExistingQuery.trim())}`}
+															target="_blank"
+															rel="noopener noreferrer"
+															className="block border-t pt-3 text-sm text-primary underline-offset-4 hover:underline"
+														>
+															View on homepage →
+														</a>
+													)}
+												</div>
+											</PopoverContent>
+										</Popover>
+									</div>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
+							)}
+						/>
+						<div className="grid gap-4 md:grid-cols-3">
 							<Controller
-								name="name"
 								control={control}
+								name="category"
 								render={({ field, fieldState }) => (
 									<Field>
-										<FieldLabel>Name</FieldLabel>
-										<div className="flex gap-2">
-											<Input
-												{...field}
-												id="name"
-												className="flex-1"
+										<FieldLabel htmlFor="category">Kategori</FieldLabel>
+										<Select value={field.value} onValueChange={field.onChange}>
+											<SelectTrigger
+												id="category"
 												aria-invalid={fieldState.invalid}
-												placeholder="Nama Institusi"
-											/>
-											<Popover
-												open={checkExistingOpen}
-												onOpenChange={(open) => {
-													setCheckExistingOpen(open);
-													if (!open) {
-														setCheckExistingResults([]);
-														setCheckExistingQuery("");
-														setHasSearchedExisting(false);
-													} else {
-														setCheckExistingQuery(
-															getValues("name")?.trim() ?? "",
-														);
-													}
-												}}
 											>
-												<PopoverTrigger asChild>
-													<Button
-														type="button"
-														variant="outline"
-														size="icon"
-														className="shrink-0"
-														title="Check existing"
-													>
-														<Search className="h-4 w-4" />
-													</Button>
-												</PopoverTrigger>
-												<PopoverContent
-													className="w-96 max-h-80 overflow-y-auto"
-													align="start"
-												>
-													<div className="space-y-2">
-														<div className="text-sm font-medium text-muted-foreground">
-															Search institutions
-														</div>
-														<div className="flex gap-2">
-															<Input
-																placeholder="Type to search (partial name, etc.)"
-																value={checkExistingQuery}
-																onChange={(e) =>
-																	setCheckExistingQuery(e.target.value)
-																}
-																onKeyDown={(e) => {
-																	if (e.key === "Enter") {
-																		e.preventDefault();
-																		runCheckExistingSearch();
-																	}
-																}}
-																className="flex-1"
-															/>
-															<Button
-																type="button"
-																size="sm"
-																disabled={
-																	!checkExistingQuery.trim() ||
-																	isCheckingExisting
-																}
-																onClick={runCheckExistingSearch}
-															>
-																{isCheckingExisting ? (
-																	<Loader2 className="h-4 w-4 animate-spin" />
-																) : (
-																	<Search className="h-4 w-4" />
-																)}
-															</Button>
-														</div>
-														{isCheckingExisting ? (
-															<p className="text-sm text-muted-foreground py-2 flex items-center gap-2">
-																<Loader2 className="h-4 w-4 animate-spin" />
-																Searching...
-															</p>
-														) : hasSearchedExisting &&
-															checkExistingResults.length === 0 ? (
-															<p className="text-sm text-muted-foreground py-2">
-																No matches found
-															</p>
-														) : checkExistingResults.length > 0 ? (
-															<ul className="space-y-1">
-																{checkExistingResults.map((inst) => (
-																	<li key={inst.id}>
-																		<a
-																			href={`/${inst.category}/${inst.slug}`}
-																			target="_blank"
-																			rel="noopener noreferrer"
-																			className="flex items-center gap-2 rounded-md p-2 text-sm hover:bg-muted transition-colors"
-																		>
-																			<Building2 className="h-4 w-4 shrink-0 text-muted-foreground" />
-																			<div className="min-w-0 flex-1">
-																				<div className="font-medium truncate">
-																					{inst.name}
-																				</div>
-																				<div className="text-xs text-muted-foreground">
-																					{inst.city}
-																					{inst.state ? `, ${inst.state}` : ""}
-																				</div>
-																			</div>
-																			<ExternalLink className="h-3 w-3 shrink-0" />
-																		</a>
-																	</li>
-																))}
-															</ul>
-														) : null}
-														{checkExistingQuery.trim() && (
-															<a
-																href={`/?search=${encodeURIComponent(checkExistingQuery.trim())}`}
-																target="_blank"
-																rel="noopener noreferrer"
-																className="block pt-2 text-sm text-primary hover:underline"
-															>
-																View on homepage →
-															</a>
-														)}
-													</div>
-												</PopoverContent>
-											</Popover>
-										</div>
+												<SelectValue placeholder="Pilih kategori" />
+											</SelectTrigger>
+											<SelectContent>
+												{CATEGORY_OPTIONS.map((c) => (
+													<SelectItem key={c} value={c}>
+														{toTitleCase(c)}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
 										{fieldState.invalid && (
 											<FieldError errors={[fieldState.error]} />
 										)}
 									</Field>
 								)}
 							/>
-						</FieldGroup>
-						<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-							<FieldGroup>
-								<Controller
-									control={control}
-									name="category"
-									render={({ field, fieldState }) => (
-										<Field>
-											<FieldLabel>Kategori</FieldLabel>
-											<Select
-												value={field.value}
-												onValueChange={field.onChange}
-											>
-												<SelectTrigger className="w-full bg-background h-10">
-													<SelectValue placeholder="Pilih kategori" />
-												</SelectTrigger>
-												<SelectContent>
-													{CATEGORY_OPTIONS.map((c) => (
-														<SelectItem
-															key={c}
-															value={c}
-															className="capitalize"
-														>
-															{toTitleCase(c)}
-														</SelectItem>
-													))}
-												</SelectContent>
-											</Select>
-											{fieldState.invalid && (
-												<FieldError errors={[fieldState.error]} />
-											)}
-										</Field>
-									)}
-								/>
-							</FieldGroup>
-							<FieldGroup>
-								<Controller
-									control={control}
-									name="state"
-									render={({ field, fieldState }) => (
-										<Field>
-											<FieldLabel>State</FieldLabel>
-											<Select
-												value={field.value}
-												onValueChange={field.onChange}
-											>
-												<SelectTrigger
-													className="w-full bg-background h-10"
-													id="state"
-													aria-invalid={fieldState.invalid}
-												>
-													<SelectValue placeholder="Select state" />
-												</SelectTrigger>
-												<SelectContent>
-													{STATE_OPTIONS.map((s) => (
-														<SelectItem
-															key={s}
-															value={s}
-															className="capitalize"
-														>
-															{s}
-														</SelectItem>
-													))}
-												</SelectContent>
-											</Select>
-											{fieldState.invalid && (
-												<FieldError errors={[fieldState.error]} />
-											)}
-										</Field>
-									)}
-								/>
-							</FieldGroup>
-							<FieldGroup>
-								<Controller
-									name="city"
-									control={control}
-									render={({ field, fieldState }) => (
-										<Field>
-											<FieldLabel>City</FieldLabel>
-											<Input
-												{...field}
-												id="city"
+							<Controller
+								control={control}
+								name="state"
+								render={({ field, fieldState }) => (
+									<Field>
+										<FieldLabel htmlFor="state">State</FieldLabel>
+										<Select value={field.value} onValueChange={field.onChange}>
+											<SelectTrigger
+												id="state"
 												aria-invalid={fieldState.invalid}
-											/>
-											{fieldState.invalid && (
-												<FieldError errors={[fieldState.error]} />
-											)}
-										</Field>
-									)}
-								/>
-							</FieldGroup>
-						</div>
-
-						{/* Location Map or Quick Lookup */}
-						<FieldGroup>
-							<FieldLabel className="text-muted-foreground font-medium">
-								{env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-									? "Location Map"
-									: "Quick Lookup"}
-							</FieldLabel>
-							{env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ? (
-								<div className="space-y-2">
-									<AdminLocationMap
-										lat={hasValidCoords ? latNum : null}
-										lon={hasValidCoords ? lonNum : null}
-										institutionName={institution.name ?? ""}
-										onCoordsChange={(lat, lon) => {
-											setValue("lat", String(lat));
-											setValue("lon", String(lon));
-										}}
-										onPlaceSelect={(place) => {
-											setValue("lat", String(place.lat));
-											setValue("lon", String(place.lon));
-											if (place.address != null)
-												setValue("address", place.address);
-											if (place.city != null) setValue("city", place.city);
-											if (place.state != null) setValue("state", place.state);
-											if (place.name != null) setValue("name", place.name);
-										}}
-									/>
-									<div className="flex flex-wrap gap-2">
-										{institution.sourceUrl && (
-											<Button
-												type="button"
-												variant="outline"
-												size="sm"
-												onClick={() =>
-													window.open(institution.sourceUrl, "_blank")
-												}
 											>
-												<ExternalLink className="mr-2 h-4 w-4" />
-												Source URL
-											</Button>
+												<SelectValue placeholder="Select state" />
+											</SelectTrigger>
+											<SelectContent>
+												{STATE_OPTIONS.map((s) => (
+													<SelectItem key={s} value={s} className="capitalize">
+														{s}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+										{fieldState.invalid && (
+											<FieldError errors={[fieldState.error]} />
 										)}
+									</Field>
+								)}
+							/>
+							<Controller
+								name="city"
+								control={control}
+								render={({ field, fieldState }) => (
+									<Field>
+										<FieldLabel htmlFor="city">City</FieldLabel>
+										<Input
+											{...field}
+											id="city"
+											aria-invalid={fieldState.invalid}
+										/>
+										{fieldState.invalid && (
+											<FieldError errors={[fieldState.error]} />
+										)}
+									</Field>
+								)}
+							/>
+						</div>
+					</CardContent>
+				</Card>
+
+				<Card>
+					<CardHeader className="p-5 pb-4">
+						<CardTitle className="flex items-center gap-2 text-base font-semibold">
+							<MapPin className="h-4 w-4 text-muted-foreground" />
+							Location
+						</CardTitle>
+					</CardHeader>
+					<CardContent className="space-y-5 p-5 pt-0">
+						{env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ? (
+							<div className="space-y-3">
+								<AdminLocationMap
+									lat={hasValidCoords ? latNum : null}
+									lon={hasValidCoords ? lonNum : null}
+									institutionName={institution.name ?? ""}
+									onCoordsChange={(lat, lon) => {
+										setValue("lat", String(lat));
+										setValue("lon", String(lon));
+									}}
+									onPlaceSelect={(place) => {
+										setValue("lat", String(place.lat));
+										setValue("lon", String(place.lon));
+										if (place.address != null)
+											setValue("address", place.address);
+										if (place.city != null) setValue("city", place.city);
+										if (place.state != null) setValue("state", place.state);
+										if (place.name != null) setValue("name", place.name);
+									}}
+								/>
+								<div className="flex flex-wrap gap-2">
+									{institution.sourceUrl && (
 										<Button
 											type="button"
 											variant="outline"
 											size="sm"
-											disabled={
-												!(
-													getValues("name")?.trim() &&
-													getValues("city")?.trim() &&
-													getValues("state")
-												)
-											}
 											onClick={() =>
-												window.open(
-													`https://www.google.com/search?q=${encodeURIComponent(
-														`${getValues("name")} ${getValues("city")} ${getValues("state")}`,
-													)}`,
-													"_blank",
-												)
+												window.open(institution.sourceUrl, "_blank")
 											}
 										>
-											<Search className="mr-2 h-4 w-4" />
-											Google Search
+											<ExternalLink className="mr-2 h-4 w-4" />
+											Source URL
+										</Button>
+									)}
+									<Button
+										type="button"
+										variant="outline"
+										size="sm"
+										disabled={!hasLookupFields}
+										title={
+											hasLookupFields
+												? undefined
+												: "Needs a name, city, and state"
+										}
+										onClick={() =>
+											window.open(
+												`https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`,
+												"_blank",
+											)
+										}
+									>
+										<Search className="mr-2 h-4 w-4" />
+										Google Search
+									</Button>
+								</div>
+							</div>
+						) : (
+							<div className="space-y-2">
+								<span className="text-sm font-medium">Quick lookup</span>
+								<div className="flex flex-wrap gap-2">
+									<Button
+										type="button"
+										variant="outline"
+										size="sm"
+										disabled={!hasLookupFields}
+										title={
+											hasLookupFields
+												? undefined
+												: "Needs a name, city, and state"
+										}
+										onClick={() =>
+											window.open(
+												`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(lookupQuery)}`,
+												"_blank",
+											)
+										}
+									>
+										<MapPin className="mr-2 h-4 w-4" />
+										Google Maps
+									</Button>
+									<Button
+										type="button"
+										variant="outline"
+										size="sm"
+										disabled={!hasLookupFields}
+										title={
+											hasLookupFields
+												? undefined
+												: "Needs a name, city, and state"
+										}
+										onClick={() =>
+											window.open(
+												`https://www.openstreetmap.org/search?query=${encodeURIComponent(lookupQuery)}`,
+												"_blank",
+											)
+										}
+									>
+										<MapPin className="mr-2 h-4 w-4" />
+										OSM
+									</Button>
+									<Button
+										type="button"
+										variant="outline"
+										size="sm"
+										disabled={!hasLookupFields}
+										title={
+											hasLookupFields
+												? undefined
+												: "Needs a name, city, and state"
+										}
+										onClick={() =>
+											window.open(
+												`https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`,
+												"_blank",
+											)
+										}
+									>
+										<Search className="mr-2 h-4 w-4" />
+										Google Search
+									</Button>
+									{institution.sourceUrl && (
+										<Button
+											type="button"
+											variant="outline"
+											size="sm"
+											onClick={() =>
+												window.open(institution.sourceUrl, "_blank")
+											}
+										>
+											<ExternalLink className="mr-2 h-4 w-4" />
+											Source URL
+										</Button>
+									)}
+								</div>
+							</div>
+						)}
+
+						<Controller
+							name="address"
+							control={control}
+							render={({ field, fieldState }) => (
+								<Field>
+									<div className="flex flex-wrap items-center justify-between gap-2">
+										<FieldLabel htmlFor="address">Address</FieldLabel>
+										<Button
+											type="button"
+											variant="outline"
+											size="sm"
+											disabled={isFillingAddress || !hasValidCoords}
+											title={
+												hasValidCoords
+													? "Reverse geocode from the coordinates below"
+													: "Needs valid coordinates"
+											}
+											onClick={async () => {
+												const latStr = getValues("lat")?.trim() ?? "";
+												const lonStr = getValues("lon")?.trim() ?? "";
+												const lat = Number.parseFloat(latStr);
+												const lon = Number.parseFloat(lonStr);
+												const currentAddress =
+													getValues("address")?.trim() ?? "";
+
+												setIsFillingAddress(true);
+												try {
+													const result = await reverseGeocodeInstitutionByAdmin(
+														lat,
+														lon,
+													);
+													if (result) {
+														const newAddr = result.addressLine;
+														if (currentAddress && currentAddress !== newAddr) {
+															setReplaceAddressDialog({
+																open: true,
+																newAddress: newAddr,
+															});
+														} else {
+															setValue("address", newAddr);
+															toast.success("Address filled from coordinates");
+														}
+													} else {
+														toast.error(
+															"No address found for these coordinates",
+														);
+													}
+												} catch {
+													toast.error("Failed to fetch address");
+												} finally {
+													setIsFillingAddress(false);
+												}
+											}}
+										>
+											{isFillingAddress ? (
+												<>
+													<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+													Filling...
+												</>
+											) : (
+												<>
+													<MapPin className="mr-2 h-4 w-4" />
+													Fill from coords
+												</>
+											)}
 										</Button>
 									</div>
-								</div>
-							) : (
-								<div className="flex flex-wrap gap-2">
-									{(() => {
-										const name = getValues("name")?.trim() ?? "";
-										const city = getValues("city")?.trim() ?? "";
-										const stateVal = getValues("state") ?? "";
-										const lookupQuery = `${name}, ${city}, ${stateVal}`;
-										const searchQuery = `${name} ${city} ${stateVal}`;
-										const hasLookupFields =
-											Boolean(name) && Boolean(city) && Boolean(stateVal);
-
-										return (
-											<>
-												<Button
-													type="button"
-													variant="outline"
-													size="sm"
-													disabled={!hasLookupFields}
-													onClick={() =>
-														window.open(
-															`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(lookupQuery)}`,
-															"_blank",
-														)
-													}
-												>
-													<MapPin className="mr-2 h-4 w-4" />
-													Google Maps
-												</Button>
-												<Button
-													type="button"
-													variant="outline"
-													size="sm"
-													disabled={!hasLookupFields}
-													onClick={() =>
-														window.open(
-															`https://www.openstreetmap.org/search?query=${encodeURIComponent(lookupQuery)}`,
-															"_blank",
-														)
-													}
-												>
-													<MapPin className="mr-2 h-4 w-4" />
-													OSM
-												</Button>
-												<Button
-													type="button"
-													variant="outline"
-													size="sm"
-													disabled={!hasLookupFields}
-													onClick={() =>
-														window.open(
-															`https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`,
-															"_blank",
-														)
-													}
-												>
-													<Search className="mr-2 h-4 w-4" />
-													Google Search
-												</Button>
-												{institution.sourceUrl && (
-													<Button
-														type="button"
-														variant="outline"
-														size="sm"
-														onClick={() =>
-															window.open(institution.sourceUrl, "_blank")
-														}
-													>
-														<ExternalLink className="mr-2 h-4 w-4" />
-														Source URL
-													</Button>
-												)}
-											</>
-										);
-									})()}
-								</div>
-							)}
-						</FieldGroup>
-
-						<FieldGroup>
-							<div className="flex items-start gap-2">
-								<div className="flex-1">
-									<Controller
-										name="address"
-										control={control}
-										render={({ field, fieldState }) => (
-											<Field>
-												<FieldLabel>Address</FieldLabel>
-												<Textarea
-													{...field}
-													id="address"
-													rows={3}
-													aria-invalid={fieldState.invalid}
-												/>
-												{fieldState.invalid && (
-													<FieldError errors={[fieldState.error]} />
-												)}
-											</Field>
-										)}
+									<Textarea
+										{...field}
+										id="address"
+										rows={3}
+										aria-invalid={fieldState.invalid}
 									/>
-								</div>
-								<Button
-									type="button"
-									variant="outline"
-									size="sm"
-									className="shrink-0 mt-8"
-									disabled={isFillingAddress || !hasValidCoords}
-									onClick={async () => {
-										const latStr = getValues("lat")?.trim() ?? "";
-										const lonStr = getValues("lon")?.trim() ?? "";
-										const lat = Number.parseFloat(latStr);
-										const lon = Number.parseFloat(lonStr);
-										const currentAddress = getValues("address")?.trim() ?? "";
-
-										setIsFillingAddress(true);
-										try {
-											const result = await reverseGeocodeInstitutionByAdmin(
-												lat,
-												lon,
-											);
-											if (result) {
-												const newAddr = result.addressLine;
-												if (currentAddress && currentAddress !== newAddr) {
-													setReplaceAddressDialog({
-														open: true,
-														newAddress: newAddr,
-													});
-												} else {
-													setValue("address", newAddr);
-													toast.success("Address filled from coordinates");
-												}
-											} else {
-												toast.error("No address found for these coordinates");
-											}
-										} catch {
-											toast.error("Failed to fetch address");
-										} finally {
-											setIsFillingAddress(false);
-										}
-									}}
-								>
-									{isFillingAddress ? (
-										<Loader2 className="h-4 w-4 animate-spin" />
-									) : (
-										"Fill Address from Coords"
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
 									)}
-								</Button>
-							</div>
-						</FieldGroup>
+								</Field>
+							)}
+						/>
 
 						{/* Confirm overwrite address dialog */}
 						<Dialog
@@ -872,14 +869,15 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 							</DialogContent>
 						</Dialog>
 
-						<FieldGroup>
+						<div className="space-y-3">
 							<div className="flex flex-wrap items-center justify-between gap-2">
-								<FieldLabel>Coordinates</FieldLabel>
+								<span className="text-sm font-medium">Coordinates</span>
 								<Button
 									type="button"
 									variant="outline"
 									size="sm"
 									disabled={isRecalibrating}
+									title="Geocode from name, city, and state"
 									onClick={async () => {
 										const name = getValues("name");
 										const city = getValues("city");
@@ -913,21 +911,27 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 								>
 									{isRecalibrating ? (
 										<>
-											<Loader2 className="h-4 w-4 animate-spin" />
+											<Loader2 className="mr-2 h-4 w-4 animate-spin" />
 											Recalibrating...
 										</>
 									) : (
-										"Recalibrate"
+										<>
+											<MapPin className="mr-2 h-4 w-4" />
+											Recalibrate
+										</>
 									)}
 								</Button>
 							</div>
-							<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+							<div className="grid gap-4 sm:grid-cols-2">
 								<Controller
 									name="lat"
 									control={control}
 									render={({ field, fieldState }) => (
 										<Field>
-											<FieldLabel className="text-sm text-muted-foreground font-normal">
+											<FieldLabel
+												htmlFor="lat"
+												className="text-sm font-normal text-muted-foreground"
+											>
 												Latitude
 											</FieldLabel>
 											<Input
@@ -957,7 +961,10 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 									control={control}
 									render={({ field, fieldState }) => (
 										<Field>
-											<FieldLabel className="text-sm text-muted-foreground font-normal">
+											<FieldLabel
+												htmlFor="lon"
+												className="text-sm font-normal text-muted-foreground"
+											>
 												Longitude
 											</FieldLabel>
 											<Input
@@ -983,40 +990,152 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 									)}
 								/>
 							</div>
-						</FieldGroup>
+							<FieldDescription>
+								Paste a "lat, lon" pair from Google Maps into either field to
+								fill both.
+							</FieldDescription>
+						</div>
+					</CardContent>
+				</Card>
 
-						<FieldGroup>
+				<Card>
+					<CardHeader className="p-5 pb-4">
+						<CardTitle className="flex items-center gap-2 text-base font-semibold">
+							<Wallet className="h-4 w-4 text-muted-foreground" />
+							Payment
+						</CardTitle>
+					</CardHeader>
+					<CardContent className="space-y-5 p-5 pt-0">
+						<Controller
+							name="supportedPayment"
+							control={control}
+							render={({ field, fieldState }) => (
+								<Field>
+									<FieldLabel>Supported payment methods</FieldLabel>
+									<div className="flex flex-wrap gap-2">
+										{PAYMENT_OPTIONS.map((payment) => {
+											const checked = field.value?.includes(payment) ?? false;
+											return (
+												<label
+													key={payment}
+													htmlFor={`payment-${payment}`}
+													className={cn(
+														"flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm capitalize transition-colors",
+														checked
+															? "border-primary bg-primary/5"
+															: "hover:bg-accent hover:text-accent-foreground",
+													)}
+												>
+													<Checkbox
+														id={`payment-${payment}`}
+														checked={checked}
+														onCheckedChange={(next) => {
+															const current = field.value ?? [];
+															field.onChange(
+																next
+																	? [...current, payment]
+																	: current.filter((v) => v !== payment),
+															);
+														}}
+													/>
+													{payment}
+												</label>
+											);
+										})}
+									</div>
+									{fieldState.invalid && (
+										<FieldError errors={[fieldState.error]} />
+									)}
+								</Field>
+							)}
+						/>
+						{/* Manual QR Content field (only shown if missing) */}
+						{!institution.qrContent && (
 							<Controller
-								name="supportedPayment"
+								name="qrContent"
 								control={control}
 								render={({ field, fieldState }) => (
 									<Field>
-										<FieldLabel>Supported Payment Methods</FieldLabel>
-										<div className="flex flex-wrap gap-3 mt-2">
-											{PAYMENT_OPTIONS.map((payment) => (
-												<label
-													key={payment}
-													className="flex items-center space-x-2"
+										<FieldLabel htmlFor="qrContent">
+											Manual QR content
+										</FieldLabel>
+										<FieldDescription>
+											Automatic extraction failed. Paste the decoded QR string
+											from the panel on the right.
+										</FieldDescription>
+										<Textarea
+											{...field}
+											id="qrContent"
+											rows={3}
+											className="font-mono text-xs"
+											placeholder="00020101021126..."
+											aria-invalid={fieldState.invalid}
+										/>
+										{fieldState.invalid && (
+											<FieldError errors={[fieldState.error]} />
+										)}
+									</Field>
+								)}
+							/>
+						)}
+					</CardContent>
+				</Card>
+
+				<Card>
+					<CardHeader className="p-5 pb-4">
+						<CardTitle className="flex items-center gap-2 text-base font-semibold">
+							<Link2 className="h-4 w-4 text-muted-foreground" />
+							Links
+						</CardTitle>
+					</CardHeader>
+					<CardContent className="p-5 pt-0">
+						<div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+							<Controller
+								name="facebook"
+								control={control}
+								render={({ field, fieldState }) => (
+									<Field>
+										<FieldLabel htmlFor="facebook">Facebook</FieldLabel>
+										<div className="flex gap-2">
+											<Input
+												{...field}
+												id="facebook"
+												placeholder="https://facebook.com/..."
+												aria-invalid={fieldState.invalid}
+											/>
+											{facebookUrl ? (
+												<Button
+													type="button"
+													variant="outline"
+													size="icon"
+													className="shrink-0"
+													aria-label="Open Facebook page"
+													title="Open Facebook page"
+													onClick={() => window.open(facebookUrl, "_blank")}
 												>
-													<input
-														type="checkbox"
-														value={payment}
-														checked={field.value?.includes(payment)}
-														onChange={(e) => {
-															const valueCopy = [...(field.value || [])];
-															if (e.target.checked) {
-																field.onChange([...valueCopy, payment]);
-															} else {
-																field.onChange(
-																	valueCopy.filter((v) => v !== payment),
-																);
-															}
-														}}
-														className="rounded border-gray-300"
-													/>
-													<span className="capitalize">{payment}</span>
-												</label>
-											))}
+													<ExternalLink className="h-4 w-4" />
+												</Button>
+											) : (
+												<Button
+													type="button"
+													variant="outline"
+													size="icon"
+													className="shrink-0"
+													aria-label="Search Facebook for this institution"
+													title="Search Facebook for this institution"
+													onClick={() =>
+														window.open(
+															generateGoogleSearchUrl(
+																"facebook",
+																institution.name || "",
+															),
+															"_blank",
+														)
+													}
+												>
+													<Search className="h-4 w-4" />
+												</Button>
+											)}
 										</div>
 										{fieldState.invalid && (
 											<FieldError errors={[fieldState.error]} />
@@ -1024,278 +1143,182 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 									</Field>
 								)}
 							/>
-						</FieldGroup>
-						{/* Manual QR Content field (only shown if missing) */}
-						{!institution.qrContent && (
-							<FieldGroup>
-								<Controller
-									name="qrContent"
-									control={control}
-									render={({ field, fieldState }) => (
-										<Field>
-											<FieldLabel>Manual QR Content</FieldLabel>
-											<Textarea
+							<Controller
+								name="instagram"
+								control={control}
+								render={({ field, fieldState }) => (
+									<Field>
+										<FieldLabel htmlFor="instagram">Instagram</FieldLabel>
+										<div className="flex gap-2">
+											<Input
 												{...field}
-												id="qrContent"
-												rows={3}
-												placeholder="Paste scanned QR text here"
+												id="instagram"
+												placeholder="https://instagram.com/..."
 												aria-invalid={fieldState.invalid}
 											/>
-											{fieldState.invalid && (
-												<FieldError errors={[fieldState.error]} />
+											{instagramUrl ? (
+												<Button
+													type="button"
+													variant="outline"
+													size="icon"
+													className="shrink-0"
+													aria-label="Open Instagram profile"
+													title="Open Instagram profile"
+													onClick={() => window.open(instagramUrl, "_blank")}
+												>
+													<ExternalLink className="h-4 w-4" />
+												</Button>
+											) : (
+												<Button
+													type="button"
+													variant="outline"
+													size="icon"
+													className="shrink-0"
+													aria-label="Search Instagram for this institution"
+													title="Search Instagram for this institution"
+													onClick={() =>
+														window.open(
+															generateGoogleSearchUrl(
+																"instagram",
+																institution.name || "",
+															),
+															"_blank",
+														)
+													}
+												>
+													<Search className="h-4 w-4" />
+												</Button>
 											)}
-										</Field>
-									)}
-								/>
-							</FieldGroup>
-						)}
-					</CardContent>
-				</Card>
-
-				{/* Social Media Links Section */}
-				<Card className="p-4 mb-6 rounded-lg shadow-sm">
-					<CardHeader className="pb-4">
-						<CardTitle className="text-xl font-semibold flex items-center gap-2">
-							🔗 Social Media Links
-						</CardTitle>
-					</CardHeader>
-					<CardContent className="space-y-4">
-						<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-							<FieldGroup>
-								<Controller
-									name="facebook"
-									control={control}
-									render={({ field, fieldState }) => (
-										<Field>
-											<FieldLabel>Facebook URL</FieldLabel>
-											<div className="flex gap-2">
-												<Input
-													{...field}
-													id="facebook"
-													placeholder="https://facebook.com/..."
-													aria-invalid={fieldState.invalid}
-												/>
-												{facebookUrl ? (
-													<Button
-														type="button"
-														variant="outline"
-														size="icon"
-														onClick={() => window.open(facebookUrl, "_blank")}
-													>
-														<ExternalLink className="h-4 w-4" />
-													</Button>
-												) : (
-													<Button
-														type="button"
-														variant="outline"
-														size="icon"
-														onClick={() =>
-															window.open(
-																generateGoogleSearchUrl(
-																	"facebook",
-																	institution.name || "",
-																),
-																"_blank",
-															)
-														}
-													>
-														<Search className="h-4 w-4" />
-													</Button>
-												)}
-											</div>
-											{fieldState.invalid && (
-												<FieldError errors={[fieldState.error]} />
+										</div>
+										{fieldState.invalid && (
+											<FieldError errors={[fieldState.error]} />
+										)}
+									</Field>
+								)}
+							/>
+							<Controller
+								name="website"
+								control={control}
+								render={({ field, fieldState }) => (
+									<Field>
+										<FieldLabel htmlFor="website">Website</FieldLabel>
+										<div className="flex gap-2">
+											<Input
+												{...field}
+												id="website"
+												placeholder="https://..."
+												aria-invalid={fieldState.invalid}
+											/>
+											{websiteUrl ? (
+												<Button
+													type="button"
+													variant="outline"
+													size="icon"
+													className="shrink-0"
+													aria-label="Open website"
+													title="Open website"
+													onClick={() => window.open(websiteUrl, "_blank")}
+												>
+													<ExternalLink className="h-4 w-4" />
+												</Button>
+											) : (
+												<Button
+													type="button"
+													variant="outline"
+													size="icon"
+													className="shrink-0"
+													aria-label="Search the web for this institution"
+													title="Search the web for this institution"
+													onClick={() =>
+														window.open(
+															generateGoogleSearchUrl(
+																"website",
+																institution.name || "",
+															),
+															"_blank",
+														)
+													}
+												>
+													<Search className="h-4 w-4" />
+												</Button>
 											)}
-										</Field>
-									)}
-								/>
-							</FieldGroup>
-							<FieldGroup>
-								<Controller
-									name="instagram"
-									control={control}
-									render={({ field, fieldState }) => (
-										<Field>
-											<FieldLabel>Instagram URL</FieldLabel>
-											<div className="flex gap-2">
-												<Input
-													{...field}
-													id="instagram"
-													placeholder="https://instagram.com/..."
-													aria-invalid={fieldState.invalid}
-												/>
-												{instagramUrl ? (
-													<Button
-														type="button"
-														variant="outline"
-														size="icon"
-														onClick={() => window.open(instagramUrl, "_blank")}
-													>
-														<ExternalLink className="h-4 w-4" />
-													</Button>
-												) : (
-													<Button
-														type="button"
-														variant="outline"
-														size="icon"
-														onClick={() =>
-															window.open(
-																generateGoogleSearchUrl(
-																	"instagram",
-																	institution.name || "",
-																),
-																"_blank",
-															)
-														}
-													>
-														<Search className="h-4 w-4" />
-													</Button>
-												)}
-											</div>
-											{fieldState.invalid && (
-												<FieldError errors={[fieldState.error]} />
-											)}
-										</Field>
-									)}
-								/>
-							</FieldGroup>
-							<FieldGroup>
-								<Controller
-									name="website"
-									control={control}
-									render={({ field, fieldState }) => (
-										<Field>
-											<FieldLabel>Website URL</FieldLabel>
-											<div className="flex gap-2">
-												<Input
-													{...field}
-													id="website"
-													placeholder="https://..."
-													aria-invalid={fieldState.invalid}
-												/>
-												{websiteUrl ? (
-													<Button
-														type="button"
-														variant="outline"
-														size="icon"
-														onClick={() => window.open(websiteUrl, "_blank")}
-													>
-														<ExternalLink className="h-4 w-4" />
-													</Button>
-												) : (
-													<Button
-														type="button"
-														variant="outline"
-														size="icon"
-														onClick={() =>
-															window.open(
-																generateGoogleSearchUrl(
-																	"website",
-																	institution.name || "",
-																),
-																"_blank",
-															)
-														}
-													>
-														<Search className="h-4 w-4" />
-													</Button>
-												)}
-											</div>
-											{fieldState.invalid && (
-												<FieldError errors={[fieldState.error]} />
-											)}
-										</Field>
-									)}
-								/>
-							</FieldGroup>
+										</div>
+										{fieldState.invalid && (
+											<FieldError errors={[fieldState.error]} />
+										)}
+									</Field>
+								)}
+							/>
 						</div>
 					</CardContent>
 				</Card>
 
-				{/* Contributor Info Section */}
-				<Card className="p-4 mb-6 rounded-lg shadow-sm bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800">
-					<CardHeader className="pb-4">
-						<CardTitle className="text-xl font-semibold flex items-center gap-2">
-							👤 Contributor Information
+				<Card>
+					<CardHeader className="p-5 pb-4">
+						<CardTitle className="flex items-center gap-2 text-base font-semibold">
+							<User className="h-4 w-4 text-muted-foreground" />
+							Submission
 						</CardTitle>
 					</CardHeader>
-					<CardContent className="space-y-4">
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-							<div className="space-y-2">
-								<div className="font-medium text-muted-foreground">
-									Submitted By
-								</div>
-								<div className="p-3 bg-background rounded-md border">
-									<div className="font-medium">
-										{institution.contributorName || "Anonymous User"}
+					<CardContent className="space-y-4 p-5 pt-0">
+						<dl className="grid gap-4 sm:grid-cols-2">
+							<div className="space-y-1.5">
+								<dt className="text-sm font-medium">Submitted by</dt>
+								<dd className="rounded-md border bg-muted/40 p-3">
+									<div className="truncate text-sm font-medium">
+										{institution.contributorName || "Anonymous user"}
 									</div>
-									{/* <div className="text-sm text-muted-foreground">
-										ID: {institution.contributorId || "anonymous"}
-									</div> */}
 									{institution.contributorEmail && (
-										<div className="text-sm text-muted-foreground">
+										<div className="truncate text-xs text-muted-foreground">
 											{institution.contributorEmail}
 										</div>
 									)}
-								</div>
+								</dd>
 							</div>
-							<div className="space-y-2">
-								<div className="font-medium text-muted-foreground">
-									Submission Date
-								</div>
-								<div className="p-3 bg-background rounded-md border">
-									<div className="font-medium">{formattedSubmissionDate}</div>
-									<div className="text-sm text-muted-foreground">
+							<div className="space-y-1.5">
+								<dt className="text-sm font-medium">Submitted at</dt>
+								<dd className="rounded-md border bg-muted/40 p-3">
+									<div className="text-sm font-medium">
+										{formattedSubmissionDate}
+									</div>
+									<div className="text-xs text-muted-foreground">
 										{formattedSubmissionTime}
 									</div>
-								</div>
+								</dd>
 							</div>
+						</dl>
+						<div className="space-y-1.5">
+							<div className="text-sm font-medium">Source URL</div>
+							{institution.sourceUrl ? (
+								<a
+									href={institution.sourceUrl}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="flex items-center gap-2 rounded-md border bg-muted/40 p-3 text-sm text-primary underline-offset-4 hover:underline"
+								>
+									<span className="min-w-0 flex-1 truncate">
+										{institution.sourceUrl}
+									</span>
+									<ExternalLink className="h-4 w-4 shrink-0" />
+								</a>
+							) : (
+								<p className="rounded-md border bg-muted/40 p-3 text-sm text-muted-foreground">
+									No source URL provided
+								</p>
+							)}
 						</div>
-						<FieldGroup>
-							<Field>
-								<FieldLabel className="text-muted-foreground font-medium">
-									Source URL (if from social media)
-								</FieldLabel>
-								<div className="flex gap-2">
-									<Input
-										id="sourceUrl"
-										{...register("sourceUrl")}
-										readOnly
-										aria-readonly="true"
-										className="read-only:opacity-100 bg-background/90 border-blue-200 dark:border-blue-800 text-foreground placeholder:text-muted-foreground"
-										placeholder="No source URL provided"
-									/>
-									{institution.sourceUrl && (
-										<Button
-											type="button"
-											variant="outline"
-											size="icon"
-											onClick={() =>
-												window.open(institution.sourceUrl, "_blank")
-											}
-										>
-											<ExternalLink className="h-4 w-4" />
-										</Button>
-									)}
-								</div>
-							</Field>
-						</FieldGroup>
-						<FieldGroup>
-							<Field>
-								<FieldLabel className="text-muted-foreground font-medium">
-									Contributor Notes
-								</FieldLabel>
-								<Textarea
-									id="contributorRemarks"
-									rows={3}
-									{...register("contributorRemarks")}
-									readOnly
-									aria-readonly="true"
-									className="read-only:opacity-100 bg-background/90 border-blue-200 dark:border-blue-800 text-foreground placeholder:text-muted-foreground leading-relaxed"
-									placeholder="No additional notes provided"
-								/>
-							</Field>
-						</FieldGroup>
+						<div className="space-y-1.5">
+							<div className="text-sm font-medium">Contributor notes</div>
+							{institution.contributorRemarks?.trim() ? (
+								<p className="whitespace-pre-wrap rounded-md border bg-muted/40 p-3 text-sm leading-relaxed">
+									{institution.contributorRemarks}
+								</p>
+							) : (
+								<p className="rounded-md border bg-muted/40 p-3 text-sm text-muted-foreground">
+									No additional notes provided
+								</p>
+							)}
+						</div>
 					</CardContent>
 				</Card>
 

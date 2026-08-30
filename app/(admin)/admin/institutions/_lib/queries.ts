@@ -1,11 +1,23 @@
 "use server";
 
-import { and, count, desc, eq, ilike, sql } from "drizzle-orm";
+import {
+	and,
+	asc,
+	count,
+	desc,
+	eq,
+	ilike,
+	isNotNull,
+	ne,
+	sql,
+} from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
 import { unstable_cache } from "next/cache";
 import { db } from "@/db";
 import { institutions, users } from "@/db/schema";
 import { requireAdminSession } from "@/lib/auth-helpers";
 import { categories, states } from "@/lib/institution-constants";
+import { getPendingScopeCondition } from "./pending-scope-condition";
 
 function normalizeParam(v: string | string[] | undefined): string {
 	if (v === undefined || v === null) return "";
@@ -17,6 +29,11 @@ function normalizeParam(v: string | string[] | undefined): string {
 function escapeLike(term: string): string {
 	return term.replace(/\\/g, "\\\\").replace(/%/g, "\\%").replace(/_/g, "\\_");
 }
+
+type QrDuplicateMatch = {
+	id: number;
+	status: (typeof institutions.$inferSelect)["status"];
+};
 
 /**
  * Fetch all institutions that are currently pending approval.
@@ -32,6 +49,10 @@ const getPendingInstitutionsInternal = unstable_cache(
 				category: institutions.category,
 				state: institutions.state,
 				city: institutions.city,
+				address: institutions.address,
+				qrImage: institutions.qrImage,
+				qrContent: institutions.qrContent,
+				coords: institutions.coords,
 				contributorName: users.name,
 				contributorId: users.id,
 				sourceUrl: institutions.sourceUrl,
@@ -40,7 +61,9 @@ const getPendingInstitutionsInternal = unstable_cache(
 			.from(institutions)
 			.leftJoin(users, eq(institutions.contributorId, users.id))
 			.where(eq(institutions.status, "pending"))
-			.orderBy(desc(institutions.createdAt))
+			// FIFO, matching the canonical review order in _lib/navigation.ts. With
+			// the cap this keeps the oldest submissions, which is the work to do.
+			.orderBy(asc(institutions.createdAt), asc(institutions.id))
 			.limit(1000); // Fetch up to 1000 records for client-side pagination
 	},
 	["pending-institutions-list"],
@@ -53,6 +76,105 @@ const getPendingInstitutionsInternal = unstable_cache(
 export async function getPendingInstitutions() {
 	await requireAdminSession();
 	return getPendingInstitutionsInternal();
+}
+
+/**
+ * Map every pending institution that shares its exact qrContent with another
+ * live record onto that record's id. Same semantics as the Telegram bot's
+ * per-candidate check (raw equality, rejected records ignored, approved and
+ * pending both count), batched into one self-join so the list is not N+1.
+ */
+const getPendingQrDuplicateEntriesInternal = unstable_cache(
+	async () => {
+		const duplicate = alias(institutions, "duplicate");
+
+		const rows = await db
+			.select({
+				id: institutions.id,
+				duplicateId: duplicate.id,
+				duplicateStatus: duplicate.status,
+			})
+			.from(institutions)
+			.innerJoin(
+				duplicate,
+				and(
+					eq(duplicate.qrContent, institutions.qrContent),
+					ne(duplicate.id, institutions.id),
+					ne(duplicate.status, "rejected"),
+				),
+			)
+			.where(
+				and(
+					eq(institutions.status, "pending"),
+					isNotNull(institutions.qrContent),
+					ne(institutions.qrContent, ""),
+				),
+			);
+
+		// Entries rather than a Map because unstable_cache cannot round-trip a Map.
+		const firstMatch = new Map<number, QrDuplicateMatch>();
+		for (const row of rows) {
+			if (!firstMatch.has(row.id)) {
+				firstMatch.set(row.id, {
+					id: row.duplicateId,
+					status: row.duplicateStatus,
+				});
+			}
+		}
+		return [...firstMatch.entries()];
+	},
+	["pending-qr-duplicates"],
+	{
+		tags: ["institutions-data", "pending-institutions"],
+		revalidate: 300, // 5 minutes fallback
+	},
+);
+
+export async function getPendingQrDuplicates(): Promise<
+	Map<number, QrDuplicateMatch>
+> {
+	await requireAdminSession();
+	return new Map(await getPendingQrDuplicateEntriesInternal());
+}
+
+/**
+ * The live record a single pending institution duplicates by exact qrContent,
+ * for the banner on the review page.
+ */
+export async function getQrContentDuplicate(institutionId: number) {
+	await requireAdminSession();
+
+	const [pending] = await db
+		.select({ qrContent: institutions.qrContent })
+		.from(institutions)
+		.where(eq(institutions.id, institutionId))
+		.limit(1);
+
+	// Presence is checked on the trimmed value but matched raw, same as the bot.
+	const qrContent = pending?.qrContent;
+	if (!qrContent?.trim()) return null;
+
+	const [duplicate] = await db
+		.select({
+			id: institutions.id,
+			name: institutions.name,
+			slug: institutions.slug,
+			category: institutions.category,
+			city: institutions.city,
+			state: institutions.state,
+			status: institutions.status,
+		})
+		.from(institutions)
+		.where(
+			and(
+				eq(institutions.qrContent, qrContent),
+				ne(institutions.id, institutionId),
+				ne(institutions.status, "rejected"),
+			),
+		)
+		.limit(1);
+
+	return duplicate ?? null;
 }
 
 /**
@@ -239,27 +361,33 @@ export async function getApprovedInstitutionsPaginated(searchParams: {
 }
 
 /**
- * Get the count of pending institutions for display in sidebar badges
+ * Get the count of pending institutions for display in sidebar badges.
+ * Scoped so the badge matches the rows the pending list actually shows, which
+ * hides automated imports by default.
  */
-const getPendingInstitutionsCountInternal = unstable_cache(
-	async () => {
-		const [result] = await db
-			.select({ count: count() })
-			.from(institutions)
-			.where(eq(institutions.status, "pending"));
-
-		return result.count;
-	},
-	["pending-institutions-count"],
-	{
-		tags: ["institutions-count", "pending-institutions"],
-		revalidate: 300, // 5 minutes fallback
-	},
-);
-
-export async function getPendingInstitutionsCount() {
+export async function getPendingInstitutionsCount(includeAutomated = false) {
 	await requireAdminSession();
-	return getPendingInstitutionsCountInternal();
+
+	return unstable_cache(
+		async () => {
+			const [result] = await db
+				.select({ count: count() })
+				.from(institutions)
+				.where(
+					and(
+						eq(institutions.status, "pending"),
+						getPendingScopeCondition(includeAutomated),
+					),
+				);
+
+			return result.count;
+		},
+		["pending-institutions-count", String(includeAutomated)],
+		{
+			tags: ["institutions-count", "pending-institutions"],
+			revalidate: 300, // 5 minutes fallback
+		},
+	)();
 }
 
 /**

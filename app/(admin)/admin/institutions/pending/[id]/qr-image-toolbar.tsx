@@ -1,8 +1,8 @@
 "use client";
 
+import { Copy, Download, Maximize2, ScanQrCode } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { CopyIcon, DownloadIcon } from "@/components/shared/icons";
 import { Button } from "@/components/ui/button";
 
 interface Props {
@@ -30,43 +30,36 @@ export default function QrImageToolbar({ imageUrl }: Props) {
 	}
 
 	return (
-		<div className="flex gap-2 mt-2">
+		<div className="flex flex-wrap justify-center gap-2">
 			<Button
 				variant="outline"
 				size="icon"
 				onClick={copyImage}
 				disabled={copying}
+				aria-label="Copy image to clipboard"
 				title="Copy image to clipboard"
 			>
-				<CopyIcon width={16} height={16} />
+				<Copy className="h-4 w-4" />
 			</Button>
-			<a href={imageUrl} download target="_blank" rel="noopener noreferrer">
-				<Button variant="outline" size="icon" title="Download image">
-					<DownloadIcon width={16} height={16} />
-				</Button>
-			</a>
+			<Button
+				asChild
+				variant="outline"
+				size="icon"
+				aria-label="Download image"
+				title="Download image"
+			>
+				<a href={imageUrl} download target="_blank" rel="noopener noreferrer">
+					<Download className="h-4 w-4" />
+				</a>
+			</Button>
 			<Button
 				variant="outline"
 				size="icon"
 				onClick={() => window.open(imageUrl, "_blank")?.focus()}
-				title="Open full size"
+				aria-label="Open image full size"
+				title="Open image full size"
 			>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="16"
-					height="16"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					strokeWidth="2"
-					strokeLinecap="round"
-					strokeLinejoin="round"
-				>
-					<path d="M14 3h7v7" />
-					<path d="M3 10l11-11" />
-					<path d="M10 21H3v-7" />
-					<path d="M14 14l7 7" />
-				</svg>
+				<Maximize2 className="h-4 w-4" />
 			</Button>
 			<Button
 				variant="outline"
@@ -79,23 +72,10 @@ export default function QrImageToolbar({ imageUrl }: Props) {
 						)
 						?.focus()
 				}
-				title="Open in QRaptor"
+				aria-label="Decode with QRaptor"
+				title="Decode with QRaptor"
 			>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="16"
-					height="16"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					strokeWidth="2"
-					strokeLinecap="round"
-					strokeLinejoin="round"
-				>
-					<path d="M3 3h18v18H3z" />
-					<path d="M7 7h10v10H7z" />
-					<path d="M21 21l-6-6" />
-				</svg>
+				<ScanQrCode className="h-4 w-4" />
 			</Button>
 		</div>
 	);

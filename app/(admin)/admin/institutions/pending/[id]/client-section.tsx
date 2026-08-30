@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, ScanQrCode } from "lucide-react";
+import { AlertTriangle, Loader2, ScanQrCode } from "lucide-react";
 import NextImage from "next/image";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
@@ -11,12 +11,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { env } from "@/env";
 import type { supportedPayments } from "@/lib/institution-constants";
+import { decodeQrFromImageBlob } from "@/lib/qr-decode-browser";
 import InstitutionReviewForm, {
 	type ReviewFormHandle,
 } from "./institution-review-form";
 import QrImageToolbar from "./qr-image-toolbar";
 import QrReplacementUpload from "./qr-replacement-upload";
-import ReviewActions from "./review-actions";
+import ReviewActions, { type QrDuplicate } from "./review-actions";
 
 type Props = {
 	institution: {
@@ -38,6 +39,7 @@ type Props = {
 	position: number;
 	total: number;
 	includeAutomated: boolean;
+	duplicate: QrDuplicate | null;
 };
 
 export default function ClientSection({
@@ -47,6 +49,7 @@ export default function ClientSection({
 	position,
 	total,
 	includeAutomated,
+	duplicate,
 }: Props) {
 	const router = useRouter();
 	const formRef = useRef<ReviewFormHandle | null>(null);
@@ -56,12 +59,7 @@ export default function ClientSection({
 		router.refresh();
 	};
 
-	/**
-	 * Extract QR content from the original uploaded image and populate the form.
-	 * Decoder order: qr-scanner (first, better for small/offset QR) -> ZXing (fallback).
-	 * Known edge cases: small QR on left of poster, low contrast; qrcoderaptor.com can
-	 * decode some images that ZXing fails on (correctErrors / decodeBitMatrixParser).
-	 */
+	/** Re-extract from the stored original so an admin can fix a wrong value. */
 	const handleExtractQrFromOriginalImage = async () => {
 		if (!institution.qrImage) {
 			toast.error("No original QR image found");
@@ -75,130 +73,15 @@ export default function ClientSection({
 				throw new Error(`Image fetch failed with status ${response.status}`);
 			}
 
-			const imageBlob = await response.blob();
-			const objectUrl = URL.createObjectURL(imageBlob);
-
-			try {
-				let extractedQrContent: string | null = null;
-
-				// 1. Try qr-scanner first (better preprocessing for small/offset QR)
-				try {
-					const QrScanner = (await import("qr-scanner")).default;
-					const result = await QrScanner.scanImage(imageBlob, {
-						returnDetailedScanResult: true,
-					});
-					extractedQrContent =
-						(typeof result === "object" && result?.data
-							? result.data
-							: String(result ?? "")
-						).trim() || null;
-				} catch {
-					// Retry with 2x-scaled canvas for small QR codes (aliasing reduction)
-					try {
-						const img = new window.Image();
-						await new Promise<void>((resolve, reject) => {
-							img.onload = () => resolve();
-							img.onerror = () => reject(new Error("Failed to load image"));
-							img.src = objectUrl;
-						});
-						const canvas = document.createElement("canvas");
-						const ctx = canvas.getContext("2d");
-						const scale = 2;
-						canvas.width = img.width * scale;
-						canvas.height = img.height * scale;
-						if (ctx) {
-							ctx.imageSmoothingEnabled = true;
-							ctx.imageSmoothingQuality = "high";
-							ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-						}
-						const QrScanner = (await import("qr-scanner")).default;
-						const result = await QrScanner.scanImage(canvas, {
-							returnDetailedScanResult: true,
-						});
-						extractedQrContent =
-							(typeof result === "object" && result?.data
-								? result.data
-								: String(result ?? "")
-							).trim() || null;
-					} catch {
-						// qr-scanner failed; fall through to ZXing
-					}
-				}
-
-				// 2. Fallback: ZXing (original pipeline)
-				if (!extractedQrContent) {
-					const { BrowserQRCodeReader } = await import("@zxing/browser");
-					const reader = new BrowserQRCodeReader();
-					const image = new window.Image();
-
-					await new Promise<void>((resolve, reject) => {
-						image.onload = () => resolve();
-						image.onerror = () => reject(new Error("Failed to load image"));
-						image.src = objectUrl;
-					});
-
-					const attempts: Array<() => Promise<string | null>> = [
-						async () => {
-							const r = await reader.decodeFromImageElement(image);
-							return r?.getText()?.trim() ?? null;
-						},
-						async () => {
-							const canvas = document.createElement("canvas");
-							const ctx = canvas.getContext("2d", {
-								willReadFrequently: true,
-							});
-							canvas.width = image.width;
-							canvas.height = image.height;
-							ctx?.drawImage(image, 0, 0);
-							const r = await reader.decodeFromCanvas(canvas);
-							return r?.getText()?.trim() ?? null;
-						},
-						async () => {
-							const target = 800;
-							const w = image.width;
-							const h = image.height;
-							const scale =
-								w < target || h < target
-									? Math.max(target / w, target / h)
-									: Math.min(target / w, target / h);
-							const cw = Math.round(w * scale);
-							const ch = Math.round(h * scale);
-
-							const canvas = document.createElement("canvas");
-							const ctx = canvas.getContext("2d", {
-								willReadFrequently: true,
-							});
-							canvas.width = cw;
-							canvas.height = ch;
-							if (ctx) {
-								ctx.imageSmoothingEnabled = true;
-								ctx.imageSmoothingQuality = "high";
-								ctx.drawImage(image, 0, 0, w, h, 0, 0, cw, ch);
-							}
-							const r = await reader.decodeFromCanvas(canvas);
-							return r?.getText()?.trim() ?? null;
-						},
-					];
-
-					for (const attempt of attempts) {
-						try {
-							extractedQrContent = await attempt();
-							if (extractedQrContent) break;
-						} catch {
-							// Try next strategy
-						}
-					}
-				}
-
-				if (!extractedQrContent) {
-					throw new Error("No QR content extracted");
-				}
-
-				formRef.current?.setQrContent(extractedQrContent);
-				toast.success("QR content extracted and filled into form");
-			} finally {
-				URL.revokeObjectURL(objectUrl);
+			const extractedQrContent = await decodeQrFromImageBlob(
+				await response.blob(),
+			);
+			if (!extractedQrContent) {
+				throw new Error("No QR content extracted");
 			}
+
+			formRef.current?.setQrContent(extractedQrContent);
+			toast.success("QR content extracted and filled into form");
 		} catch (error) {
 			console.warn("QR extraction from original image failed:", error);
 			toast.error(
@@ -224,6 +107,7 @@ export default function ClientSection({
 					position={position}
 					total={total}
 					includeAutomated={includeAutomated}
+					duplicate={duplicate}
 				/>
 			</div>
 
@@ -240,13 +124,14 @@ export default function ClientSection({
 				</div>
 				<div className="lg:col-span-1">
 					{/* DuitNow QR Section */}
-					<Card className="p-4 rounded-lg shadow-sm sticky top-4">
-						<CardHeader className="pb-4">
-							<CardTitle className="text-xl font-semibold flex items-center gap-2">
-								📱 DuitNow QR Code
+					<Card className="sticky top-4">
+						<CardHeader className="p-5 pb-4">
+							<CardTitle className="flex items-center gap-2 text-base font-semibold">
+								<ScanQrCode className="h-4 w-4 text-muted-foreground" />
+								DuitNow QR
 							</CardTitle>
 						</CardHeader>
-						<CardContent className="flex flex-col items-center gap-4">
+						<CardContent className="flex flex-col items-center gap-4 p-5 pt-0">
 							{institution.qrContent ? (
 								<>
 									<div className="flex justify-center">
@@ -259,19 +144,23 @@ export default function ClientSection({
 											size={280}
 										/>
 									</div>
-									<p className="text-sm text-muted-foreground text-center">
+									<p className="text-center text-sm text-muted-foreground">
 										Scan to verify recipient name
 									</p>
-									<div className="w-full bg-muted rounded-md p-3 break-all text-xs border">
-										<div className="font-medium text-sm mb-1">QR Content:</div>
-										{institution.qrContent}
+									<div className="w-full space-y-1.5">
+										<div className="text-xs font-medium text-muted-foreground">
+											QR content
+										</div>
+										<div className="break-all rounded-md border bg-muted p-3 font-mono text-xs">
+											{institution.qrContent}
+										</div>
 									</div>
 
 									{/* Original uploaded QR image */}
 									{institution.qrImage && (
-										<div className="w-full border-t pt-4">
-											<div className="text-sm font-medium mb-2">
-												Original Uploaded Image:
+										<div className="w-full space-y-2 border-t pt-4">
+											<div className="text-xs font-medium text-muted-foreground">
+												Original upload
 											</div>
 											<div className="flex justify-center">
 												<NextImage
@@ -279,18 +168,22 @@ export default function ClientSection({
 													alt="Original QR Code Upload"
 													width={200}
 													height={200}
-													className="rounded-lg border"
+													className="rounded-md border"
 												/>
 											</div>
+											<QrImageToolbar imageUrl={institution.qrImage} />
 										</div>
 									)}
 								</>
 							) : (
-								<div className="flex flex-col items-center gap-4 w-full">
-									<div className="text-sm text-muted-foreground p-4 bg-amber-50 border border-amber-200 rounded-md text-center">
-										QR code content could not be automatically extracted. Please
-										use the tools below to manually inspect and enter the QR
-										string, or upload a new QR code image.
+								<div className="flex w-full flex-col items-center gap-4">
+									<div className="flex w-full items-start gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 p-3 text-sm">
+										<AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+										<span>
+											Could not decode this QR automatically. Inspect the image
+											with the tools below and enter the content manually, or
+											upload a replacement.
+										</span>
 									</div>
 									<div className="flex justify-center">
 										<NextImage
@@ -298,7 +191,7 @@ export default function ClientSection({
 											alt="QR Code"
 											width={280}
 											height={280}
-											className="rounded-lg border"
+											className="rounded-md border"
 										/>
 									</div>
 									<Button
@@ -316,7 +209,7 @@ export default function ClientSection({
 										) : (
 											<>
 												<ScanQrCode className="mr-2 h-4 w-4" />
-												Extract QR from Original Image
+												Extract from image
 											</>
 										)}
 									</Button>

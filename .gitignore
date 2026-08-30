@@ -17,6 +17,13 @@ yarn.lock
 /.next/
 /out/
 
+# cloudflare / opennext build output
+/.open-next/
+/.wrangler/
+
+# git worktrees kept inside the repo
+/.worktrees/
+
 # production
 /build
 

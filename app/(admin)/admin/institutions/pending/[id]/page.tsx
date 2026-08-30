@@ -13,7 +13,10 @@ import {
 	getPendingListHref,
 	shouldIncludeAutomated,
 } from "../../_lib/pending-review-scope";
-import { getPendingInstitutionById } from "../../_lib/queries";
+import {
+	getPendingInstitutionById,
+	getQrContentDuplicate,
+} from "../../_lib/queries";
 import ClientSection from "./client-section";
 
 interface Props {
@@ -34,11 +37,12 @@ export default async function PendingInstitutionReviewPage(props: Props) {
 		notFound();
 	}
 
-	const [results, prevId, nextId, positionData] = await Promise.all([
+	const [results, prevId, nextId, positionData, duplicate] = await Promise.all([
 		getPendingInstitutionById(idNum),
 		getPrevPendingInstitutionId(idNum, includeAutomated),
 		getNextPendingInstitutionId(idNum, includeAutomated),
 		getPendingInstitutionPosition(idNum, includeAutomated),
+		getQrContentDuplicate(idNum),
 	]);
 	const institution = results[0];
 
@@ -70,6 +74,7 @@ export default async function PendingInstitutionReviewPage(props: Props) {
 						position={positionData.position}
 						total={positionData.total}
 						includeAutomated={includeAutomated}
+						duplicate={duplicate}
 					/>
 				</AdminLayout>
 			</SidebarInset>

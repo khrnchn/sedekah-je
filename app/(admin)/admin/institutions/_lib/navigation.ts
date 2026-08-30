@@ -1,36 +1,16 @@
 "use server";
 
-import {
-	and,
-	asc,
-	count,
-	desc,
-	eq,
-	gt,
-	isNull,
-	like,
-	lt,
-	ne,
-	or,
-	sql,
-} from "drizzle-orm";
+import { and, asc, count, desc, eq, gt, lt, ne, or, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { institutions } from "@/db/schema";
 import { requireAdminSession } from "@/lib/auth-helpers";
-
-function getPendingScopeCondition(includeAutomated: boolean) {
-	return includeAutomated
-		? sql`true`
-		: or(
-				isNull(institutions.sourceUrl),
-				eq(institutions.sourceUrl, ""),
-				like(institutions.sourceUrl, "http%"),
-			);
-}
+import { getPendingScopeCondition } from "./pending-scope-condition";
 
 /**
- * Get the next pending institution ID in canonical order (createdAt DESC, id DESC).
- * Used for Save & Next flow. Returns null if no next pending exists.
+ * Get the next pending institution ID in canonical order (createdAt ASC, id ASC).
+ * The queue is FIFO so the oldest submission is reviewed first and nothing
+ * starves at the back. Used for Save & Next flow. Returns null if no next
+ * pending exists.
  */
 export async function getNextPendingInstitutionId(
 	currentId: number,
@@ -46,16 +26,16 @@ export async function getNextPendingInstitutionId(
 		)
 		.limit(1);
 
-	// Next row: createdAt < curr OR (createdAt = curr AND id < curr), ordered DESC
+	// Next row: createdAt > curr OR (createdAt = curr AND id > curr), ordered ASC
 	const nextCondition = current
 		? or(
-				lt(institutions.createdAt, current.createdAt),
+				gt(institutions.createdAt, current.createdAt),
 				and(
 					eq(institutions.createdAt, current.createdAt),
-					lt(institutions.id, current.id),
+					gt(institutions.id, current.id),
 				),
 			)
-		: sql`true`; // Fallback: current not pending, take first pending
+		: sql`true`; // Fallback: current not pending, take the head of the queue
 
 	const [next] = await db
 		.select({ id: institutions.id })
@@ -68,14 +48,14 @@ export async function getNextPendingInstitutionId(
 				nextCondition,
 			),
 		)
-		.orderBy(desc(institutions.createdAt), desc(institutions.id))
+		.orderBy(asc(institutions.createdAt), asc(institutions.id))
 		.limit(1);
 
 	return next?.id ?? null;
 }
 
 /**
- * Get the previous pending institution ID in canonical order (createdAt DESC, id DESC).
+ * Get the previous pending institution ID in canonical order (createdAt ASC, id ASC).
  * Returns null if no previous pending exists.
  */
 export async function getPrevPendingInstitutionId(
@@ -92,13 +72,13 @@ export async function getPrevPendingInstitutionId(
 		)
 		.limit(1);
 
-	// Prev row: createdAt > curr OR (createdAt = curr AND id > curr), ordered ASC
+	// Prev row: createdAt < curr OR (createdAt = curr AND id < curr), ordered DESC
 	const prevCondition = current
 		? or(
-				gt(institutions.createdAt, current.createdAt),
+				lt(institutions.createdAt, current.createdAt),
 				and(
 					eq(institutions.createdAt, current.createdAt),
-					gt(institutions.id, current.id),
+					lt(institutions.id, current.id),
 				),
 			)
 		: sql`false`;
@@ -114,7 +94,7 @@ export async function getPrevPendingInstitutionId(
 				prevCondition,
 			),
 		)
-		.orderBy(asc(institutions.createdAt), asc(institutions.id))
+		.orderBy(desc(institutions.createdAt), desc(institutions.id))
 		.limit(1);
 
 	return prev?.id ?? null;
@@ -139,12 +119,12 @@ export async function getNextToReviewAfterDecision(
 
 	if (!reviewed) return null;
 
-	// Prev in display order (createdAt DESC): larger createdAt or same + larger id
+	// Prev in display order (createdAt ASC): smaller createdAt or same + smaller id
 	const prevCondition = or(
-		gt(institutions.createdAt, reviewed.createdAt),
+		lt(institutions.createdAt, reviewed.createdAt),
 		and(
 			eq(institutions.createdAt, reviewed.createdAt),
-			gt(institutions.id, reviewed.id),
+			lt(institutions.id, reviewed.id),
 		),
 	);
 
@@ -158,7 +138,7 @@ export async function getNextToReviewAfterDecision(
 				prevCondition,
 			),
 		)
-		.orderBy(asc(institutions.createdAt), asc(institutions.id))
+		.orderBy(desc(institutions.createdAt), desc(institutions.id))
 		.limit(1);
 
 	return prev?.id ?? null;
@@ -188,12 +168,13 @@ export async function getPendingInstitutionPosition(
 		)
 		.limit(1);
 
+	// Everything ahead of the current row in the FIFO queue, so older first.
 	const prevCondition = current
 		? or(
-				gt(institutions.createdAt, current.createdAt),
+				lt(institutions.createdAt, current.createdAt),
 				and(
 					eq(institutions.createdAt, current.createdAt),
-					gt(institutions.id, current.id),
+					lt(institutions.id, current.id),
 				),
 			)
 		: sql`false`;

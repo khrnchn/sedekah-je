@@ -23,6 +23,8 @@ import {
 	ChevronsLeftIcon,
 	ChevronsRightIcon,
 	ColumnsIcon,
+	InboxIcon,
+	SearchIcon,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -159,6 +161,8 @@ export function ReusableDataTable<TData, TValue>({
 						<div className="w-[150px] lg:w-[250px]">
 							<Input
 								placeholder={searchPlaceholder}
+								aria-label={searchPlaceholder}
+								startIcon={SearchIcon}
 								value={
 									onSearchChange
 										? (controlledSearchValue ?? "")
@@ -205,7 +209,7 @@ export function ReusableDataTable<TData, TValue>({
 													column.toggleVisibility(!!value)
 												}
 											>
-												{column.id}
+												{column.id.replace(/([A-Z])/g, " $1").trim()}
 											</DropdownMenuCheckboxItem>
 										);
 									})}
@@ -262,12 +266,12 @@ export function ReusableDataTable<TData, TValue>({
 								</TableRow>
 							))
 						) : (
-							<TableRow>
-								<TableCell
-									colSpan={columns.length}
-									className="h-24 text-center"
-								>
-									{emptyStateMessage}
+							<TableRow className="hover:bg-transparent">
+								<TableCell colSpan={columns.length} className="h-40">
+									<div className="flex flex-col items-center justify-center gap-3 text-muted-foreground">
+										<InboxIcon className="h-8 w-8 opacity-40" />
+										<p className="text-sm">{emptyStateMessage}</p>
+									</div>
 								</TableCell>
 							</TableRow>
 						)}
@@ -277,8 +281,9 @@ export function ReusableDataTable<TData, TValue>({
 			{enablePagination && (
 				<div className="flex items-center justify-between px-2">
 					<div className="flex-1 text-sm text-muted-foreground">
-						{table.getFilteredSelectedRowModel().rows.length} of{" "}
-						{table.getFilteredRowModel().rows.length} row(s) selected.
+						{enableRowSelection
+							? `${table.getFilteredSelectedRowModel().rows.length} of ${table.getFilteredRowModel().rows.length} row(s) selected.`
+							: null}
 					</div>
 					<div className="flex items-center space-x-6 lg:space-x-8">
 						<div className="flex items-center space-x-2">
