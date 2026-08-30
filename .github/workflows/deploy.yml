@@ -44,7 +44,9 @@ jobs:
       - name: Run tests
         run: |
           bun test
-          python3 -m unittest scripts/ssm_to_compose_env_test.py
+          python3 -m unittest \
+            scripts/deploy_ec2_test.py \
+            scripts/ssm_to_compose_env_test.py
         env:
           NODE_ENV: test
 
@@ -266,11 +268,15 @@ jobs:
 
       - name: Deploy and wait for readiness
         shell: bash
+        env:
+          GHCR_PULL_USERNAME: ${{ github.actor }}
+          GHCR_PULL_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -Eeuo pipefail
           image_reference="$IMAGE@$IMAGE_DIGEST"
-          ssh -i "$HOME/.ssh/ec2_key" -o BatchMode=yes -o StrictHostKeyChecking=yes "$EC2_USER@$EC2_HOST" \
-            "sudo '$EC2_APP_DIR/scripts/deploy-ec2.sh' '$AWS_REGION' '$SSM_PARAMETER_PATH' '$image_reference'"
+          printf '%s\n' "$GHCR_PULL_TOKEN" | \
+            ssh -i "$HOME/.ssh/ec2_key" -o BatchMode=yes -o StrictHostKeyChecking=yes "$EC2_USER@$EC2_HOST" \
+              "sudo env GHCR_PULL_USERNAME='$GHCR_PULL_USERNAME' '$EC2_APP_DIR/scripts/deploy-ec2.sh' '$AWS_REGION' '$SSM_PARAMETER_PATH' '$image_reference'"
 
       - name: Verify public reverse-proxy path
         if: env.HEALTH_URL != ''

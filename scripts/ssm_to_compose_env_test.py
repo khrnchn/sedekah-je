@@ -5,7 +5,12 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from scripts.ssm_to_compose_env import convert, load_parameters, validate_values
+from scripts.ssm_to_compose_env import (
+    convert,
+    load_parameters,
+    quote_for_compose,
+    validate_values,
+)
 
 IMAGE = "ghcr.io/khrnchn/sedekah-je@sha256:" + ("a" * 64)
 
@@ -15,7 +20,7 @@ def valid_values() -> dict[str, str]:
         "DATABASE_URL": "postgresql://user:password@db.example.test/database",
         "R2_ENDPOINT": "https://account.r2.cloudflarestorage.com",
         "R2_ACCESS_KEY_ID": "access-key",
-        "R2_SECRET_ACCESS_KEY": "secret with $dollar #hash and 'quote'",
+        "R2_SECRET_ACCESS_KEY": "secret with $dollar #hash, backslash \\ and 'quote'",
         "R2_BUCKET_NAME": "bucket",
         "R2_PUBLIC_URL": "https://uploads.example.test",
         "BETTER_AUTH_SECRET": "x" * 32,
@@ -41,11 +46,14 @@ class SsmToComposeEnvTests(unittest.TestCase):
     def test_converts_valid_values_with_literal_compose_quoting(self) -> None:
         rendered = convert(payload(valid_values()), IMAGE)
 
-        self.assertIn(f"SEDEKAHJE_IMAGE='{IMAGE}'\n", rendered)
+        self.assertIn(f'SEDEKAHJE_IMAGE="{IMAGE}"\n', rendered)
         self.assertIn(
-            "R2_SECRET_ACCESS_KEY='secret with $dollar #hash and \\'quote\\''\n",
+            'R2_SECRET_ACCESS_KEY="secret with $$dollar #hash, backslash \\\\ and \'quote\'"\n',
             rendered,
         )
+
+    def test_compose_quoting_does_not_mutate_literal_backslashes(self) -> None:
+        self.assertEqual(quote_for_compose("a\\b"), '"a\\\\b"')
 
     def test_rejects_missing_required_values(self) -> None:
         values = valid_values()
@@ -96,32 +104,46 @@ class SsmToComposeEnvTests(unittest.TestCase):
     @unittest.skipUnless(shutil.which("docker"), "Docker is not installed")
     def test_rendered_file_preserves_special_characters_in_compose(self) -> None:
         repository_root = Path(__file__).resolve().parent.parent
-        expected = valid_values()["R2_SECRET_ACCESS_KEY"]
-        with tempfile.NamedTemporaryFile("w", encoding="utf-8") as env_file:
-            env_file.write(convert(payload(valid_values()), IMAGE))
-            env_file.flush()
-            result = subprocess.run(
-                [
-                    "docker",
-                    "compose",
-                    "--env-file",
-                    env_file.name,
-                    "--file",
-                    str(repository_root / "compose.yaml"),
-                    "config",
-                    "--format",
-                    "json",
-                ],
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-
-        configuration = json.loads(result.stdout)
-        self.assertEqual(
-            configuration["services"]["app"]["environment"]["R2_SECRET_ACCESS_KEY"],
-            expected.replace("$", "$$"),
+        special_values = (
+            "plain",
+            "a\\b",
+            "trailing\\",
+            "quote'and\\",
+            "backslash-before-quote\\'",
+            "dollar$hash#space value",
         )
+
+        for expected in special_values:
+            with self.subTest(expected=expected):
+                values = valid_values()
+                values["R2_SECRET_ACCESS_KEY"] = expected
+                with tempfile.NamedTemporaryFile("w", encoding="utf-8") as env_file:
+                    env_file.write(convert(payload(values), IMAGE))
+                    env_file.flush()
+                    result = subprocess.run(
+                        [
+                            "docker",
+                            "compose",
+                            "--env-file",
+                            env_file.name,
+                            "--file",
+                            str(repository_root / "compose.yaml"),
+                            "config",
+                            "--format",
+                            "json",
+                        ],
+                        check=True,
+                        capture_output=True,
+                        text=True,
+                    )
+
+                configuration = json.loads(result.stdout)
+                self.assertEqual(
+                    configuration["services"]["app"]["environment"][
+                        "R2_SECRET_ACCESS_KEY"
+                    ],
+                    expected.replace("$", "$$"),
+                )
 
 
 if __name__ == "__main__":

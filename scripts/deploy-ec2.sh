@@ -14,6 +14,7 @@ fi
 aws_region=$1
 ssm_parameter_path=$2
 image_reference=$3
+ghcr_username=${GHCR_PULL_USERNAME:-}
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 app_dir=$(cd -- "$script_dir/.." && pwd)
 compose_file="$app_dir/compose.yaml"
@@ -29,6 +30,10 @@ previous_compose_file="$app_dir/compose.yaml.previous"
 }
 [[ $image_reference =~ ^ghcr\.io/[a-z0-9._/-]+@sha256:[0-9a-f]{64}$ ]] || {
 	echo "The image must be an immutable lowercase GHCR digest reference." >&2
+	exit 64
+}
+[[ $ghcr_username =~ ^[A-Za-z0-9-]{1,39}$ ]] || {
+	echo "GHCR_PULL_USERNAME must be a valid GitHub username." >&2
 	exit 64
 }
 [[ -f $compose_file ]] || {
@@ -49,18 +54,30 @@ import re
 import sys
 
 match = re.match(r"^(\d+)\.(\d+)\.(\d+)", sys.argv[1])
-if not match or tuple(map(int, match.groups())) < (2, 20, 2):
-    raise SystemExit("Docker Compose 2.20.2 or newer is required.")
+if not match or tuple(map(int, match.groups())) < (2, 26, 0):
+    raise SystemExit("Docker Compose 2.26.0 or newer is required.")
 PY
 
 umask 077
 parameters_json=$(mktemp /tmp/sedekah-je-ssm.XXXXXX.json)
 runtime_env=$(mktemp /tmp/sedekah-je-env.XXXXXX)
+docker_config=$(mktemp -d /tmp/sedekah-je-docker.XXXXXX)
 
 cleanup() {
 	rm -f -- "$parameters_json" "$runtime_env"
+	rm -rf -- "$docker_config"
 }
 trap cleanup EXIT
+
+if ! IFS= read -r ghcr_token || [[ -z $ghcr_token ]]; then
+	echo "A GHCR pull token must be provided on standard input." >&2
+	exit 64
+fi
+
+export DOCKER_CONFIG=$docker_config
+printf '%s\n' "$ghcr_token" |
+	docker login ghcr.io --username "$ghcr_username" --password-stdin >/dev/null
+unset ghcr_token
 
 aws ssm get-parameters-by-path \
 	--region "$aws_region" \

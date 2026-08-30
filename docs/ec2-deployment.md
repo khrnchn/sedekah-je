@@ -62,7 +62,7 @@ Reference: [Supabase database connection methods](https://supabase.com/docs/guid
 
 ## Host prerequisites
 
-- A supported Docker Engine installation with Docker Compose v2.20.2 or newer.
+- A supported Docker Engine installation with Docker Compose v2.26.0 or newer.
 - AWS CLI v2 and Python 3 available to root (the deployment script runs through
   `sudo`).
 - The existing Nginx reverse proxy configured to forward `sedekah.je` to
@@ -196,8 +196,13 @@ SSM_PARAMETER_PATH                     # optional; defaults to /sedekah-je/prod
 
 Capture `EC2_SSH_HOST_KEY` through a trusted EC2 console or another authenticated
 channel. Do not populate it from an unauthenticated `ssh-keyscan` during the
-workflow. Make the repository's GHCR package readable by the EC2 host (public for
-this public project, or configure a read-only registry credential separately).
+workflow. The deploy job's short-lived `GITHUB_TOKEN` has only `packages: read`
+and is authorized for the package linked to this repository. The workflow sends
+it over SSH standard input, uses it only in a mode-`0700` temporary Docker
+configuration, and removes the configuration on every exit; it is never passed
+as a process argument or persisted in root's normal Docker configuration. This
+avoids a long-lived host PAT. Reference:
+[GitHub Container registry authentication](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry).
 
 The GitHub AWS role must trust this repository's `production` environment OIDC
 subject and have only the security-group permissions used by the workflow. The
@@ -248,9 +253,10 @@ None of these changes are made by the repository or its workflow.
   `production` environment subject. Permit only the target security group's
   ingress authorization/revocation required for temporary runner `/32` SSH
   access. Do not create long-lived AWS access keys.
-- [ ] **GHCR:** confirm the EC2 can pull the repository package without a
-  write-capable credential. Use a public package for this public repository or a
-  separately provisioned read-only token.
+- [ ] **GHCR:** retain `packages: read` on the deploy job and confirm the first
+  published package stays linked to this repository, so its short-lived
+  `GITHUB_TOKEN` can pull it. The workflow does not rely on anonymous access or a
+  persistent EC2 registry login.
 - [ ] **Nginx and origin TLS:** install and enable the Sedekah.je site below,
   provision a matching origin certificate, run `sudo nginx -t`, and reload only
   after validation. It is acceptable for the upstream to return 502 until the

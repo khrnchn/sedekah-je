@@ -83,7 +83,9 @@ def validate_values(values: dict[str, str]) -> None:
 
 
 def quote_for_compose(value: str) -> str:
-    return "'" + value.replace("\\", "\\\\").replace("'", "\\'") + "'"
+    # Compose processes JSON-style escapes in double-quoted env-file values.
+    # Protect dollars from interpolation before encoding quotes/backslashes.
+    return json.dumps(value.replace("$", "$$"), ensure_ascii=False)
 
 
 def convert(payload: object, image_reference: str) -> str:
