@@ -57,7 +57,19 @@ ENV NODE_ENV=production \
 	HOSTNAME=0.0.0.0 \
 	PORT=3000
 
-RUN addgroup --gid 1001 --system nodejs \
+# Package managers are build tools. Removing them from the runtime image reduces
+# attack surface; the standalone server only needs the Node executable.
+RUN apk upgrade --no-cache \
+	&& rm -rf -- \
+		/usr/local/lib/node_modules/npm \
+		/usr/local/lib/node_modules/corepack \
+		/usr/local/bin/npm \
+		/usr/local/bin/npx \
+		/usr/local/bin/corepack \
+		/usr/local/bin/yarn \
+		/usr/local/bin/yarnpkg \
+		/opt/yarn-v1.22.22 \
+	&& addgroup --gid 1001 --system nodejs \
 	&& adduser --uid 1001 --system --ingroup nodejs --home /app nextjs
 
 # Next.js standalone output contains the traced runtime dependencies. Static

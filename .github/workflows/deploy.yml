@@ -92,6 +92,7 @@ jobs:
           context: .
           platforms: linux/amd64
           push: ${{ github.event_name != 'pull_request' }}
+          load: ${{ github.event_name == 'pull_request' }}
           tags: |
             ${{ env.IMAGE }}:${{ github.sha }}
             ${{ github.ref == 'refs/heads/main' && format('{0}:latest', env.IMAGE) || '' }}
@@ -107,9 +108,47 @@ jobs:
           provenance: mode=max
           sbom: true
 
+      - name: Scan pull request image for vulnerabilities
+        if: github.event_name == 'pull_request'
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
+        with:
+          image-ref: ${{ env.IMAGE }}:${{ github.sha }}
+          format: table
+          exit-code: "1"
+          ignore-unfixed: "false"
+          vuln-type: os,library
+          severity: CRITICAL,HIGH
+
+  security:
+    name: Scan published image
+    needs: container
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Log in to GHCR
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Scan immutable image for vulnerabilities
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
+        with:
+          image-ref: ${{ env.IMAGE }}@${{ needs.container.outputs.digest }}
+          format: table
+          exit-code: "1"
+          ignore-unfixed: "false"
+          vuln-type: os,library
+          severity: CRITICAL,HIGH
+
   deploy:
     name: Deploy production digest
-    needs: container
+    needs: [container, security]
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 20
