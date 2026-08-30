@@ -105,8 +105,11 @@ jobs:
             NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${{ vars.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          provenance: mode=max
-          sbom: true
+          # Docker's local image exporter cannot load the manifest list created
+          # by attestations. Published images retain both attestations; PR builds
+          # load a single local image so Trivy can scan it before merge.
+          provenance: ${{ github.event_name == 'pull_request' && 'false' || 'mode=max' }}
+          sbom: ${{ github.event_name != 'pull_request' }}
 
       - name: Scan pull request image for vulnerabilities
         if: github.event_name == 'pull_request'
@@ -170,7 +173,7 @@ jobs:
       EC2_SSH_HOST_KEY: ${{ secrets.EC2_SSH_HOST_KEY }}
       SSM_PARAMETER_PATH: ${{ secrets.SSM_PARAMETER_PATH || '/sedekah-je/prod' }}
       IMAGE_DIGEST: ${{ needs.container.outputs.digest }}
-      HEALTH_URL: ${{ vars.HEALTH_URL || 'https://sedekah.je/api/health' }}
+      HEALTH_URL: ${{ vars.HEALTH_URL }}
     steps:
       - name: Check out deployment files
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -270,9 +273,11 @@ jobs:
             "sudo '$EC2_APP_DIR/scripts/deploy-ec2.sh' '$AWS_REGION' '$SSM_PARAMETER_PATH' '$image_reference'"
 
       - name: Verify public reverse-proxy path
+        if: env.HEALTH_URL != ''
         shell: bash
         run: |
           set -Eeuo pipefail
+          [[ $HEALTH_URL == https://* ]]
           curl --fail --silent --show-error \
             --retry 12 --retry-delay 5 --retry-all-errors --max-time 10 --proto '=https' \
             "$HEALTH_URL" >/dev/null
