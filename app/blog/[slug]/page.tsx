@@ -5,20 +5,16 @@ import { notFound } from "next/navigation";
 import { BlogRenderer } from "@/components/blog/blog-renderer";
 import { Header } from "@/components/shared/header";
 import { isValidBlogDocument } from "@/lib/blog";
-import {
-	getPublishedBlogBySlug,
-	getPublishedBlogSlugs,
-} from "@/lib/queries/blog";
+import { getPublishedBlogBySlug } from "@/lib/queries/blog";
 import { formatDate } from "@/lib/utils";
 
 type Props = {
 	params: Promise<{ slug: string }>;
 };
 
-export async function generateStaticParams() {
-	const slugs = await getPublishedBlogSlugs();
-	return slugs.map((slug) => ({ slug }));
-}
+// Published posts change independently of an image release. Resolve them at
+// request time so builds never need database access or embed stale post data.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
 	const { slug } = await params;

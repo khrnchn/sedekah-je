@@ -1,27 +1,98 @@
+name: sedekah-je
+
 services:
   app:
-    image: ghcr.io/khrnchn/sedekah-je:latest
-    container_name: sedekahje
+    image: ${SEDEKAHJE_IMAGE:?Set SEDEKAHJE_IMAGE to an immutable tag or digest}
+    init: true
     restart: unless-stopped
-    # Only exposed to the host; the existing reverse proxy fronts it.
+    pull_policy: always
     ports:
-      - "127.0.0.1:3001:3000"
-    env_file:
-      - .env
-    deploy:
-      resources:
-        limits:
-          # This box also runs getdoa. Cap us so a leak here cannot starve it.
-          memory: 2G
-          cpus: "1.2"
+      - name: http
+        target: 3000
+        published: "${SEDEKAHJE_PORT:-3001}"
+        host_ip: "${SEDEKAHJE_BIND_ADDRESS:-127.0.0.1}"
+        protocol: tcp
+        app_protocol: http
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:?Set NEXT_PUBLIC_APP_URL}
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL}
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:?Set BETTER_AUTH_SECRET}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:?Set BETTER_AUTH_URL}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:?Set GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:?Set GOOGLE_CLIENT_SECRET}
+      R2_ENDPOINT: ${R2_ENDPOINT:?Set R2_ENDPOINT}
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID:?Set R2_ACCESS_KEY_ID}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY:?Set R2_SECRET_ACCESS_KEY}
+      R2_BUCKET_NAME: ${R2_BUCKET_NAME:?Set R2_BUCKET_NAME}
+      R2_PUBLIC_URL: ${R2_PUBLIC_URL:?Set R2_PUBLIC_URL}
+      CLOUDFLARE_TURNSTILE_SECRET_KEY: ${CLOUDFLARE_TURNSTILE_SECRET_KEY:?Set CLOUDFLARE_TURNSTILE_SECRET_KEY}
+      NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY: ${NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY:?Set NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY}
+      NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${NEXT_PUBLIC_GOOGLE_MAPS_API_KEY:-}
+      SUPABASE_URL: ${SUPABASE_URL:-}
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:-}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY:-}
+      MAILERSEND_API_KEY: ${MAILERSEND_API_KEY:-}
+      MAILERSEND_FROM_EMAIL: ${MAILERSEND_FROM_EMAIL:-}
+      MAILERSEND_FROM_NAME: ${MAILERSEND_FROM_NAME:-}
+      MAILERSEND_APPROVAL_TEMPLATE_ID: ${MAILERSEND_APPROVAL_TEMPLATE_ID:-}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+      TELEGRAM_WEBHOOK_SECRET: ${TELEGRAM_WEBHOOK_SECRET:-}
+      TELEGRAM_REVIEWER_USER_ID: ${TELEGRAM_REVIEWER_USER_ID:-}
+      TELEGRAM_ADMIN_BASE_URL: ${TELEGRAM_ADMIN_BASE_URL:-}
+      GOOGLE_GEOCODING_API_KEY: ${GOOGLE_GEOCODING_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      BULK_IMPORT_CONTRIBUTOR_ID: ${BULK_IMPORT_CONTRIBUTOR_ID:-}
+      UMAMI_DATABASE_URL: ${UMAMI_DATABASE_URL:-}
+      META_CALLBACK_BASE: ${META_CALLBACK_BASE:-}
+      THREADS_API_CLIENT_ID: ${THREADS_API_CLIENT_ID:-}
+      THREADS_API_CLIENT_SECRET: ${THREADS_API_CLIENT_SECRET:-}
+      THREADS_APP_SECRET: ${THREADS_APP_SECRET:-}
+      THREADS_USER_ID: ${THREADS_USER_ID:-}
+      THREADS_ACCESS_TOKEN: ${THREADS_ACCESS_TOKEN:-}
+      THREADS_EXPIRES_IN: ${THREADS_EXPIRES_IN:-}
+      EXTENSION_ID: ${EXTENSION_ID:-}
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m,uid=1001,gid=1001
+    volumes:
+      - next_cache:/app/.next/cache
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 256
+    cpus: "${SEDEKAHJE_CPU_LIMIT:-1.0}"
+    mem_limit: ${SEDEKAHJE_MEMORY_LIMIT:-1536m}
+    stop_grace_period: 30s
     logging:
       driver: json-file
       options:
         max-size: "10m"
         max-file: "3"
     healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/institutions').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      test:
+        - CMD
+        - node
+        - -e
+        - >-
+          fetch('http://127.0.0.1:3000/api/health',
+          {signal:AbortSignal.timeout(4000)}).then((response)=>process.exit(response.ok?0:1)).catch(()=>process.exit(1))
       interval: 30s
-      timeout: 10s
+      timeout: 5s
       start_period: 40s
+      start_interval: 5s
       retries: 3
+    networks:
+      - sedekahje-network
+
+volumes:
+  next_cache:
+
+networks:
+  sedekahje-network:
+    name: sedekahje-network
+    driver: bridge

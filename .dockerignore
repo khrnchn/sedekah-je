@@ -1,11 +1,17 @@
 node_modules
 .next
 .open-next
+.turbo
+coverage
+*.log
 .git
 .github
 .worktrees
 .env
 .env.*
+.DS_Store
+.idea
+.vscode
 .dev.vars
 .impeccable
 .playwright-mcp

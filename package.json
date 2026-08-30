@@ -2,8 +2,12 @@
 	"name": "sedekah-je",
 	"version": "0.1.0",
 	"private": true,
+	"packageManager": "bun@1.4.0",
+	"engines": {
+		"node": ">=24 <25"
+	},
 	"scripts": {
-		"preinstall": "npx only-allow bun",
+		"preinstall": "bunx only-allow bun",
 		"dev": "next dev --turbopack",
 		"build": "next build --webpack",
 		"start": "next start",
@@ -11,7 +15,7 @@
 		"format": "biome format --write",
 		"check": "biome check .",
 		"type-check": "next typegen && tsc --noEmit",
-		"test": "bun test",
+		"test": "NODE_ENV=test bun test",
 		"artisan:plop": "NODE_OPTIONS='--import tsx' plop --plopfile=plopfile.ts",
 		"db:seed": "bun db/main.ts",
 		"db:truncate": "bun db/truncate.ts",
