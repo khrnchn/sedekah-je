@@ -1,0 +1,302 @@
+name: CI and production deploy
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: sedekah-je-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  IMAGE: ghcr.io/${{ github.repository }}
+  BUN_VERSION: 1.4.0
+
+jobs:
+  verify:
+    name: Verify application
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: ${{ env.BUN_VERSION }}
+
+      - name: Install locked dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Check formatting and lint rules
+        run: bun run check
+
+      - name: Check types
+        run: bun run type-check
+
+      - name: Run tests
+        run: |
+          bun test
+          python3 -m unittest \
+            scripts/deploy_ec2_test.py \
+            scripts/ssm_to_compose_env_test.py
+        env:
+          NODE_ENV: test
+
+  container:
+    name: Build production image
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@37fe631027851001ddb9b187196cc803df7f5f0e # v4.3.0
+
+      - name: Validate production public build configuration
+        if: github.event_name != 'pull_request'
+        env:
+          NEXT_PUBLIC_APP_URL: ${{ vars.NEXT_PUBLIC_APP_URL }}
+          NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY: ${{ vars.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY }}
+        run: |
+          set -Eeuo pipefail
+          [[ -n $NEXT_PUBLIC_APP_URL ]]
+          [[ -n $NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY ]]
+
+      - name: Log in to GHCR
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and publish immutable image
+        id: build
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        with:
+          context: .
+          platforms: linux/amd64
+          push: ${{ github.event_name != 'pull_request' }}
+          load: ${{ github.event_name == 'pull_request' }}
+          tags: |
+            ${{ env.IMAGE }}:${{ github.sha }}
+            ${{ github.ref == 'refs/heads/main' && format('{0}:latest', env.IMAGE) || '' }}
+          labels: |
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+          build-args: |
+            NEXT_PUBLIC_APP_URL=${{ vars.NEXT_PUBLIC_APP_URL || 'http://localhost:3000' }}
+            NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY=${{ vars.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY || 'build-only-site-key' }}
+            NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${{ vars.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          # Docker's local image exporter cannot load the manifest list created
+          # by attestations. Published images retain both attestations; PR builds
+          # load a single local image so Trivy can scan it before merge.
+          provenance: ${{ github.event_name == 'pull_request' && 'false' || 'mode=max' }}
+          sbom: ${{ github.event_name != 'pull_request' }}
+
+      - name: Scan pull request image for vulnerabilities
+        if: github.event_name == 'pull_request'
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
+        with:
+          image-ref: ${{ env.IMAGE }}:${{ github.sha }}
+          format: table
+          exit-code: "1"
+          ignore-unfixed: "false"
+          vuln-type: os,library
+          severity: CRITICAL,HIGH
+
+  security:
+    name: Scan published image
+    needs: container
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - name: Log in to GHCR
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Scan immutable image for vulnerabilities
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
+        with:
+          image-ref: ${{ env.IMAGE }}@${{ needs.container.outputs.digest }}
+          format: table
+          exit-code: "1"
+          ignore-unfixed: "false"
+          vuln-type: os,library
+          severity: CRITICAL,HIGH
+
+  deploy:
+    name: Deploy production digest
+    needs: [container, security]
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: production
+      url: ${{ vars.HEALTH_URL || 'https://sedekah.je/api/health' }}
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+      AWS_INSTANCE_SG_ID: ${{ secrets.AWS_INSTANCE_SG_ID }}
+      EC2_HOST: ${{ secrets.EC2_HOST }}
+      EC2_USER: ${{ secrets.EC2_USER || 'ubuntu' }}
+      EC2_APP_DIR: ${{ secrets.EC2_APP_DIR || '/home/ubuntu/sedekah-je' }}
+      EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+      EC2_SSH_HOST_KEY: ${{ secrets.EC2_SSH_HOST_KEY }}
+      SSM_PARAMETER_PATH: ${{ secrets.SSM_PARAMETER_PATH || '/sedekah-je/prod' }}
+      IMAGE_DIGEST: ${{ needs.container.outputs.digest }}
+      HEALTH_URL: ${{ vars.HEALTH_URL }}
+    steps:
+      - name: Check out deployment files
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Validate deployment inputs
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          required=(
+            AWS_REGION AWS_ROLE_TO_ASSUME AWS_INSTANCE_SG_ID EC2_HOST EC2_USER
+            EC2_APP_DIR EC2_SSH_KEY EC2_SSH_HOST_KEY SSM_PARAMETER_PATH IMAGE_DIGEST
+          )
+          for key in "${required[@]}"; do
+            if [[ -z ${!key} ]]; then
+              echo "Missing deployment input: $key" >&2
+              exit 1
+            fi
+          done
+          [[ $EC2_USER =~ ^[a-z_][a-z0-9_-]*$ ]]
+          [[ $EC2_APP_DIR =~ ^/[A-Za-z0-9._/-]+$ ]]
+          [[ $EC2_APP_DIR == */sedekah-je && $EC2_APP_DIR != *'/../'* ]]
+          [[ $SSM_PARAMETER_PATH =~ ^/[A-Za-z0-9_.~/-]+$ ]]
+          [[ $IMAGE_DIGEST =~ ^sha256:[0-9a-f]{64}$ ]]
+
+      - name: Configure short-lived AWS credentials
+        uses: aws-actions/configure-aws-credentials@e6de054238d6b7531b4efff3b6587d9aade6a06c # v6.2.3
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Resolve runner IPv4
+        id: runner-ip
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          runner_ip=$(curl --fail --silent --show-error --retry 3 --proto '=https' https://checkip.amazonaws.com | tr -d '[:space:]')
+          RUNNER_IP=$runner_ip python3 - <<'PY'
+          import ipaddress
+          import os
+
+          address = ipaddress.ip_address(os.environ["RUNNER_IP"])
+          if address.version != 4:
+              raise SystemExit("The GitHub runner did not resolve to IPv4.")
+          PY
+          echo "ipv4=$runner_ip" >> "$GITHUB_OUTPUT"
+
+      - name: Temporarily allow runner SSH
+        id: ingress
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          cidr="${{ steps.runner-ip.outputs.ipv4 }}/32"
+          if output=$(aws ec2 authorize-security-group-ingress \
+            --group-id "$AWS_INSTANCE_SG_ID" \
+            --ip-permissions "IpProtocol=tcp,FromPort=22,ToPort=22,IpRanges=[{CidrIp=$cidr,Description='sedekah-je GitHub deploy'}]" 2>&1); then
+            echo "added=true" >> "$GITHUB_OUTPUT"
+          elif grep -q 'InvalidPermission.Duplicate' <<< "$output"; then
+            echo "The runner CIDR was already allowed; leaving the existing rule untouched."
+            echo "added=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "$output" >&2
+            exit 1
+          fi
+
+      - name: Configure verified SSH host key
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          install -d -m 700 "$HOME/.ssh"
+          install -m 600 /dev/null "$HOME/.ssh/ec2_key"
+          printf '%s\n' "$EC2_SSH_KEY" > "$HOME/.ssh/ec2_key"
+          install -m 600 /dev/null "$HOME/.ssh/known_hosts"
+          printf '%s\n' "$EC2_SSH_HOST_KEY" > "$HOME/.ssh/known_hosts"
+          ssh-keygen -y -f "$HOME/.ssh/ec2_key" >/dev/null
+          ssh-keygen -F "$EC2_HOST" -f "$HOME/.ssh/known_hosts" >/dev/null
+
+      - name: Transfer versioned deployment files
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          ssh=(ssh -i "$HOME/.ssh/ec2_key" -o BatchMode=yes -o StrictHostKeyChecking=yes "$EC2_USER@$EC2_HOST")
+          scp=(scp -i "$HOME/.ssh/ec2_key" -o BatchMode=yes -o StrictHostKeyChecking=yes)
+          "${ssh[@]}" "sudo install -d -o '$EC2_USER' -g '$EC2_USER' -m 0750 '$EC2_APP_DIR' '$EC2_APP_DIR/scripts'"
+          "${scp[@]}" compose.yaml "$EC2_USER@$EC2_HOST:$EC2_APP_DIR/compose.yaml.next"
+          "${scp[@]}" scripts/deploy-ec2.sh "$EC2_USER@$EC2_HOST:$EC2_APP_DIR/scripts/deploy-ec2.sh.next"
+          "${scp[@]}" scripts/ssm_to_compose_env.py "$EC2_USER@$EC2_HOST:$EC2_APP_DIR/scripts/ssm_to_compose_env.py.next"
+          "${ssh[@]}" "chmod 0750 '$EC2_APP_DIR/scripts/deploy-ec2.sh.next' && chmod 0640 '$EC2_APP_DIR/compose.yaml.next' '$EC2_APP_DIR/scripts/ssm_to_compose_env.py.next' && if [ -f '$EC2_APP_DIR/compose.yaml' ]; then cp -p '$EC2_APP_DIR/compose.yaml' '$EC2_APP_DIR/compose.yaml.previous'; fi && mv '$EC2_APP_DIR/compose.yaml.next' '$EC2_APP_DIR/compose.yaml' && mv '$EC2_APP_DIR/scripts/deploy-ec2.sh.next' '$EC2_APP_DIR/scripts/deploy-ec2.sh' && mv '$EC2_APP_DIR/scripts/ssm_to_compose_env.py.next' '$EC2_APP_DIR/scripts/ssm_to_compose_env.py'"
+
+      - name: Deploy and wait for readiness
+        shell: bash
+        env:
+          GHCR_PULL_USERNAME: ${{ github.actor }}
+          GHCR_PULL_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -Eeuo pipefail
+          image_reference="$IMAGE@$IMAGE_DIGEST"
+          printf '%s\n' "$GHCR_PULL_TOKEN" | \
+            ssh -i "$HOME/.ssh/ec2_key" -o BatchMode=yes -o StrictHostKeyChecking=yes "$EC2_USER@$EC2_HOST" \
+              "sudo env GHCR_PULL_USERNAME='$GHCR_PULL_USERNAME' '$EC2_APP_DIR/scripts/deploy-ec2.sh' '$AWS_REGION' '$SSM_PARAMETER_PATH' '$image_reference'"
+
+      - name: Verify public reverse-proxy path
+        if: env.HEALTH_URL != ''
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          [[ $HEALTH_URL == https://* ]]
+          curl --fail --silent --show-error \
+            --retry 12 --retry-delay 5 --retry-all-errors --max-time 10 --proto '=https' \
+            "$HEALTH_URL" >/dev/null
+
+      - name: Remove local SSH material
+        if: always()
+        run: rm -f "$HOME/.ssh/ec2_key" "$HOME/.ssh/known_hosts"
+
+      - name: Revoke runner SSH access
+        if: always() && steps.ingress.outputs.added == 'true'
+        run: |
+          aws ec2 revoke-security-group-ingress \
+            --group-id "$AWS_INSTANCE_SG_ID" \
+            --protocol tcp \
+            --port 22 \
+            --cidr "${{ steps.runner-ip.outputs.ipv4 }}/32"

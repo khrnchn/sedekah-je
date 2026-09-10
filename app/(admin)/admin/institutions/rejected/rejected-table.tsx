@@ -89,15 +89,13 @@ export default function RejectedInstitutionsTable({
 	);
 
 	return (
-		<>
-			<ReusableDataTable
-				columns={columns}
-				data={filteredData}
-				searchKey="name"
-				searchPlaceholder="Search institutions..."
-				emptyStateMessage="No rejected institutions found."
-				leftToolbarContent={filterControls}
-			/>
-		</>
+		<ReusableDataTable
+			columns={columns}
+			data={filteredData}
+			searchKey="name"
+			searchPlaceholder="Search institutions..."
+			emptyStateMessage="No rejected institutions found."
+			leftToolbarContent={filterControls}
+		/>
 	);
 }
