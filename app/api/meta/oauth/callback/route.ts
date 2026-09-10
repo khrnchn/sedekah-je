@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { persistThreadsOAuthToken } from "@/app/api/meta/_lib/meta-oauth-token-store";
+import { requireAdminApiSession } from "@/lib/auth-helpers";
 
 const OAUTH_STATE_COOKIE = "meta_oauth_state";
 const META_TOKEN_ENDPOINT = "https://graph.threads.net/oauth/access_token";
@@ -23,6 +24,13 @@ function getAppBaseUrl(): string {
 }
 
 export async function GET(request: NextRequest) {
+	const adminSession = await requireAdminApiSession();
+	if (!adminSession.ok) {
+		const response = adminSession.response;
+		response.cookies.delete(OAUTH_STATE_COOKIE);
+		return response;
+	}
+
 	const code = request.nextUrl.searchParams.get("code");
 	const state = request.nextUrl.searchParams.get("state");
 	const error = request.nextUrl.searchParams.get("error");
