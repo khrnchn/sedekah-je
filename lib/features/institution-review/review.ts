@@ -27,6 +27,9 @@ function runReviewSideEffects(decision: InstitutionReviewDecision) {
 		"max",
 	);
 	revalidateTag("institutions-count", "max");
+	revalidateTag("dashboard-data", "max");
+	revalidateTag("recent-activities", "max");
+	revalidateTag("user-contributions", "max");
 
 	if (decision === "approved") {
 		revalidateTag("institutions", "max");
@@ -288,6 +291,9 @@ export async function undoInstitutionApprovals(input: {
 	revalidateTag("institutions-data", "max");
 	revalidateTag("institutions", "max"); // Homepage cache
 	revalidateTag("quest-mosques", "max");
+	revalidateTag("dashboard-data", "max");
+	revalidateTag("recent-activities", "max");
+	revalidateTag("user-contributions", "max");
 
 	return reverted;
 }

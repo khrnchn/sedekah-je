@@ -143,6 +143,9 @@ export async function updateInstitutionByAdmin(
 	revalidateTag("institutions-count", "max");
 	revalidateTag("institutions-data", "max");
 	revalidateTag("institutions", "max"); // Homepage cache
+	revalidateTag("dashboard-data", "max");
+	revalidateTag("recent-activities", "max");
+	revalidateTag("user-contributions", "max");
 
 	return result;
 }
@@ -195,6 +198,9 @@ export async function assignContributorToInstitution(
 	revalidateTag("approved-institutions", "max");
 	revalidateTag("institutions-data", "max");
 	revalidateTag("institutions", "max"); // Homepage cache
+	revalidateTag("dashboard-data", "max");
+	revalidateTag("recent-activities", "max");
+	revalidateTag("user-contributions", "max"); // old and new contributor's "my contributions" list
 
 	return result;
 }
@@ -244,6 +250,9 @@ export async function undoApproval(id: number, adminNotes?: string) {
 	revalidateTag("institutions-count", "max");
 	revalidateTag("institutions-data", "max");
 	revalidateTag("institutions", "max"); // Homepage cache
+	revalidateTag("dashboard-data", "max");
+	revalidateTag("recent-activities", "max");
+	revalidateTag("user-contributions", "max");
 
 	return result;
 }
@@ -288,6 +297,9 @@ export async function undoRejection(id: number, adminNotes?: string) {
 	revalidateTag("pending-institutions", "max");
 	revalidateTag("institutions-count", "max");
 	revalidateTag("institutions-data", "max");
+	revalidateTag("dashboard-data", "max");
+	revalidateTag("recent-activities", "max");
+	revalidateTag("user-contributions", "max");
 
 	return result;
 }

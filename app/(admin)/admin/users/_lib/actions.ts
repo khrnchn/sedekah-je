@@ -1,7 +1,7 @@
 "use server";
 
 import { eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 import { auth } from "@/auth";
 import { db } from "@/db";
@@ -46,6 +46,9 @@ export async function setUserRole(userId: string, role: UserRole) {
 		});
 		if (result.error) throw result.error;
 		revalidatePath("/admin/users");
+		revalidateTag("users-data", "max");
+		revalidateTag(`user-role-${userId}`, "max");
+		revalidateTag(`user-${userId}`, "max");
 		return { success: true };
 	} catch (error) {
 		console.error("Failed to set user role:", error);
@@ -89,6 +92,9 @@ export async function removeAdminRole(userId: string) {
 		});
 		if (result.error) throw result.error;
 		revalidatePath("/admin/users");
+		revalidateTag("users-data", "max");
+		revalidateTag(`user-role-${userId}`, "max");
+		revalidateTag(`user-${userId}`, "max");
 		return { success: true };
 	} catch (error) {
 		console.error("Failed to remove admin role:", error);
@@ -125,6 +131,8 @@ export async function resetUserOnboardingTour(userId: string) {
 			.where(eq(users.id, userId));
 
 		revalidatePath("/admin/users");
+		revalidateTag("users-data", "max");
+		revalidateTag(`user-${userId}`, "max");
 		return { success: true };
 	} catch (error) {
 		console.error("Failed to reset onboarding tour:", error);
