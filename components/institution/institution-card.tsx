@@ -1,7 +1,16 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
-import { Code2, DownloadIcon, Eye, MapPin, Share2, User } from "lucide-react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import {
+	Code2,
+	DownloadIcon,
+	Eye,
+	MapPin,
+	Share2,
+	User,
+	X,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { forwardRef, useEffect, useRef, useState } from "react";
@@ -12,10 +21,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
 	Dialog,
-	DialogContent,
+	DialogClose,
 	DialogDescription,
 	DialogFooter,
 	DialogHeader,
+	DialogPortal,
 	DialogTitle,
 } from "@/components/ui/dialog";
 import {
@@ -109,6 +119,8 @@ const InstitutionCard = forwardRef<
 		ref,
 	) => {
 		const [active, setActive] = useState(false);
+		const reduceMotion = useReducedMotion();
+		const qrLayoutId = reduceMotion ? undefined : `image-${name}-${id}`;
 		const [hasMounted, setHasMounted] = useState(false);
 		const [isDownloading, setIsDownloading] = useState(false);
 		const [downloadStage, setDownloadStage] = useState<string>("");
@@ -494,95 +506,140 @@ const InstitutionCard = forwardRef<
 				</AnimatePresence>
 
 				<Dialog open={active} onOpenChange={setActive}>
-					<DialogContent
-						className="flex max-h-[calc(100dvh-1rem)] w-[calc(100%-1rem)] max-w-[460px] flex-col gap-4 overflow-y-auto rounded-xl p-4 [&>button]:right-2 [&>button]:top-2 [&>button]:flex [&>button]:h-12 [&>button]:w-12 [&>button]:items-center [&>button]:justify-center [&>button]:rounded-md [&>button]:hover:bg-accent sm:max-h-[calc(100dvh-2rem)] sm:p-6 sm:[&>button]:right-3 sm:[&>button]:top-3"
-						onCloseAutoFocus={(event) => {
-							event.preventDefault();
-							printRef.current?.focus();
-						}}
-					>
-						<DialogHeader className="pr-10 text-left">
-							<DialogTitle>Kod QR {capitalizedName}</DialogTitle>
-							<DialogDescription>
-								{capitalizedCity}, {capitalizedState}
-							</DialogDescription>
-						</DialogHeader>
+					{/* Motion owns removal of the whole portal subtree, including scroll lock. */}
+					<DialogPortal forceMount>
+						<AnimatePresence>
+							{active && (
+								<motion.div
+									key="qr-preview"
+									layoutRoot
+									className="pointer-events-none fixed inset-0 z-50 grid place-items-center p-2 sm:p-4"
+								>
+									<DialogPrimitive.Overlay forceMount asChild>
+										<motion.div
+											initial={{ opacity: 0 }}
+											animate={{ opacity: 1 }}
+											exit={{ opacity: 0 }}
+											transition={{ duration: 0.2 }}
+											className="absolute inset-0 bg-black/80"
+										/>
+									</DialogPrimitive.Overlay>
+									<DialogPrimitive.Content
+										forceMount
+										asChild
+										onCloseAutoFocus={(event) => {
+											event.preventDefault();
+											printRef.current?.focus({ preventScroll: true });
+										}}
+									>
+										<motion.div
+											layoutScroll
+											initial={{ opacity: 0 }}
+											animate={{ opacity: 1 }}
+											exit={{ opacity: 0 }}
+											transition={{ duration: 0.2 }}
+											className="pointer-events-auto relative flex max-h-full w-full max-w-[460px] flex-col gap-4 overflow-y-auto rounded-xl border bg-background p-4 shadow-lg data-[state=closed]:overflow-visible sm:p-6"
+										>
+											<DialogClose className="absolute right-2 top-2 flex h-12 w-12 items-center justify-center rounded-md opacity-70 transition-opacity hover:bg-accent hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:right-3 sm:top-3">
+												<X className="h-4 w-4" aria-hidden="true" />
+												<span className="sr-only">Tutup</span>
+											</DialogClose>
 
-						<motion.div
-							layoutId={`image-${name}-${id}`}
-							className="flex items-center justify-center rounded-lg border bg-muted/40 p-3"
-						>
-							{qrContent ? (
-								<QrCodeDisplay
-									qrContent={qrContent}
-									supportedPayment={supportedPayment}
-									size={300}
-									disabled
-									tabIndex={-1}
-									aria-hidden="true"
-									className="cursor-default"
-								/>
-							) : (
-								<Image
-									priority
-									width={300}
-									height={300}
-									src={qrImage}
-									alt={`Kod QR untuk ${capitalizedName}`}
-									className="aspect-square w-full max-w-[300px] rounded-xl object-cover object-top"
-								/>
+											<DialogHeader className="pr-10 text-left">
+												<DialogTitle>Kod QR {capitalizedName}</DialogTitle>
+												<DialogDescription>
+													{capitalizedCity}, {capitalizedState}
+												</DialogDescription>
+											</DialogHeader>
+
+											<motion.div
+												layoutId={qrLayoutId}
+												transition={{
+													layout: { duration: 0.22, ease: "easeOut" },
+												}}
+												className="flex items-center justify-center rounded-lg border bg-muted/40 p-3"
+											>
+												{qrContent ? (
+													<QrCodeDisplay
+														qrContent={qrContent}
+														supportedPayment={supportedPayment}
+														size={300}
+														disabled
+														tabIndex={-1}
+														aria-hidden="true"
+														className="cursor-default"
+													/>
+												) : (
+													<Image
+														priority
+														width={300}
+														height={300}
+														src={qrImage}
+														alt={`Kod QR untuk ${capitalizedName}`}
+														className="aspect-square w-full max-w-[300px] rounded-xl object-cover object-top"
+													/>
+												)}
+											</motion.div>
+
+											<DialogFooter className="grid grid-cols-2 gap-2 sm:grid-cols-2 sm:space-x-0">
+												<Button
+													type="button"
+													disabled={isDownloading}
+													onClick={handleDownload}
+													className="h-11 gap-2"
+												>
+													{isDownloading ? (
+														<div className="h-5 w-5 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
+													) : (
+														<DownloadIcon className="h-5 w-5" />
+													)}
+													Muat turun QR
+												</Button>
+												<DropdownMenu>
+													<DropdownMenuTrigger asChild>
+														<Button
+															type="button"
+															variant="outline"
+															disabled={isDownloading}
+															className="h-11 gap-2"
+														>
+															<Share2 className="h-5 w-5" />
+															Kongsi
+														</Button>
+													</DropdownMenuTrigger>
+													<DropdownMenuContent className="animate-in fade-in zoom-in-95">
+														<DropdownMenuItem onClick={handleCopyQr}>
+															Salin QR
+														</DropdownMenuItem>
+														<DropdownMenuSeparator />
+														<DropdownMenuItem
+															className="gap-2"
+															onSelect={() =>
+																shareToPlatform({ category, name }, "WHATSAPP")
+															}
+														>
+															<Share
+																data={{ category, name }}
+																platform="WHATSAPP"
+															/>
+														</DropdownMenuItem>
+														<DropdownMenuItem
+															className="gap-2"
+															onSelect={() =>
+																shareToPlatform({ category, name }, "X")
+															}
+														>
+															<Share data={{ category, name }} platform="X" />
+														</DropdownMenuItem>
+													</DropdownMenuContent>
+												</DropdownMenu>
+											</DialogFooter>
+										</motion.div>
+									</DialogPrimitive.Content>
+								</motion.div>
 							)}
-						</motion.div>
-
-						<DialogFooter className="grid grid-cols-2 gap-2 sm:grid-cols-2 sm:space-x-0">
-							<Button
-								type="button"
-								disabled={isDownloading}
-								onClick={handleDownload}
-								className="h-11 gap-2"
-							>
-								{isDownloading ? (
-									<div className="h-5 w-5 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
-								) : (
-									<DownloadIcon className="h-5 w-5" />
-								)}
-								Muat turun QR
-							</Button>
-							<DropdownMenu>
-								<DropdownMenuTrigger asChild>
-									<Button
-										type="button"
-										variant="outline"
-										disabled={isDownloading}
-										className="h-11 gap-2"
-									>
-										<Share2 className="h-5 w-5" />
-										Kongsi
-									</Button>
-								</DropdownMenuTrigger>
-								<DropdownMenuContent className="animate-in fade-in zoom-in-95">
-									<DropdownMenuItem onClick={handleCopyQr}>
-										Salin QR
-									</DropdownMenuItem>
-									<DropdownMenuSeparator />
-									<DropdownMenuItem
-										className="gap-2"
-										onSelect={() =>
-											shareToPlatform({ category, name }, "WHATSAPP")
-										}
-									>
-										<Share data={{ category, name }} platform="WHATSAPP" />
-									</DropdownMenuItem>
-									<DropdownMenuItem
-										className="gap-2"
-										onSelect={() => shareToPlatform({ category, name }, "X")}
-									>
-										<Share data={{ category, name }} platform="X" />
-									</DropdownMenuItem>
-								</DropdownMenuContent>
-							</DropdownMenu>
-						</DialogFooter>
-					</DialogContent>
+						</AnimatePresence>
+					</DialogPortal>
 				</Dialog>
 
 				<TooltipProvider>
@@ -686,7 +743,8 @@ const InstitutionCard = forwardRef<
 									</span>
 								</div>
 								<motion.div
-									layoutId={`image-${name}-${id}`}
+									layoutId={qrLayoutId}
+									transition={{ layout: { duration: 0.22, ease: "easeOut" } }}
 									className="flex flex-col items-center gap-2 rounded-lg bg-muted/25 p-2.5 shadow-none"
 								>
 									{qrContent ? (
