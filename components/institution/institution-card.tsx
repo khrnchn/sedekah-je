@@ -522,7 +522,10 @@ const InstitutionCard = forwardRef<
 							</DialogDescription>
 						</DialogHeader>
 
-						<div className="flex items-center justify-center rounded-lg border bg-muted/40 p-3">
+						<motion.div
+							layoutId={`image-${name}-${id}`}
+							className="flex items-center justify-center rounded-lg border bg-muted/40 p-3"
+						>
 							{qrContent ? (
 								<QrCodeDisplay
 									qrContent={qrContent}
@@ -543,7 +546,7 @@ const InstitutionCard = forwardRef<
 									className="aspect-square w-full max-w-[300px] rounded-xl object-cover object-top"
 								/>
 							)}
-						</div>
+						</motion.div>
 
 						<DialogFooter className="grid grid-cols-2 gap-2 sm:grid-cols-2 sm:space-x-0">
 							<Button
