@@ -1,26 +1,17 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import {
-	Code2,
-	DownloadIcon,
-	Eye,
-	MapPin,
-	Share2,
-	User,
-	X,
-} from "lucide-react";
+import { Code2, DownloadIcon, Eye, MapPin, Share2, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import type { Institution } from "@/app/types/institutions";
-import Share from "@/components/share";
+import Share, { shareToPlatform } from "@/components/share";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
 	Dialog,
-	DialogClose,
 	DialogContent,
 	DialogDescription,
 	DialogFooter,
@@ -504,17 +495,12 @@ const InstitutionCard = forwardRef<
 
 				<Dialog open={active} onOpenChange={setActive}>
 					<DialogContent
-						className="flex max-h-[calc(100dvh-1rem)] w-[calc(100%-1rem)] max-w-[460px] flex-col gap-4 overflow-y-auto rounded-xl p-4 [&>button]:hidden sm:max-h-[calc(100dvh-2rem)] sm:p-6"
+						className="flex max-h-[calc(100dvh-1rem)] w-[calc(100%-1rem)] max-w-[460px] flex-col gap-4 overflow-y-auto rounded-xl p-4 [&>button]:right-2 [&>button]:top-2 [&>button]:flex [&>button]:h-12 [&>button]:w-12 [&>button]:items-center [&>button]:justify-center [&>button]:rounded-md [&>button]:hover:bg-accent sm:max-h-[calc(100dvh-2rem)] sm:p-6 sm:[&>button]:right-3 sm:[&>button]:top-3"
 						onCloseAutoFocus={(event) => {
 							event.preventDefault();
 							printRef.current?.focus();
 						}}
 					>
-						<DialogClose className="absolute right-2 top-2 flex h-12 w-12 items-center justify-center rounded-md opacity-70 ring-offset-background transition-opacity hover:bg-accent hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground sm:right-3 sm:top-3">
-							<X className="h-4 w-4" aria-hidden="true" />
-							<span className="sr-only">Tutup</span>
-						</DialogClose>
-
 						<DialogHeader className="pr-10 text-left">
 							<DialogTitle>Kod QR {capitalizedName}</DialogTitle>
 							<DialogDescription>
@@ -579,10 +565,18 @@ const InstitutionCard = forwardRef<
 										Salin QR
 									</DropdownMenuItem>
 									<DropdownMenuSeparator />
-									<DropdownMenuItem asChild>
+									<DropdownMenuItem
+										className="gap-2"
+										onSelect={() =>
+											shareToPlatform({ category, name }, "WHATSAPP")
+										}
+									>
 										<Share data={{ category, name }} platform="WHATSAPP" />
 									</DropdownMenuItem>
-									<DropdownMenuItem asChild>
+									<DropdownMenuItem
+										className="gap-2"
+										onSelect={() => shareToPlatform({ category, name }, "X")}
+									>
 										<Share data={{ category, name }} platform="X" />
 									</DropdownMenuItem>
 								</DropdownMenuContent>
@@ -794,10 +788,20 @@ const InstitutionCard = forwardRef<
 												<span>Sematkan di laman web</span>
 											</DropdownMenuItem>
 											<DropdownMenuSeparator />
-											<DropdownMenuItem asChild>
+											<DropdownMenuItem
+												className="gap-2"
+												onSelect={() =>
+													shareToPlatform({ category, name }, "WHATSAPP")
+												}
+											>
 												<Share data={{ category, name }} platform="WHATSAPP" />
 											</DropdownMenuItem>
-											<DropdownMenuItem asChild>
+											<DropdownMenuItem
+												className="gap-2"
+												onSelect={() =>
+													shareToPlatform({ category, name }, "X")
+												}
+											>
 												<Share data={{ category, name }} platform="X" />
 											</DropdownMenuItem>
 										</DropdownMenuContent>
