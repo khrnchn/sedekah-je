@@ -1,7 +1,15 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Code2, DownloadIcon, Eye, MapPin, Share2, User } from "lucide-react";
+import {
+	Code2,
+	DownloadIcon,
+	Eye,
+	MapPin,
+	Share2,
+	User,
+	X,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { forwardRef, useEffect, useRef, useState } from "react";
@@ -12,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
 	Dialog,
+	DialogClose,
 	DialogContent,
 	DialogDescription,
 	DialogFooter,
@@ -376,56 +385,51 @@ const InstitutionCard = forwardRef<
 
 			return canvas;
 		};
-		const copyToClipboard = async (pngBlob: Blob | null) => {
-			if (!pngBlob) return;
-			try {
-				await writePngBlobToClipboard(pngBlob);
-				toast.success("Berjaya menyalin kod QR ke papan klipboard.");
-			} catch (error) {
-				console.error(error);
-				toast.error("Gagal menyalin kod QR.");
-			}
-		};
-
 		const copyCanvasToClipboard = async (canvas: HTMLCanvasElement) => {
 			const pngBlob = await canvasToBlob(canvas);
 			await writePngBlobToClipboard(pngBlob);
 		};
 
-		const convertToPng = (imgBlob: Blob) => {
+		const copyImg = async (src: string) => {
+			const res = await fetch(src);
+			const imgBlob = await res.blob();
+			const objectUrl = window.URL.createObjectURL(imgBlob);
+
 			try {
+				const imageEl = await loadImage(objectUrl);
 				const canvas = document.createElement("canvas");
+				canvas.width = imageEl.naturalWidth;
+				canvas.height = imageEl.naturalHeight;
 				const ctx = canvas.getContext("2d");
-				const imageEl = createImage({
-					src: window.URL.createObjectURL(imgBlob),
-				});
-				imageEl.onload = (e) => {
-					//@ts-expect-error
-					canvas.width = e.target?.width;
-					//@ts-expect-error
-					canvas.height = e.target?.height;
-					//@ts-expect-error
-					ctx?.drawImage(e.target, 0, 0, e.target?.width, e.target?.height);
-					canvas.toBlob(copyToClipboard, "image/png", 1);
-				};
-			} catch (e) {
-				console.error(e);
+				if (!ctx) {
+					throw new Error("Canvas context unavailable");
+				}
+				ctx.drawImage(imageEl, 0, 0);
+				await copyCanvasToClipboard(canvas);
+			} finally {
+				window.URL.revokeObjectURL(objectUrl);
 			}
 		};
 
-		const copyImg = async (src: string) => {
-			const img = await fetch(src);
-			const imgBlob = await img.blob();
-
+		const handleCopyQr = async () => {
+			const toastId = toast.loading("Menyalin kod QR...");
 			try {
-				const extension = src.split(".").pop();
-				if (!extension) throw new Error("No extension found");
-
-				return convertToPng(imgBlob);
-			} catch {
-				console.error("Format unsupported");
+				if (qrContent) {
+					const canvas = await renderQrContentToCanvas();
+					await copyCanvasToClipboard(canvas);
+				} else {
+					await copyImg(qrImage);
+				}
+				toast.success("Berjaya menyalin kod QR ke papan klip.", {
+					id: toastId,
+				});
+			} catch (error) {
+				console.error("Copy QR error:", error);
+				toast.error(
+					"Gagal menyalin kod QR. Muat turun imej sebagai alternatif.",
+					{ id: toastId },
+				);
 			}
-			return;
 		};
 
 		const handleDownload = async () => {
@@ -500,14 +504,17 @@ const InstitutionCard = forwardRef<
 
 				<Dialog open={active} onOpenChange={setActive}>
 					<DialogContent
-						className="flex max-h-[calc(100dvh-1rem)] w-[calc(100%-1rem)] max-w-[460px] flex-col gap-4 overflow-y-auto rounded-xl p-4 sm:max-h-[calc(100dvh-2rem)] sm:p-6"
-						closeButtonClassName="right-2 top-2 flex h-12 w-12 items-center justify-center rounded-md hover:bg-accent sm:right-3 sm:top-3"
-						closeLabel="Tutup"
+						className="flex max-h-[calc(100dvh-1rem)] w-[calc(100%-1rem)] max-w-[460px] flex-col gap-4 overflow-y-auto rounded-xl p-4 [&>button]:hidden sm:max-h-[calc(100dvh-2rem)] sm:p-6"
 						onCloseAutoFocus={(event) => {
 							event.preventDefault();
 							printRef.current?.focus();
 						}}
 					>
+						<DialogClose className="absolute right-2 top-2 flex h-12 w-12 items-center justify-center rounded-md opacity-70 ring-offset-background transition-opacity hover:bg-accent hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground sm:right-3 sm:top-3">
+							<X className="h-4 w-4" aria-hidden="true" />
+							<span className="sr-only">Tutup</span>
+						</DialogClose>
+
 						<DialogHeader className="pr-10 text-left">
 							<DialogTitle>Kod QR {capitalizedName}</DialogTitle>
 							<DialogDescription>
@@ -565,37 +572,14 @@ const InstitutionCard = forwardRef<
 									</Button>
 								</DropdownMenuTrigger>
 								<DropdownMenuContent className="animate-in fade-in zoom-in-95">
-									<DropdownMenuItem
-										onClick={async () => {
-											if (!qrContent) {
-												await copyImg(qrImage);
-												return;
-											}
-
-											const toastId = toast.loading("Menyalin kod QR...");
-											try {
-												const canvas = await renderQrContentToCanvas();
-												await copyCanvasToClipboard(canvas);
-												toast.success(
-													"Berjaya menyalin kod QR ke papan klip.",
-													{ id: toastId },
-												);
-											} catch (error) {
-												console.error("Copy QR error:", error);
-												toast.error(
-													"Gagal menyalin kod QR. Muat turun imej sebagai alternatif.",
-													{ id: toastId },
-												);
-											}
-										}}
-									>
+									<DropdownMenuItem onClick={handleCopyQr}>
 										Salin QR
 									</DropdownMenuItem>
 									<DropdownMenuSeparator />
-									<DropdownMenuItem>
+									<DropdownMenuItem asChild>
 										<Share data={{ category, name }} platform="WHATSAPP" />
 									</DropdownMenuItem>
-									<DropdownMenuItem>
+									<DropdownMenuItem asChild>
 										<Share data={{ category, name }} platform="X" />
 									</DropdownMenuItem>
 								</DropdownMenuContent>
@@ -796,30 +780,7 @@ const InstitutionCard = forwardRef<
 											onClick={(e) => e.stopPropagation()}
 											className="animate-in fade-in zoom-in-95"
 										>
-											<DropdownMenuItem
-												onClick={async () => {
-													if (!qrContent) {
-														await copyImg(qrImage);
-														return;
-													}
-
-													const toastId = toast.loading("Menyalin kod QR...");
-													try {
-														const canvas = await renderQrContentToCanvas();
-														await copyCanvasToClipboard(canvas);
-														toast.success(
-															"Berjaya menyalin kod QR ke papan klip.",
-															{ id: toastId },
-														);
-													} catch (error) {
-														console.error("Copy QR error:", error);
-														toast.error(
-															"Gagal menyalin kod QR. Muat turun imej sebagai alternatif.",
-															{ id: toastId },
-														);
-													}
-												}}
-											>
+											<DropdownMenuItem onClick={handleCopyQr}>
 												Salin QR
 											</DropdownMenuItem>
 											<DropdownMenuItem
@@ -830,10 +791,10 @@ const InstitutionCard = forwardRef<
 												<span>Sematkan di laman web</span>
 											</DropdownMenuItem>
 											<DropdownMenuSeparator />
-											<DropdownMenuItem>
+											<DropdownMenuItem asChild>
 												<Share data={{ category, name }} platform="WHATSAPP" />
 											</DropdownMenuItem>
-											<DropdownMenuItem>
+											<DropdownMenuItem asChild>
 												<Share data={{ category, name }} platform="X" />
 											</DropdownMenuItem>
 										</DropdownMenuContent>
