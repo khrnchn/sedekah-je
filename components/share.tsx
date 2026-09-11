@@ -65,41 +65,37 @@ const getShareUrl = (platform: SharePlatform, message: string) => {
 	return isMobile ? urls.mobile : urls.desktop;
 };
 
+export const shareToPlatform = (data: ShareData, platform: SharePlatform) => {
+	if (typeof window === "undefined") return;
+	const message = generateShareMessage(data);
+	const url = getShareUrl(platform, message);
+	window.open(url, "_blank");
+};
+
 export default function Share(props: ShareProps) {
 	const { data } = props;
 	const { theme } = useTheme();
 	const isDarkMode = theme === "dark";
 	const [copied, setCopied] = useState(false);
 
-	// Platform-specific (legacy) mode
+	// Platform-specific (legacy) mode: renders label content only. The caller
+	// is expected to make this interactive (e.g. a DropdownMenuItem with
+	// onSelect calling shareToPlatform), since Radix menu items already own
+	// keyboard/click activation and nesting another interactive element here
+	// would break that.
 	if ("platform" in props && props.platform) {
 		const platform = props.platform;
 
-		const handleShareClick = () => {
-			if (typeof window === "undefined") return;
-			const message = generateShareMessage(data);
-			const url = getShareUrl(platform, message);
-			window.open(url, "_blank");
-		};
-
-		return (
-			<button
-				type="button"
-				onClick={handleShareClick}
-				className="flex items-center gap-2 text-sm w-full"
-			>
-				{platform === "X" ? (
-					<>
-						<XIcon className="w-5 h-5" darkMode={isDarkMode} />
-						<span>Kongsi ke X</span>
-					</>
-				) : (
-					<>
-						<WhatsAppIcon className="w-5 h-5" />
-						<span>Kongsi ke WhatsApp</span>
-					</>
-				)}
-			</button>
+		return platform === "X" ? (
+			<>
+				<XIcon className="w-5 h-5" darkMode={isDarkMode} />
+				<span>Kongsi ke X</span>
+			</>
+		) : (
+			<>
+				<WhatsAppIcon className="w-5 h-5" />
+				<span>Kongsi ke WhatsApp</span>
+			</>
 		);
 	}
 

@@ -1,15 +1,33 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
-import { Code2, DownloadIcon, Eye, MapPin, Share2, User } from "lucide-react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import {
+	Code2,
+	DownloadIcon,
+	Eye,
+	MapPin,
+	Share2,
+	User,
+	X,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import type { Institution } from "@/app/types/institutions";
-import Share from "@/components/share";
+import Share, { shareToPlatform } from "@/components/share";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+	Dialog,
+	DialogClose,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogPortal,
+	DialogTitle,
+} from "@/components/ui/dialog";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -24,7 +42,6 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/use-auth";
-import { useOutsideClick } from "@/hooks/use-outside-click";
 import {
 	getInstitutionCategoryIcon,
 	getInstitutionCategoryIconDimensions,
@@ -87,14 +104,12 @@ const InstitutionCard = forwardRef<
 			id,
 			name,
 			slug,
-			description,
 			state,
 			city,
 			qrImage,
 			qrContent,
 			supportedPayment,
 			category,
-			coords,
 			isClosest,
 			distanceToCurrentUserInMeter,
 			contributorId,
@@ -103,13 +118,14 @@ const InstitutionCard = forwardRef<
 		},
 		ref,
 	) => {
-		const [active, setActive] = useState<boolean | null>(false);
+		const [active, setActive] = useState(false);
+		const reduceMotion = useReducedMotion();
+		const qrLayoutId = reduceMotion ? undefined : `image-${name}-${id}`;
 		const [hasMounted, setHasMounted] = useState(false);
 		const [isDownloading, setIsDownloading] = useState(false);
 		const [downloadStage, setDownloadStage] = useState<string>("");
 		const [showClaimModal, setShowClaimModal] = useState(false);
 		const [showEmbedDialog, setShowEmbedDialog] = useState(false);
-		const innerRef = useRef<HTMLDivElement>(null);
 		const printRef = useRef<HTMLButtonElement>(null);
 
 		const { isAuthenticated, isLoading } = useAuth();
@@ -140,25 +156,6 @@ const InstitutionCard = forwardRef<
 		useEffect(() => {
 			setHasMounted(true);
 		}, []);
-
-		useEffect(() => {
-			function onKeyDown(event: KeyboardEvent) {
-				if (event.key === "Escape") {
-					setActive(false);
-				}
-			}
-
-			if (active) {
-				document.body.style.overflow = "hidden";
-			} else {
-				document.body.style.overflow = "auto";
-			}
-
-			window.addEventListener("keydown", onKeyDown);
-			return () => window.removeEventListener("keydown", onKeyDown);
-		}, [active]);
-
-		useOutsideClick(innerRef, () => setActive(false));
 
 		const createImage = (options: { src: string }) => {
 			const img = document.createElement("img");
@@ -391,71 +388,101 @@ const InstitutionCard = forwardRef<
 
 			return canvas;
 		};
-		const copyToClipboard = async (pngBlob: Blob | null) => {
-			if (!pngBlob) return;
-			try {
-				await writePngBlobToClipboard(pngBlob);
-				toast.success("Berjaya menyalin kod QR ke papan klipboard.");
-			} catch (error) {
-				console.error(error);
-				toast.error("Gagal menyalin kod QR.");
-			}
-		};
-
 		const copyCanvasToClipboard = async (canvas: HTMLCanvasElement) => {
 			const pngBlob = await canvasToBlob(canvas);
 			await writePngBlobToClipboard(pngBlob);
 		};
 
-		const convertToPng = (imgBlob: Blob) => {
+		const copyImg = async (src: string) => {
+			const res = await fetch(src);
+			const imgBlob = await res.blob();
+			const objectUrl = window.URL.createObjectURL(imgBlob);
+
 			try {
+				const imageEl = await loadImage(objectUrl);
 				const canvas = document.createElement("canvas");
+				canvas.width = imageEl.naturalWidth;
+				canvas.height = imageEl.naturalHeight;
 				const ctx = canvas.getContext("2d");
-				const imageEl = createImage({
-					src: window.URL.createObjectURL(imgBlob),
-				});
-				imageEl.onload = (e) => {
-					//@ts-expect-error
-					canvas.width = e.target?.width;
-					//@ts-expect-error
-					canvas.height = e.target?.height;
-					//@ts-expect-error
-					ctx?.drawImage(e.target, 0, 0, e.target?.width, e.target?.height);
-					canvas.toBlob(copyToClipboard, "image/png", 1);
-				};
-			} catch (e) {
-				console.error(e);
+				if (!ctx) {
+					throw new Error("Canvas context unavailable");
+				}
+				ctx.drawImage(imageEl, 0, 0);
+				await copyCanvasToClipboard(canvas);
+			} finally {
+				window.URL.revokeObjectURL(objectUrl);
 			}
 		};
 
-		const copyImg = async (src: string) => {
-			const img = await fetch(src);
-			const imgBlob = await img.blob();
-
+		const handleCopyQr = async () => {
+			const toastId = toast.loading("Menyalin kod QR...");
 			try {
-				const extension = src.split(".").pop();
-				if (!extension) throw new Error("No extension found");
-
-				return convertToPng(imgBlob);
-			} catch {
-				console.error("Format unsupported");
+				if (qrContent) {
+					const canvas = await renderQrContentToCanvas();
+					await copyCanvasToClipboard(canvas);
+				} else {
+					await copyImg(qrImage);
+				}
+				toast.success("Berjaya menyalin kod QR ke papan klip.", {
+					id: toastId,
+				});
+			} catch (error) {
+				console.error("Copy QR error:", error);
+				toast.error(
+					"Gagal menyalin kod QR. Muat turun imej sebagai alternatif.",
+					{ id: toastId },
+				);
 			}
-			return;
+		};
+
+		const handleDownload = async () => {
+			setIsDownloading(true);
+			setDownloadStage("Menyediakan kod QR...");
+			try {
+				let canvas: HTMLCanvasElement;
+
+				if (qrContent) {
+					canvas = await renderQrContentToCanvas();
+				} else {
+					setDownloadStage("Mengambil gambar kod QR...");
+					const imageEl = createImage({ src: qrImage });
+					const { promise, resolve, reject } = Promise.withResolvers<
+						Event | string
+					>();
+					imageEl.onload = resolve;
+					imageEl.onerror = reject;
+					await promise;
+					const imageCanvas = document.createElement("canvas");
+					imageCanvas.width = imageEl.naturalWidth;
+					imageCanvas.height = imageEl.naturalHeight;
+					const ctx = imageCanvas.getContext("2d");
+					if (!ctx) {
+						throw new Error("Canvas context unavailable");
+					}
+					ctx.drawImage(imageEl, 0, 0);
+					canvas = imageCanvas;
+				}
+
+				setDownloadStage("Menyediakan fail untuk dimuat turun...");
+				const data = canvas.toDataURL("image/png");
+				const link = document.createElement("a");
+				link.href = data;
+				link.download = `sedekahje-${resolvedSlug}.png`;
+				document.body.appendChild(link);
+				link.click();
+				document.body.removeChild(link);
+				toast.success("Berjaya memuat turun kod QR.");
+			} catch (error) {
+				console.error("Download error:", error);
+				toast.error("Gagal memuat turun kod QR. Cuba lagi.");
+			} finally {
+				setIsDownloading(false);
+				setDownloadStage("");
+			}
 		};
 
 		return (
 			<>
-				<AnimatePresence>
-					{active && (
-						<motion.div
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							exit={{ opacity: 0 }}
-							className="fixed inset-0 z-10 h-full w-full bg-transparent md:bg-foreground/20"
-						/>
-					)}
-				</AnimatePresence>
-
 				{/* Loading Overlay for Mobile */}
 				<AnimatePresence>
 					{isDownloading && (
@@ -478,105 +505,142 @@ const InstitutionCard = forwardRef<
 					)}
 				</AnimatePresence>
 
-				<AnimatePresence>
-					{active ? (
-						<div className="fixed inset-0 z-[100] grid place-items-center px-3 py-3 sm:px-4 sm:py-4">
-							<motion.button
-								key={`button-${name}-${id}`}
-								layout
-								initial={{ opacity: 0 }}
-								animate={{ opacity: 1 }}
-								exit={{ opacity: 0, transition: { duration: 0.05 } }}
-								className="absolute right-2 top-2 z-10 flex h-6 w-6 items-center justify-center rounded-md border bg-card lg:hidden"
-								onClick={(e) => {
-									e.stopPropagation();
-									setActive(null);
-								}}
-							>
-								<CloseIcon />
-							</motion.button>
-							<motion.div
-								layoutId={`card-${name}-${id}`}
-								ref={innerRef}
-								drag
-								onDragEnd={(e) => {
-									e.stopPropagation();
-									setActive(null);
-								}}
-								whileDrag={{ scale: 1.05 }}
-								className="flex max-h-[calc(100dvh-1.5rem)] w-full max-w-[460px] flex-col overflow-auto rounded-lg border bg-card p-5 shadow-lg sm:max-h-[calc(100dvh-2rem)] lg:overflow-hidden"
-							>
+				<Dialog open={active} onOpenChange={setActive}>
+					{/* Motion owns removal of the whole portal subtree, including scroll lock. */}
+					<DialogPortal forceMount>
+						<AnimatePresence>
+							{active && (
 								<motion.div
-									layoutId={`image-${name}-${id}`}
-									className="flex items-center justify-center rounded-lg border bg-muted/40 p-3"
+									key="qr-preview"
+									layoutRoot
+									className="pointer-events-none fixed inset-0 z-50 grid place-items-center p-2 sm:p-4"
 								>
-									{qrContent ? (
-										<QrCodeDisplay
-											qrContent={qrContent}
-											supportedPayment={supportedPayment}
-											size={300}
-										/>
-									) : (
-										<Image
-											priority
-											width={300}
-											height={300}
-											src={qrImage}
-											alt={name}
-											className="aspect-square w-full max-w-[300px] rounded-xl object-cover object-top"
-										/>
-									)}
-								</motion.div>
-
-								<div className="mt-4">
-									<div className="flex justify-between items-start p-4">
-										<div className="flex-1">
-											<motion.h3
-												layoutId={`title-${name}-${id}`}
-												className="text-base font-semibold text-foreground"
-											>
-												{capitalizedName}
-											</motion.h3>
-											<motion.p
-												layoutId={`location-${city}-${state}-${id}`}
-												className="text-base text-muted-foreground"
-											>
-												{capitalizedCity}, {capitalizedState}
-											</motion.p>
-										</div>
-										<motion.a
-											layout
+									<DialogPrimitive.Overlay forceMount asChild>
+										<motion.div
 											initial={{ opacity: 0 }}
 											animate={{ opacity: 1 }}
 											exit={{ opacity: 0 }}
-											href={`https://www.google.com/maps/search/?api=1&query=${
-												coords ? coords.join(",") : encodeURIComponent(name)
-											}`}
-											target="_blank"
-											className="rounded-md bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
-											rel="noreferrer"
+											transition={{ duration: 0.2 }}
+											className="absolute inset-0 bg-black/80"
+										/>
+									</DialogPrimitive.Overlay>
+									<DialogPrimitive.Content
+										forceMount
+										asChild
+										onCloseAutoFocus={(event) => {
+											event.preventDefault();
+											printRef.current?.focus({ preventScroll: true });
+										}}
+									>
+										<motion.div
+											layoutScroll
+											initial={{ opacity: 0 }}
+											animate={{ opacity: 1 }}
+											exit={{ opacity: 0 }}
+											transition={{ duration: 0.2 }}
+											className="pointer-events-auto relative flex max-h-full w-full max-w-[460px] flex-col gap-4 overflow-y-auto rounded-xl border bg-background p-4 shadow-lg data-[state=closed]:overflow-visible sm:p-6"
 										>
-											Cari di peta
-										</motion.a>
-									</div>
-									{description ? (
-										<div className="pt-4 relative px-4">
+											<DialogClose className="absolute right-2 top-2 flex h-12 w-12 items-center justify-center rounded-md opacity-70 transition-opacity hover:bg-accent hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:right-3 sm:top-3">
+												<X className="h-4 w-4" aria-hidden="true" />
+												<span className="sr-only">Tutup</span>
+											</DialogClose>
+
+											<DialogHeader className="pr-10 text-left">
+												<DialogTitle>Kod QR {capitalizedName}</DialogTitle>
+												<DialogDescription>
+													{capitalizedCity}, {capitalizedState}
+												</DialogDescription>
+											</DialogHeader>
+
 											<motion.div
-												layout
-												initial={{ opacity: 0 }}
-												animate={{ opacity: 1 }}
-												exit={{ opacity: 0 }}
-												className="flex max-h-40 flex-col items-start gap-4 overflow-auto pb-10 text-xs text-muted-foreground [mask:linear-gradient(to_bottom,white,white,transparent)] [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-overflow-scrolling:touch] md:max-h-60 md:text-sm lg:max-h-80 lg:text-base"
+												layoutId={qrLayoutId}
+												transition={{
+													layout: { duration: 0.22, ease: "easeOut" },
+												}}
+												className="flex items-center justify-center rounded-lg border bg-muted/40 p-3"
 											>
-												{description}
+												{qrContent ? (
+													<QrCodeDisplay
+														qrContent={qrContent}
+														supportedPayment={supportedPayment}
+														size={300}
+														disabled
+														tabIndex={-1}
+														aria-hidden="true"
+														className="cursor-default"
+													/>
+												) : (
+													<Image
+														priority
+														width={300}
+														height={300}
+														src={qrImage}
+														alt={`Kod QR untuk ${capitalizedName}`}
+														className="aspect-square w-full max-w-[300px] rounded-xl object-cover object-top"
+													/>
+												)}
 											</motion.div>
-										</div>
-									) : null}
-								</div>
-							</motion.div>
-						</div>
-					) : null}
-				</AnimatePresence>
+
+											<DialogFooter className="grid grid-cols-2 gap-2 sm:grid-cols-2 sm:space-x-0">
+												<Button
+													type="button"
+													disabled={isDownloading}
+													onClick={handleDownload}
+													className="h-11 gap-2"
+												>
+													{isDownloading ? (
+														<div className="h-5 w-5 animate-spin rounded-full border-2 border-primary-foreground border-t-transparent" />
+													) : (
+														<DownloadIcon className="h-5 w-5" />
+													)}
+													Muat turun QR
+												</Button>
+												<DropdownMenu>
+													<DropdownMenuTrigger asChild>
+														<Button
+															type="button"
+															variant="outline"
+															disabled={isDownloading}
+															className="h-11 gap-2"
+														>
+															<Share2 className="h-5 w-5" />
+															Kongsi
+														</Button>
+													</DropdownMenuTrigger>
+													<DropdownMenuContent className="animate-in fade-in zoom-in-95">
+														<DropdownMenuItem onClick={handleCopyQr}>
+															Salin QR
+														</DropdownMenuItem>
+														<DropdownMenuSeparator />
+														<DropdownMenuItem
+															className="gap-2"
+															onSelect={() =>
+																shareToPlatform({ category, name }, "WHATSAPP")
+															}
+														>
+															<Share
+																data={{ category, name }}
+																platform="WHATSAPP"
+															/>
+														</DropdownMenuItem>
+														<DropdownMenuItem
+															className="gap-2"
+															onSelect={() =>
+																shareToPlatform({ category, name }, "X")
+															}
+														>
+															<Share data={{ category, name }} platform="X" />
+														</DropdownMenuItem>
+													</DropdownMenuContent>
+												</DropdownMenu>
+											</DialogFooter>
+										</motion.div>
+									</DialogPrimitive.Content>
+								</motion.div>
+							)}
+						</AnimatePresence>
+					</DialogPortal>
+				</Dialog>
 
 				<TooltipProvider>
 					<motion.div
@@ -628,13 +692,11 @@ const InstitutionCard = forwardRef<
 										)}
 									</div>
 								)}
-								<Link
-									href={href}
+								<div
 									className={cn(
-										"mb-2 flex w-full flex-col items-center gap-1 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+										"mb-2 flex w-full flex-col items-center gap-1 px-2 py-1",
 										isClosest && "pt-2",
 									)}
-									aria-label={`Buka halaman ${capitalizedName}`}
 								>
 									<motion.div>
 										<Image
@@ -679,10 +741,11 @@ const InstitutionCard = forwardRef<
 									>
 										{getInstitutionCategoryLabel(category)}
 									</span>
-								</Link>
+								</div>
 								<motion.div
-									layoutId={`image-${name}-${id}`}
-									className="cursor-pointer rounded-lg bg-muted/25 p-2.5 shadow-none"
+									layoutId={qrLayoutId}
+									transition={{ layout: { duration: 0.22, ease: "easeOut" } }}
+									className="flex flex-col items-center gap-2 rounded-lg bg-muted/25 p-2.5 shadow-none"
 								>
 									{qrContent ? (
 										<div className="flex aspect-square w-40 items-center justify-center">
@@ -700,6 +763,7 @@ const InstitutionCard = forwardRef<
 										</div>
 									) : (
 										<button
+											ref={printRef}
 											type="button"
 											className="block aspect-square w-40 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
 											aria-label={`Perbesarkan kod QR untuk ${capitalizedName}`}
@@ -710,13 +774,16 @@ const InstitutionCard = forwardRef<
 										>
 											<Image
 												src={qrImage}
-												alt={`QR Code for ${name}`}
+												alt={`Kod QR untuk ${capitalizedName}`}
 												width={160}
 												height={160}
 												className="h-full w-full rounded-md object-cover"
 											/>
 										</button>
 									)}
+									<p className="text-xs font-medium text-muted-foreground">
+										Tekan QR untuk besarkan
+									</p>
 								</motion.div>
 								<div className="mt-auto flex w-full justify-center gap-1.5">
 									{/* Download Button */}
@@ -728,52 +795,9 @@ const InstitutionCard = forwardRef<
 												className="h-11 gap-1.5 px-2.5 hover:bg-primary/10 hover:text-primary transition-colors duration-200 ease-out"
 												disabled={isDownloading}
 												aria-label={`Muat turun kod QR untuk ${capitalizedName}`}
-												onClick={async (e) => {
+												onClick={(e) => {
 													e.stopPropagation();
-													setIsDownloading(true);
-													setDownloadStage("Menyediakan kod QR...");
-													try {
-														let canvas: HTMLCanvasElement;
-
-														if (qrContent) {
-															canvas = await renderQrContentToCanvas();
-														} else {
-															setDownloadStage("Mengambil gambar kod QR...");
-															const imageEl = createImage({ src: qrImage });
-															await new Promise((resolve, reject) => {
-																imageEl.onload = resolve;
-																imageEl.onerror = reject;
-															});
-															const imageCanvas =
-																document.createElement("canvas");
-															imageCanvas.width = imageEl.naturalWidth;
-															imageCanvas.height = imageEl.naturalHeight;
-															const ctx = imageCanvas.getContext("2d");
-															if (!ctx) {
-																throw new Error("Canvas context unavailable");
-															}
-															ctx.drawImage(imageEl, 0, 0);
-															canvas = imageCanvas;
-														}
-
-														setDownloadStage(
-															"Menyediakan fail untuk dimuat turun...",
-														);
-														const data = canvas.toDataURL("image/png");
-														const link = document.createElement("a");
-														link.href = data;
-														link.download = `sedekahje-${resolvedSlug}.png`;
-														document.body.appendChild(link);
-														link.click();
-														document.body.removeChild(link);
-														toast.success("Berjaya memuat turun kod QR.");
-													} catch (error) {
-														console.error("Download error:", error);
-														toast.error("Gagal memuat turun kod QR.");
-													} finally {
-														setIsDownloading(false);
-														setDownloadStage("");
-													}
+													void handleDownload();
 												}}
 											>
 												{isDownloading ? (
@@ -811,29 +835,7 @@ const InstitutionCard = forwardRef<
 											onClick={(e) => e.stopPropagation()}
 											className="animate-in fade-in zoom-in-95"
 										>
-											<DropdownMenuItem
-												onClick={async () => {
-													if (!qrContent) {
-														await copyImg(qrImage);
-														return;
-													}
-
-													const toastId = toast.loading("Menyalin kod QR...");
-													try {
-														const canvas = await renderQrContentToCanvas();
-														await copyCanvasToClipboard(canvas);
-														toast.success(
-															"Berjaya menyalin kod QR ke papan klipboard.",
-															{ id: toastId },
-														);
-													} catch (error) {
-														console.error("Copy QR error:", error);
-														toast.error("Gagal menyalin kod QR.", {
-															id: toastId,
-														});
-													}
-												}}
-											>
+											<DropdownMenuItem onClick={handleCopyQr}>
 												Salin QR
 											</DropdownMenuItem>
 											<DropdownMenuItem
@@ -844,36 +846,35 @@ const InstitutionCard = forwardRef<
 												<span>Sematkan di laman web</span>
 											</DropdownMenuItem>
 											<DropdownMenuSeparator />
-											<DropdownMenuItem>
+											<DropdownMenuItem
+												className="gap-2"
+												onSelect={() =>
+													shareToPlatform({ category, name }, "WHATSAPP")
+												}
+											>
 												<Share data={{ category, name }} platform="WHATSAPP" />
 											</DropdownMenuItem>
-											<DropdownMenuItem>
+											<DropdownMenuItem
+												className="gap-2"
+												onSelect={() =>
+													shareToPlatform({ category, name }, "X")
+												}
+											>
 												<Share data={{ category, name }} platform="X" />
 											</DropdownMenuItem>
 										</DropdownMenuContent>
 									</DropdownMenu>
-
-									{/* Expand Button */}
-									<Tooltip>
-										<TooltipTrigger asChild>
-											<Button
-												size="sm"
-												variant="ghost"
-												className="h-11 gap-1.5 px-2.5 hover:bg-primary/10 hover:text-primary transition-colors duration-200 ease-out"
-												aria-label={`Perbesarkan kod QR untuk ${capitalizedName}`}
-												onClick={async (e) => {
-													e.stopPropagation();
-													setActive(true);
-												}}
-											>
-												<Eye className="h-5 w-5" />
-												<span className="text-xs font-medium">QR</span>
-											</Button>
-										</TooltipTrigger>
-										<TooltipContent side="top">
-											<p>Perbesarkan kod QR</p>
-										</TooltipContent>
-									</Tooltip>
+									<Button
+										asChild
+										size="sm"
+										variant="ghost"
+										className="h-11 gap-1.5 px-2.5 transition-colors duration-200 ease-out hover:bg-primary/10 hover:text-primary"
+									>
+										<Link href={href} aria-label={`Butiran ${capitalizedName}`}>
+											<Eye className="h-5 w-5" aria-hidden="true" />
+											<span className="text-xs font-medium">Butiran</span>
+										</Link>
+									</Button>
 								</div>
 							</CardContent>
 						</Card>
@@ -901,30 +902,5 @@ const InstitutionCard = forwardRef<
 );
 
 InstitutionCard.displayName = "InstitutionCard";
-
-export const CloseIcon = () => {
-	return (
-		<motion.svg
-			name="close-icon"
-			initial={{ opacity: 0 }}
-			animate={{ opacity: 1 }}
-			exit={{ opacity: 0, transition: { duration: 0.05 } }}
-			xmlns="http://www.w3.org/2000/svg"
-			width="24"
-			height="24"
-			viewBox="0 0 24 24"
-			fill="none"
-			stroke="currentColor"
-			strokeWidth="2"
-			strokeLinecap="round"
-			strokeLinejoin="round"
-			className="h-4 w-4 text-foreground"
-		>
-			<path stroke="none" d="M0 0h24v24H0z" fill="none" />
-			<path d="M18 6l-12 12" />
-			<path d="M6 6l12 12" />
-		</motion.svg>
-	);
-};
 
 export default InstitutionCard;
