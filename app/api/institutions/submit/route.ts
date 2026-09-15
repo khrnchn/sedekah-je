@@ -1,4 +1,4 @@
-import { and, count, eq, gte } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
@@ -13,6 +13,10 @@ import { geocodeInstitutionWithFallback } from "@/lib/integrations/geocode";
 import { r2Storage } from "@/lib/integrations/r2-client";
 import { notifyInstitutionSubmission } from "@/lib/integrations/telegram/review-bot";
 import { isToyyibpay } from "@/lib/qr-utils";
+import {
+	checkSubmissionRateLimit,
+	SUBMISSIONS_PER_DAY,
+} from "@/lib/queries/institution-submission-limit";
 import { slugify } from "@/lib/utils";
 
 /**
@@ -107,26 +111,15 @@ export async function POST(request: NextRequest) {
 	const isAdmin = user.role === "admin";
 
 	// --- Rate limit (skip for admins)
-	if (!isAdmin) {
-		const oneDayAgo = new Date();
-		oneDayAgo.setDate(oneDayAgo.getDate() - 1);
-
-		const [{ value }] = await db
-			.select({ value: count() })
-			.from(institutions)
-			.where(
-				and(
-					eq(institutions.contributorId, contributorId),
-					gte(institutions.createdAt, oneDayAgo),
-				),
-			);
-
-		if (value >= 3) {
-			return json(
-				{ status: "error", message: "Rate limit: max 3 submissions per day." },
-				429,
-			);
-		}
+	const rateLimit = await checkSubmissionRateLimit(contributorId, isAdmin);
+	if (rateLimit.limited) {
+		return json(
+			{
+				status: "error",
+				message: `Rate limit: max ${SUBMISSIONS_PER_DAY} submissions per day.`,
+			},
+			429,
+		);
 	}
 
 	// --- Parse form data

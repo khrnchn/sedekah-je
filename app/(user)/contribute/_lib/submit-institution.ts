@@ -1,6 +1,6 @@
 "use server";
 
-import { and, count, desc, eq, gte } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 import { auth } from "@/auth";
@@ -17,12 +17,13 @@ import { logInstitutionSubmissionFailure } from "@/lib/integrations/telegram";
 import { notifyInstitutionSubmission } from "@/lib/integrations/telegram/review-bot";
 import { decodeQrFromBuffer } from "@/lib/qr-decode";
 import { isToyyibpay } from "@/lib/qr-utils";
+import {
+	checkSubmissionRateLimit,
+	SUBMISSIONS_PER_DAY,
+} from "@/lib/queries/institution-submission-limit";
 import { getUserById } from "@/lib/queries/users";
 import { slugify } from "@/lib/utils";
 import { institutionFormServerSchema } from "./validations";
-
-const COOLDOWN_HOURS = 12;
-const SUBMISSIONS_PER_DAY = 3;
 
 export type SubmitInstitutionFormState =
 	| { status: "idle" }
@@ -115,59 +116,21 @@ export async function submitInstitution(
 		qrContent: formData.get("qrContent"),
 	};
 
-	// --- Rate limit check (3 submissions per day)
-	if (user.role !== "admin") {
-		const oneDayAgo = new Date();
-		oneDayAgo.setDate(oneDayAgo.getDate() - 1);
-
-		const [{ value }] = await db
-			.select({ value: count() })
-			.from(institutions)
-			.where(
-				and(
-					eq(institutions.contributorId, contributorId),
-					gte(institutions.createdAt, oneDayAgo),
-				),
-			);
-
-		if (value >= SUBMISSIONS_PER_DAY) {
-			// Fetch the 3 most recent submissions to compute cooldown
-			const recentSubmissions = await db
-				.select({ createdAt: institutions.createdAt })
-				.from(institutions)
-				.where(
-					and(
-						eq(institutions.contributorId, contributorId),
-						gte(institutions.createdAt, oneDayAgo),
-					),
-				)
-				.orderBy(desc(institutions.createdAt))
-				.limit(SUBMISSIONS_PER_DAY);
-
-			const thirdSubmissionAt = recentSubmissions[0]?.createdAt; // Most recent
-			const firstSubmissionAt =
-				recentSubmissions[recentSubmissions.length - 1]?.createdAt; // Oldest
-
-			const cooldownEndsAt =
-				thirdSubmissionAt && firstSubmissionAt
-					? new Date(
-							Math.max(
-								thirdSubmissionAt.getTime() + COOLDOWN_HOURS * 60 * 60 * 1000,
-								firstSubmissionAt.getTime() + 24 * 60 * 60 * 1000,
-							),
-						)
-					: new Date(Date.now() + COOLDOWN_HOURS * 60 * 60 * 1000);
-
-			return {
-				status: "error",
-				errors: {
-					general: [
-						"Anda telah mencapai had 3 submission sehari. Sila cuba lagi esok. Terima kasih!",
-					],
-				},
-				cooldownEndsAt: cooldownEndsAt.toISOString(),
-			};
-		}
+	// --- Rate limit check
+	const rateLimit = await checkSubmissionRateLimit(
+		contributorId,
+		user.role === "admin",
+	);
+	if (rateLimit.limited) {
+		return {
+			status: "error",
+			errors: {
+				general: [
+					`Anda telah mencapai had ${SUBMISSIONS_PER_DAY} submission sehari. Sila cuba lagi esok. Terima kasih!`,
+				],
+			},
+			cooldownEndsAt: rateLimit.cooldownEndsAt.toISOString(),
+		};
 	}
 
 	// --- Require QR image
@@ -468,51 +431,13 @@ export async function getContributionCooldown(): Promise<ContributionCooldownRes
 		return { inCooldown: false };
 	}
 
-	const oneDayAgo = new Date();
-	oneDayAgo.setDate(oneDayAgo.getDate() - 1);
-
-	const [{ value }] = await db
-		.select({ value: count() })
-		.from(institutions)
-		.where(
-			and(
-				eq(institutions.contributorId, userId),
-				gte(institutions.createdAt, oneDayAgo),
-			),
-		);
-
-	if (value < SUBMISSIONS_PER_DAY) {
+	const rateLimit = await checkSubmissionRateLimit(userId, false);
+	if (!rateLimit.limited) {
 		return { inCooldown: false };
 	}
 
-	const recentSubmissions = await db
-		.select({ createdAt: institutions.createdAt })
-		.from(institutions)
-		.where(
-			and(
-				eq(institutions.contributorId, userId),
-				gte(institutions.createdAt, oneDayAgo),
-			),
-		)
-		.orderBy(desc(institutions.createdAt))
-		.limit(SUBMISSIONS_PER_DAY);
-
-	const thirdSubmissionAt = recentSubmissions[0]?.createdAt;
-	const firstSubmissionAt =
-		recentSubmissions[recentSubmissions.length - 1]?.createdAt;
-
-	const cooldownEndsAt =
-		thirdSubmissionAt && firstSubmissionAt
-			? new Date(
-					Math.max(
-						thirdSubmissionAt.getTime() + COOLDOWN_HOURS * 60 * 60 * 1000,
-						firstSubmissionAt.getTime() + 24 * 60 * 60 * 1000,
-					),
-				)
-			: new Date(Date.now() + COOLDOWN_HOURS * 60 * 60 * 1000);
-
 	return {
 		inCooldown: true,
-		cooldownEndsAt: cooldownEndsAt.toISOString(),
+		cooldownEndsAt: rateLimit.cooldownEndsAt.toISOString(),
 	};
 }
