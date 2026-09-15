@@ -11,6 +11,7 @@ import {
 	createInstitutionReviewModule,
 	type InstitutionReviewDecision,
 } from "@/lib/features/institution-review/review-core";
+import { toTitleCase } from "@/lib/utils";
 
 function runReviewSideEffects(decision: InstitutionReviewDecision) {
 	revalidatePath("/admin/institutions/pending", "page");
@@ -127,6 +128,36 @@ export const reviewPendingInstitution = createInstitutionReviewModule({
 		findReviewer,
 		async transitionPending(input) {
 			return db.transaction(async (tx) => {
+				// Applied here (not just the admin UI's manual "Capitalize" button)
+				// so Telegram approvals, which skip the review form entirely, get
+				// the same title-cased name/city/address.
+				let titleCased: Partial<typeof institutions.$inferInsert> = {};
+				if (input.decision === "approved") {
+					const [current] = await tx
+						.select({
+							name: institutions.name,
+							city: institutions.city,
+							address: institutions.address,
+						})
+						.from(institutions)
+						.where(
+							and(
+								eq(institutions.id, input.institutionId),
+								eq(institutions.status, "pending"),
+							),
+						)
+						.limit(1);
+					if (current) {
+						titleCased = {
+							name: toTitleCase(current.name),
+							city: toTitleCase(current.city),
+							address: current.address
+								? toTitleCase(current.address)
+								: current.address,
+						};
+					}
+				}
+
 				const [updated] = await tx
 					.update(institutions)
 					.set({
@@ -134,6 +165,7 @@ export const reviewPendingInstitution = createInstitutionReviewModule({
 						reviewedBy: input.reviewerId,
 						reviewedAt: new Date(),
 						adminNotes: input.adminNotes,
+						...titleCased,
 					})
 					.where(
 						and(

@@ -110,12 +110,18 @@ export function toSentenceCase(str: string) {
  * toTitleCase('delivery failed')     // Returns: 'Delivery Failed'
  * toTitleCase('hello world')         // Returns: 'Hello World'
  * toTitleCase('user_profile_page')   // Returns: 'User Profile Page'
+ * toTitleCase('al-muhtadin')         // Returns: 'Al-Muhtadin'
  */
 export function toTitleCase(str: string): string {
 	return str
 		.toLowerCase()
 		.split(/[\s_]+/)
-		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+		.map((word) =>
+			word
+				.split("-")
+				.map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+				.join("-"),
+		)
 		.join(" ");
 }
 
