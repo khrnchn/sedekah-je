@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: sedekah.je API
   description: |
-    Public API for sedekah.je — a community-driven directory of QR codes for mosques, suraus, and other religious institutions in Malaysia.
+    Public API for sedekah.je, a community-driven directory of QR codes for mosques, suraus, and other religious institutions in Malaysia.
 
     These endpoints are open and do not require authentication or API keys. Please be respectful with usage.
 
@@ -45,13 +45,33 @@ info:
     | Tool | Description | Parameters |
     |------|-------------|------------|
     | `list_filter_options` | Returns all available filter values (categories, states, payment methods) | None |
-    | `search_institutions` | Search and filter approved institutions with pagination | `search?`, `category?`, `state?`, `payment_method?`, `page?`, `limit?` |
+    | `search_institutions` | Search and filter approved institutions with pagination | `search?`, `category?`, `state?`, `payment_method?`, `page?` (default 1, max 1000), `limit?` (default 20, max 100) |
     | `get_institution` | Get full details of a specific institution | `slug` (required) |
     | `get_random_institution` | Returns one random approved institution | None |
+
+    ## Embed Widget
+
+    Any approved institution's QR code can be embedded on another website with an iframe. The "Sematkan" button on each institution card generates the snippet.
+
+    ```html
+    <iframe src="https://sedekah.je/embed/masjid-negara"
+      title="Kod QR sedekah untuk Masjid Negara"
+      width="300" height="420" loading="lazy"
+      style="border:0;max-width:100%"></iframe>
+    ```
+
+    | Query param | Values | Default |
+    |-------------|--------|---------|
+    | `theme` | `light`, `dark`, `auto` (follows the visitor's colour scheme) | `light` |
+    | `size` | `sm` (260x360), `md` (300x420), `lg` (340x480) | `md` |
+
+    Set the iframe `width` and `height` to match the chosen `size`.
   version: 1.0.0
   contact:
     name: sedekah.je
     url: https://sedekah.je
+
+security: []
 
 tags:
   - name: Institutions
@@ -111,7 +131,7 @@ paths:
             example: "Selangor"
         - name: mode
           in: query
-          description: Return a paginated page or all matching map markers
+          description: Return a paginated page, or all matching institutions that have coordinates (for map markers)
           schema:
             type: string
             enum: [page, markers]
@@ -205,7 +225,7 @@ paths:
       description: |
         Model Context Protocol endpoint for AI assistants. Uses JSON-RPC 2.0 over Streamable HTTP transport.
 
-        This endpoint is designed to be consumed by MCP clients (Claude Desktop, Cursor, etc.) — not called directly. See the MCP section above for connection instructions.
+        This endpoint is designed to be consumed by MCP clients (Claude Desktop, Cursor, etc.), not called directly. See the MCP section above for connection instructions.
 
         **Example: Initialize**
         ```json
@@ -286,13 +306,33 @@ paths:
                   serverInfo:
                     name: "sedekah-je"
                     version: "1.0.0"
+        "400":
+          description: Invalid JSON-RPC message
+          content:
+            application/json:
+              example:
+                jsonrpc: "2.0"
+                error:
+                  code: -32700
+                  message: "Parse error: Invalid JSON-RPC message"
+                id: null
+        "406":
+          description: Missing `Accept` header. Clients must accept both `application/json` and `text/event-stream`.
+          content:
+            application/json:
+              example:
+                jsonrpc: "2.0"
+                error:
+                  code: -32000
+                  message: "Not Acceptable: Client must accept both application/json and text/event-stream"
+                id: null
 
   /api/random:
     get:
       operationId: getRandomInstitution
       summary: Get a random institution
       description: |
-        Returns one randomly selected approved institution. Never cached — each request returns a fresh result. Open CORS.
+        Returns one randomly selected approved institution. Never cached, so each request returns a fresh result. Open CORS.
       tags:
         - Institutions
       responses:
@@ -356,8 +396,7 @@ components:
         slug:
           type: string
         description:
-          type: string
-          nullable: true
+          type: [string, "null"]
         category:
           type: string
           enum: [masjid, surau, tahfiz, kebajikan, lain-lain]
@@ -366,30 +405,25 @@ components:
         city:
           type: string
         qrImage:
-          type: string
-          nullable: true
+          type: [string, "null"]
           description: URL to the QR code image
         qrContent:
-          type: string
-          nullable: true
+          type: [string, "null"]
           description: Raw QR code payload
         supportedPayment:
-          type: array
-          nullable: true
+          type: [array, "null"]
           items:
             type: string
             enum: [duitnow, tng, boost, toyyibpay]
         coords:
-          type: array
-          nullable: true
+          type: [array, "null"]
           description: "[latitude, longitude]"
           items:
             type: number
           minItems: 2
           maxItems: 2
         contributorId:
-          type: string
-          nullable: true
+          type: [string, "null"]
         claimable:
           type: boolean
 
@@ -409,20 +443,16 @@ components:
         city:
           type: string
         qrImage:
-          type: string
-          nullable: true
+          type: [string, "null"]
         qrContent:
-          type: string
-          nullable: true
+          type: [string, "null"]
         supportedPayment:
-          type: array
-          nullable: true
+          type: [array, "null"]
           items:
             type: string
             enum: [duitnow, tng, boost, toyyibpay]
         coords:
-          type: array
-          nullable: true
+          type: [array, "null"]
           items:
             type: number
           minItems: 2
