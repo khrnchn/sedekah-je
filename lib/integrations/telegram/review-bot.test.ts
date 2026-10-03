@@ -30,6 +30,7 @@ const candidate: TelegramReviewCandidate = {
 	supportedPayment: ["duitnow"],
 	coords: [3.1, 101.6],
 	contributorName: "Contributor",
+	partnerName: null,
 	sourceUrl: null,
 	createdAt: new Date("2026-08-21T05:19:10.650Z"),
 	duplicateInstitutionId: null,

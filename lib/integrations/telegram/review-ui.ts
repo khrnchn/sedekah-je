@@ -49,6 +49,7 @@ export type TelegramReviewCandidate = {
 	supportedPayment: string[] | null;
 	coords: [number, number] | null;
 	contributorName: string | null;
+	partnerName: string | null;
 	sourceUrl: string | null;
 	createdAt: Date;
 	duplicateInstitutionId: number | null;
@@ -306,7 +307,7 @@ export function buildReviewCard(
 		`Address: ${escapeTelegramHtml(candidate.address || "Not provided")}`,
 		`Payment: ${escapeTelegramHtml(payments)}`,
 		`Submitted: ${escapeTelegramHtml(submittedAt)}`,
-		`Contributor: ${escapeTelegramHtml(candidate.contributorName || (isImport ? "Automated import" : "Unknown"))}`,
+		`Contributor: ${escapeTelegramHtml(candidate.contributorName || (isImport ? "Automated import" : "Unknown"))}${candidate.partnerName ? ` (via ${escapeTelegramHtml(candidate.partnerName)})` : ""}`,
 		"",
 		blockers.length === 0
 			? "✅ <b>Ready for quick review</b>"

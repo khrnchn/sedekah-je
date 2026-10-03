@@ -513,6 +513,12 @@ export async function getPendingInstitutionById(id: number) {
 			contributorName: users.name,
 			contributorId: users.id,
 			contributorEmail: users.email,
+			partnerName: sql<string | null>`(
+				select ${users.name}
+				from ${users}
+				where ${users.id} = ${institutions.partnerId}
+				limit 1
+			)`,
 			contributorRemarks: institutions.contributorRemarks,
 			sourceUrl: institutions.sourceUrl,
 			createdAt: institutions.createdAt,

@@ -26,6 +26,7 @@ const candidate: TelegramReviewCandidate = {
 	supportedPayment: ["duitnow"],
 	coords: [3.1, 101.6],
 	contributorName: "Community Contributor",
+	partnerName: null,
 	sourceUrl: null,
 	createdAt: new Date("2026-08-21T05:19:10.650Z"),
 	duplicateInstitutionId: null,
@@ -67,6 +68,16 @@ describe("Telegram institution review UI", () => {
 				.some((button) => button.text === "✅ Approve"),
 		);
 		assert.equal(card.qrFollowUpText, null);
+	});
+
+	test("labels partner submissions with the partner name", () => {
+		const card = buildReviewCard(
+			{ ...candidate, contributorName: "Ali", partnerName: "Taubat" },
+			"community",
+			{ adminBaseUrl: null },
+		);
+
+		assert.ok(card.caption.includes("Contributor: Ali (via Taubat)"));
 	});
 
 	test("blocks quick approval when required review evidence is missing", () => {

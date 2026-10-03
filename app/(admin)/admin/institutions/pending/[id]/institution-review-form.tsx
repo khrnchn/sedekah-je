@@ -78,6 +78,7 @@ type PartialInstitution = Partial<Institution> & {
 	contributorName?: string | null;
 	contributorId?: string | null;
 	contributorEmail?: string | null;
+	partnerName?: string | null;
 	createdAt?: Date;
 };
 
@@ -1271,6 +1272,11 @@ const InstitutionReviewForm = forwardRef<ReviewFormHandle, Props>(
 									{institution.contributorEmail && (
 										<div className="truncate text-xs text-muted-foreground">
 											{institution.contributorEmail}
+										</div>
+									)}
+									{institution.partnerName && (
+										<div className="truncate text-xs text-muted-foreground">
+											via {institution.partnerName}
 										</div>
 									)}
 								</dd>

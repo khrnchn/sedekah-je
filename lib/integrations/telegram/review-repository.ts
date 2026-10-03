@@ -107,6 +107,12 @@ const candidateSelection = {
 	supportedPayment: institutions.supportedPayment,
 	coords: institutions.coords,
 	contributorName: users.name,
+	partnerName: sql<string | null>`(
+		select ${users.name}
+		from ${users}
+		where ${users.id} = ${institutions.partnerId}
+		limit 1
+	)`,
 	sourceUrl: institutions.sourceUrl,
 	createdAt: institutions.createdAt,
 };
