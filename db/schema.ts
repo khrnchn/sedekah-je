@@ -1,5 +1,6 @@
 // Main schema exports - import from individual files
 
+export * from "./api_keys";
 export * from "./auth";
 export * from "./blog";
 export * from "./claim_requests";

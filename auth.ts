@@ -1,7 +1,7 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
-import { admin } from "better-auth/plugins";
+import { admin, apiKey } from "better-auth/plugins";
 import { eq } from "drizzle-orm";
 import { logNewUser } from "@/lib/integrations/telegram";
 import { db } from "./db";
@@ -15,9 +15,26 @@ export const auth = betterAuth({
 			session: schema.sessions,
 			account: schema.accounts,
 			verification: schema.verifications,
+			apikey: schema.apiKeys,
 		},
 	}),
-	plugins: [admin(), nextCookies()],
+	// Partner keys are issued only via scripts/partner-api-key.ts, so the
+	// plugin's HTTP endpoints stay closed to signed-in users.
+	disabledPaths: [
+		"/api-key/create",
+		"/api-key/get",
+		"/api-key/update",
+		"/api-key/delete",
+		"/api-key/list",
+	],
+	plugins: [
+		admin(),
+		// Partner API keys. The per-key limit counts every verified request.
+		apiKey({
+			rateLimit: { timeWindow: 1000 * 60 * 60 * 24, maxRequests: 200 },
+		}),
+		nextCookies(),
+	],
 	// emailAndPassword: {
 	//	enabled: true,
 	// },

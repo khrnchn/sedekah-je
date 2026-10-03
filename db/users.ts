@@ -39,6 +39,8 @@ export const users = pgTable("users", {
 		.notNull()
 		.$type<(typeof userRoles)[number]>(),
 	isActive: boolean("is_active").default(true).notNull(),
+	// Partner that created this user from a submission, e.g. "taubat"
+	createdVia: varchar("created_via", { length: 50 }),
 	banned: boolean("banned").default(false),
 	banReason: text("ban_reason"),
 	banExpires: timestamp("ban_expires"),

@@ -71,6 +71,13 @@
 			"when": 1787326553175,
 			"tag": "0009_silent_yellowjacket",
 			"breakpoints": true
+		},
+		{
+			"idx": 10,
+			"version": "7",
+			"when": 1790964361184,
+			"tag": "0010_partner_api_keys",
+			"breakpoints": true
 		}
 	]
 }

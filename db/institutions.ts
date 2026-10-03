@@ -50,6 +50,8 @@ export const institutions = pgTable("institutions", {
 	contributorId: text("contributor_id").references(() => users.id),
 	contributorRemarks: text("contributor_remarks"),
 	sourceUrl: text("source_url"),
+	// Partner account whose API key submitted this row
+	partnerId: text("partner_id").references(() => users.id),
 	reviewedBy: text("reviewed_by").references(() => users.id),
 	reviewedAt: timestamp("reviewed_at"),
 	adminNotes: text("admin_notes"),
