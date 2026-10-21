@@ -18,7 +18,4 @@ export type Institution = {
 	qrContent?: string;
 	supportedPayment?: PaymentOption[];
 	coords?: [number, number];
-	contributorId?: string | null;
-	contributorEmail?: string | null;
-	claimable?: boolean;
 };

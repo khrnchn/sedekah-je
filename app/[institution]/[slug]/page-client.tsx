@@ -6,14 +6,14 @@ import type { Institution as OldInstitution } from "@/app/types/institutions";
 import InstitutionCard from "@/components/institution/institution-card";
 import CollapsibleCustomMap from "@/components/map/custom-map";
 import { Button } from "@/components/ui/button";
-import type { Institution } from "@/db/schema";
 import {
 	getInstitutionCategoryColor,
 	normalizeInstitutionCategory,
 } from "@/lib/institution-categories";
+import type { PublicInstitutionDetails } from "@/lib/queries/public-institution";
 
 type Props = {
-	institution: Institution;
+	institution: PublicInstitutionDetails;
 };
 
 export function InstitutionPageClient({ institution }: Props) {

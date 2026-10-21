@@ -422,10 +422,6 @@ components:
             type: number
           minItems: 2
           maxItems: 2
-        contributorId:
-          type: [string, "null"]
-        claimable:
-          type: boolean
 
     InstitutionCompact:
       type: object

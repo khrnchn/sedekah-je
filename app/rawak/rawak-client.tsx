@@ -35,16 +35,16 @@ import {
 	DrawerTitle,
 	DrawerTrigger,
 } from "@/components/ui/drawer";
-import type { Institution } from "@/db/schema";
 import useClientDimensions from "@/hooks/use-client-dimensions";
 import {
 	type CanonicalInstitutionCategory,
 	normalizeInstitutionCategory,
 } from "@/lib/institution-categories";
+import type { PublicInstitution } from "@/lib/queries/public-institution";
 import { getBaseUrl, removeDuplicateInstitutions, slugify } from "@/lib/utils";
 
 type Props = {
-	initialInstitutions: Institution[];
+	initialInstitutions: Array<PublicInstitution & { updatedAt: Date | null }>;
 };
 type NormalizedInstitution = Omit<OldInstitution, "category"> & {
 	category: CanonicalInstitutionCategory;

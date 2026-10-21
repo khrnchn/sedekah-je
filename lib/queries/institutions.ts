@@ -13,20 +13,22 @@ import {
 } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import { db } from "@/db";
-import { institutions, users } from "@/db/schema";
+import { institutions } from "@/db/schema";
 import { normalizeInstitutionCategory } from "@/lib/institution-categories";
 import type {
-	categories as categoryOptions,
-	states as stateOptions,
-	supportedPayments,
-} from "@/lib/institution-constants";
+	PublicInstitution,
+	PublicInstitutionDetails,
+} from "@/lib/queries/public-institution";
+import {
+	toPublicInstitution,
+	toPublicInstitutionDetails,
+} from "@/lib/queries/public-institution";
 
-const INSTITUTIONS_CACHE_VERSION = "v3";
-const PUBLIC_INSTITUTIONS_CACHE_VERSION = "v2";
+const INSTITUTIONS_CACHE_VERSION = "v4";
+const PUBLIC_INSTITUTIONS_CACHE_VERSION = "v3";
 
-type Category = (typeof categoryOptions)[number];
-type State = (typeof stateOptions)[number];
-type SupportedPayment = (typeof supportedPayments)[number];
+type Category = PublicInstitution["category"];
+type State = PublicInstitution["state"];
 
 export type PublicInstitutionsParams = {
 	search?: string;
@@ -36,21 +38,7 @@ export type PublicInstitutionsParams = {
 	limit?: number;
 };
 
-export type PublicInstitution = {
-	id: number;
-	name: string;
-	slug: string;
-	description: string | null;
-	category: Category;
-	state: State;
-	city: string;
-	qrImage: string | null;
-	qrContent: string | null;
-	supportedPayment: SupportedPayment[] | null;
-	coords: [number, number] | null;
-	contributorId: string | null;
-	claimable: boolean;
-};
+export type { PublicInstitution, PublicInstitutionDetails };
 
 function normalizePublicInstitutionParams(params: PublicInstitutionsParams) {
 	const page =
@@ -128,8 +116,6 @@ const publicInstitutionSelect = {
 	qrContent: institutions.qrContent,
 	supportedPayment: institutions.supportedPayment,
 	coords: institutions.coords,
-	contributorId: institutions.contributorId,
-	claimable: sql<boolean>`(${institutions.contributorId} is null or ${users.email} = 'khairin13chan@gmail.com')`,
 };
 
 const getPublicInstitutionsPageInternal = unstable_cache(
@@ -142,7 +128,6 @@ const getPublicInstitutionsPageInternal = unstable_cache(
 		const institutionsQuery = db
 			.select(publicInstitutionSelect)
 			.from(institutions)
-			.leftJoin(users, eq(institutions.contributorId, users.id))
 			.where(and(...conditions))
 			.orderBy(
 				asc(sql`lower(btrim(${institutions.name}))`),
@@ -177,10 +162,12 @@ const getPublicInstitutionsPageInternal = unstable_cache(
 		);
 
 		return {
-			institutions: institutionsResult.map((institution) => ({
-				...institution,
-				category: normalizeInstitutionCategory(institution.category),
-			})),
+			institutions: institutionsResult.map((institution) =>
+				toPublicInstitution({
+					...institution,
+					category: normalizeInstitutionCategory(institution.category),
+				}),
+			),
 			pagination: {
 				page: params.page,
 				limit: params.limit,
@@ -217,17 +204,18 @@ const getPublicInstitutionMarkersInternal = unstable_cache(
 		const results = await db
 			.select(publicInstitutionSelect)
 			.from(institutions)
-			.leftJoin(users, eq(institutions.contributorId, users.id))
 			.where(and(...conditions, isNotNull(institutions.coords)))
 			.orderBy(
 				asc(sql`lower(btrim(${institutions.name}))`),
 				asc(institutions.id),
 			);
 
-		return results.map((institution) => ({
-			...institution,
-			category: normalizeInstitutionCategory(institution.category),
-		}));
+		return results.map((institution) =>
+			toPublicInstitution({
+				...institution,
+				category: normalizeInstitutionCategory(institution.category),
+			}),
+		);
 	},
 	["public-institution-markers", PUBLIC_INSTITUTIONS_CACHE_VERSION],
 	{
@@ -246,35 +234,10 @@ const getInstitutionsInternal = unstable_cache(
 	async () => {
 		const results = await db
 			.select({
-				id: institutions.id,
-				name: institutions.name,
-				slug: institutions.slug,
-				description: institutions.description,
-				category: institutions.category,
-				state: institutions.state,
-				city: institutions.city,
-				address: institutions.address,
-				qrImage: institutions.qrImage,
-				qrContent: institutions.qrContent,
-				supportedPayment: institutions.supportedPayment,
-				coords: institutions.coords,
-				socialMedia: institutions.socialMedia,
-				status: institutions.status,
-				contributorId: institutions.contributorId,
-				contributorRemarks: institutions.contributorRemarks,
-				sourceUrl: institutions.sourceUrl,
-				partnerId: institutions.partnerId,
-				reviewedBy: institutions.reviewedBy,
-				reviewedAt: institutions.reviewedAt,
-				adminNotes: institutions.adminNotes,
-				contributorEmail: users.email,
-				isVerified: institutions.isVerified,
-				isActive: institutions.isActive,
-				createdAt: institutions.createdAt,
+				...publicInstitutionSelect,
 				updatedAt: institutions.updatedAt,
 			})
 			.from(institutions)
-			.leftJoin(users, eq(institutions.contributorId, users.id))
 			.where(eq(institutions.status, "approved"))
 			.orderBy(
 				asc(sql`lower(btrim(${institutions.name}))`),
@@ -282,8 +245,11 @@ const getInstitutionsInternal = unstable_cache(
 			);
 
 		return results.map((institution) => ({
-			...institution,
-			category: normalizeInstitutionCategory(institution.category),
+			...toPublicInstitution({
+				...institution,
+				category: normalizeInstitutionCategory(institution.category),
+			}),
+			updatedAt: institution.updatedAt,
 		}));
 	},
 	["all-institutions", INSTITUTIONS_CACHE_VERSION],
@@ -301,45 +267,22 @@ const getInstitutionBySlugInternal = unstable_cache(
 	async (slug: string) => {
 		const [institution] = await db
 			.select({
-				id: institutions.id,
-				name: institutions.name,
-				slug: institutions.slug,
-				description: institutions.description,
-				category: institutions.category,
-				state: institutions.state,
-				city: institutions.city,
+				...publicInstitutionSelect,
 				address: institutions.address,
-				qrImage: institutions.qrImage,
-				qrContent: institutions.qrContent,
-				supportedPayment: institutions.supportedPayment,
-				coords: institutions.coords,
 				socialMedia: institutions.socialMedia,
-				status: institutions.status,
-				contributorId: institutions.contributorId,
-				contributorRemarks: institutions.contributorRemarks,
-				sourceUrl: institutions.sourceUrl,
-				partnerId: institutions.partnerId,
-				reviewedBy: institutions.reviewedBy,
-				reviewedAt: institutions.reviewedAt,
-				adminNotes: institutions.adminNotes,
-				contributorEmail: users.email,
 				isVerified: institutions.isVerified,
-				isActive: institutions.isActive,
-				createdAt: institutions.createdAt,
-				updatedAt: institutions.updatedAt,
 			})
 			.from(institutions)
-			.leftJoin(users, eq(institutions.contributorId, users.id))
 			.where(
 				and(eq(institutions.slug, slug), eq(institutions.status, "approved")),
 			)
 			.limit(1);
 
 		return institution
-			? {
+			? toPublicInstitutionDetails({
 					...institution,
 					category: normalizeInstitutionCategory(institution.category),
-				}
+				})
 			: null;
 	},
 	["institution-by-slug", INSTITUTIONS_CACHE_VERSION],

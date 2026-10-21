@@ -6,6 +6,7 @@ import {
 	Code2,
 	DownloadIcon,
 	Eye,
+	Loader2,
 	MapPin,
 	Share2,
 	User,
@@ -42,6 +43,7 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/use-auth";
+import { getClaimEligibility } from "@/lib/features/claim-institution/actions";
 import {
 	getInstitutionCategoryIcon,
 	getInstitutionCategoryIconDimensions,
@@ -112,9 +114,6 @@ const InstitutionCard = forwardRef<
 			category,
 			isClosest,
 			distanceToCurrentUserInMeter,
-			contributorId,
-			contributorEmail,
-			claimable,
 		},
 		ref,
 	) => {
@@ -125,6 +124,7 @@ const InstitutionCard = forwardRef<
 		const [isDownloading, setIsDownloading] = useState(false);
 		const [downloadStage, setDownloadStage] = useState<string>("");
 		const [showClaimModal, setShowClaimModal] = useState(false);
+		const [isCheckingClaim, setIsCheckingClaim] = useState(false);
 		const [showEmbedDialog, setShowEmbedDialog] = useState(false);
 		const printRef = useRef<HTMLButtonElement>(null);
 
@@ -135,17 +135,30 @@ const InstitutionCard = forwardRef<
 		const capitalizedCity = capitalizeWords(city);
 		const formattedDistance = formatDistance(distanceToCurrentUserInMeter);
 
-		// Check if user can claim this institution
-		// 1. User must be logged in
-		// 2. Institution's contributorId must be null, OR
-		// 3. Institution's contributor email must be khairin13chan@gmail.com
-		const canClaim =
-			hasMounted &&
-			!isLoading &&
-			isAuthenticated &&
-			(claimable ??
-				(contributorId === null ||
-					contributorEmail === "khairin13chan@gmail.com"));
+		// submitClaimRequest enforces which institutions are claimable.
+		const canClaim = hasMounted && !isLoading && isAuthenticated;
+
+		const handleClaimClick = async () => {
+			setIsCheckingClaim(true);
+			try {
+				const { status } = await getClaimEligibility(id);
+				if (status === "claimable") {
+					setShowClaimModal(true);
+				} else if (status === "pending") {
+					toast.info(
+						"Anda sudah mempunyai permohonan tuntutan yang belum selesai untuk institusi ini.",
+					);
+				} else if (status === "owned") {
+					toast.info("Institusi ini sudah dituntut.");
+				} else {
+					toast.error("Sila log masuk untuk menuntut institusi ini.");
+				}
+			} catch {
+				toast.error("Gagal menyemak status tuntutan. Cuba lagi.");
+			} finally {
+				setIsCheckingClaim(false);
+			}
+		};
 
 		const resolvedSlug = slug ?? slugify(name);
 		const normalizedCategory = normalizeInstitutionCategory(category);
@@ -666,12 +679,17 @@ const InstitutionCard = forwardRef<
 													size="sm"
 													variant="ghost"
 													className="h-7 gap-1 px-2 text-xs text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors duration-200 ease-out"
+													disabled={isCheckingClaim}
 													onClick={(e) => {
 														e.stopPropagation();
-														setShowClaimModal(true);
+														handleClaimClick();
 													}}
 												>
-													<User className="h-3.5 w-3.5" />
+													{isCheckingClaim ? (
+														<Loader2 className="h-3.5 w-3.5 animate-spin" />
+													) : (
+														<User className="h-3.5 w-3.5" />
+													)}
 													Tuntut
 												</Button>
 											</TooltipTrigger>

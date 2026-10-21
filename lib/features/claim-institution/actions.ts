@@ -1,6 +1,6 @@
 "use server";
 
-import { and, count, eq, gte } from "drizzle-orm";
+import { and, count, eq, gte, sql } from "drizzle-orm";
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -156,4 +156,46 @@ export async function submitClaimRequest(formData: FormData) {
 
 		return { success: false, error: "Gagal menghantar permohonan tuntutan" };
 	}
+}
+
+export async function getClaimEligibility(institutionId: number) {
+	const session = await auth.api.getSession({ headers: await headers() });
+	if (!session?.user) {
+		return { status: "unauthenticated" as const };
+	}
+
+	const [inst] = await db
+		.select({
+			contributorId: institutions.contributorId,
+			contributorEmail: users.email,
+			hasPendingClaim: sql<boolean>`exists (
+				select 1 from ${claimRequests}
+				where ${claimRequests.institutionId} = ${institutions.id}
+				and ${claimRequests.userId} = ${session.user.id}
+				and ${claimRequests.status} = 'pending'
+			)`,
+		})
+		.from(institutions)
+		.leftJoin(users, eq(institutions.contributorId, users.id))
+		.where(
+			and(
+				eq(institutions.id, institutionId),
+				eq(institutions.status, "approved"),
+			),
+		)
+		.limit(1);
+
+	if (!inst) {
+		return { status: "owned" as const };
+	}
+	if (inst.hasPendingClaim) {
+		return { status: "pending" as const };
+	}
+
+	// Must match the canClaim rule in submitClaimRequest.
+	const canClaim =
+		inst.contributorId === null ||
+		inst.contributorEmail === "khairin13chan@gmail.com";
+
+	return { status: canClaim ? ("claimable" as const) : ("owned" as const) };
 }
