@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, test } from "node:test";
+import { reviewVersion } from "@/lib/features/institution-review/telegram-evidence";
 import {
 	buildCustomReasonConfirmation,
 	buildCustomReasonPrompt,
@@ -188,4 +189,45 @@ describe("Telegram institution review UI", () => {
 			"✅ <b>APPROVED · #42</b>\nReviewed by Admin &lt;One&gt;",
 		);
 	});
+});
+
+test("combined assessment stays within photo caption limit and escapes image text", () => {
+	const row = {
+		...candidate,
+		name: "A".repeat(200),
+		address: "B".repeat(2000),
+		city: "C".repeat(100),
+	};
+	const card = buildReviewCard(
+		{
+			...row,
+			reviewMetadata: {
+				analysis: {
+					version: reviewVersion(row),
+					state: "complete",
+					model: "test",
+					attempts: 1,
+					result: {
+						imageType: "physical_photo",
+						visibleInstitution: "<img>".repeat(100),
+						visibleLocation: "&location".repeat(50),
+						recipientRelationship: "unclear",
+						conflicts: ["<concern>".repeat(30)],
+						explanation: "X".repeat(800),
+					},
+				},
+			},
+		},
+		"community",
+		{ adminBaseUrl: null },
+	);
+	const parsed = card.caption
+		.replace(/<\/?b>/g, "")
+		.replace(/&lt;/g, "<")
+		.replace(/&gt;/g, ">")
+		.replace(/&amp;/g, "&");
+	assert.ok(parsed.length <= 1024);
+	assert.ok(!card.caption.includes("<img>"));
+	assert.match(card.caption, /Name shown: &lt;img&gt;/);
+	assert.equal(card.qrFollowUpText, null);
 });

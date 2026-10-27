@@ -12,6 +12,7 @@ import {
 	type EvidenceRecord,
 	inspectDuitNow,
 	operationVersion,
+	reviewVersion,
 	telegramApprovalBlockers,
 } from "@/lib/features/institution-review/telegram-evidence";
 import { states } from "@/lib/institution-constants";
@@ -24,6 +25,7 @@ import type {
 	TelegramMessage,
 } from "./bot-api";
 import { scheduleReviewAnalysis } from "./review-analysis";
+import { formatAssessmentReport } from "./review-assessment-copy";
 import { fetchReviewImage, validateReviewImage } from "./review-media";
 import {
 	applyReviewOperation,
@@ -322,6 +324,7 @@ export async function handleToolCallback(
 				"hold",
 				"resume-held",
 				"analysis",
+				"analysis-details",
 				"evidence",
 				"reject-custom",
 				"reject-custom-edit",
@@ -402,10 +405,17 @@ export async function handleToolCallback(
 				chatId: config.chatId,
 				messageId: message.message_id,
 			});
-			await client.sendMessage({
-				chatId: config.chatId,
-				text: `Saved. /find ${op.institutionId} to reopen.`,
-			});
+			if (op.kind === "analysis-request") {
+				await client.editMessageText({
+					chatId: config.chatId,
+					messageId: message.message_id,
+					text: "Analysis requested. Results will appear on the review card. You can keep reviewing while it runs.",
+				});
+			} else
+				await client.sendMessage({
+					chatId: config.chatId,
+					text: `Saved. /find ${op.institutionId} to reopen.`,
+				});
 			if ((op.kind === "approve" || op.kind === "reject") && onReviewed) {
 				const scope =
 					op.payload._queue === "imports"
@@ -432,7 +442,20 @@ export async function handleToolCallback(
 			throw new Error(
 				"This older undo button expired. Use the undo button attached to the latest saved review.",
 			);
-		if (action.action === "payload") {
+		if (action.action === "analysis-details") {
+			const analysis = row.reviewMetadata?.analysis;
+			if (
+				analysis?.state !== "complete" ||
+				analysis.version !== reviewVersion(row) ||
+				!analysis.result
+			)
+				throw new Error("No current photo assessment. Choose Retry analysis.");
+			await sendReviewText(client, {
+				chatId: config.chatId,
+				replyToMessageId: message.message_id,
+				text: formatAssessmentReport({ ...row, assessment: analysis.result }),
+			});
+		} else if (action.action === "payload") {
 			const payload = row.qrContent || "No QR payload — use Retry/replace QR";
 			for (let offset = 0; offset < payload.length; offset += 2000)
 				await client.sendMessage({
@@ -620,7 +643,7 @@ export async function handleToolCallback(
 				candidate,
 				"analysis-request",
 				{},
-				"Request a new Gemini assessment? AI remains unavailable while disabled or without working credentials. Manual review stays available.",
+				"Check this photo again? The result will update the review card. You still make the approval decision.",
 				tools,
 			);
 		} else

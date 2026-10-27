@@ -7,6 +7,7 @@ import {
 	reviewPendingInstitution,
 	undoInstitutionReview,
 } from "@/lib/features/institution-review/review";
+import { reviewVersion } from "@/lib/features/institution-review/telegram-evidence";
 import {
 	createTelegramBotClient,
 	type TelegramBotClient,
@@ -39,6 +40,7 @@ import {
 	scheduleReviewAnalysis,
 	shouldAutoAnalyseSubmission,
 } from "./review-analysis";
+import { reviewCardDigest, syncReviewCard } from "./review-card-sync";
 import {
 	handleToolCallback,
 	handleToolReply,
@@ -60,6 +62,7 @@ export type ReviewBotConfig = {
 };
 
 export type ReviewBotDependencies = {
+	syncCard: typeof syncReviewCard;
 	tools?: ReviewToolServices;
 	getCandidate: typeof getTelegramReviewCandidate;
 	getNextCandidate: typeof getNextTelegramReviewCandidate;
@@ -77,6 +80,7 @@ export type ReviewBotDependencies = {
 };
 
 const defaultDependencies: ReviewBotDependencies = {
+	syncCard: syncReviewCard,
 	tools: reviewToolServices,
 	getCandidate: getTelegramReviewCandidate,
 	getNextCandidate: getNextTelegramReviewCandidate,
@@ -146,18 +150,20 @@ async function sendCandidate(
 	config: Pick<ReviewBotConfig, "chatId" | "adminBaseUrl">,
 	candidate: TelegramReviewCandidate,
 	scope: TelegramReviewScope,
+	dependencies: ReviewBotDependencies = defaultDependencies,
 ): Promise<TelegramMessage> {
 	if (candidate.reviewMetadata?.analysis) {
 		await scheduleReviewAnalysis(candidate.id).catch(() =>
 			console.error("[review analysis] recovery scheduling failed"),
 		);
-		const refreshed = await getTelegramReviewCandidate(candidate.id, "all");
+		const refreshed = await dependencies.getCandidate(candidate.id, "all");
 		if (refreshed) candidate = refreshed;
 	}
 	const card = buildReviewCard(candidate, scope, {
 		adminBaseUrl: config.adminBaseUrl,
 	});
 	let sent: TelegramMessage;
+	let kind: "photo" | "text" = "text";
 	if (candidate.qrImage) {
 		try {
 			sent = await client.sendPhoto({
@@ -166,6 +172,7 @@ async function sendCandidate(
 				caption: card.caption,
 				replyMarkup: card.replyMarkup,
 			});
+			kind = "photo";
 		} catch (error) {
 			console.error("[telegram review] photo delivery failed", error);
 			sent = await client.sendMessage({
@@ -183,6 +190,17 @@ async function sendCandidate(
 			replyMarkup: card.replyMarkup,
 		});
 	}
+
+	await dependencies
+		.syncCard(client, config, candidate.id, {
+			chatId: config.chatId,
+			messageId: sent.message_id,
+			kind,
+			scope,
+			version: reviewVersion(candidate),
+			digest: reviewCardDigest(card),
+		})
+		.catch(() => console.error("[telegram review] card binding failed"));
 
 	if (card.qrFollowUpText) {
 		await client.sendMessage({
@@ -214,7 +232,7 @@ export async function sendNextCandidate(
 		});
 		return;
 	}
-	await sendCandidate(client, config, candidate, scope);
+	await sendCandidate(client, config, candidate, scope, dependencies);
 	await dependencies.saveSession({
 		telegramChatId: config.chatId,
 		scope,
@@ -241,7 +259,7 @@ export async function resumeReview(
 		session.scope,
 	);
 	if (current) {
-		await sendCandidate(client, config, current, session.scope);
+		await sendCandidate(client, config, current, session.scope, dependencies);
 		return;
 	}
 	await sendNextCandidate(
@@ -384,7 +402,7 @@ export async function handleMenuMessage(
 	if (findMatch) {
 		const query = findMatch[1].trim();
 		const openCandidate = async (candidate: TelegramReviewCandidate) => {
-			await sendCandidate(client, config, candidate, "all");
+			await sendCandidate(client, config, candidate, "all", dependencies);
 			await dependencies.saveSession({
 				telegramChatId: config.chatId,
 				scope: "all",
@@ -449,6 +467,46 @@ export async function handleReviewCallback(
 	callback: TelegramCallbackQuery,
 	dependencies: ReviewBotDependencies = defaultDependencies,
 ): Promise<void> {
+	const source = callback.message;
+	const action = callback.data ? decodeReviewCallback(callback.data) : null;
+	if (
+		source &&
+		action?.action === "analysis" &&
+		isAuthorizedTelegramActor(config.chatId, callback.from.id, source.chat.id)
+	) {
+		const candidate = await dependencies.getCandidate(
+			action.institutionId,
+			"all",
+		);
+		if (candidate) {
+			const target = candidate.reviewMetadata?.telegramCard;
+			if (
+				target?.messageId === source.message_id &&
+				target.chatId === config.chatId &&
+				target.version === reviewVersion(candidate)
+			) {
+				await dependencies
+					.syncCard(client, config, candidate.id)
+					.catch(() =>
+						console.error("[telegram review] analysis card refresh failed"),
+					);
+			} else {
+				// Legacy/untracked cards may contain an older QR photo. Open the
+				// current image rather than attach new evidence to an old photo.
+				await sendCandidate(
+					client,
+					config,
+					candidate,
+					action.scope,
+					dependencies,
+				);
+				await client.editMessageReplyMarkup({
+					chatId: config.chatId,
+					messageId: source.message_id,
+				});
+			}
+		}
+	}
 	if (
 		await handleToolCallback(
 			client,

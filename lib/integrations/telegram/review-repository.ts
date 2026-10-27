@@ -49,10 +49,11 @@ async function hydrateCandidate(
 		"duplicateInstitutionId" | "position" | "total"
 	>,
 	scope: TelegramReviewScope,
+	store: Pick<typeof db, "select"> = db,
 ): Promise<TelegramReviewCandidate> {
 	const scopeCondition = getScopeCondition(scope);
 	const duplicate = row.qrContent
-		? await db
+		? await store
 				.select({ id: institutions.id })
 				.from(institutions)
 				.where(
@@ -65,7 +66,7 @@ async function hydrateCandidate(
 				.limit(1)
 		: [];
 	const [positionResult, totalResult] = await Promise.all([
-		db
+		store
 			.select({ value: count() })
 			.from(institutions)
 			.where(
@@ -75,7 +76,7 @@ async function hydrateCandidate(
 					lte(institutions.id, row.id),
 				),
 			),
-		db
+		store
 			.select({ value: count() })
 			.from(institutions)
 			.where(and(eq(institutions.status, "pending"), scopeCondition)),
@@ -84,7 +85,7 @@ async function hydrateCandidate(
 	return {
 		...row,
 		version: reviewVersion(row),
-		duplicates: await findReviewDuplicates(row),
+		duplicates: await findReviewDuplicates(row, store),
 		duplicateInstitutionId: duplicate[0]?.id ?? null,
 		position: positionResult[0]?.value ?? 1,
 		total: totalResult[0]?.value ?? 0,
@@ -117,8 +118,9 @@ const candidateSelection = {
 export async function getTelegramReviewCandidate(
 	institutionId: number,
 	scope: TelegramReviewScope,
+	store: Pick<typeof db, "select"> = db,
 ): Promise<TelegramReviewCandidate | null> {
-	const [row] = await db
+	const [row] = await store
 		.select(candidateSelection)
 		.from(institutions)
 		.leftJoin(users, eq(institutions.contributorId, users.id))
@@ -130,7 +132,7 @@ export async function getTelegramReviewCandidate(
 			),
 		)
 		.limit(1);
-	return row ? hydrateCandidate(row, scope) : null;
+	return row ? hydrateCandidate(row, scope, store) : null;
 }
 
 export async function getNextTelegramReviewCandidate(

@@ -13,8 +13,10 @@ import {
 	reviewVersion,
 } from "@/lib/features/institution-review/telegram-evidence";
 import { makePayload, makeRecord } from "./__fixtures__/review-records";
+import { createTelegramBotClient } from "./bot-api";
 import { REVIEW_PROMPT_VERSION } from "./gemini-assessment";
 import { runReviewAnalysis, scheduleReviewAnalysis } from "./review-analysis";
+import { syncReviewCard } from "./review-card-sync";
 import {
 	applyReviewOperation,
 	createReviewOperation,
@@ -469,6 +471,73 @@ localTest(
 					undefined,
 				);
 			}
+		} finally {
+			globalThis.fetch = originalFetch;
+		}
+	},
+);
+
+localTest(
+	"Postgres: late analysis binds to one card and cannot revive a reviewed or stale card",
+	async () => {
+		const row = await seed();
+		const originalFetch = globalThis.fetch;
+		let edits = 0;
+		globalThis.fetch = Object.assign(
+			async (url: unknown, init?: RequestInit) => {
+				assert.match(String(url), /api.telegram.org.*editMessageCaption$/);
+				const body = JSON.parse(String(init?.body));
+				assert.equal(body.message_id, 99);
+				assert.ok(body.reply_markup.inline_keyboard.length);
+				edits++;
+				return Response.json({ ok: true, result: true });
+			},
+			{},
+		);
+		try {
+			await db
+				.update(institutions)
+				.set({
+					reviewMetadata: {
+						analysis: {
+							state: "unavailable",
+							version: reviewVersion(row),
+							model: "test",
+							attempts: 1,
+						},
+					},
+				})
+				.where(eq(institutions.id, row.id));
+			const client = createTelegramBotClient("local-test");
+			const config = { chatId: "123", adminBaseUrl: null };
+			// Analysis finished before the initial message reference was persisted.
+			await syncReviewCard(client, config, row.id, {
+				chatId: "123",
+				messageId: 99,
+				kind: "photo",
+				scope: "community",
+				version: reviewVersion(row),
+				digest: "",
+			});
+			assert.equal(edits, 1);
+			assert.equal(
+				(await current(row.id)).reviewMetadata?.telegramCard?.messageId,
+				99,
+			);
+			await syncReviewCard(client, config, row.id);
+			assert.equal(edits, 1); // repeated completion does not repeat Telegram edits
+			await db
+				.update(institutions)
+				.set({ status: "approved" })
+				.where(eq(institutions.id, row.id));
+			await syncReviewCard(client, config, row.id);
+			assert.equal(edits, 1);
+			await db
+				.update(institutions)
+				.set({ status: "pending", address: "Changed" })
+				.where(eq(institutions.id, row.id));
+			await syncReviewCard(client, config, row.id);
+			assert.equal(edits, 1);
 		} finally {
 			globalThis.fetch = originalFetch;
 		}

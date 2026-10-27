@@ -9,7 +9,10 @@ import {
 	type ReviewMetadata,
 	reviewVersion,
 } from "@/lib/features/institution-review/telegram-evidence";
-import { assessmentCardSummary } from "./review-assessment-copy";
+import {
+	assessmentCardDetails,
+	assessmentCardSummary,
+} from "./review-assessment-copy";
 
 export type TelegramReviewScope = "community" | "imports" | "all" | "held";
 
@@ -36,6 +39,7 @@ export type ReviewCallback = {
 		| "hold"
 		| "resume-held"
 		| "analysis"
+		| "analysis-details"
 		| "evidence";
 	scope: TelegramReviewScope;
 	institutionId: number;
@@ -96,6 +100,7 @@ const CALLBACK_ACTION_CODES = {
 	hold: "h",
 	"resume-held": "s",
 	analysis: "g",
+	"analysis-details": "G",
 	evidence: "v",
 } as const satisfies Record<ReviewCallback["action"], string>;
 
@@ -323,41 +328,48 @@ export function buildReviewCard(
 	const currentAnalysis =
 		analysis?.version === reviewVersion(candidate) ? analysis : undefined;
 	const summary = [
-		`Recipient: ${escapeTelegramHtml((qr.recipient || "Unknown").slice(0, 90))}`,
-		`Name: ${escapeTelegramHtml(compareRecipient(candidate.name, qr.recipient))}`,
+		`Recipient: ${(qr.recipient || "Not verified").slice(0, 90)}`,
+		`Name: ${compareRecipient(candidate.name, qr.recipient)}`,
 		`QR: ${qr.format}; checksum ${qr.checksum}`,
 		`Pin: ${candidate.coords?.join(", ") || "Missing"}`,
 		currentAnalysis?.state === "complete" && currentAnalysis.result
-			? escapeTelegramHtml(
-					assessmentCardSummary(currentAnalysis.result, candidate.qrContent),
-				)
+			? assessmentCardSummary(currentAnalysis.result, candidate.qrContent)
 			: currentAnalysis?.state === "queued" ||
 					currentAnalysis?.state === "processing"
 				? "AI: Checking image…"
 				: currentAnalysis?.state === "unavailable"
 					? "AI: Unavailable. Review manually or retry."
 					: "AI: Not checked yet. Use Retry analysis if needed.",
+		...(currentAnalysis?.state === "complete" && currentAnalysis.result
+			? assessmentCardDetails(currentAnalysis.result)
+			: []),
 		...(candidate.reviewMetadata?.held ? ["⏸ Held"] : []),
 	];
-	// Bound each field before escaping so Telegram captions remain valid HTML.
+	const headings = [`${label} · #${candidate.id}`, candidate.name.slice(0, 90)];
 	const compact = [
-		`<b>${label} · #${candidate.id}</b>`,
-		`<b>${escapeTelegramHtml(candidate.name.slice(0, 90))}</b>`,
-		`${escapeTelegramHtml(candidate.city.slice(0, 50))}, ${escapeTelegramHtml(candidate.state)}`,
-		`Address: ${escapeTelegramHtml((candidate.address || "Missing").slice(0, 130))}`,
-		...summary,
+		`${candidate.city.slice(0, 50)}, ${candidate.state}`,
+		`Address: ${(candidate.address || "Missing").slice(0, 130)}`,
 		...(candidate.duplicates?.length
 			? [
 					`⚠️ ${candidate.duplicates.length} duplicate candidates — compare before approval`,
 				]
 			: []),
+		...summary,
 		...(candidate.partnerName
-			? [`Partner: ${escapeTelegramHtml(candidate.partnerName.slice(0, 40))}`]
+			? [`Partner: ${candidate.partnerName.slice(0, 40)}`]
 			: []),
 		`Queue: ${candidate.position} of ${candidate.total}`,
 	];
-	// Telegram counts parsed characters; each source field is bounded above.
-	const caption = compact.join("\n");
+	// Bound plain text before HTML escaping. This keeps Telegram's 1024-character
+	// photo limit even with long assessment text, without breaking HTML entities.
+	const bodyBudget = 1024 - headings.join("\n").length - 1;
+	const body = Array.from(compact.join("\n").slice(0, bodyBudget))
+		.join("")
+		.replace(/[\uD800-\uDBFF]$/, "");
+	const caption = [
+		...headings.map((line) => `<b>${escapeTelegramHtml(line)}</b>`),
+		escapeTelegramHtml(body),
+	].join("\n");
 	const qrFollowUpText = null;
 
 	const firstRow: TelegramInlineButton[] = [];
@@ -388,7 +400,19 @@ export function buildReviewCard(
 				candidate.id,
 			),
 		],
-		[callbackButton("Retry analysis", "analysis", scope, candidate.id)],
+		[
+			...(currentAnalysis?.state === "complete"
+				? [
+						callbackButton(
+							"Photo details",
+							"analysis-details",
+							scope,
+							candidate.id,
+						),
+					]
+				: []),
+			callbackButton("Retry analysis", "analysis", scope, candidate.id),
+		],
 	];
 	if (!candidate.address?.trim() || !candidate.coords) {
 		rows.push([

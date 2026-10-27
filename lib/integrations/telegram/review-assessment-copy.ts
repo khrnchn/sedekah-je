@@ -44,6 +44,17 @@ export function assessmentCardSummary(
 	return `AI: ${imageDescription(assessment.imageType)}. Confirm evidence before approval.`;
 }
 
+export function assessmentCardDetails(assessment: Assessment): string[] {
+	const concern = assessment.conflicts
+		.filter((conflict) => conflict !== UNVERIFIED_RECIPIENT_CONFLICT)
+		.join("; ");
+	return [
+		`Name shown: ${(assessment.visibleInstitution || "Not readable").slice(0, 90)}`,
+		`Location shown: ${visibleLocation(assessment.visibleLocation).slice(0, 90)}`,
+		...(concern ? [`Concern: ${concern.slice(0, 140)}`] : []),
+	];
+}
+
 export function formatAssessmentReport(input: {
 	id: number;
 	name: string;

@@ -109,6 +109,9 @@ function harness(updates: Partial<Institution> = {}) {
 		total: 1,
 	});
 	const dependencies: ReviewBotDependencies = {
+		syncCard: async (_client, _config, id, target) => {
+			calls.push({ method: "syncCard", input: { id, target } });
+		},
 		tools,
 		getCandidate: async () => candidate(),
 		getNextCandidate: async () => candidate(),
@@ -423,6 +426,23 @@ test("analysis retries require a single-use confirmation before scheduling", asy
 	assert.equal(h.ops.at(-1)?.kind, "analysis-request");
 	await h.confirm();
 	assert.equal(analyses, 1);
+	assert.ok(h.calls.some((call) => call.method === "syncCard"));
+	assert.ok(
+		h.calls.some(
+			(call) =>
+				call.method === "editMessageText" &&
+				JSON.stringify(call.input).includes(
+					"Results will appear on the review card",
+				),
+		),
+	);
+	assert.ok(
+		!h.calls.some(
+			(call) =>
+				call.method === "sendMessage" &&
+				JSON.stringify(call.input).includes("Saved."),
+		),
+	);
 	await h.confirm();
 	assert.equal(analyses, 1);
 });
@@ -500,4 +520,57 @@ test("Telegram template rejections keep shared feedback and admin filter buckets
 		await h.confirm();
 		assert.equal(getRejectionReasonBucket(notes ?? null), expectedBucket);
 	}
+});
+
+test("photo details are sent only on request and reject stale assessments", async () => {
+	const base = makeRecord();
+	const h = harness({
+		reviewMetadata: {
+			analysis: {
+				version: reviewVersion(base),
+				state: "complete",
+				model: "test",
+				attempts: 1,
+				result: {
+					imageType: "physical_photo",
+					visibleInstitution: "Masjid Amanah",
+					visibleLocation: "Jalan Amanah",
+					recipientRelationship: "institution",
+					conflicts: ["Check the address"],
+					explanation: "A physical sign.",
+				},
+			},
+		},
+	});
+	await h.action("analysis-details");
+	assert.match(h.text(), /Check the address/);
+	assert.equal(h.ops.length, 0);
+	h.record.address = "Changed";
+	await h.action("analysis-details");
+	assert.match(h.text(), /No current photo assessment/);
+});
+
+test("retry from a tracked current card keeps the same photo; legacy cards reopen the current image", async () => {
+	const row = makeRecord();
+	const h = harness({
+		reviewMetadata: {
+			telegramCard: {
+				chatId: config.chatId,
+				messageId: 1,
+				kind: "photo",
+				scope: "community",
+				version: reviewVersion(row),
+				digest: "already-shown",
+			},
+		},
+	});
+	await h.action("analysis");
+	assert.equal(h.calls.filter((call) => call.method === "sendPhoto").length, 0);
+	assert.ok(h.calls.some((call) => call.method === "syncCard"));
+	const legacy = harness();
+	await legacy.action("analysis");
+	assert.equal(
+		legacy.calls.filter((call) => call.method === "sendPhoto").length,
+		1,
+	);
 });

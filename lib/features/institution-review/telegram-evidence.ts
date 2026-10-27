@@ -18,6 +18,14 @@ export const assessmentSchema = z
 	.strict();
 export type Assessment = z.infer<typeof assessmentSchema>;
 export type ReviewMetadata = {
+	telegramCard?: {
+		chatId: string;
+		messageId: number;
+		kind: "photo" | "text";
+		scope: "community" | "imports" | "all" | "held";
+		version: string;
+		digest: string;
+	};
 	held?: boolean;
 	evidence?: {
 		version: string;

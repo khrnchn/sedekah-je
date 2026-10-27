@@ -15,12 +15,25 @@ import {
 	requestAssessment,
 } from "./gemini-assessment";
 import { reviewAiConfig } from "./review-ai-config";
-import {
-	formatAssessmentReport,
-	formatAssessmentUnavailable,
-} from "./review-assessment-copy";
+import { syncReviewCard } from "./review-card-sync";
 import { fetchReviewImage } from "./review-media";
-import { sendReviewText } from "./review-text";
+
+async function refreshAnalysisCard(id: number): Promise<void> {
+	if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID) return;
+	try {
+		await syncReviewCard(
+			createTelegramBotClient(env.TELEGRAM_BOT_TOKEN),
+			{
+				chatId: env.TELEGRAM_CHAT_ID,
+				adminBaseUrl:
+					env.TELEGRAM_ADMIN_BASE_URL ?? process.env.BETTER_AUTH_URL ?? null,
+			},
+			id,
+		);
+	} catch {
+		console.error("[review analysis] card refresh failed");
+	}
+}
 
 const LEASE_MS = 180_000;
 export function shouldAutoAnalyseSubmission(sourceUrl: string | null): boolean {
@@ -132,6 +145,7 @@ export async function scheduleReviewAnalysis(
 		return true;
 	});
 	if (!queued) return;
+	await refreshAnalysisCard(id);
 	if (dispatch) {
 		dispatch(() => runReviewAnalysis(id));
 		return;
@@ -189,14 +203,13 @@ export async function runReviewAnalysis(id: number): Promise<void> {
 		if (!row) return;
 		let result: Awaited<ReturnType<typeof requestAssessment>> | undefined,
 			error: AssessmentError | undefined,
-			key: string | undefined,
-			decodedQrContent: string | null = null;
+			key: string | undefined;
 		try {
 			if (!row.qrImage) throw new AssessmentError("missing_image");
 			const bytes = await fetchReviewImage(row.qrImage);
 			key = assessmentKey(bytes, row, provider.identity);
 			const meta = await sharp(bytes).metadata();
-			decodedQrContent = await recoverQrFromBuffer(bytes);
+			const decodedQrContent = await recoverQrFromBuffer(bytes);
 			result = await requestAssessment({
 				bytes,
 				mimeType: `image/${meta.format}`,
@@ -255,24 +268,7 @@ export async function runReviewAnalysis(id: number): Promise<void> {
 			await new Promise((resolve) => setTimeout(resolve, 1000 * 2 ** retry));
 			continue;
 		}
-		if (state === "done" && env.TELEGRAM_BOT_TOKEN && env.TELEGRAM_CHAT_ID) {
-			try {
-				await sendReviewText(createTelegramBotClient(env.TELEGRAM_BOT_TOKEN), {
-					chatId: env.TELEGRAM_CHAT_ID,
-					text: result
-						? formatAssessmentReport({
-								id,
-								name: row.name,
-								category: row.category,
-								qrContent: decodedQrContent,
-								assessment: result,
-							})
-						: formatAssessmentUnavailable(id),
-				});
-			} catch {
-				console.error("[review analysis] report delivery failed");
-			}
-		}
+		if (state === "done") await refreshAnalysisCard(id);
 		return;
 	}
 }
