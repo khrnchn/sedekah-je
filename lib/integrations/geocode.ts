@@ -86,12 +86,13 @@ export async function geocodeMalaysiaInstitutionByName(
 	state: MalaysianState;
 	address: string | null;
 	needsManualReview: boolean;
+	provider: "google" | "nominatim";
 } | null> {
 	const name = institutionName.trim();
 	if (!name) return null;
 
 	const google = await geocodeGoogleMalaysiaWithComponents(name);
-	if (google) return google;
+	if (google) return { ...google, provider: "google" };
 
 	const nominatimCoords = await geocodeNominatimMalaysiaQuery(name);
 	if (!nominatimCoords) return null;
@@ -115,6 +116,7 @@ export async function geocodeMalaysiaInstitutionByName(
 	if (city === "Unknown") needsManualReview = true;
 
 	return {
+		provider: "nominatim",
 		coords: nominatimCoords,
 		city,
 		state,

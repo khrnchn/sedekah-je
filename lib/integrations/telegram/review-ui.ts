@@ -2,8 +2,15 @@ import {
 	getReviewBlockerCodes,
 	type ReviewBlockerCode,
 } from "@/lib/features/institution-review/review-blockers";
+import {
+	compareRecipient,
+	type DuplicateCandidate,
+	inspectDuitNow,
+	type ReviewMetadata,
+	reviewVersion,
+} from "@/lib/features/institution-review/telegram-evidence";
 
-export type TelegramReviewScope = "community" | "imports" | "all";
+export type TelegramReviewScope = "community" | "imports" | "all" | "held";
 
 export type RejectionTemplateKey = "unclear" | "individual" | "duplicate";
 
@@ -20,7 +27,15 @@ export type ReviewCallback = {
 		| "cancel"
 		| "next"
 		| "find-address"
-		| "undo";
+		| "undo"
+		| "payload"
+		| "location"
+		| "qr"
+		| "compare"
+		| "hold"
+		| "resume-held"
+		| "analysis"
+		| "evidence";
 	scope: TelegramReviewScope;
 	institutionId: number;
 	template?: RejectionTemplateKey;
@@ -39,6 +54,9 @@ export type TelegramInlineKeyboard = {
 
 export type TelegramReviewCandidate = {
 	id: number;
+	version?: string;
+	reviewMetadata?: ReviewMetadata | null;
+	duplicates?: DuplicateCandidate[];
 	name: string;
 	category: string;
 	state: string;
@@ -70,6 +88,14 @@ const CALLBACK_ACTION_CODES = {
 	next: "n",
 	"find-address": "f",
 	undo: "u",
+	payload: "p",
+	location: "l",
+	qr: "q",
+	compare: "d",
+	hold: "h",
+	"resume-held": "s",
+	analysis: "g",
+	evidence: "v",
 } as const satisfies Record<ReviewCallback["action"], string>;
 
 const ACTIONS_BY_CODE = Object.fromEntries(
@@ -80,6 +106,7 @@ const SCOPE_CODES = {
 	community: "h",
 	imports: "i",
 	all: "a",
+	held: "d",
 } as const satisfies Record<TelegramReviewScope, string>;
 
 const SCOPES_BY_CODE = Object.fromEntries(
@@ -92,8 +119,6 @@ const TEMPLATE_KEYS = new Set<RejectionTemplateKey>([
 	"duplicate",
 ]);
 
-const MAX_PHOTO_CAPTION_LENGTH = 1024;
-
 export const TELEGRAM_MENU_BUTTONS = {
 	reviewNext: "▶️ Review next",
 	queue: "📊 Queue",
@@ -102,6 +127,7 @@ export const TELEGRAM_MENU_BUTTONS = {
 	community: "👤 Community submissions",
 	imports: "🤖 Bulk imports",
 	openAdmin: "🌐 Open web admin",
+	held: "⏸ Held submissions",
 } as const;
 
 export const TELEGRAM_REVIEW_MENU = {
@@ -109,7 +135,7 @@ export const TELEGRAM_REVIEW_MENU = {
 		[TELEGRAM_MENU_BUTTONS.reviewNext, TELEGRAM_MENU_BUTTONS.queue],
 		[TELEGRAM_MENU_BUTTONS.resume, TELEGRAM_MENU_BUTTONS.all],
 		[TELEGRAM_MENU_BUTTONS.community, TELEGRAM_MENU_BUTTONS.imports],
-		[TELEGRAM_MENU_BUTTONS.openAdmin],
+		[TELEGRAM_MENU_BUTTONS.held, TELEGRAM_MENU_BUTTONS.openAdmin],
 	],
 	resize_keyboard: true,
 	is_persistent: true,
@@ -287,63 +313,75 @@ export function buildReviewCard(
 	qrFollowUpText: string | null;
 	replyMarkup: TelegramInlineKeyboard;
 } {
-	const blockers = getReviewBlockers(candidate);
 	const isImport =
 		Boolean(candidate.sourceUrl) && !candidate.sourceUrl?.startsWith("http");
 	const label = isImport ? "BULK IMPORT" : "COMMUNITY SUBMISSION";
-	const submittedAt = candidate.createdAt.toLocaleString("en-MY", {
-		timeZone: "Asia/Kuala_Lumpur",
-		dateStyle: "medium",
-		timeStyle: "short",
-	});
-	const payments = candidate.supportedPayment?.length
-		? candidate.supportedPayment.join(", ")
-		: "Not specified";
-	const baseLines = [
+
+	const qr = inspectDuitNow(candidate.qrContent);
+	const analysis = candidate.reviewMetadata?.analysis;
+	const currentAnalysis =
+		analysis?.version === reviewVersion(candidate) ? analysis : undefined;
+	const summary = [
+		`Recipient: ${escapeTelegramHtml((qr.recipient || "Unknown").slice(0, 90))}`,
+		`Name: ${escapeTelegramHtml(compareRecipient(candidate.name, qr.recipient))}`,
+		`QR: ${qr.format}; checksum ${qr.checksum}`,
+		`Pin: ${candidate.coords?.join(", ") || "Missing"}`,
+		currentAnalysis?.state === "complete" && currentAnalysis.result
+			? `AI: ${escapeTelegramHtml(currentAnalysis.result.imageType)}; ${escapeTelegramHtml(currentAnalysis.result.explanation.slice(0, 180))}`
+			: `AI unavailable${currentAnalysis?.state === "queued" || currentAnalysis?.state === "processing" ? " (analysis pending)" : ""}`,
+		...(candidate.reviewMetadata?.held ? ["⏸ Held"] : []),
+	];
+	// Bound each field before escaping so Telegram captions remain valid HTML.
+	const compact = [
 		`<b>${label} · #${candidate.id}</b>`,
-		`<b>${escapeTelegramHtml(candidate.name)}</b>`,
-		"",
-		`${escapeTelegramHtml(candidate.category)} · ${escapeTelegramHtml(candidate.city)}, ${escapeTelegramHtml(candidate.state)}`,
-		`Address: ${escapeTelegramHtml(candidate.address || "Not provided")}`,
-		`Payment: ${escapeTelegramHtml(payments)}`,
-		`Submitted: ${escapeTelegramHtml(submittedAt)}`,
-		`Contributor: ${escapeTelegramHtml(candidate.contributorName || (isImport ? "Automated import" : "Unknown"))}${candidate.partnerName ? ` (via ${escapeTelegramHtml(candidate.partnerName)})` : ""}`,
-		"",
-		blockers.length === 0
-			? "✅ <b>Ready for quick review</b>"
-			: `⚠️ <b>Needs web review</b>\n${blockers.map((blocker) => `• ${escapeTelegramHtml(blocker)}`).join("\n")}`,
-		...(options.note ? [options.note] : []),
+		`<b>${escapeTelegramHtml(candidate.name.slice(0, 90))}</b>`,
+		`${escapeTelegramHtml(candidate.city.slice(0, 50))}, ${escapeTelegramHtml(candidate.state)}`,
+		`Address: ${escapeTelegramHtml((candidate.address || "Missing").slice(0, 130))}`,
+		...summary,
+		...(candidate.duplicates?.length
+			? [
+					`⚠️ ${candidate.duplicates.length} duplicate candidates — compare before approval`,
+				]
+			: []),
+		...(candidate.partnerName
+			? [`Partner: ${escapeTelegramHtml(candidate.partnerName.slice(0, 40))}`]
+			: []),
 		`Queue: ${candidate.position} of ${candidate.total}`,
 	];
-
-	const escapedQr = candidate.qrContent
-		? escapeTelegramHtml(candidate.qrContent)
-		: null;
-	const captionWithQr = escapedQr
-		? [...baseLines, "", "<b>QR payload</b>", `<code>${escapedQr}</code>`].join(
-				"\n",
-			)
-		: baseLines.join("\n");
-	const qrFollowUpText =
-		captionWithQr.length <= MAX_PHOTO_CAPTION_LENGTH || !escapedQr
-			? null
-			: `<b>QR payload · #${candidate.id}</b>\n<code>${escapedQr}</code>`;
-	const caption =
-		captionWithQr.length <= MAX_PHOTO_CAPTION_LENGTH
-			? captionWithQr
-			: [...baseLines, "", "QR payload is in the message below."].join("\n");
+	// Telegram counts parsed characters; each source field is bounded above.
+	const caption = compact.join("\n");
+	const qrFollowUpText = null;
 
 	const firstRow: TelegramInlineButton[] = [];
-	if (blockers.length === 0) {
-		firstRow.push(callbackButton("✅ Approve", "approve", scope, candidate.id));
-	}
+	firstRow.push(callbackButton("✅ Approve", "approve", scope, candidate.id));
 	firstRow.push(callbackButton("❌ Reject", "reject", scope, candidate.id));
 
 	const secondRow = [callbackButton("⏭ Skip", "next", scope, candidate.id)];
 	const adminUrl = buildAdminUrl(options.adminBaseUrl, candidate.id);
 	if (adminUrl) secondRow.push({ text: "✏️ Edit in admin", url: adminUrl });
 
-	const rows = [firstRow, secondRow];
+	const rows = [
+		firstRow,
+		secondRow,
+		[
+			callbackButton("View payload", "payload", scope, candidate.id),
+			callbackButton("Confirm evidence", "evidence", scope, candidate.id),
+		],
+		[
+			callbackButton("Edit location", "location", scope, candidate.id),
+			callbackButton("Retry/replace QR", "qr", scope, candidate.id),
+		],
+		[
+			callbackButton("Compare duplicates", "compare", scope, candidate.id),
+			callbackButton(
+				candidate.reviewMetadata?.held ? "Resume submission" : "Hold",
+				candidate.reviewMetadata?.held ? "resume-held" : "hold",
+				scope,
+				candidate.id,
+			),
+		],
+		[callbackButton("Retry analysis", "analysis", scope, candidate.id)],
+	];
 	if (!candidate.address?.trim() || !candidate.coords) {
 		rows.push([
 			callbackButton("📍 Find address", "find-address", scope, candidate.id),

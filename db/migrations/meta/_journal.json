@@ -78,6 +78,13 @@
 			"when": 1790964361184,
 			"tag": "0010_partner_api_keys",
 			"breakpoints": true
+		},
+		{
+			"idx": 11,
+			"version": "7",
+			"when": 1792424447113,
+			"tag": "0011_true_goliath",
+			"breakpoints": true
 		}
 	]
 }

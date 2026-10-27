@@ -8,6 +8,7 @@ import {
 	timestamp,
 	varchar,
 } from "drizzle-orm/pg-core";
+import type { ReviewMetadata } from "@/lib/features/institution-review/telegram-evidence";
 import type {
 	categories,
 	institutionStatuses,
@@ -42,6 +43,7 @@ export const institutions = pgTable("institutions", {
 		instagram?: string;
 		website?: string;
 	}>(),
+	reviewMetadata: jsonb("review_metadata").$type<ReviewMetadata>(),
 	// Workflow fields
 	status: varchar("status", { length: 20 })
 		.default("pending")
@@ -62,20 +64,17 @@ export const institutions = pgTable("institutions", {
 	...timestamps,
 });
 
-export const institutionsRelations = relations(
-	institutions,
-	({ one, many }) => ({
-		contributor: one(users, {
-			fields: [institutions.contributorId],
-			references: [users.id],
-		}),
-		reviewer: one(users, {
-			fields: [institutions.reviewedBy],
-			references: [users.id],
-			relationName: "reviewer",
-		}),
+export const institutionsRelations = relations(institutions, ({ one }) => ({
+	contributor: one(users, {
+		fields: [institutions.contributorId],
+		references: [users.id],
 	}),
-);
+	reviewer: one(users, {
+		fields: [institutions.reviewedBy],
+		references: [users.id],
+		relationName: "reviewer",
+	}),
+}));
 
 export type Institution = typeof institutions.$inferSelect;
 export type NewInstitution = typeof institutions.$inferInsert;

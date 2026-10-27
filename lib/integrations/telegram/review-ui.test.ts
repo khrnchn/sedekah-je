@@ -59,9 +59,7 @@ describe("Telegram institution review UI", () => {
 		});
 
 		assert.ok(card.caption.includes("Masjid &lt;Amanah&gt; &amp; Rakan"));
-		assert.ok(
-			card.caption.includes("<code>00020101021126&amp;merchant</code>"),
-		);
+		assert.ok(!card.caption.includes("00020101021126"));
 		assert.ok(
 			card.replyMarkup.inline_keyboard
 				.flat()
@@ -77,7 +75,7 @@ describe("Telegram institution review UI", () => {
 			{ adminBaseUrl: null },
 		);
 
-		assert.ok(card.caption.includes("Contributor: Ali (via Taubat)"));
+		assert.ok(card.caption.includes("Partner: Taubat"));
 	});
 
 	test("blocks quick approval when required review evidence is missing", () => {
@@ -96,14 +94,19 @@ describe("Telegram institution review UI", () => {
 			adminBaseUrl: "https://sedekah.example",
 		});
 		assert.ok(
-			!card.replyMarkup.inline_keyboard
+			card.replyMarkup.inline_keyboard
 				.flat()
 				.some((button) => button.text === "✅ Approve"),
 		);
-		assert.ok(card.caption.includes("Needs web review"));
+		assert.ok(card.caption.includes("checksum missing"));
+		assert.ok(
+			card.replyMarkup.inline_keyboard
+				.flat()
+				.some((b) => b.text === "Retry/replace QR"),
+		);
 	});
 
-	test("keeps oversized QR content copyable in a follow-up message", () => {
+	test("keeps full payload behind View payload", () => {
 		const card = buildReviewCard(
 			{ ...candidate, qrContent: "A".repeat(1_200) },
 			"community",
@@ -112,7 +115,9 @@ describe("Telegram institution review UI", () => {
 
 		assert.ok(card.caption.length <= 1024);
 		assert.ok(
-			card.qrFollowUpText?.includes(`<code>${"A".repeat(1_200)}</code>`),
+			card.replyMarkup.inline_keyboard
+				.flat()
+				.some((b) => b.text === "View payload"),
 		);
 	});
 

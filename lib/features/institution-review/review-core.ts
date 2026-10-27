@@ -10,7 +10,8 @@ export type InstitutionReviewResult = {
 	contributorId: string | null;
 };
 
-type ReviewInput = {
+export type ReviewInput = {
+	telegramOperation?: { id: string; chatId: string; promptMessageId: number };
 	institutionId: number;
 	reviewerId: string;
 	decision: InstitutionReviewDecision;

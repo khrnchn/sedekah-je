@@ -1,4 +1,5 @@
 import type { TelegramInlineKeyboard } from "@/lib/integrations/telegram/review-ui";
+import { readLimitedImage, validateReviewImage } from "./review-media";
 
 export type TelegramChat = {
 	id: number;
@@ -18,7 +19,14 @@ export type TelegramMessage = {
 	from?: TelegramUser;
 	text?: string;
 	caption?: string;
-	photo?: unknown[];
+	photo?: Array<{
+		file_id?: string;
+		file_size?: number;
+		width?: number;
+		height?: number;
+	}>;
+	location?: { latitude: number; longitude: number };
+	document?: { file_id: string; file_size?: number; mime_type?: string };
 	reply_to_message?: TelegramMessage;
 };
 
@@ -89,6 +97,27 @@ export function createTelegramBotClient(
 	}
 
 	return {
+		async downloadPhoto(fileId: string): Promise<Buffer> {
+			const file = await request<{ file_path?: string; file_size?: number }>(
+				"getFile",
+				{ file_id: fileId },
+			);
+			if (
+				!file.file_path ||
+				!/^[a-zA-Z0-9_./-]+$/.test(file.file_path) ||
+				file.file_path.includes("..") ||
+				(file.file_size ?? 0) > 10 * 1024 * 1024
+			)
+				throw new Error("Invalid Telegram image file");
+			const bytes = await readLimitedImage(
+				await fetch(
+					`https://api.telegram.org/file/bot${botToken}/${file.file_path}`,
+					{ redirect: "error", signal: AbortSignal.timeout(15_000) },
+				),
+			);
+			await validateReviewImage(bytes);
+			return bytes;
+		},
 		getUpdates(input: { offset?: number; timeout?: number } = {}) {
 			const timeout = input.timeout ?? 25;
 			return request<TelegramUpdate[]>(

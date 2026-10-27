@@ -32,6 +32,32 @@ export const env = createEnv({
 		TELEGRAM_REVIEWER_USER_ID: z.string().min(1).optional(),
 		TELEGRAM_ADMIN_BASE_URL: z.string().url().optional(),
 
+		TELEGRAM_AI_PROVIDER: z
+			.enum(["gemini", "anthropic-compatible"])
+			.default("gemini"),
+		TELEGRAM_AI_API_KEY: z.string().min(1).optional(),
+		TELEGRAM_AI_BASE_URL: z
+			.string()
+			.url()
+			.refine((value) => {
+				const url = new URL(value);
+				return (
+					url.protocol === "https:" &&
+					!url.username &&
+					!url.password &&
+					!url.search &&
+					!url.hash
+				);
+			})
+			.optional(),
+		TELEGRAM_AI_MODEL: z.string().min(1).optional(),
+		GEMINI_API_KEY: z.string().min(1).optional(),
+		GEMINI_MODEL: z.string().default("gemini-flash-latest"),
+		TELEGRAM_AI_ENABLED: z
+			.enum(["true", "false"])
+			.default("false")
+			.transform((v) => v === "true"),
+
 		// Google Geocoding (optional, for backfill scripts)
 		GOOGLE_GEOCODING_API_KEY: z.string().min(1).optional(),
 

@@ -1,503 +1,503 @@
 import assert from "node:assert/strict";
-import { describe, test } from "node:test";
-import type {
-	TelegramBotClient,
-	TelegramCallbackQuery,
-	TelegramMessage,
-} from "@/lib/integrations/telegram/bot-api";
+import { createHash } from "node:crypto";
+import { test } from "node:test";
+import type { Institution } from "@/db/institutions";
+import {
+	getRejectionReasonBucket,
+	REJECTION_TEMPLATES,
+} from "@/lib/admin-templates";
+import { reviewVersion } from "@/lib/features/institution-review/telegram-evidence";
+import { makeRecord } from "./__fixtures__/review-records";
+import type { TelegramBotClient, TelegramMessage } from "./bot-api";
 import {
 	handleMenuMessage,
 	handleReviewCallback,
-	type ReviewBotConfig,
 	type ReviewBotDependencies,
 	resumeReview,
 	sendNextCandidate,
-} from "@/lib/integrations/telegram/review-bot";
+} from "./review-bot";
 import {
-	encodeReviewCallback,
-	type TelegramReviewCandidate,
-} from "@/lib/integrations/telegram/review-ui";
+	parseEvidence,
+	parseLocationEdit,
+	type ReviewToolServices,
+} from "./review-tools";
+import { encodeReviewCallback, type ReviewCallback } from "./review-ui";
 
-const candidate: TelegramReviewCandidate = {
-	id: 42,
-	name: "Masjid Amanah",
-	category: "masjid",
-	state: "Selangor",
-	city: "Petaling Jaya",
-	address: "Jalan Amanah",
-	qrImage: "https://images.example.test/qr.jpg",
-	qrContent: "00020101021126merchant",
-	supportedPayment: ["duitnow"],
-	coords: [3.1, 101.6],
-	contributorName: "Contributor",
-	partnerName: null,
-	sourceUrl: null,
-	createdAt: new Date("2026-08-21T05:19:10.650Z"),
-	duplicateInstitutionId: null,
-	position: 1,
-	total: 1,
-};
-
-const config: ReviewBotConfig = {
+const config = {
 	chatId: "123",
-	reviewerUserId: "admin-1",
-	reviewerName: "Review Admin",
+	reviewerUserId: "test-admin",
+	reviewerName: "Admin",
 	adminBaseUrl: null,
 };
-
-function createHarness() {
+function harness(updates: Partial<Institution> = {}) {
+	let record = makeRecord(updates),
+		nextMessage = 10;
 	const calls: Array<{ method: string; input: unknown }> = [];
+	const ops: Array<{
+		id: string;
+		chatId: string;
+		institutionId: number;
+		promptMessageId: number;
+		version: string;
+		kind: string;
+		payload: Record<string, unknown>;
+		expiresAt: Date;
+		consumedAt: Date | null;
+	}> = [];
 	const message: TelegramMessage = {
-		message_id: 500,
+		message_id: 1,
 		chat: { id: 123, type: "private" },
+		from: { id: 123 },
 	};
-	const client = {
+	const log = async (method: string, input: unknown) => {
+		calls.push({ method, input });
+		return { ...message, message_id: ++nextMessage };
+	};
+	const client: TelegramBotClient = {
+		downloadPhoto: async () => Buffer.from("image"),
 		getUpdates: async () => [],
-		sendMessage: async (input: unknown) => {
-			calls.push({ method: "sendMessage", input });
-			return message;
-		},
-		sendPhoto: async (input: unknown) => {
-			calls.push({ method: "sendPhoto", input });
-			return message;
-		},
+		sendMessage: (input: unknown) => log("sendMessage", input),
+		sendPhoto: (input: unknown) => log("sendPhoto", input),
 		answerCallbackQuery: async (input: unknown) => {
-			calls.push({ method: "answerCallbackQuery", input });
+			await log("answerCallbackQuery", input);
 			return true;
 		},
-		editMessageReplyMarkup: async (input: unknown) => {
-			calls.push({ method: "editMessageReplyMarkup", input });
-			return true;
+		editMessageReplyMarkup: (input: unknown) =>
+			log("editMessageReplyMarkup", input),
+		editMessageText: (input: unknown) => log("editMessageText", input),
+		editMessageCaption: (input: unknown) => log("editMessageCaption", input),
+	};
+	const tools: ReviewToolServices = {
+		getRecord: async () => record,
+		createOperation: async (input) => {
+			const id = (ops.length + 1).toString(16).padStart(32, "0");
+			ops.push({
+				...input,
+				payload: input.payload ?? {},
+				id,
+				expiresAt: new Date(Date.now() + 900000),
+				consumedAt: null,
+			});
+			return id;
 		},
-		editMessageText: async (input: unknown) => {
-			calls.push({ method: "editMessageText", input });
-			return true;
+		getReplyOperation: async (chat, prompt) =>
+			ops.find(
+				(op) =>
+					op.chatId === chat && op.promptMessageId === prompt && !op.consumedAt,
+			),
+		consumePrompt: async (binding) => {
+			const op = ops.find((op) => op.id === binding.id && !op.consumedAt);
+			if (!op) throw new Error("already used");
+			op.consumedAt = new Date();
 		},
-		editMessageCaption: async (input: unknown) => {
-			calls.push({ method: "editMessageCaption", input });
-			return true;
-		},
-	} as TelegramBotClient;
-	return { calls, client, message };
-}
-
-function createDependencies(
-	overrides: Partial<ReviewBotDependencies> = {},
-): ReviewBotDependencies {
-	return {
-		getCandidate: async () => candidate,
-		getNextCandidate: async () => null,
+		applyOperation: async () => record,
+		duplicates: async () => [],
+		geocode: async () => null,
+		fetchImage: async () => Buffer.from("image"),
+		recoverQr: async () => record.qrContent,
+		upload: async () => "https://images.example.test/new.png",
+		analyse: async () => {},
+		review: async () => record,
+		undo: async () => record,
+	};
+	const candidate = () => ({
+		...record,
+		contributorName: null,
+		partnerName: null,
+		duplicateInstitutionId: null,
+		position: 1,
+		total: 1,
+	});
+	const dependencies: ReviewBotDependencies = {
+		tools,
+		getCandidate: async () => candidate(),
+		getNextCandidate: async () => candidate(),
 		getQueueCounts: async () => ({
 			all: 1,
+			held: 0,
 			community: 1,
 			imports: 0,
-			needsExtraction: 0,
+			needsExtraction: 1,
 			totalPending: 1,
 		}),
-		getSession: async () => null,
-		saveSession: async () => {},
-		geocodeByName: async () => null,
-		updateLocation: async () => {},
-		searchCandidates: async () => [],
-		undoReview: async () => null,
-		reviewInstitution: async () => candidate,
-		...overrides,
+		getSession: async () => ({
+			scope: "community",
+			cursorInstitutionId: record.id,
+		}),
+		saveSession: async (input) => {
+			calls.push({ method: "saveSession", input });
+		},
+		searchCandidates: async () => [{ id: record.id, name: record.name }],
+		undoReview: async () => record,
+		reviewInstitution: async () => record,
 	};
-}
-
-function callback(
-	action: Parameters<typeof encodeReviewCallback>[0],
-	message: TelegramMessage,
-): TelegramCallbackQuery {
+	async function action(action: ReviewCallback["action"]) {
+		await handleReviewCallback(
+			client,
+			config,
+			{
+				id: "callback",
+				from: { id: 123 },
+				message,
+				data: encodeReviewCallback({
+					action,
+					institutionId: record.id,
+					scope: "community",
+				}),
+			},
+			dependencies,
+		);
+	}
+	async function confirm(index = ops.length - 1) {
+		const op = ops[index];
+		await handleReviewCallback(
+			client,
+			config,
+			{
+				id: "confirm",
+				from: { id: 123 },
+				message: { ...message, message_id: op.promptMessageId },
+				data: `ro:${op.id}`,
+			},
+			dependencies,
+		);
+	}
+	async function reply(
+		text?: string,
+		location?: TelegramMessage["location"],
+		fromId = 123,
+	) {
+		const op = ops.at(-1);
+		assert.ok(op);
+		await handleMenuMessage(
+			client,
+			config,
+			{
+				...message,
+				from: { id: fromId },
+				text,
+				location,
+				reply_to_message: { ...message, message_id: op.promptMessageId },
+			},
+			dependencies,
+		);
+	}
 	return {
-		id: "callback-1",
-		from: { id: 123 },
-		data: encodeReviewCallback(action),
+		record,
+		tools,
+		client,
 		message,
+		calls,
+		ops,
+		dependencies,
+		action,
+		confirm,
+		reply,
+		text: () => JSON.stringify(calls),
 	};
 }
+test("manual address and pin edits preview complete values and require confirmation", async () => {
+	const h = harness();
+	let saves = 0;
+	h.tools.applyOperation = async () => {
+		saves++;
+		return h.record;
+	};
+	await h.action("location");
+	await h.reply(undefined, { latitude: 3.2, longitude: 101.7 });
+	assert.equal(saves, 0);
+	assert.equal(h.ops.at(-1)?.kind, "location");
+	assert.deepEqual(h.ops.at(-1)?.payload, { coords: [3.2, 101.7] });
+	assert.match(h.text(), /Jalan Amanah/);
+	assert.match(h.text(), /does not geocode/);
+	await h.confirm();
+	assert.equal(saves, 1);
+});
+test("Find address proposes contextual lookup and flags Al-Istiqlal location conflict", async () => {
+	const h = harness({ name: "Masjid Al-Istiqlal", city: "Petaling Jaya" });
+	let query = "";
+	h.tools.geocode = async (name) => {
+		query = name;
+		return {
+			address: "Different location",
+			coords: [3.5, 101.9],
+			city: "Shah Alam",
+			state: "Selangor",
+			needsManualReview: true,
+			provider: "nominatim",
+		};
+	};
+	await h.action("find-address");
+	assert.match(query, /Masjid Al-Istiqlal, Petaling Jaya, Selangor/);
+	assert.equal(h.record.address, "Jalan Amanah");
+	assert.match(h.text(), /possible location conflict/);
+	assert.equal(h.ops.at(-1)?.kind, "location");
+	assert.match(h.text(), /Nominatim/);
+	assert.equal(h.text().includes("Google name"), false);
+});
+test("stale and unauthorised replies cannot create edits", async () => {
+	const h = harness();
+	await h.action("location");
+	await h.reply("unauthorized", undefined, 999);
+	assert.equal(h.ops.length, 1);
+	h.record.city = "Changed";
+	await h.reply("new address");
+	assert.equal(h.ops.length, 1);
+	assert.match(h.text(), /Record changed/);
+});
+test("missing QR payload opens from search and offers replacement", async () => {
+	const h = harness({ qrContent: null });
+	await handleMenuMessage(
+		h.client,
+		config,
+		{ ...h.message, text: "/find 42" },
+		h.dependencies,
+	);
+	assert.match(h.text(), /Retry\/replace QR/);
+	assert.match(h.text(), /checksum missing/);
+	await h.action("qr");
+	assert.equal(h.ops[0].kind, "prompt-qr");
+});
+test("evidence confirmation and old approval callbacks cannot directly approve", async () => {
+	const h = harness();
+	let approved = 0;
+	h.tools.review = async () => {
+		approved++;
+		return h.record;
+	};
+	await h.action("approve");
+	assert.equal(approved, 0);
+	assert.match(h.text(), /Approval needs attention/);
+	await h.action("evidence");
+	await h.reply("PHYSICAL");
+	assert.equal(h.ops.at(-1)?.kind, "evidence");
+	assert.match(h.text(), /not an individual/);
+	await h.action("approve-confirm");
+	assert.equal(approved, 0);
+	assert.match(h.text(), /older confirmation expired/);
+});
+test("approval carries a durable operation binding and creates guarded undo", async () => {
+	const h = harness();
+	h.record.reviewMetadata = {
+		evidence: {
+			version: reviewVersion(h.record),
+			recipientInstitution: true,
+			imageHash: createHash("sha256")
+				.update(Buffer.from("image"))
+				.digest("hex"),
+			physicalDisplay: true,
+		},
+	};
+	let received: unknown;
+	h.tools.review = async (input) => {
+		received = input;
+		return { ...h.record, status: "approved", reviewedAt: new Date() };
+	};
+	await h.action("approve");
+	assert.equal(h.ops.at(-1)?.kind, "approve");
+	const op = h.ops.at(-1);
+	assert.ok(op);
+	await h.confirm();
+	assert.deepEqual(received, {
+		institutionId: 42,
+		reviewerId: "test-admin",
+		decision: "approved",
+		adminNotes: undefined,
+		telegramOperation: {
+			id: op.id,
+			chatId: "123",
+			promptMessageId: op.promptMessageId,
+		},
+	});
+	assert.equal(h.ops.at(-1)?.kind, "undo");
+});
+test("UPM different-QR comparison offers explicit different-institution and duplicate rejection", async () => {
+	const h = harness({ name: "Masjid UPM" });
+	h.tools.duplicates = async () => [
+		{
+			...makeRecord({
+				id: 706,
+				name: "Masjid UPM",
+				qrContent: "different payload",
+				status: "approved",
+			}),
+			reason: "similar_name",
+		},
+	];
+	await h.action("compare");
+	assert.match(h.text(), /Reject duplicate of #706/);
+	assert.match(h.text(), /Different institution/);
+	assert.equal(h.ops.at(-1)?.kind, "different");
+	assert.equal(h.record.qrContent?.startsWith("000202"), true);
+});
+test("held queue, resume, skip and search keep their navigation", async () => {
+	const h = harness({ qrContent: null });
+	await h.action("hold");
+	assert.equal(h.ops.at(-1)?.kind, "hold");
+	assert.equal(h.record.status, "pending");
+	await handleMenuMessage(
+		h.client,
+		config,
+		{ ...h.message, text: "⏸ Held submissions" },
+		h.dependencies,
+	);
+	assert.match(h.text(), /rv:n:d:42/);
+	await resumeReview(h.client, config, h.dependencies);
+	await sendNextCandidate(
+		h.client,
+		config,
+		"community",
+		undefined,
+		h.dependencies,
+	);
+	assert.ok(h.calls.some((c) => c.method === "saveSession"));
+});
+test("location/evidence parsing rejects unsupported state, arbitrary updates and unverified source forms", () => {
+	assert.deepEqual(parseLocationEdit({ text: "New address" }), {
+		address: "New address",
+	});
+	assert.throws(() => parseLocationEdit({ text: '{"state":"Unknown"}' }));
+	assert.throws(() => parseLocationEdit({ text: '{"status":"approved"}' }));
+	assert.throws(() =>
+		parseLocationEdit({ location: { latitude: 91, longitude: 101 } }),
+	);
+	assert.throws(() =>
+		parseEvidence("https://official.example.test", { category: "masjid" }),
+	);
+	assert.throws(() =>
+		parseEvidence("http://official.example.test", { category: "tahfiz" }),
+	);
+	assert.deepEqual(
+		parseEvidence("https://official.example.test/donate", {
+			category: "tahfiz",
+		}),
+		{ officialSource: "https://official.example.test/donate" },
+	);
+});
 
-describe("Telegram review orchestration", () => {
-	test("confirms approval, marks the original card, and advances", async () => {
-		const { calls, client, message } = createHarness();
-		message.photo = [{}];
-		const reviews: unknown[] = [];
+test("replacement photo previews both recipients and preserves saved QR until confirmation", async () => {
+	const h = harness();
+	const sharp = (await import("sharp")).default;
+	const bytes = await sharp({
+		create: { width: 8, height: 8, channels: 3, background: "white" },
+	})
+		.png()
+		.toBuffer();
+	h.client.downloadPhoto = async () => bytes;
+	h.tools.recoverQr = async () => makeRecord({ name: "Other" }).qrContent;
+	await h.action("qr");
+	const prompt = h.ops.find((op) => op.kind === "prompt-qr");
+	assert.ok(prompt);
+	await handleMenuMessage(
+		h.client,
+		config,
+		{
+			...h.message,
+			photo: [{ file_id: "photo-id", file_size: bytes.length }],
+			reply_to_message: { ...h.message, message_id: prompt.promptMessageId },
+		},
+		h.dependencies,
+	);
+	assert.equal(h.ops.at(-1)?.kind, "qr");
+	assert.equal(h.record.qrImage, "https://images.example.test/qr.png");
+	assert.match(h.text(), /Old recipient/);
+	assert.match(h.text(), /New recipient/);
+});
+
+test("analysis retries require a single-use confirmation before scheduling", async () => {
+	const h = harness();
+	let analyses = 0;
+	h.tools.analyse = async () => {
+		analyses++;
+	};
+	h.tools.applyOperation = async (binding) => {
+		const operation = h.ops.find(
+			(op) => op.id === binding.id && !op.consumedAt,
+		);
+		assert.ok(operation);
+		operation.consumedAt = new Date();
+		return h.record;
+	};
+	await h.action("analysis");
+	assert.equal(analyses, 0);
+	assert.equal(h.ops.at(-1)?.kind, "analysis-request");
+	await h.confirm();
+	assert.equal(analyses, 1);
+	await h.confirm();
+	assert.equal(analyses, 1);
+});
+
+test("long location previews preserve full data and bind confirmation to the final part", async () => {
+	const h = harness({ address: "A".repeat(2000) });
+	const sent: Array<{ id: number; text: string }> = [];
+	h.client.sendMessage = async (input) => {
+		assert.ok(input.text.length <= 4096);
+		const id = 200 + sent.length;
+		sent.push({ id, text: input.text });
+		return { message_id: id, chat: { id: 123, type: "private" } };
+	};
+	await h.action("location");
+	const first = h.ops.at(-1);
+	assert.ok(first);
+	await h.reply(undefined, { latitude: 3.2, longitude: 101.7 });
+	const preview = h.ops.at(-1);
+	assert.ok(preview);
+	assert.equal(preview.kind, "location");
+	assert.equal(preview.promptMessageId, sent.at(-1)?.id);
+	assert.ok(first.consumedAt);
+	assert.ok(sent.length >= 3);
+	assert.ok(
+		sent
+			.slice(1)
+			.map((part) => part.text)
+			.join("")
+			.includes("A".repeat(2000)),
+	);
+	let saves = 0;
+	h.tools.applyOperation = async (binding) => {
+		const op = h.ops.find((op) => op.id === binding.id && !op.consumedAt);
+		assert.ok(op);
+		op.consumedAt = new Date();
+		saves++;
+		return h.record;
+	};
+	await h.confirm();
+	await h.confirm(1);
+	assert.equal(saves, 1);
+});
+
+test("Telegram template rejections keep shared feedback and admin filter buckets", async () => {
+	for (const [template, expectedBucket, index] of [
+		["unclear", "unclear_qr", 0],
+		["individual", "individual_qr", 1],
+		["duplicate", "duplicate", 2],
+	] as const) {
+		const h = harness();
 		await handleReviewCallback(
-			client,
+			h.client,
 			config,
-			callback(
-				{ action: "approve-confirm", scope: "community", institutionId: 42 },
-				message,
-			),
-			createDependencies({
-				reviewInstitution: async (input) => {
-					reviews.push(input);
-					return candidate;
-				},
-			}),
-		);
-
-		assert.deepEqual(reviews, [
 			{
-				institutionId: 42,
-				reviewerId: "admin-1",
-				decision: "approved",
-				adminNotes: undefined,
-			},
-		]);
-		assert.ok(calls.some((call) => call.method === "editMessageCaption"));
-		assert.ok(
-			calls.some(
-				(call) =>
-					call.method === "answerCallbackQuery" &&
-					JSON.stringify(call.input).includes("Approved"),
-			),
-		);
-	});
-
-	test("passes template and custom rejection reasons to the review service", async () => {
-		for (const scenario of [
-			{
-				action: {
-					action: "reject-template-confirm" as const,
-					scope: "community" as const,
-					institutionId: 42,
-					template: "duplicate" as const,
-				},
-				messageText: undefined,
-			},
-			{
-				action: {
-					action: "reject-custom-confirm" as const,
-					scope: "community" as const,
-					institutionId: 42,
-					reviewMessageId: 400,
-				},
-				messageText: "Custom rejection reason for #42:\n\nIncorrect account",
-			},
-		]) {
-			const { client, message } = createHarness();
-			message.text = scenario.messageText;
-			const reviews: Array<{ adminNotes?: string }> = [];
-			await handleReviewCallback(
-				client,
-				config,
-				callback(scenario.action, message),
-				createDependencies({
-					reviewInstitution: async (input) => {
-						reviews.push(input);
-						return candidate;
-					},
-				}),
-			);
-			assert.equal(reviews.length, 1);
-			assert.ok(reviews[0]?.adminNotes);
-		}
-	});
-
-	test("treats an already-reviewed callback as stale and does not advance", async () => {
-		const { calls, client, message } = createHarness();
-		await handleReviewCallback(
-			client,
-			config,
-			callback(
-				{ action: "approve-confirm", scope: "community", institutionId: 42 },
-				message,
-			),
-			createDependencies({
-				reviewInstitution: async () => {
-					throw new Error("Institution not found or not pending");
-				},
-			}),
-		);
-
-		assert.ok(
-			calls.some((call) =>
-				JSON.stringify(call.input).includes("already been reviewed"),
-			),
-		);
-		assert.ok(
-			!calls.some((call) =>
-				JSON.stringify(call.input).includes("No more pending"),
-			),
-		);
-	});
-
-	test("persists the queue cursor and resumes its pending card", async () => {
-		const first = createHarness();
-		const saved: unknown[] = [];
-		await sendNextCandidate(
-			first.client,
-			config,
-			"community",
-			undefined,
-			createDependencies({
-				getNextCandidate: async () => candidate,
-				saveSession: async (input) => {
-					saved.push(input);
-				},
-			}),
-		);
-		assert.deepEqual(saved, [
-			{
-				telegramChatId: "123",
-				scope: "community",
-				cursorInstitutionId: 42,
-			},
-		]);
-
-		const resumed = createHarness();
-		await resumeReview(
-			resumed.client,
-			config,
-			createDependencies({
-				getSession: async () => ({
+				id: "template",
+				from: { id: 123 },
+				message: h.message,
+				data: encodeReviewCallback({
+					action: "reject-template-confirm",
+					institutionId: h.record.id,
 					scope: "community",
-					cursorInstitutionId: 42,
+					template,
 				}),
-			}),
-		);
-		assert.ok(resumed.calls.some((call) => call.method === "sendPhoto"));
-	});
-
-	test("resume skips a saved cursor that is no longer Telegram-reviewable", async () => {
-		const resumed = createHarness();
-		const nextCalls: unknown[] = [];
-		await resumeReview(
-			resumed.client,
-			config,
-			createDependencies({
-				getSession: async () => ({
-					scope: "community",
-					cursorInstitutionId: 41,
-				}),
-				getCandidate: async () => null,
-				getNextCandidate: async (scope, afterInstitutionId) => {
-					nextCalls.push({ scope, afterInstitutionId });
-					return candidate;
-				},
-			}),
-		);
-
-		assert.deepEqual(nextCalls, [
-			{ scope: "community", afterInstitutionId: 41 },
-		]);
-		assert.ok(resumed.calls.some((call) => call.method === "sendPhoto"));
-	});
-
-	test("fills a missing address and coords from a name-only geocode lookup", async () => {
-		const { calls, client, message } = createHarness();
-		message.photo = [{}];
-		const withoutAddress = { ...candidate, address: null, coords: null };
-		const updates: unknown[] = [];
-		await handleReviewCallback(
-			client,
-			config,
-			callback(
-				{ action: "find-address", scope: "community", institutionId: 42 },
-				message,
-			),
-			createDependencies({
-				getCandidate: async () => withoutAddress,
-				geocodeByName: async () => ({
-					coords: [3.2, 101.7],
-					city: "Shah Alam",
-					state: "Selangor",
-					address: "Jalan Contoh 1",
-					needsManualReview: false,
-				}),
-				updateLocation: async (institutionId, input) => {
-					updates.push({ institutionId, input });
-				},
-			}),
-		);
-
-		assert.deepEqual(updates, [
-			{
-				institutionId: 42,
-				input: { address: "Jalan Contoh 1", coords: [3.2, 101.7] },
 			},
-		]);
-		assert.ok(calls.some((call) => call.method === "editMessageCaption"));
-	});
-
-	test("does not overwrite an existing address when finding a location", async () => {
-		const { client, message } = createHarness();
-		const updates: unknown[] = [];
-		await handleReviewCallback(
-			client,
-			config,
-			callback(
-				{ action: "find-address", scope: "community", institutionId: 42 },
-				message,
-			),
-			createDependencies({
-				geocodeByName: async () => ({
-					coords: [1, 1],
-					city: "Somewhere",
-					state: "Selangor",
-					address: "Should not be used",
-					needsManualReview: false,
-				}),
-				updateLocation: async (institutionId, input) => {
-					updates.push({ institutionId, input });
-				},
-			}),
+			h.dependencies,
 		);
-
-		assert.deepEqual(updates, [{ institutionId: 42, input: {} }]);
-	});
-
-	test("shows a low-confidence warning when the geocode result needs manual review", async () => {
-		const { calls, client, message } = createHarness();
-		const withoutAddress = { ...candidate, address: null, coords: null };
-		await handleReviewCallback(
-			client,
-			config,
-			callback(
-				{ action: "find-address", scope: "community", institutionId: 42 },
-				message,
-			),
-			createDependencies({
-				getCandidate: async () => withoutAddress,
-				geocodeByName: async () => ({
-					coords: [1.1, 1.1],
-					city: "Unknown",
-					state: "Selangor",
-					address: "Malaysia",
-					needsManualReview: true,
-				}),
-				updateLocation: async () => {},
-			}),
-		);
-
-		assert.ok(
-			calls.some(
-				(call) =>
-					call.method === "editMessageText" &&
-					JSON.stringify(call.input).includes("please verify"),
-			),
-		);
-		assert.ok(
-			calls.some(
-				(call) =>
-					call.method === "answerCallbackQuery" &&
-					JSON.stringify(call.input).includes("low confidence"),
-			),
-		);
-	});
-
-	test("undoes an approval and reverts the institution to pending", async () => {
-		const { calls, client, message } = createHarness();
-		const undoCalls: unknown[] = [];
-		await handleReviewCallback(
-			client,
-			config,
-			callback(
-				{ action: "undo", scope: "community", institutionId: 42 },
-				message,
-			),
-			createDependencies({
-				undoReview: async (input) => {
-					undoCalls.push(input);
-					return {} as Awaited<ReturnType<ReviewBotDependencies["undoReview"]>>;
-				},
-			}),
-		);
-
-		assert.deepEqual(undoCalls, [{ institutionId: 42, reviewerId: "admin-1" }]);
-		assert.ok(
-			calls.some(
-				(call) =>
-					call.method === "sendMessage" &&
-					JSON.stringify(call.input).includes("reverted to pending"),
-			),
-		);
-	});
-
-	test("treats undo as a no-op when the institution already changed", async () => {
-		const { calls, client, message } = createHarness();
-		await handleReviewCallback(
-			client,
-			config,
-			callback(
-				{ action: "undo", scope: "community", institutionId: 42 },
-				message,
-			),
-			createDependencies({ undoReview: async () => null }),
-		);
-
-		assert.ok(
-			calls.some(
-				(call) =>
-					call.method === "answerCallbackQuery" &&
-					JSON.stringify(call.input).includes("already changed"),
-			),
-		);
-		assert.ok(!calls.some((call) => call.method === "sendMessage"));
-	});
-
-	test("/find <id> opens a Telegram-reviewable institution directly", async () => {
-		const { calls, client, message } = createHarness();
-		message.text = "/find 42";
-		const saved: unknown[] = [];
-		await handleMenuMessage(
-			client,
-			config,
-			message,
-			createDependencies({
-				getCandidate: async (id) => (id === 42 ? candidate : null),
-				saveSession: async (input) => {
-					saved.push(input);
-				},
-			}),
-		);
-
-		assert.deepEqual(saved, [
-			{ telegramChatId: "123", scope: "all", cursorInstitutionId: 42 },
-		]);
-		assert.ok(calls.some((call) => call.method === "sendPhoto"));
-	});
-
-	test("/find <name> with one match opens it directly", async () => {
-		const { calls, client, message } = createHarness();
-		message.text = "/find amanah";
-		await handleMenuMessage(
-			client,
-			config,
-			message,
-			createDependencies({
-				searchCandidates: async () => [{ id: 42, name: "Masjid Amanah" }],
-				getCandidate: async () => candidate,
-			}),
-		);
-
-		assert.ok(calls.some((call) => call.method === "sendPhoto"));
-	});
-
-	test("/find <name> with multiple matches lists them instead of guessing", async () => {
-		const { calls, client, message } = createHarness();
-		message.text = "/find masjid";
-		await handleMenuMessage(
-			client,
-			config,
-			message,
-			createDependencies({
-				searchCandidates: async () => [
-					{ id: 42, name: "Masjid Amanah" },
-					{ id: 43, name: "Masjid Ikhlas" },
-				],
-			}),
-		);
-
-		assert.ok(!calls.some((call) => call.method === "sendPhoto"));
-		assert.ok(
-			calls.some(
-				(call) =>
-					call.method === "sendMessage" &&
-					JSON.stringify(call.input).includes("#42") &&
-					JSON.stringify(call.input).includes("#43"),
-			),
-		);
-	});
+		const op = h.ops.at(-1);
+		assert.ok(op);
+		assert.equal(op.payload.notes, REJECTION_TEMPLATES[index].value);
+		let notes: string | undefined;
+		h.tools.review = async (input) => {
+			notes = input.adminNotes;
+			return { ...h.record, status: "rejected" };
+		};
+		await h.confirm();
+		assert.equal(getRejectionReasonBucket(notes ?? null), expectedBucket);
+	}
 });

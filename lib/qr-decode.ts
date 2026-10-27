@@ -82,3 +82,57 @@ export const decodeQrFromBuffer = async (
 
 	return null;
 };
+
+/** Bounded recovery for review: normal scales, contrast, then five overlapping crops. */
+export async function recoverQrFromBuffer(
+	buffer: Buffer,
+): Promise<string | null> {
+	const image = sharp(buffer, { limitInputPixels: 20_000_000 });
+	const { width, height } = await image.metadata();
+	if (!width || !height || width * height > 20_000_000) return null;
+	// Resizing a large poster can erase a small, otherwise readable QR. Keep
+	// one native attempt within the review pixel limit before reducing detail.
+	if (width > 2000 || height > 2000) {
+		const frame = await rgbaAtScale(buffer, 1, width, height);
+		const hit = jsQR(frame.data, frame.width, frame.height, {
+			inversionAttempts: "attemptBoth",
+		});
+		if (hit?.data?.trim()) return hit.data.trim();
+	}
+	// Cap the input to bound the number of raw pixels processed across attempts.
+	const bounded = await image
+		.resize({
+			width: 2000,
+			height: 2000,
+			fit: "inside",
+			withoutEnlargement: true,
+		})
+		.png()
+		.toBuffer();
+	const direct = await decodeQrFromBuffer(bounded);
+	if (direct) return direct;
+	const contrast = await sharp(bounded).normalize().sharpen().png().toBuffer();
+	const hit = await decodeQrFromBuffer(contrast);
+	if (hit) return hit;
+	const meta = await sharp(bounded).metadata();
+	const w = Math.floor((meta.width ?? 1) * 0.65),
+		h = Math.floor((meta.height ?? 1) * 0.65);
+	const right = (meta.width ?? 1) - w,
+		bottom = (meta.height ?? 1) - h;
+	for (const [left, top] of [
+		[0, 0],
+		[right, 0],
+		[0, bottom],
+		[right, bottom],
+		[Math.floor(right / 2), Math.floor(bottom / 2)],
+	]) {
+		const crop = await sharp(bounded)
+			.extract({ left, top, width: w, height: h })
+			.normalize()
+			.png()
+			.toBuffer();
+		const recovered = await decodeQrFromBuffer(crop);
+		if (recovered) return recovered;
+	}
+	return null;
+}

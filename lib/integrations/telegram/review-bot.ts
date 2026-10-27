@@ -1,13 +1,12 @@
 import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
-import { users } from "@/db/schema";
+import { institutions, users } from "@/db/schema";
 import { env } from "@/env";
 import { REJECTION_TEMPLATES } from "@/lib/admin-templates";
 import {
 	reviewPendingInstitution,
 	undoInstitutionReview,
 } from "@/lib/features/institution-review/review";
-import { geocodeMalaysiaInstitutionByName } from "@/lib/integrations/geocode";
 import {
 	createTelegramBotClient,
 	type TelegramBotClient,
@@ -22,29 +21,30 @@ import {
 	getTelegramReviewSession,
 	saveTelegramReviewSession,
 	searchTelegramReviewCandidates,
-	updateTelegramCandidateLocation,
 } from "@/lib/integrations/telegram/review-repository";
 import { isAuthorizedTelegramActor } from "@/lib/integrations/telegram/review-security";
 import {
-	buildApprovalConfirmation,
-	buildCustomReasonConfirmation,
-	buildCustomReasonPrompt,
 	buildRejectionMenu,
 	buildReviewCard,
-	buildReviewedCardStatus,
 	buildTemplateRejectionConfirmation,
-	buildUndoKeyboard,
 	decodeReviewCallback,
 	escapeTelegramHtml,
-	extractCustomReason,
-	getReviewBlockers,
-	parseCustomReasonPrompt,
 	type RejectionTemplateKey,
 	TELEGRAM_MENU_BUTTONS,
 	TELEGRAM_REVIEW_MENU,
 	type TelegramReviewCandidate,
 	type TelegramReviewScope,
 } from "@/lib/integrations/telegram/review-ui";
+import {
+	scheduleReviewAnalysis,
+	shouldAutoAnalyseSubmission,
+} from "./review-analysis";
+import {
+	handleToolCallback,
+	handleToolReply,
+	type ReviewToolServices,
+	reviewToolServices,
+} from "./review-tools";
 
 const REJECTION_REASONS: Record<RejectionTemplateKey, string> = {
 	unclear: REJECTION_TEMPLATES[0].value,
@@ -60,13 +60,12 @@ export type ReviewBotConfig = {
 };
 
 export type ReviewBotDependencies = {
+	tools?: ReviewToolServices;
 	getCandidate: typeof getTelegramReviewCandidate;
 	getNextCandidate: typeof getNextTelegramReviewCandidate;
 	getQueueCounts: typeof getTelegramQueueCounts;
 	getSession: typeof getTelegramReviewSession;
 	saveSession: typeof saveTelegramReviewSession;
-	geocodeByName: typeof geocodeMalaysiaInstitutionByName;
-	updateLocation: typeof updateTelegramCandidateLocation;
 	searchCandidates: typeof searchTelegramReviewCandidates;
 	undoReview: typeof undoInstitutionReview;
 	reviewInstitution: (input: {
@@ -78,13 +77,12 @@ export type ReviewBotDependencies = {
 };
 
 const defaultDependencies: ReviewBotDependencies = {
+	tools: reviewToolServices,
 	getCandidate: getTelegramReviewCandidate,
 	getNextCandidate: getNextTelegramReviewCandidate,
 	getQueueCounts: getTelegramQueueCounts,
 	getSession: getTelegramReviewSession,
 	saveSession: saveTelegramReviewSession,
-	geocodeByName: geocodeMalaysiaInstitutionByName,
-	updateLocation: updateTelegramCandidateLocation,
 	searchCandidates: searchTelegramReviewCandidates,
 	undoReview: undoInstitutionReview,
 	reviewInstitution: reviewPendingInstitution,
@@ -149,6 +147,13 @@ async function sendCandidate(
 	candidate: TelegramReviewCandidate,
 	scope: TelegramReviewScope,
 ): Promise<TelegramMessage> {
+	if (candidate.reviewMetadata?.analysis) {
+		await scheduleReviewAnalysis(candidate.id).catch(() =>
+			console.error("[review analysis] recovery scheduling failed"),
+		);
+		const refreshed = await getTelegramReviewCandidate(candidate.id, "all");
+		if (refreshed) candidate = refreshed;
+	}
 	const card = buildReviewCard(candidate, scope, {
 		adminBaseUrl: config.adminBaseUrl,
 	});
@@ -248,51 +253,6 @@ export async function resumeReview(
 	);
 }
 
-async function markReviewMessage(input: {
-	client: TelegramBotClient;
-	config: ReviewBotConfig;
-	chatId: number;
-	messageId: number;
-	institutionId: number;
-	decision: "approved" | "rejected";
-	knownPhotoMessage: boolean | null;
-}) {
-	const status = buildReviewedCardStatus({
-		institutionId: input.institutionId,
-		decision: input.decision,
-		reviewerName: input.config.reviewerName,
-	});
-	if (input.knownPhotoMessage === true) {
-		await input.client.editMessageCaption({
-			chatId: input.chatId,
-			messageId: input.messageId,
-			caption: status,
-		});
-		return;
-	}
-	if (input.knownPhotoMessage === false) {
-		await input.client.editMessageText({
-			chatId: input.chatId,
-			messageId: input.messageId,
-			text: status,
-		});
-		return;
-	}
-	try {
-		await input.client.editMessageCaption({
-			chatId: input.chatId,
-			messageId: input.messageId,
-			caption: status,
-		});
-	} catch {
-		await input.client.editMessageText({
-			chatId: input.chatId,
-			messageId: input.messageId,
-			text: status,
-		});
-	}
-}
-
 async function restoreReviewButtons(
 	client: TelegramBotClient,
 	config: ReviewBotConfig,
@@ -318,35 +278,6 @@ async function restoreReviewButtons(
 	return true;
 }
 
-async function refreshReviewCard(
-	client: TelegramBotClient,
-	config: Pick<ReviewBotConfig, "adminBaseUrl">,
-	message: TelegramMessage,
-	candidate: TelegramReviewCandidate,
-	scope: TelegramReviewScope,
-	note?: string | null,
-) {
-	const card = buildReviewCard(candidate, scope, {
-		adminBaseUrl: config.adminBaseUrl,
-		note,
-	});
-	if (message.photo?.length) {
-		await client.editMessageCaption({
-			chatId: message.chat.id,
-			messageId: message.message_id,
-			caption: card.caption,
-			replyMarkup: card.replyMarkup,
-		});
-		return;
-	}
-	await client.editMessageText({
-		chatId: message.chat.id,
-		messageId: message.message_id,
-		text: card.caption,
-		replyMarkup: card.replyMarkup,
-	});
-}
-
 async function acknowledgeUnauthorized(
 	client: TelegramBotClient,
 	callback?: TelegramCallbackQuery,
@@ -365,27 +296,16 @@ export async function handleMenuMessage(
 	message: TelegramMessage,
 	dependencies: ReviewBotDependencies = defaultDependencies,
 ): Promise<void> {
-	const text = message.text?.trim();
-	const repliedPrompt = message.reply_to_message?.text
-		? parseCustomReasonPrompt(message.reply_to_message.text)
-		: null;
-	if (repliedPrompt && text) {
-		const confirmation = buildCustomReasonConfirmation(
-			repliedPrompt.institutionId,
-			repliedPrompt.scope,
-			text,
-			repliedPrompt.reviewMessageId,
-		);
-		await client.sendMessage({
-			chatId: config.chatId,
-			text: confirmation.text,
-			parseMode: "HTML",
-			replyMarkup: confirmation.replyMarkup,
-			replyToMessageId: repliedPrompt.reviewMessageId,
-		});
+	if (
+		await handleToolReply(
+			client,
+			config,
+			message,
+			dependencies.tools ?? reviewToolServices,
+		)
+	)
 		return;
-	}
-
+	const text = message.text?.trim();
 	if (text === "/start" || text === "/menu") {
 		await client.sendMessage({
 			chatId: config.chatId,
@@ -414,6 +334,10 @@ export async function handleMenuMessage(
 		);
 		return;
 	}
+	if (text === TELEGRAM_MENU_BUTTONS.held) {
+		await sendNextCandidate(client, config, "held", undefined, dependencies);
+		return;
+	}
 	if (text === TELEGRAM_MENU_BUTTONS.imports) {
 		await sendNextCandidate(client, config, "imports", undefined, dependencies);
 		return;
@@ -428,6 +352,7 @@ export async function handleMenuMessage(
 				`Bulk imports: <b>${counts.imports}</b>`,
 				`Ready in Telegram: <b>${counts.all}</b>`,
 				`Needs QR extraction: <b>${counts.needsExtraction}</b>`,
+				`Held: <b>${counts.held ?? 0}</b>`,
 				`Total pending: <b>${counts.totalPending}</b>`,
 			].join("\n"),
 			parseMode: "HTML",
@@ -472,7 +397,7 @@ export async function handleMenuMessage(
 			if (!candidate) {
 				await client.sendMessage({
 					chatId: config.chatId,
-					text: `No Telegram-reviewable pending institution #${query}. It may be missing QR content, already reviewed, or nonexistent — check the web admin.`,
+					text: `No Telegram-reviewable pending institution #${query}. It may be already reviewed or nonexistent.`,
 					replyMarkup: TELEGRAM_REVIEW_MENU,
 				});
 				return;
@@ -524,6 +449,16 @@ export async function handleReviewCallback(
 	callback: TelegramCallbackQuery,
 	dependencies: ReviewBotDependencies = defaultDependencies,
 ): Promise<void> {
+	if (
+		await handleToolCallback(
+			client,
+			config,
+			callback,
+			dependencies.tools ?? reviewToolServices,
+			(scope, id) => sendNextCandidate(client, config, scope, id, dependencies),
+		)
+	)
+		return;
 	const message = callback.message;
 	const parsed = callback.data ? decodeReviewCallback(callback.data) : null;
 	if (!message || !parsed) {
@@ -536,34 +471,6 @@ export async function handleReviewCallback(
 	}
 
 	const chatId = message.chat.id;
-	if (parsed.action === "approve") {
-		const candidate = await dependencies.getCandidate(
-			parsed.institutionId,
-			parsed.scope,
-		);
-		if (!candidate || getReviewBlockers(candidate).length > 0) {
-			await client.answerCallbackQuery({
-				callbackQueryId: callback.id,
-				text: "This institution requires web review.",
-				showAlert: true,
-			});
-			return;
-		}
-		await client.editMessageReplyMarkup({
-			chatId,
-			messageId: message.message_id,
-			replyMarkup: buildApprovalConfirmation(
-				parsed.institutionId,
-				parsed.scope,
-			),
-		});
-		await client.answerCallbackQuery({
-			callbackQueryId: callback.id,
-			text: "Confirm approval",
-		});
-		return;
-	}
-
 	if (parsed.action === "reject") {
 		await client.editMessageReplyMarkup({
 			chatId,
@@ -596,55 +503,6 @@ export async function handleReviewCallback(
 		await client.answerCallbackQuery({
 			callbackQueryId: callback.id,
 			text: "Review and confirm the reason",
-		});
-		return;
-	}
-
-	if (parsed.action === "reject-custom") {
-		await client.sendMessage({
-			chatId,
-			text: buildCustomReasonPrompt(
-				parsed.institutionId,
-				parsed.scope,
-				message.message_id,
-			),
-			replyMarkup: {
-				force_reply: true,
-				selective: true,
-				input_field_placeholder: "Type the rejection reason",
-			},
-			replyToMessageId: message.message_id,
-		});
-		await client.answerCallbackQuery({
-			callbackQueryId: callback.id,
-			text: "Reply with your custom reason",
-		});
-		return;
-	}
-
-	if (parsed.action === "reject-custom-edit") {
-		const reviewMessageId = parsed.reviewMessageId ?? message.message_id;
-		await client.sendMessage({
-			chatId,
-			text: buildCustomReasonPrompt(
-				parsed.institutionId,
-				parsed.scope,
-				reviewMessageId,
-			),
-			replyMarkup: {
-				force_reply: true,
-				selective: true,
-				input_field_placeholder: "Edit the rejection reason",
-			},
-			replyToMessageId: reviewMessageId,
-		});
-		await client.editMessageReplyMarkup({
-			chatId,
-			messageId: message.message_id,
-		});
-		await client.answerCallbackQuery({
-			callbackQueryId: callback.id,
-			text: "Reply with the edited reason",
 		});
 		return;
 	}
@@ -684,205 +542,6 @@ export async function handleReviewCallback(
 		);
 		return;
 	}
-
-	if (parsed.action === "find-address") {
-		const candidate = await dependencies.getCandidate(
-			parsed.institutionId,
-			parsed.scope,
-		);
-		if (!candidate) {
-			await client.answerCallbackQuery({
-				callbackQueryId: callback.id,
-				text: "This institution is no longer available.",
-				showAlert: true,
-			});
-			return;
-		}
-		const geo = await dependencies.geocodeByName(candidate.name);
-		if (!geo) {
-			await client.answerCallbackQuery({
-				callbackQueryId: callback.id,
-				text: "No address found. Please use the web admin.",
-				showAlert: true,
-			});
-			return;
-		}
-		await dependencies.updateLocation(parsed.institutionId, {
-			...(candidate.address?.trim()
-				? {}
-				: { address: geo.address ?? undefined }),
-			...(candidate.coords ? {} : { coords: geo.coords }),
-		});
-		const updated = await dependencies.getCandidate(
-			parsed.institutionId,
-			parsed.scope,
-		);
-		if (updated) {
-			await refreshReviewCard(
-				client,
-				config,
-				message,
-				updated,
-				parsed.scope,
-				geo.needsManualReview ? "⚠️ Auto-filled address — please verify" : null,
-			);
-		}
-		await client.answerCallbackQuery({
-			callbackQueryId: callback.id,
-			text: !updated
-				? "Institution no longer pending"
-				: geo.needsManualReview
-					? "Address filled — low confidence, please verify"
-					: "Address updated",
-			showAlert: Boolean(updated && geo.needsManualReview),
-		});
-		return;
-	}
-
-	if (parsed.action === "undo") {
-		let reverted: unknown = null;
-		try {
-			reverted = await dependencies.undoReview({
-				institutionId: parsed.institutionId,
-				reviewerId: config.reviewerUserId,
-			});
-		} catch (error) {
-			console.error("[telegram review] undo failed", error);
-		}
-		if (!reverted) {
-			await client.answerCallbackQuery({
-				callbackQueryId: callback.id,
-				text: "Nothing to undo — this institution has already changed.",
-				showAlert: true,
-			});
-			return;
-		}
-		await client.editMessageReplyMarkup({
-			chatId,
-			messageId: message.message_id,
-		});
-		await client.sendMessage({
-			chatId,
-			text: `↩️ Institution #${parsed.institutionId} reverted to pending.`,
-			replyToMessageId: message.message_id,
-			replyMarkup: TELEGRAM_REVIEW_MENU,
-		});
-		await client.answerCallbackQuery({
-			callbackQueryId: callback.id,
-			text: "Reverted",
-		});
-		return;
-	}
-
-	let decision: "approved" | "rejected" | null = null;
-	let adminNotes: string | undefined;
-	if (parsed.action === "approve-confirm") decision = "approved";
-	if (parsed.action === "reject-template-confirm" && parsed.template) {
-		decision = "rejected";
-		adminNotes = REJECTION_REASONS[parsed.template];
-	}
-	if (parsed.action === "reject-custom-confirm") {
-		const reason = message.text
-			? extractCustomReason(message.text, parsed.institutionId)
-			: null;
-		if (!reason) {
-			await client.answerCallbackQuery({
-				callbackQueryId: callback.id,
-				text: "The custom reason could not be read.",
-				showAlert: true,
-			});
-			return;
-		}
-		decision = "rejected";
-		adminNotes = reason;
-	}
-	if (!decision) return;
-
-	if (decision === "approved") {
-		const candidate = await dependencies.getCandidate(
-			parsed.institutionId,
-			parsed.scope,
-		);
-		if (!candidate || getReviewBlockers(candidate).length > 0) {
-			await client.answerCallbackQuery({
-				callbackQueryId: callback.id,
-				text: "This institution is no longer eligible for quick approval.",
-				showAlert: true,
-			});
-			return;
-		}
-	}
-
-	try {
-		await dependencies.reviewInstitution({
-			institutionId: parsed.institutionId,
-			reviewerId: config.reviewerUserId,
-			decision,
-			adminNotes,
-		});
-	} catch (error) {
-		const alreadyReviewed =
-			error instanceof Error && error.message.includes("not pending");
-		await client.answerCallbackQuery({
-			callbackQueryId: callback.id,
-			text: alreadyReviewed
-				? "This institution has already been reviewed."
-				: "The review could not be saved.",
-			showAlert: true,
-		});
-		if (alreadyReviewed) {
-			await client.editMessageReplyMarkup({
-				chatId,
-				messageId: parsed.reviewMessageId ?? message.message_id,
-			});
-		}
-		return;
-	}
-
-	const reviewMessageId = parsed.reviewMessageId ?? message.message_id;
-	try {
-		await markReviewMessage({
-			client,
-			config,
-			chatId,
-			messageId: reviewMessageId,
-			institutionId: parsed.institutionId,
-			decision,
-			knownPhotoMessage:
-				message.message_id === reviewMessageId
-					? Boolean(message.photo?.length)
-					: null,
-		});
-	} catch (error) {
-		console.error("[telegram review] could not mark review card", error);
-		await client.editMessageReplyMarkup({ chatId, messageId: reviewMessageId });
-	}
-	if (message.message_id !== reviewMessageId) {
-		await client.editMessageReplyMarkup({
-			chatId,
-			messageId: message.message_id,
-		});
-	}
-	await client.sendMessage({
-		chatId,
-		text:
-			decision === "approved"
-				? `✅ Institution #${parsed.institutionId} approved.`
-				: `❌ Institution #${parsed.institutionId} rejected.`,
-		replyToMessageId: reviewMessageId,
-		replyMarkup: buildUndoKeyboard(parsed.institutionId, parsed.scope),
-	});
-	await client.answerCallbackQuery({
-		callbackQueryId: callback.id,
-		text: decision === "approved" ? "Approved" : "Rejected",
-	});
-	await sendNextCandidate(
-		client,
-		config,
-		parsed.scope,
-		parsed.institutionId,
-		dependencies,
-	);
 }
 
 export async function handleTelegramReviewUpdate(
@@ -917,6 +576,17 @@ export async function handleTelegramReviewUpdate(
 export async function notifyInstitutionSubmission(
 	institutionId: number,
 ): Promise<boolean> {
+	// Persist queued analysis even if Telegram notifications are not configured.
+	const [submission] = await db
+		.select({ sourceUrl: institutions.sourceUrl })
+		.from(institutions)
+		.where(eq(institutions.id, institutionId))
+		.limit(1);
+	if (submission && shouldAutoAnalyseSubmission(submission.sourceUrl)) {
+		await scheduleReviewAnalysis(institutionId).catch(() =>
+			console.error("[review analysis] scheduling failed"),
+		);
+	}
 	const client = getTelegramClient();
 	if (!client || !env.TELEGRAM_CHAT_ID) return false;
 	const candidate = await getTelegramReviewCandidate(institutionId, "all");

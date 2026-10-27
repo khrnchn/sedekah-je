@@ -14,31 +14,32 @@ import {
 } from "drizzle-orm";
 import { db } from "@/db";
 import { institutions, telegramReviewSessions, users } from "@/db/schema";
+import { reviewVersion } from "@/lib/features/institution-review/telegram-evidence";
 import type {
 	TelegramReviewCandidate,
 	TelegramReviewScope,
 } from "@/lib/integrations/telegram/review-ui";
+import { findReviewDuplicates } from "./review-operations";
 
 function getScopeCondition(scope: TelegramReviewScope) {
-	if (scope === "all") return sql`true`;
+	if (scope === "held")
+		return sql`coalesce(${institutions.reviewMetadata}->>'held', 'false') = 'true'`;
+	if (scope === "all")
+		return sql`coalesce(${institutions.reviewMetadata}->>'held', 'false') <> 'true'`;
 	const automated = and(
 		not(isNull(institutions.sourceUrl)),
 		ne(institutions.sourceUrl, ""),
 		not(like(institutions.sourceUrl, "http%")),
 	);
-	return scope === "imports"
-		? automated
-		: or(
-				isNull(institutions.sourceUrl),
-				eq(institutions.sourceUrl, ""),
-				like(institutions.sourceUrl, "http%"),
-			);
-}
-
-function getTelegramReviewableCondition() {
 	return and(
-		not(isNull(institutions.qrContent)),
-		sql`trim(${institutions.qrContent}) <> ''`,
+		sql`coalesce(${institutions.reviewMetadata}->>'held', 'false') <> 'true'`,
+		scope === "imports"
+			? automated
+			: or(
+					isNull(institutions.sourceUrl),
+					eq(institutions.sourceUrl, ""),
+					like(institutions.sourceUrl, "http%"),
+				),
 	);
 }
 
@@ -71,24 +72,19 @@ async function hydrateCandidate(
 				and(
 					eq(institutions.status, "pending"),
 					scopeCondition,
-					getTelegramReviewableCondition(),
 					lte(institutions.id, row.id),
 				),
 			),
 		db
 			.select({ value: count() })
 			.from(institutions)
-			.where(
-				and(
-					eq(institutions.status, "pending"),
-					scopeCondition,
-					getTelegramReviewableCondition(),
-				),
-			),
+			.where(and(eq(institutions.status, "pending"), scopeCondition)),
 	]);
 
 	return {
 		...row,
+		version: reviewVersion(row),
+		duplicates: await findReviewDuplicates(row),
 		duplicateInstitutionId: duplicate[0]?.id ?? null,
 		position: positionResult[0]?.value ?? 1,
 		total: totalResult[0]?.value ?? 0,
@@ -97,6 +93,7 @@ async function hydrateCandidate(
 
 const candidateSelection = {
 	id: institutions.id,
+	reviewMetadata: institutions.reviewMetadata,
 	name: institutions.name,
 	category: institutions.category,
 	state: institutions.state,
@@ -129,8 +126,7 @@ export async function getTelegramReviewCandidate(
 			and(
 				eq(institutions.id, institutionId),
 				eq(institutions.status, "pending"),
-				getScopeCondition(scope),
-				getTelegramReviewableCondition(),
+				scope === "all" ? sql`true` : getScopeCondition(scope),
 			),
 		)
 		.limit(1);
@@ -152,7 +148,6 @@ export async function getNextTelegramReviewCandidate(
 			and(
 				eq(institutions.status, "pending"),
 				getScopeCondition(scope),
-				getTelegramReviewableCondition(),
 				afterCondition,
 			),
 		)
@@ -162,10 +157,13 @@ export async function getNextTelegramReviewCandidate(
 }
 
 export async function getTelegramQueueCounts() {
-	const reviewable = getTelegramReviewableCondition();
+	const reviewable = getScopeCondition("all");
 	const [row] = await db
 		.select({
 			totalPending: count(),
+			held: sql<number>`count(*) filter (where ${getScopeCondition("held")})`.mapWith(
+				Number,
+			),
 			all: sql<number>`count(*) filter (where ${reviewable})`.mapWith(Number),
 			community:
 				sql<number>`count(*) filter (where ${and(reviewable, getScopeCondition("community"))})`.mapWith(
@@ -176,7 +174,7 @@ export async function getTelegramQueueCounts() {
 					Number,
 				),
 			needsExtraction:
-				sql<number>`count(*) filter (where not (${reviewable}))`.mapWith(
+				sql<number>`count(*) filter (where ${institutions.qrContent} is null or trim(${institutions.qrContent}) = '')`.mapWith(
 					Number,
 				),
 		})
@@ -184,25 +182,12 @@ export async function getTelegramQueueCounts() {
 		.where(eq(institutions.status, "pending"));
 	return {
 		all: row?.all ?? 0,
+		held: row?.held ?? 0,
 		community: row?.community ?? 0,
 		imports: row?.imports ?? 0,
 		needsExtraction: row?.needsExtraction ?? 0,
 		totalPending: row?.totalPending ?? 0,
 	};
-}
-
-export async function updateTelegramCandidateLocation(
-	institutionId: number,
-	updates: {
-		address?: string;
-		coords?: [number, number];
-	},
-): Promise<void> {
-	if (updates.address === undefined && updates.coords === undefined) return;
-	await db
-		.update(institutions)
-		.set(updates)
-		.where(eq(institutions.id, institutionId));
 }
 
 export async function searchTelegramReviewCandidates(
@@ -217,7 +202,6 @@ export async function searchTelegramReviewCandidates(
 		.where(
 			and(
 				eq(institutions.status, "pending"),
-				getTelegramReviewableCondition(),
 				sql`${institutions.name} ilike ${`%${trimmed}%`}`,
 			),
 		)

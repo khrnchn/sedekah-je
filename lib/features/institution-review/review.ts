@@ -1,4 +1,4 @@
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { after } from "next/server";
 import { db } from "@/db";
@@ -11,7 +11,13 @@ import {
 	createInstitutionReviewModule,
 	type InstitutionReviewDecision,
 } from "@/lib/features/institution-review/review-core";
+import {
+	appendReviewHistory,
+	consumeReviewOperation,
+	findReviewDuplicates,
+} from "@/lib/integrations/telegram/review-operations";
 import { toTitleCase } from "@/lib/utils";
+import { telegramApprovalBlockers } from "./telegram-evidence";
 
 function runReviewSideEffects(decision: InstitutionReviewDecision) {
 	revalidatePath("/admin/institutions/pending", "page");
@@ -88,12 +94,35 @@ function workAfterResponse(work: () => Promise<void>): void {
 }
 
 export async function undoInstitutionReview(input: {
+	telegramOperation?: { id: string; chatId: string; promptMessageId: number };
 	institutionId: number;
 	reviewerId: string;
 }): Promise<typeof institutions.$inferSelect | null> {
 	assertActiveAdminReviewer(await findReviewer(input.reviewerId));
 
 	return db.transaction(async (tx) => {
+		let undoHistory: Partial<typeof institutions.$inferInsert> = {};
+		if (input.telegramOperation) {
+			const { op, row } = await consumeReviewOperation(
+				tx,
+				input.telegramOperation,
+				input.institutionId,
+			);
+			if (op.kind !== "undo") throw new Error("Invalid undo operation");
+			undoHistory = {
+				reviewMetadata: {
+					...appendReviewHistory(
+						row.reviewMetadata,
+						input.reviewerId,
+						"undo",
+						{ status: row.status, adminNotes: row.adminNotes },
+						{ status: "pending" },
+					),
+					evidence: undefined,
+					differentInstitutions: undefined,
+				},
+			};
+		}
 		const [current] = await tx
 			.select({ status: institutions.status })
 			.from(institutions)
@@ -108,6 +137,7 @@ export async function undoInstitutionReview(input: {
 				reviewedBy: null,
 				reviewedAt: null,
 				adminNotes: null,
+				...undoHistory,
 			})
 			.where(
 				and(
@@ -118,7 +148,11 @@ export async function undoInstitutionReview(input: {
 			.returning();
 		if (!reverted) return null;
 
-		runReviewSideEffects(current.status as InstitutionReviewDecision);
+		try {
+			runReviewSideEffects(current.status as InstitutionReviewDecision);
+		} catch {
+			/* Long polling has no request cache. */
+		}
 		return reverted;
 	});
 }
@@ -128,6 +162,38 @@ export const reviewPendingInstitution = createInstitutionReviewModule({
 		findReviewer,
 		async transitionPending(input) {
 			return db.transaction(async (tx) => {
+				let telegramHistory: Partial<typeof institutions.$inferInsert> = {};
+				if (input.telegramOperation) {
+					const { op, row } = await consumeReviewOperation(
+						tx,
+						input.telegramOperation,
+						input.institutionId,
+					);
+					if (
+						op.kind !== (input.decision === "approved" ? "approve" : "reject")
+					)
+						throw new Error("Invalid review operation");
+					if (input.decision === "approved") {
+						// Serialize Telegram approvals against the same QR payload.
+						await tx.execute(
+							sql`select pg_advisory_xact_lock(hashtext(${row.qrContent ?? ""}))`,
+						);
+						const blockers = telegramApprovalBlockers(
+							row,
+							await findReviewDuplicates(row, tx),
+						);
+						if (blockers.length) throw new Error(blockers.join("; "));
+					}
+					telegramHistory = {
+						reviewMetadata: appendReviewHistory(
+							row.reviewMetadata,
+							input.reviewerId,
+							input.decision,
+							{ status: row.status, adminNotes: row.adminNotes },
+							{ status: input.decision, adminNotes: input.adminNotes },
+						),
+					};
+				}
 				// Applied here (not just the admin UI's manual "Capitalize" button)
 				// so Telegram approvals, which skip the review form entirely, get
 				// the same title-cased name/city/address.
@@ -166,6 +232,7 @@ export const reviewPendingInstitution = createInstitutionReviewModule({
 						reviewedAt: new Date(),
 						adminNotes: input.adminNotes,
 						...titleCased,
+						...telegramHistory,
 					})
 					.where(
 						and(
