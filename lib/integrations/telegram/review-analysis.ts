@@ -15,6 +15,10 @@ import {
 	requestAssessment,
 } from "./gemini-assessment";
 import { reviewAiConfig } from "./review-ai-config";
+import {
+	formatAssessmentReport,
+	formatAssessmentUnavailable,
+} from "./review-assessment-copy";
 import { fetchReviewImage } from "./review-media";
 import { sendReviewText } from "./review-text";
 
@@ -185,16 +189,18 @@ export async function runReviewAnalysis(id: number): Promise<void> {
 		if (!row) return;
 		let result: Awaited<ReturnType<typeof requestAssessment>> | undefined,
 			error: AssessmentError | undefined,
-			key: string | undefined;
+			key: string | undefined,
+			decodedQrContent: string | null = null;
 		try {
 			if (!row.qrImage) throw new AssessmentError("missing_image");
 			const bytes = await fetchReviewImage(row.qrImage);
 			key = assessmentKey(bytes, row, provider.identity);
 			const meta = await sharp(bytes).metadata();
+			decodedQrContent = await recoverQrFromBuffer(bytes);
 			result = await requestAssessment({
 				bytes,
 				mimeType: `image/${meta.format}`,
-				row: { ...row, qrContent: await recoverQrFromBuffer(bytes) },
+				row: { ...row, qrContent: decodedQrContent },
 				apiKey: provider.apiKey,
 				model: provider.model,
 				baseUrl: provider.baseUrl,
@@ -254,8 +260,14 @@ export async function runReviewAnalysis(id: number): Promise<void> {
 				await sendReviewText(createTelegramBotClient(env.TELEGRAM_BOT_TOKEN), {
 					chatId: env.TELEGRAM_CHAT_ID,
 					text: result
-						? `AI assessment #${id}\n${result.imageType}; recipient: ${result.recipientRelationship}\nVisible institution: ${result.visibleInstitution}\nVisible location: ${result.visibleLocation}\nConflicts: ${result.conflicts.join("; ") || "none reported"}\n${result.explanation}\nHuman verification required. /find ${id}`
-						: `#${id}: AI unavailable (${error?.code ?? "unknown"}). Manual review remains available.`,
+						? formatAssessmentReport({
+								id,
+								name: row.name,
+								category: row.category,
+								qrContent: decodedQrContent,
+								assessment: result,
+							})
+						: formatAssessmentUnavailable(id),
 				});
 			} catch {
 				console.error("[review analysis] report delivery failed");

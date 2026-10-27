@@ -9,6 +9,7 @@ import {
 	type ReviewMetadata,
 	reviewVersion,
 } from "@/lib/features/institution-review/telegram-evidence";
+import { assessmentCardSummary } from "./review-assessment-copy";
 
 export type TelegramReviewScope = "community" | "imports" | "all" | "held";
 
@@ -327,8 +328,15 @@ export function buildReviewCard(
 		`QR: ${qr.format}; checksum ${qr.checksum}`,
 		`Pin: ${candidate.coords?.join(", ") || "Missing"}`,
 		currentAnalysis?.state === "complete" && currentAnalysis.result
-			? `AI: ${escapeTelegramHtml(currentAnalysis.result.imageType)}; ${escapeTelegramHtml(currentAnalysis.result.explanation.slice(0, 180))}`
-			: `AI unavailable${currentAnalysis?.state === "queued" || currentAnalysis?.state === "processing" ? " (analysis pending)" : ""}`,
+			? escapeTelegramHtml(
+					assessmentCardSummary(currentAnalysis.result, candidate.qrContent),
+				)
+			: currentAnalysis?.state === "queued" ||
+					currentAnalysis?.state === "processing"
+				? "AI: Checking image…"
+				: currentAnalysis?.state === "unavailable"
+					? "AI: Unavailable. Review manually or retry."
+					: "AI: Not checked yet. Use Retry analysis if needed.",
 		...(candidate.reviewMetadata?.held ? ["⏸ Held"] : []),
 	];
 	// Bound each field before escaping so Telegram captions remain valid HTML.
