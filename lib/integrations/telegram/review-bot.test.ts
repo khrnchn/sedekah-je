@@ -257,7 +257,7 @@ test("missing QR payload opens from search and offers replacement", async () => 
 		h.dependencies,
 	);
 	assert.match(h.text(), /Retry\/replace QR/);
-	assert.match(h.text(), /checksum missing/);
+	assert.match(h.text(), /QR payload missing/);
 	await h.action("qr");
 	assert.equal(h.ops[0].kind, "prompt-qr");
 });
@@ -573,4 +573,65 @@ test("retry from a tracked current card keeps the same photo; legacy cards reope
 		legacy.calls.filter((call) => call.method === "sendPhoto").length,
 		1,
 	);
+});
+
+test("review tools opens diagnostics and guarded actions without changing the review", async () => {
+	const h = harness();
+	await h.action("tools");
+	assert.match(h.text(), /checksum valid/);
+	assert.match(h.text(), /integrity only/);
+	const sent = h.calls.find((call) => call.method === "sendMessage");
+	assert.ok(sent && JSON.stringify(sent.input).includes("Confirm evidence"));
+	assert.ok(sent && JSON.stringify(sent.input).includes("Retry analysis"));
+	assert.equal(h.ops.length, 0);
+});
+
+test("a long payload is automatically replied to its review photo without losing content", async () => {
+	const payload = "<qr&>".repeat(1500);
+	const h = harness({ qrContent: payload });
+	await handleMenuMessage(
+		h.client,
+		config,
+		{ ...h.message, text: "/find 42" },
+		h.dependencies,
+	);
+	const replies = h.calls
+		.filter((call) => call.method === "sendMessage")
+		.map((call) => call.input as { text: string; replyToMessageId?: number });
+	assert.ok(replies.length > 1);
+	const restored = replies
+		.map((reply) => {
+			assert.equal(reply.replyToMessageId, 11);
+			return reply.text
+				.split("<code>")[1]
+				.split("</code>")[0]
+				.replaceAll("&lt;", "<")
+				.replaceAll("&gt;", ">")
+				.replaceAll("&amp;", "&");
+		})
+		.join("");
+	assert.equal(restored, payload);
+});
+
+test("AI retry from the tools reply keeps the bound original photo", async () => {
+	const record = makeRecord();
+	const h = harness({
+		reviewMetadata: {
+			telegramCard: {
+				chatId: config.chatId,
+				messageId: 1,
+				kind: "photo",
+				scope: "community",
+				version: reviewVersion(record),
+				digest: "shown",
+			},
+		},
+	});
+	const original = { ...h.message };
+	h.message.message_id = 22;
+	h.message.reply_to_message = original;
+	await h.action("analysis");
+	assert.equal(h.calls.filter((call) => call.method === "sendPhoto").length, 0);
+	assert.ok(h.calls.some((call) => call.method === "syncCard"));
+	assert.equal(h.ops.at(-1)?.kind, "analysis-request");
 });

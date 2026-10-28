@@ -7,6 +7,7 @@ import {
 	buildRejectionMenu,
 	buildReviewCard,
 	buildReviewedCardStatus,
+	buildReviewTools,
 	decodeReviewCallback,
 	encodeReviewCallback,
 	extractCustomReason,
@@ -60,7 +61,7 @@ describe("Telegram institution review UI", () => {
 		});
 
 		assert.ok(card.caption.includes("Masjid &lt;Amanah&gt; &amp; Rakan"));
-		assert.ok(!card.caption.includes("00020101021126"));
+		assert.ok(card.caption.includes("00020101021126"));
 		assert.ok(
 			card.replyMarkup.inline_keyboard
 				.flat()
@@ -99,15 +100,15 @@ describe("Telegram institution review UI", () => {
 				.flat()
 				.some((button) => button.text === "✅ Approve"),
 		);
-		assert.ok(card.caption.includes("checksum missing"));
+		assert.ok(card.caption.includes("QR payload missing"));
 		assert.ok(
-			card.replyMarkup.inline_keyboard
-				.flat()
+			buildReviewTools(incomplete, "community")
+				.inline_keyboard.flat()
 				.some((b) => b.text === "Retry/replace QR"),
 		);
 	});
 
-	test("keeps full payload behind View payload", () => {
+	test("keeps an oversized payload intact in the follow-up", () => {
 		const card = buildReviewCard(
 			{ ...candidate, qrContent: "A".repeat(1_200) },
 			"community",
@@ -115,11 +116,7 @@ describe("Telegram institution review UI", () => {
 		);
 
 		assert.ok(card.caption.length <= 1024);
-		assert.ok(
-			card.replyMarkup.inline_keyboard
-				.flat()
-				.some((b) => b.text === "View payload"),
-		);
+		assert.ok(card.qrFollowUpText?.includes("A".repeat(1_200)));
 	});
 
 	test("offers template buttons and preserves a custom rejection reason", () => {
@@ -228,6 +225,96 @@ test("combined assessment stays within photo caption limit and escapes image tex
 		.replace(/&amp;/g, "&");
 	assert.ok(parsed.length <= 1024);
 	assert.ok(!card.caption.includes("<img>"));
-	assert.match(card.caption, /Name shown: &lt;img&gt;/);
+	assert.ok(!card.caption.includes("Name shown:"));
 	assert.equal(card.qrFollowUpText, null);
+});
+
+test("compact card restores the complete escaped payload and keeps six main actions", () => {
+	const card = buildReviewCard(candidate, "community", {
+		adminBaseUrl: "https://sedekah.example",
+	});
+	assert.ok(
+		card.caption.includes(
+			`<code>${candidate.qrContent?.replaceAll("&", "&amp;")}</code>`,
+		),
+	);
+	assert.equal(card.qrFollowUpText, null);
+	assert.ok(!card.caption.includes("Pin:"));
+	assert.ok(!card.caption.includes("checksum"));
+	assert.deepEqual(
+		card.replyMarkup.inline_keyboard.map((row) => row.map((b) => b.text)),
+		[
+			["✅ Approve", "❌ Reject"],
+			["⏭ Skip", "⏸ Hold"],
+			["🔧 Review tools", "✏️ Web admin"],
+		],
+	);
+});
+
+test("oversized payload is preserved in full below the caption", () => {
+	const payload = "<&>".repeat(1500);
+	const card = buildReviewCard(
+		{ ...candidate, qrContent: payload, coords: null },
+		"community",
+		{ adminBaseUrl: null },
+	);
+	assert.ok(card.caption.includes("QR payload is in the message below."));
+	assert.ok(
+		card.qrFollowUpText?.includes(
+			payload
+				.replaceAll("&", "&amp;")
+				.replaceAll("<", "&lt;")
+				.replaceAll(">", "&gt;"),
+		),
+	);
+	assert.match(card.caption, /coordinates missing/);
+});
+
+test("unavailable AI explains the provider error on the card", () => {
+	const row = {
+		...candidate,
+		reviewMetadata: {
+			analysis: {
+				version: reviewVersion(candidate),
+				model: "test",
+				state: "unavailable" as const,
+				attempts: 3,
+				error: "http_503",
+			},
+		},
+	};
+	const card = buildReviewCard(row, "community", { adminBaseUrl: null });
+	assert.match(card.caption, /AI: Provider unavailable \(503\)/);
+});
+
+test("AI updates keep a boundary-length payload in the same place", () => {
+	for (const length of [300, 450, 600, 750]) {
+		const row = { ...candidate, qrContent: "x".repeat(length) };
+		const before = buildReviewCard(row, "community", { adminBaseUrl: null });
+		const after = buildReviewCard(
+			{
+				...row,
+				reviewMetadata: {
+					analysis: {
+						version: reviewVersion(row),
+						model: "test",
+						state: "unavailable",
+						attempts: 3,
+						error: "http_503",
+					},
+				},
+			},
+			"community",
+			{ adminBaseUrl: null },
+		);
+		assert.equal(!!after.qrFollowUpText, !!before.qrFollowUpText);
+		for (const card of [before, after]) {
+			const plain = card.caption
+				.replace(/<\/?(?:b|code)>/g, "")
+				.replaceAll("&lt;", "<")
+				.replaceAll("&gt;", ">")
+				.replaceAll("&amp;", "&");
+			assert.ok(plain.length <= 1024);
+		}
+	}
 });

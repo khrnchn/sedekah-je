@@ -9,10 +9,7 @@ import {
 	type ReviewMetadata,
 	reviewVersion,
 } from "@/lib/features/institution-review/telegram-evidence";
-import {
-	assessmentCardDetails,
-	assessmentCardSummary,
-} from "./review-assessment-copy";
+import { assessmentCardSummary } from "./review-assessment-copy";
 
 export type TelegramReviewScope = "community" | "imports" | "all" | "held";
 
@@ -32,6 +29,7 @@ export type ReviewCallback = {
 		| "next"
 		| "find-address"
 		| "undo"
+		| "tools"
 		| "payload"
 		| "location"
 		| "qr"
@@ -93,6 +91,7 @@ const CALLBACK_ACTION_CODES = {
 	next: "n",
 	"find-address": "f",
 	undo: "u",
+	tools: "m",
 	payload: "p",
 	location: "l",
 	qr: "q",
@@ -327,64 +326,110 @@ export function buildReviewCard(
 	const analysis = candidate.reviewMetadata?.analysis;
 	const currentAnalysis =
 		analysis?.version === reviewVersion(candidate) ? analysis : undefined;
-	const summary = [
-		`Recipient: ${(qr.recipient || "Not verified").slice(0, 90)}`,
-		`Name: ${compareRecipient(candidate.name, qr.recipient)}`,
-		`QR: ${qr.format}; checksum ${qr.checksum}`,
-		`Pin: ${candidate.coords?.join(", ") || "Missing"}`,
+	const providerStatus = currentAnalysis?.error?.match(/^http_(\d{3})$/)?.[1];
+	const ai = (
 		currentAnalysis?.state === "complete" && currentAnalysis.result
 			? assessmentCardSummary(currentAnalysis.result, candidate.qrContent)
 			: currentAnalysis?.state === "queued" ||
 					currentAnalysis?.state === "processing"
 				? "AI: Checking image…"
 				: currentAnalysis?.state === "unavailable"
-					? "AI: Unavailable. Review manually or retry."
-					: "AI: Not checked yet. Use Retry analysis if needed.",
-		...(currentAnalysis?.state === "complete" && currentAnalysis.result
-			? assessmentCardDetails(currentAnalysis.result)
-			: []),
-		...(candidate.reviewMetadata?.held ? ["⏸ Held"] : []),
-	];
+					? `AI: ${providerStatus ? `Provider unavailable (${providerStatus})` : "Photo check unavailable"}. Review manually or retry later.`
+					: "AI: Not checked. Open Review tools to request a photo check."
+	).slice(0, 120);
 	const headings = [`${label} · #${candidate.id}`, candidate.name.slice(0, 90)];
-	const compact = [
+	const lines = [
 		`${candidate.city.slice(0, 50)}, ${candidate.state}`,
 		`Address: ${(candidate.address || "Missing").slice(0, 130)}`,
-		...(candidate.duplicates?.length
-			? [
-					`⚠️ ${candidate.duplicates.length} duplicate candidates — compare before approval`,
-				]
+		"",
+		`Recipient: ${(qr.recipient || "Not decoded").slice(0, 90)}`,
+		...(!qr.recipient
+			? ["⚠️ Recipient not decoded. Check the QR."]
+			: compareRecipient(candidate.name, qr.recipient).startsWith(
+						"name matches",
+					)
+				? []
+				: ["⚠️ Name differs or is incomplete. Verify ownership."]),
+		...(!candidate.qrContent
+			? ["⚠️ QR payload missing. Use Retry/replace QR."]
 			: []),
-		...summary,
+		...(!candidate.coords
+			? ["⚠️ Map coordinates missing. Set location before approval."]
+			: []),
+		...(candidate.duplicates?.length || candidate.duplicateInstitutionId
+			? ["⚠️ Possible duplicate. Compare before approval."]
+			: []),
+		...(candidate.reviewMetadata?.held ? ["⏸ Held"] : []),
 		...(candidate.partnerName
 			? [`Partner: ${candidate.partnerName.slice(0, 40)}`]
 			: []),
+		"",
+		ai,
+		"",
 		`Queue: ${candidate.position} of ${candidate.total}`,
 	];
-	// Bound plain text before HTML escaping. This keeps Telegram's 1024-character
-	// photo limit even with long assessment text, without breaking HTML entities.
-	const bodyBudget = 1024 - headings.join("\n").length - 1;
-	const body = Array.from(compact.join("\n").slice(0, bodyBudget))
-		.join("")
-		.replace(/[\uD800-\uDBFF]$/, "");
-	const caption = [
+	const baseText = [...headings, ...lines].join("\n");
+	const baseHtml = [
 		...headings.map((line) => `<b>${escapeTelegramHtml(line)}</b>`),
-		escapeTelegramHtml(body),
+		escapeTelegramHtml(lines.join("\n")),
 	].join("\n");
-	const qrFollowUpText = null;
-
-	const firstRow: TelegramInlineButton[] = [];
-	firstRow.push(callbackButton("✅ Approve", "approve", scope, candidate.id));
-	firstRow.push(callbackButton("❌ Reject", "reject", scope, candidate.id));
-
-	const secondRow = [callbackButton("⏭ Skip", "next", scope, candidate.id)];
-	const adminUrl = buildAdminUrl(options.adminBaseUrl, candidate.id);
-	if (adminUrl) secondRow.push({ text: "✏️ Edit in admin", url: adminUrl });
-
-	const rows = [
-		firstRow,
-		secondRow,
+	const payload = candidate.qrContent;
+	// Reserve the longest AI status so completion never moves an inline payload
+	// below the card without sending its fallback reply.
+	const fitsPayload =
+		!!payload &&
+		baseText.length +
+			(120 - ai.length) +
+			"\n\nQR payload\n".length +
+			payload.length <=
+			1024;
+	const caption = !payload
+		? baseHtml
+		: fitsPayload
+			? `${baseHtml}\n\n<b>QR payload</b>\n<code>${escapeTelegramHtml(payload)}</code>`
+			: `${baseHtml}\n\nQR payload is in the message below.`;
+	const qrFollowUpText =
+		payload && !fitsPayload
+			? `<b>QR payload · #${candidate.id}</b>\n<code>${escapeTelegramHtml(payload)}</code>`
+			: null;
+	const rows: TelegramInlineButton[][] = [
 		[
-			callbackButton("View payload", "payload", scope, candidate.id),
+			callbackButton("✅ Approve", "approve", scope, candidate.id),
+			callbackButton("❌ Reject", "reject", scope, candidate.id),
+		],
+		[
+			callbackButton("⏭ Skip", "next", scope, candidate.id),
+			callbackButton(
+				candidate.reviewMetadata?.held ? "↩️ Resume submission" : "⏸ Hold",
+				candidate.reviewMetadata?.held ? "resume-held" : "hold",
+				scope,
+				candidate.id,
+			),
+		],
+		[callbackButton("🔧 Review tools", "tools", scope, candidate.id)],
+	];
+	const adminUrl = buildAdminUrl(options.adminBaseUrl, candidate.id);
+	if (adminUrl) rows[2].push({ text: "✏️ Web admin", url: adminUrl });
+
+	return {
+		caption,
+		qrFollowUpText,
+		replyMarkup: { inline_keyboard: rows },
+	};
+}
+
+export function buildReviewTools(
+	candidate: TelegramReviewCandidate,
+	scope: TelegramReviewScope,
+): TelegramInlineKeyboard {
+	const rows = [
+		[
+			callbackButton(
+				"QR details / full payload",
+				"payload",
+				scope,
+				candidate.id,
+			),
 			callbackButton("Confirm evidence", "evidence", scope, candidate.id),
 		],
 		[
@@ -393,38 +438,22 @@ export function buildReviewCard(
 		],
 		[
 			callbackButton("Compare duplicates", "compare", scope, candidate.id),
-			callbackButton(
-				candidate.reviewMetadata?.held ? "Resume submission" : "Hold",
-				candidate.reviewMetadata?.held ? "resume-held" : "hold",
-				scope,
-				candidate.id,
-			),
-		],
-		[
-			...(currentAnalysis?.state === "complete"
-				? [
-						callbackButton(
-							"Photo details",
-							"analysis-details",
-							scope,
-							candidate.id,
-						),
-					]
-				: []),
 			callbackButton("Retry analysis", "analysis", scope, candidate.id),
 		],
 	];
-	if (!candidate.address?.trim() || !candidate.coords) {
+	const analysis = candidate.reviewMetadata?.analysis;
+	if (
+		analysis?.state === "complete" &&
+		analysis.version === reviewVersion(candidate)
+	)
+		rows.push([
+			callbackButton("Photo details", "analysis-details", scope, candidate.id),
+		]);
+	if (!candidate.address?.trim() || !candidate.coords)
 		rows.push([
 			callbackButton("📍 Find address", "find-address", scope, candidate.id),
 		]);
-	}
-
-	return {
-		caption,
-		qrFollowUpText,
-		replyMarkup: { inline_keyboard: rows },
-	};
+	return { inline_keyboard: rows };
 }
 
 function templateButton(

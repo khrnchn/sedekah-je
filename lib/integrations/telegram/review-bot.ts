@@ -41,6 +41,7 @@ import {
 	shouldAutoAnalyseSubmission,
 } from "./review-analysis";
 import { reviewCardDigest, syncReviewCard } from "./review-card-sync";
+import { sendReviewPayload } from "./review-text";
 import {
 	handleToolCallback,
 	handleToolReply,
@@ -202,11 +203,11 @@ async function sendCandidate(
 		})
 		.catch(() => console.error("[telegram review] card binding failed"));
 
-	if (card.qrFollowUpText) {
-		await client.sendMessage({
+	if (card.qrFollowUpText && candidate.qrContent) {
+		await sendReviewPayload(client, {
 			chatId: config.chatId,
-			text: card.qrFollowUpText,
-			parseMode: "HTML",
+			institutionId: candidate.id,
+			payload: candidate.qrContent,
 			replyToMessageId: sent.message_id,
 		});
 	}
@@ -481,7 +482,9 @@ export async function handleReviewCallback(
 		if (candidate) {
 			const target = candidate.reviewMetadata?.telegramCard;
 			if (
-				target?.messageId === source.message_id &&
+				target &&
+				(target.messageId === source.message_id ||
+					target.messageId === source.reply_to_message?.message_id) &&
 				target.chatId === config.chatId &&
 				target.version === reviewVersion(candidate)
 			) {

@@ -55,9 +55,18 @@ Apply `db/migrations/0011_true_goliath.sql` through the normal migration workflo
 **before** running this version of the app. It adds `institutions.review_metadata`
 and `telegram_review_operations`; institution statuses remain unchanged.
 
-Cards include the image, locally decoded recipient, conservative name comparison,
-DuitNow structure/CRC validity, location, duplicate warning and AI summary. Full
-payloads are available through **View payload**. Submissions with missing payloads
+Cards show the image, locally decoded recipient, ownership warnings, address and
+brief AI status. The full copyable QR payload appears in the photo caption;
+when it cannot fit, it is automatically sent in full as replies below the card.
+Space is reserved for AI status changes so completion keeps the payload in its
+original place. Missing coordinates and suspected duplicates appear as warnings.
+
+The main actions are **Approve**, **Reject**, **Skip**, **Hold** (or **Resume
+submission**), **Review tools**, and **Web admin** when configured. Review tools
+opens evidence confirmation, location editing, QR recovery/replacement, duplicate
+comparison, AI details/retry, and QR diagnostics/full payload. Checksum validity
+checks payload integrity only; it does not verify recipient ownership. AI provider
+failures show their HTTP status on the card. Submissions with missing payloads
 are included in search and navigation.
 
 - **Edit location** accepts address text, a replied Telegram pin, or explicit

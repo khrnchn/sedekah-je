@@ -36,6 +36,7 @@ import {
 } from "./review-operations";
 import { sendReviewText } from "./review-text";
 import {
+	buildReviewTools,
 	decodeReviewCallback,
 	type TelegramReviewCandidate,
 	type TelegramReviewScope,
@@ -316,6 +317,7 @@ export async function handleToolCallback(
 				"approve",
 				"approve-confirm",
 				"undo",
+				"tools",
 				"payload",
 				"location",
 				"find-address",
@@ -442,7 +444,15 @@ export async function handleToolCallback(
 			throw new Error(
 				"This older undo button expired. Use the undo button attached to the latest saved review.",
 			);
-		if (action.action === "analysis-details") {
+		if (action.action === "tools") {
+			const qr = inspectDuitNow(row.qrContent);
+			await client.sendMessage({
+				chatId: config.chatId,
+				replyToMessageId: message.message_id,
+				text: `Review tools · #${row.id}\nRecipient: ${qr.recipient ?? "Not decoded"}\nQR: ${qr.format}; checksum ${qr.checksum}\nA valid checksum checks integrity only; verify recipient ownership before approval.`,
+				replyMarkup: buildReviewTools(candidate, action.scope),
+			});
+		} else if (action.action === "analysis-details") {
 			const analysis = row.reviewMetadata?.analysis;
 			if (
 				analysis?.state !== "complete" ||

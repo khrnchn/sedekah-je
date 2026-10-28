@@ -62,15 +62,19 @@ test("completed and unavailable analyses edit the original photo with review but
 	};
 	const config = { chatId: "123", adminBaseUrl: null };
 	const updated = await editBoundReviewCard(client, config, candidate, target);
-	assert.match(edits[0], /Name shown: Masjid Amanah/);
-	assert.match(edits[0], /Location shown: Jalan Amanah/);
+	assert.match(edits[0], /AI: Photo of a physical display/);
+	assert.match(edits[0], /<code>/);
+	assert.ok(!edits[0].includes("Location shown:"));
 	await editBoundReviewCard(client, config, candidate, updated);
 	assert.equal(edits.length, 1);
 	const analysis = candidate.reviewMetadata?.analysis;
 	assert.ok(analysis);
 	analysis.state = "unavailable";
 	await editBoundReviewCard(client, config, candidate, updated);
-	assert.match(edits[1], /Unavailable. Review manually or retry/);
+	assert.match(
+		edits[1],
+		/Photo check unavailable. Review manually or retry later/,
+	);
 });
 
 test("text fallback edits text; stale record and wrong chat cannot edit a card", async () => {

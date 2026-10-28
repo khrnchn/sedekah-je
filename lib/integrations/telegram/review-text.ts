@@ -1,4 +1,5 @@
 import type { TelegramBotClient, TelegramMessage } from "./bot-api";
+import { escapeTelegramHtml } from "./review-ui";
 
 const MAX_MESSAGE_LENGTH = 4096;
 type PlainTextMessage = Omit<
@@ -32,4 +33,31 @@ export async function sendReviewText(
 		offset = end;
 	} while (offset < input.text.length);
 	return sent;
+}
+
+export async function sendReviewPayload(
+	client: Pick<TelegramBotClient, "sendMessage">,
+	input: {
+		chatId: string;
+		institutionId: number;
+		payload: string;
+		replyToMessageId: number;
+	},
+): Promise<void> {
+	let offset = 0;
+	while (offset < input.payload.length) {
+		let end = Math.min(offset + 3500, input.payload.length);
+		if (
+			end < input.payload.length &&
+			/[\uD800-\uDBFF]/.test(input.payload[end - 1])
+		)
+			end--;
+		await client.sendMessage({
+			chatId: input.chatId,
+			replyToMessageId: input.replyToMessageId,
+			parseMode: "HTML",
+			text: `<b>QR payload · #${input.institutionId}</b>\n<code>${escapeTelegramHtml(input.payload.slice(offset, end))}</code>`,
+		});
+		offset = end;
+	}
 }
