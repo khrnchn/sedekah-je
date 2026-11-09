@@ -8,7 +8,9 @@ import type {
 	QuestStatusFilter,
 } from "@/app/quest/_lib/types";
 import type { QuestView } from "@/app/quest/_lib/url-state";
+import QuestBoard from "./quest-board";
 import QuestCard from "./quest-card";
+import QuestGrid from "./quest-grid";
 import QuestHeader from "./quest-header";
 import QuestMap from "./quest-map";
 
@@ -51,12 +53,6 @@ export default function QuestPageClient({
 		navigate("board", selectedId);
 	};
 
-	const placeholderMosques = mosques.filter((m) => {
-		if (statusFilter === "all") return true;
-		if (statusFilter === "unmapped") return m.coords === null;
-		return m.status === statusFilter;
-	});
-
 	return (
 		<div className="flex h-dvh w-full flex-col bg-background">
 			<QuestHeader
@@ -76,20 +72,20 @@ export default function QuestPageClient({
 							onStatusFilterChange={setStatusFilter}
 							onShowUnmapped={onShowUnmapped}
 						/>
+					) : view === "board" ? (
+						<QuestBoard
+							mosques={mosques}
+							selectedId={selectedId}
+							onSelect={onSelect}
+							statusFilter={statusFilter}
+							onStatusFilterChange={setStatusFilter}
+						/>
 					) : (
-						<ul className="h-full divide-y divide-border overflow-y-auto px-4">
-							{placeholderMosques.map((m) => (
-								<li key={m.id}>
-									<button
-										type="button"
-										onClick={() => onSelect(m.id)}
-										className="w-full py-3 text-left text-sm text-foreground"
-									>
-										{m.name}
-									</button>
-								</li>
-							))}
-						</ul>
+						<QuestGrid
+							mosques={mosques}
+							selectedId={selectedId}
+							onSelect={onSelect}
+						/>
 					)}
 				</main>
 				{selectedMosque && (
