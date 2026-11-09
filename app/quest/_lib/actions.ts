@@ -1,7 +1,7 @@
 "use server";
 
 import { eq, TransactionRollbackError } from "drizzle-orm";
-import { revalidateTag } from "next/cache";
+import { revalidateTag, updateTag } from "next/cache";
 import { headers } from "next/headers";
 import { insertQuestAttempt } from "@/app/quest/_lib/attempts";
 import { questSubmitSchema } from "@/app/quest/_lib/schema";
@@ -193,7 +193,7 @@ export async function submitQuestAttempt(
 			console.error("Failed to notify Telegram:", telegramError);
 		}
 
-		revalidateTag("quest-mosques", "max");
+		updateTag("quest-mosques");
 		revalidateTag("pending-institutions", "max");
 		revalidateTag("institutions-count", "max");
 		revalidateTag(`user_contributions_count:${userId}`, "max");
@@ -277,7 +277,7 @@ export async function submitQuestAttempt(
 		console.error("Failed to notify Telegram:", telegramError);
 	}
 
-	revalidateTag("quest-mosques", "max");
+	updateTag("quest-mosques");
 	revalidateTag("pending-institutions", "max");
 	revalidateTag("institutions-count", "max");
 	revalidateTag(`user_contributions_count:${userId}`, "max");
