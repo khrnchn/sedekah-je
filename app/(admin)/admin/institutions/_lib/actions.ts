@@ -287,16 +287,23 @@ export async function undoRejection(id: number, adminNotes?: string) {
 		throw new Error("Can only undo rejection for rejected institutions");
 	}
 
-	const result = await db
-		.update(institutions)
-		.set({
-			status: "pending",
-			reviewedBy: null,
-			reviewedAt: null,
-			adminNotes: adminNotes ?? null,
-		})
-		.where(eq(institutions.id, id))
-		.returning();
+	const result = await db.transaction(async (tx) => {
+		const rows = await tx
+			.update(institutions)
+			.set({
+				status: "pending",
+				reviewedBy: null,
+				reviewedAt: null,
+				adminNotes: adminNotes ?? null,
+			})
+			.where(eq(institutions.id, id))
+			.returning();
+		await syncQuestForInstitutions(
+			tx,
+			rows.map((row) => row.id),
+		);
+		return rows;
+	});
 
 	revalidatePath("/admin/institutions/rejected", "page");
 	revalidatePath("/admin/institutions/pending", "page");
@@ -308,6 +315,7 @@ export async function undoRejection(id: number, adminNotes?: string) {
 	revalidateTag("institutions-data", "max");
 	revalidateTag("dashboard-data", "max");
 	revalidateTag("recent-activities", "max");
+	revalidateTag("quest-mosques", "max");
 	revalidateTag("user-contributions", "max");
 
 	return result;
