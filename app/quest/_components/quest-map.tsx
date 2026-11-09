@@ -1,7 +1,10 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import type { QuestMosqueWithStatus } from "@/app/quest/_lib/types";
+import type {
+	QuestMosqueView,
+	QuestStatusFilter,
+} from "@/app/quest/_lib/types";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const QuestMapLeaflet = dynamic(
@@ -17,27 +20,14 @@ const QuestMapLeaflet = dynamic(
 );
 
 type QuestMapProps = {
-	mosques: QuestMosqueWithStatus[];
+	mosques: QuestMosqueView[];
 	selectedId: number | null;
-	onMarkerClick: (id: number) => void;
-	bottomSheetOpen?: boolean;
-	isDesktop?: boolean;
+	onSelect: (id: number | null) => void;
+	statusFilter: QuestStatusFilter;
+	onStatusFilterChange: (filter: QuestStatusFilter) => void;
+	onShowUnmapped: () => void;
 };
 
-export default function QuestMap({
-	mosques,
-	selectedId,
-	onMarkerClick,
-	bottomSheetOpen,
-	isDesktop,
-}: QuestMapProps) {
-	return (
-		<QuestMapLeaflet
-			mosques={mosques}
-			selectedId={selectedId}
-			onMarkerClick={onMarkerClick}
-			bottomSheetOpen={bottomSheetOpen}
-			isDesktop={isDesktop}
-		/>
-	);
+export default function QuestMap(props: QuestMapProps) {
+	return <QuestMapLeaflet {...props} />;
 }
