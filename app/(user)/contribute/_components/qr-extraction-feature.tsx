@@ -1,6 +1,6 @@
 "use client";
 
-import { Camera, ImagePlus, X } from "lucide-react";
+import { Camera, CheckCircle2, ImagePlus, X } from "lucide-react";
 import Image from "next/image";
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -282,9 +282,6 @@ export default function QRExtractionFeature({
 					Gambar Kod QR{" "}
 					{!optional && <span className="text-destructive">*</span>}
 				</label>
-				<p className="text-xs leading-relaxed text-muted-foreground">
-					Saiz maksimum 5MB. Format yang disokong: JPG, PNG, WebP.
-				</p>
 				<p className="hidden text-xs leading-relaxed text-muted-foreground [@media(pointer:fine)]:block">
 					Boleh juga tampal imej dengan Ctrl+V atau Cmd+V.
 				</p>
@@ -417,19 +414,11 @@ export default function QRExtractionFeature({
 				</div>
 			</Suspense>
 
-			{qrStatus.qrExtracting && (
-				<p className="text-sm text-muted-foreground">
-					Mengekstrak kandungan QR...
-				</p>
-			)}
 			{qrContent && (
-				<div className="rounded-md border border-primary/20 bg-primary/10 p-3">
-					<p className="text-sm font-medium text-primary">
-						Kod QR berjaya dibaca. Ini akan mempercepatkan semakan submission
-						anda.
-					</p>
-					<p className="break-all text-sm text-primary/90">{qrContent}</p>
-				</div>
+				<p className="flex items-center gap-1.5 text-sm font-medium text-primary">
+					<CheckCircle2 className="h-4 w-4" />
+					Kod QR dibaca
+				</p>
 			)}
 			{!qrStatus.qrExtracting &&
 				qrStatus.qrExtractionFailed &&
@@ -438,8 +427,8 @@ export default function QRExtractionFeature({
 						<div className="flex items-start justify-between gap-3">
 							<div className="flex-1">
 								<p className="text-sm font-medium text-foreground">
-									Kod QR tidak dapat dibaca secara automatik. Tiada masalah,
-									sila teruskan. Pasukan kami akan semak imej secara manual.
+									QR tidak dapat dibaca. Teruskan, admin akan semak secara
+									manual.
 								</p>
 							</div>
 							<Button
