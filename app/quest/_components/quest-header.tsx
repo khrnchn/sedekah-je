@@ -2,6 +2,7 @@
 
 import type { QuestLeaderboardEntry, QuestStats } from "@/app/quest/_lib/types";
 import type { QuestView } from "@/app/quest/_lib/url-state";
+import { ModeToggle } from "@/components/shared/mode-toggle";
 import { cn } from "@/lib/utils";
 import QuestLeaderboard from "./quest-leaderboard";
 
@@ -44,6 +45,7 @@ export default function QuestHeader({
 						<p className="text-xs text-muted-foreground">have QR</p>
 					</div>
 					<QuestLeaderboard leaderboard={leaderboard} />
+					<ModeToggle className="h-11 w-11 shrink-0" />
 				</div>
 			</div>
 			<div

@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type {
 	QuestLeaderboardEntry,
@@ -28,7 +27,6 @@ export default function QuestPageClient({
 	initialView,
 	initialSelectedId,
 }: QuestPageClientProps) {
-	const router = useRouter();
 	const [view, setView] = useState<QuestView>(initialView);
 	const [selectedId, setSelectedId] = useState<number | null>(
 		initialSelectedId,
@@ -44,7 +42,7 @@ export default function QuestPageClient({
 		if (nextView !== "map") params.set("view", nextView);
 		if (nextSelectedId !== null) params.set("m", String(nextSelectedId));
 		const query = params.toString();
-		router.replace(query ? `/quest?${query}` : "/quest", { scroll: false });
+		window.history.replaceState(null, "", query ? `/quest?${query}` : "/quest");
 	};
 
 	const onSelect = (id: number | null) => navigate(view, id);
