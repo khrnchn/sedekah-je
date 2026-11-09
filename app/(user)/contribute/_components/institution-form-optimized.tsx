@@ -1,12 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-	CheckCircle2,
-	ChevronDown,
-	ChevronUp,
-	ClipboardCheck,
-} from "lucide-react";
+import { CheckCircle2, ChevronDown, ChevronUp } from "lucide-react";
 import Link from "next/link";
 import {
 	lazy,
@@ -35,6 +30,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Spinner } from "@/components/ui/spinner";
 import { useAuth } from "@/hooks/use-auth";
+import { type DuitNowPrefill, readDuitNowPrefill } from "@/lib/duitnow-prefill";
 import { validateAndCompressImage } from "@/lib/image-utils";
 import {
 	categories as CATEGORY_OPTIONS,
@@ -62,12 +58,10 @@ function SubmitButton({
 	hasFile,
 	isAuthenticated,
 	isInCooldown,
-	qrExtractionFailed,
 	isDuplicateQr,
 }: {
 	isSubmitting: boolean;
 	qrExtracting: boolean;
-	qrExtractionFailed: boolean;
 	hasFile: boolean;
 	isAuthenticated: boolean;
 	isInCooldown: boolean;
@@ -81,19 +75,20 @@ function SubmitButton({
 		isInCooldown ||
 		isDuplicateQr;
 
-	const helperText = !isAuthenticated
-		? "Log masuk diperlukan sebelum submission boleh dihantar."
-		: isInCooldown
-			? "Tunggu tempoh cooldown tamat sebelum menghantar submission baharu."
-			: qrExtracting
-				? "Tunggu sehingga QR selesai diproses."
-				: !hasFile
-					? "Muat naik gambar QR dahulu untuk aktifkan butang hantar."
-					: isDuplicateQr
-						? "QR ini sudah ada dalam sistem. Tukar gambar QR untuk teruskan."
-						: qrExtractionFailed
-							? "QR akan disemak secara manual selepas dihantar."
-							: "Submission akan masuk ke semakan komuniti sebelum dipaparkan.";
+	// Only explain the button when it can't be pressed.
+	const helperText = isSubmitting
+		? null
+		: !isAuthenticated
+			? "Log masuk diperlukan sebelum submission boleh dihantar."
+			: isInCooldown
+				? "Tunggu tempoh cooldown tamat sebelum menghantar submission baharu."
+				: qrExtracting
+					? "Tunggu sehingga QR selesai diproses."
+					: !hasFile
+						? "Muat naik gambar QR dahulu."
+						: isDuplicateQr
+							? "QR ini sudah ada dalam sistem. Tukar gambar QR untuk teruskan."
+							: null;
 
 	return (
 		<div className="space-y-2">
@@ -113,14 +108,11 @@ function SubmitButton({
 					"Hantar untuk semakan"
 				)}
 			</Button>
-			<p
-				className={cn(
-					"text-center text-xs leading-relaxed text-muted-foreground",
-					!hasFile && isAuthenticated && !isInCooldown && "text-primary",
-				)}
-			>
-				{helperText}
-			</p>
+			{helperText && (
+				<p className="text-center text-xs leading-relaxed text-muted-foreground">
+					{helperText}
+				</p>
+			)}
 		</div>
 	);
 }
@@ -149,52 +141,16 @@ function RequiredMark() {
 	return <span className="text-destructive">*</span>;
 }
 
-function ContributionBrief() {
-	return (
-		<div className="rounded-lg border border-border/70 bg-card/70 p-3.5 text-sm shadow-sm sm:p-4">
-			<div className="flex items-center gap-2">
-				<span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary">
-					<ClipboardCheck className="h-3.5 w-3.5" />
-				</span>
-				<p className="font-semibold text-foreground">Sebelum dihantar</p>
-			</div>
-			<p className="mt-2 max-w-prose text-muted-foreground">
-				QR akan disemak sebelum dipaparkan di direktori.
-			</p>
-			<div className="mt-3 flex flex-wrap gap-1.5">
-				{["Gambar QR", "Nama institusi", "Lokasi"].map((item) => (
-					<div
-						key={item}
-						className="inline-flex items-center gap-1.5 rounded-full bg-muted/50 px-2.5 py-1 text-xs font-medium text-muted-foreground"
-					>
-						<CheckCircle2 className="h-3.5 w-3.5 text-primary" />
-						{item}
-					</div>
-				))}
-			</div>
-		</div>
-	);
-}
-
 function FormSection({
 	title,
 	children,
-	description,
 }: {
 	title: string;
 	children: React.ReactNode;
-	description?: string;
 }) {
 	return (
 		<section className="space-y-4">
-			<div className="space-y-1">
-				<h2 className="text-sm font-semibold text-foreground">{title}</h2>
-				{description && (
-					<p className="text-xs leading-relaxed text-muted-foreground">
-						{description}
-					</p>
-				)}
-			</div>
+			<h2 className="text-sm font-semibold text-foreground">{title}</h2>
 			{children}
 		</section>
 	);
@@ -272,22 +228,6 @@ function InstitutionForm({ onSuccess }: { onSuccess: () => void }) {
 		SubmitInstitutionFormState,
 		{ status: "error" }
 	> | null>(null);
-	const latestQrContentRef = useRef<string | null>(null);
-	const handleQrContentChange = useCallback((content: string | null) => {
-		setQrContent(content);
-		setDuplicateFeedback(null);
-		latestQrContentRef.current = content;
-		if (!content) return;
-		// Submit re-checks on the server, so a failed lookup here is harmless.
-		checkQrDuplicate(content)
-			.then((result) => {
-				if (result && latestQrContentRef.current === content) {
-					setDuplicateFeedback(result);
-				}
-			})
-			.catch(() => {});
-	}, []);
-
 	const [additionalInfoExpanded, setAdditionalInfoExpanded] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [enableAdvancedFeatures, setEnableAdvancedFeatures] = useState(false);
@@ -319,10 +259,57 @@ function InstitutionForm({ onSuccess }: { onSuccess: () => void }) {
 		handleSubmit,
 		formState: { errors },
 		setValue,
+		getValues,
 		watch,
 	} = form;
 
 	const fromSocialMedia = watch("fromSocialMedia");
+	const nameValue = watch("name");
+
+	// Prefill only overwrites a field that is empty or still holds the previous
+	// prefill, so replacing the QR updates it but user edits are kept.
+	const lastPrefillRef = useRef<DuitNowPrefill>({});
+	const [prefilledName, setPrefilledName] = useState<string | null>(null);
+	const latestQrContentRef = useRef<string | null>(null);
+	const handleQrContentChange = useCallback(
+		(content: string | null) => {
+			setQrContent(content);
+			setDuplicateFeedback(null);
+			latestQrContentRef.current = content;
+			if (!content) return;
+
+			const prefill = readDuitNowPrefill(content) ?? {};
+			const current = getValues();
+			const last = lastPrefillRef.current;
+			if (
+				prefill.name &&
+				(!current.name.trim() || current.name === last.name)
+			) {
+				setValue("name", prefill.name, { shouldValidate: true });
+				setPrefilledName(prefill.name);
+			}
+			if (
+				prefill.category &&
+				(!current.category || current.category === last.category)
+			) {
+				setValue("category", prefill.category, { shouldValidate: true });
+			}
+			if (prefill.state && (!current.state || current.state === last.state)) {
+				setValue("state", prefill.state, { shouldValidate: true });
+			}
+			lastPrefillRef.current = prefill;
+
+			// Submit re-checks on the server, so a failed lookup here is harmless.
+			checkQrDuplicate(content)
+				.then((result) => {
+					if (result && latestQrContentRef.current === content) {
+						setDuplicateFeedback(result);
+					}
+				})
+				.catch(() => {});
+		},
+		[getValues, setValue],
+	);
 
 	/* Progressive Enhancement: Enable advanced features after initial load */
 	useEffect(() => {
@@ -501,7 +488,6 @@ function InstitutionForm({ onSuccess }: { onSuccess: () => void }) {
 			encType="multipart/form-data"
 			className="mx-auto max-w-xl space-y-6 px-4 pb-20 md:px-0 md:pb-6"
 		>
-			<ContributionBrief />
 			<fieldset disabled={isSubmitting} className="space-y-6 sm:space-y-7">
 				{/* Hidden fields */}
 				<input
@@ -520,10 +506,7 @@ function InstitutionForm({ onSuccess }: { onSuccess: () => void }) {
 					render={({ field }) => <input type="hidden" {...field} />}
 				/>
 
-				<FormSection
-					title="1. Gambar QR"
-					description="Ambil gambar terus dari kamera atau pilih imej yang jelas dari galeri."
-				>
+				<FormSection title="1. Gambar QR">
 					<Suspense fallback={<QRUploadSkeleton />}>
 						<QRExtractionFeature
 							isSubmitting={isSubmitting}
@@ -564,7 +547,16 @@ function InstitutionForm({ onSuccess }: { onSuccess: () => void }) {
 									)}
 									autoComplete="organization"
 								/>
-								{fieldState.error && <FieldError errors={[fieldState.error]} />}
+								{fieldState.error ? (
+									<FieldError errors={[fieldState.error]} />
+								) : (
+									prefilledName &&
+									nameValue === prefilledName && (
+										<p className="text-xs text-muted-foreground">
+											Diisi daripada kod QR. Sila semak nama penuh.
+										</p>
+									)
+								)}
 							</Field>
 						)}
 					/>
@@ -606,10 +598,7 @@ function InstitutionForm({ onSuccess }: { onSuccess: () => void }) {
 					/>
 				</FormSection>
 
-				<FormSection
-					title="3. Lokasi"
-					description="Lokasi membantu penyumbang lain cari institusi yang betul."
-				>
+				<FormSection title="3. Lokasi">
 					{enableAdvancedFeatures ? (
 						<Suspense fallback={<BasicLocationInput />}>
 							<LocationServicesFeature setValue={setValue} />
@@ -871,7 +860,6 @@ function InstitutionForm({ onSuccess }: { onSuccess: () => void }) {
 					<SubmitButton
 						isSubmitting={isSubmitting}
 						qrExtracting={qrStatus.qrExtracting}
-						qrExtractionFailed={qrStatus.qrExtractionFailed}
 						hasFile={qrStatus.hasFile}
 						isAuthenticated={!!user?.id}
 						isInCooldown={!!cooldownEndsAt}

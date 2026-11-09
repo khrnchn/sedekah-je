@@ -71,14 +71,8 @@ export function useQrExtractionLazy() {
 				if (decoded) {
 					setQrContent(decoded);
 					setQrExtractionFailed(false);
-					toast("Kod QR telah dikesan dengan jayanya!", {
-						description: "Kandungan kod QR telah diekstrak.",
-					});
 				} else {
 					setQrExtractionFailed(true);
-					toast("Kod QR tidak dapat dikesan", {
-						description: "Admin akan mengekstrak kandungan QR secara manual.",
-					});
 				}
 
 				// Compress for upload only, and only when it actually shrinks the

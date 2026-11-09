@@ -85,9 +85,6 @@ export default function LocationServicesFeature({
 					Saya berada di lokasi ini sekarang
 				</label>
 			</div>
-			<p className="text-xs text-muted-foreground pl-6">
-				Lokasi hanya digunakan untuk titik peta institusi ini.
-			</p>
 			{loadingLocation && (
 				<p className="text-sm text-muted-foreground pl-6">Mengesan lokasi…</p>
 			)}
