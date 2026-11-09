@@ -35,14 +35,14 @@ export default function QuestLeaderboard({
 				variant="outline"
 				size="sm"
 				aria-label="Leaderboard"
-				className="h-11 w-11 shrink-0 p-0 sm:w-auto sm:px-3"
+				className="quest-leaderboard-trigger h-11 w-11 shrink-0 rounded-lg border-0 bg-transparent p-0 text-xs font-medium shadow-none sm:w-auto sm:px-3"
 				onClick={() => setOpen(true)}
 			>
 				<Trophy className="h-4 w-4 sm:hidden" aria-hidden="true" />
 				<span className="hidden sm:inline">Leaderboard</span>
 			</Button>
 			<Sheet open={open} onOpenChange={setOpen}>
-				<SheetContent className="flex w-full flex-col gap-0 p-0 sm:max-w-sm">
+				<SheetContent className="quest-portal flex w-full flex-col gap-0 p-0 sm:max-w-sm">
 					<SheetHeader className="border-b border-border px-5 py-4 text-left">
 						<SheetTitle>Leaderboard</SheetTitle>
 						<SheetDescription>

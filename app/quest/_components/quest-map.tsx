@@ -26,6 +26,8 @@ type QuestMapProps = {
 	statusFilter: QuestStatusFilter;
 	onStatusFilterChange: (filter: QuestStatusFilter) => void;
 	onShowUnmapped: () => void;
+	onFindMissing: () => void;
+	onShowGroup: (ids: number[]) => void;
 };
 
 export default function QuestMap(props: QuestMapProps) {

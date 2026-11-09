@@ -1,141 +1,213 @@
 "use client";
 
-import { X } from "lucide-react";
+import {
+	ArrowUpRight,
+	ChevronLeft,
+	ChevronRight,
+	CircleCheck,
+	CircleHelp,
+	Clock3,
+	Maximize2,
+	Navigation,
+	ScanLine,
+	X,
+} from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { QuestMosqueView } from "@/app/quest/_lib/types";
 import { directionsUrl, type QuestView } from "@/app/quest/_lib/url-state";
 import QrCodeDisplay from "@/components/institution/qr-code-display";
 import { Button } from "@/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 import { normalizeInstitutionCategory } from "@/lib/institution-categories";
-import { cn } from "@/lib/utils";
+import { paymentBrands } from "@/lib/payment-brands";
 import QuestContributeForm from "./quest-contribute-form";
 
-const STATUS_PILL = {
-	has_qr: {
-		label: "Has QR",
-		className:
-			"border-transparent bg-emerald-600/10 text-emerald-700 dark:text-emerald-400",
-	},
-	in_review: {
-		label: "In review",
-		className:
-			"border-transparent bg-amber-500/15 text-amber-700 dark:text-amber-400",
-	},
-	missing: {
-		label: "Missing QR",
-		className: "border-border text-foreground",
-	},
+const STATUS = {
+	has_qr: { label: "Has QR", icon: CircleCheck },
+	in_review: { label: "In review", icon: Clock3 },
+	missing: { label: "Missing QR", icon: CircleHelp },
 } as const;
 
 type QuestCardProps = {
 	mosque: QuestMosqueView;
 	view: QuestView;
 	onClose: () => void;
+	step?: {
+		index: number;
+		total: number;
+		onPrev: () => void;
+		onNext: () => void;
+	};
 };
 
-export default function QuestCard({ mosque, view, onClose }: QuestCardProps) {
+export default function QuestCard({
+	mosque,
+	view,
+	onClose,
+	step,
+}: QuestCardProps) {
 	const [contributeOpen, setContributeOpen] = useState(false);
-	const pill = STATUS_PILL[mosque.status];
+	const [qrOpen, setQrOpen] = useState(false);
+	const closeRef = useRef<HTMLButtonElement>(null);
+	useEffect(() => {
+		closeRef.current?.focus({ preventScroll: true });
+	}, []);
+	useEffect(() => {
+		const closeOnEscape = (event: KeyboardEvent) => {
+			if (event.key === "Escape" && !contributeOpen && !qrOpen) onClose();
+		};
+		window.addEventListener("keydown", closeOnEscape);
+		return () => window.removeEventListener("keydown", closeOnEscape);
+	}, [contributeOpen, qrOpen, onClose]);
+	const { label, icon: StatusIcon } = STATUS[mosque.status];
 	const listingHref =
 		mosque.institutionCategory && mosque.institutionSlug
 			? `/${normalizeInstitutionCategory(mosque.institutionCategory)}/${mosque.institutionSlug}`
 			: null;
+	const payments = mosque.supportedPayment
+		?.map((payment) => paymentBrands[payment]?.label)
+		.filter(Boolean)
+		.join(" · ");
 
 	return (
 		<section
 			aria-label={mosque.name}
-			className="fixed inset-x-0 bottom-0 z-20 max-h-[40dvh] overflow-y-auto rounded-t-2xl border-t border-border bg-background px-4 pb-6 pt-4 shadow-[0_-4px_16px_rgba(0,0,0,0.06)] md:static md:z-auto md:max-h-none md:w-[360px] md:shrink-0 md:rounded-none md:border-l md:border-t-0 md:shadow-none"
+			className="quest-detail"
+			data-status={mosque.status}
 		>
-			<div className="flex items-start justify-between gap-3">
-				<div className="min-w-0 flex-1">
-					<h2 className="text-base font-semibold leading-snug text-foreground">
-						{mosque.name}
-					</h2>
-					{mosque.address && (
-						<p className="mt-0.5 text-xs text-muted-foreground">
-							{mosque.address}
-						</p>
-					)}
-					{!mosque.coords && (
-						<p className="mt-0.5 text-xs text-muted-foreground">
-							No map location
-						</p>
-					)}
+			<button
+				ref={closeRef}
+				type="button"
+				onClick={onClose}
+				aria-label="Close mosque details"
+				className="quest-detail-close"
+			>
+				<X size={18} />
+			</button>
+			<div className="quest-detail-scroll">
+				<div className="quest-detail-status">
+					<StatusIcon size={14} />
+					<span>{label}</span>
 				</div>
-				<div className="flex shrink-0 items-center gap-1">
-					<span
-						className={cn(
-							"rounded-full border px-2 py-0.5 text-[11px] font-medium",
-							pill.className,
-						)}
-					>
-						{pill.label}
-					</span>
-					<button
-						type="button"
-						onClick={onClose}
-						aria-label="Close"
-						className="inline-flex h-11 w-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-					>
-						<X className="h-4 w-4" />
-					</button>
-				</div>
-			</div>
+				<h2>{mosque.name}</h2>
+				{mosque.address && (
+					<p className="quest-detail-address">{mosque.address}</p>
+				)}
+				{!mosque.coords && (
+					<p className="mt-2 text-xs text-muted-foreground">No map location</p>
+				)}
 
-			{mosque.status === "has_qr" ? (
-				<div className="mt-4 space-y-3">
-					{mosque.qrContent && (
-						<QrCodeDisplay
-							qrContent={mosque.qrContent}
-							supportedPayment={mosque.supportedPayment ?? undefined}
-							size={140}
-						/>
-					)}
-					{mosque.contributorName && (
-						<p className="text-xs text-muted-foreground">
-							Added by {mosque.contributorName}
-						</p>
-					)}
-					{listingHref && (
-						<Link
-							href={listingHref}
-							className="inline-block text-sm font-medium text-foreground underline underline-offset-4"
-						>
-							View listing
-						</Link>
-					)}
-				</div>
-			) : (
-				<>
-					{mosque.pendingAttempts > 0 && (
-						<p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300">
-							<span className="tabular-nums">{mosque.pendingAttempts}</span>{" "}
-							{mosque.pendingAttempts === 1 ? "submission" : "submissions"} in
-							review. You can still submit.
-						</p>
-					)}
-					<div className="mt-3 flex gap-2">
-						<Button
-							type="button"
-							className="h-11 flex-1 bg-foreground text-background hover:bg-foreground/90"
-							onClick={() => setContributeOpen(true)}
-						>
-							Submit QR
+				{mosque.status === "has_qr" ? (
+					mosque.qrContent && (
+						<div className="quest-qr-row">
+							<QrCodeDisplay
+								qrContent={mosque.qrContent}
+								supportedPayment={mosque.supportedPayment ?? undefined}
+								size={132}
+								aria-label={`Enlarge donation QR for ${mosque.name}`}
+								onClick={() => setQrOpen(true)}
+							/>
+							<div className="quest-qr-meta">
+								<p className="quest-qr-label">Donation QR</p>
+								{payments && <p className="quest-qr-payment">{payments}</p>}
+								{mosque.contributorName && (
+									<p className="quest-qr-credit">
+										Added by <span>{mosque.contributorName}</span>
+									</p>
+								)}
+								<button
+									type="button"
+									onClick={() => setQrOpen(true)}
+									className="quest-enlarge-qr"
+								>
+									<Maximize2 size={13} /> Enlarge QR
+								</button>
+							</div>
+						</div>
+					)
+				) : (
+					<p className="quest-attempt-notice">
+						{mosque.pendingAttempts > 0 ? (
+							<>
+								<span className="tabular-nums">{mosque.pendingAttempts}</span>{" "}
+								{mosque.pendingAttempts === 1 ? "submission" : "submissions"} in
+								review. You can still submit.
+							</>
+						) : (
+							"Help add this mosque’s donation QR."
+						)}
+					</p>
+				)}
+			</div>
+			<div className="quest-detail-actions">
+				{mosque.status === "has_qr" ? (
+					listingHref && (
+						<Button asChild className="quest-detail-primary h-11 flex-1">
+							<Link href={listingHref}>
+								View listing <ArrowUpRight size={15} className="ml-2" />
+							</Link>
 						</Button>
-						<Button asChild variant="outline" className="h-11">
-							<a href={directionsUrl(mosque)} target="_blank" rel="noreferrer">
-								Directions
-							</a>
-						</Button>
-					</div>
-					<QuestContributeForm
-						mosque={mosque}
-						view={view}
-						open={contributeOpen}
-						onOpenChange={setContributeOpen}
-					/>
-				</>
+					)
+				) : (
+					<Button
+						type="button"
+						className="quest-detail-primary h-11 flex-1"
+						onClick={() => setContributeOpen(true)}
+					>
+						<ScanLine size={15} className="mr-2" /> Submit QR
+					</Button>
+				)}
+				<Button asChild variant="outline" className="h-11 flex-1">
+					<a href={directionsUrl(mosque)} target="_blank" rel="noreferrer">
+						<Navigation size={14} className="mr-2" /> Directions
+					</a>
+				</Button>
+			</div>
+			{step && step.total > 1 && (
+				<nav aria-label="Browse mosques" className="quest-detail-step">
+					<button type="button" onClick={step.onPrev}>
+						<ChevronLeft size={16} aria-hidden /> Previous
+					</button>
+					<span className="tabular-nums">
+						{step.index + 1} of {step.total}
+					</span>
+					<button type="button" onClick={step.onNext}>
+						Next <ChevronRight size={16} aria-hidden />
+					</button>
+				</nav>
+			)}
+			<QuestContributeForm
+				mosque={mosque}
+				view={view}
+				open={contributeOpen}
+				onOpenChange={setContributeOpen}
+			/>
+			{mosque.qrContent && (
+				<Dialog open={qrOpen} onOpenChange={setQrOpen}>
+					<DialogContent className="quest-portal quest-submit-dialog quest-qr-dialog sm:max-w-sm">
+						<DialogHeader>
+							<DialogTitle className="pr-8 text-left">Donation QR</DialogTitle>
+							<DialogDescription className="text-left">
+								{mosque.name}
+							</DialogDescription>
+						</DialogHeader>
+						<div className="flex justify-center py-4">
+							<QrCodeDisplay
+								qrContent={mosque.qrContent}
+								supportedPayment={mosque.supportedPayment ?? undefined}
+								size={240}
+								aria-label={`Donation QR for ${mosque.name}`}
+							/>
+						</div>
+					</DialogContent>
+				</Dialog>
 			)}
 		</section>
 	);
