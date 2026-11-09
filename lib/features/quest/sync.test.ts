@@ -171,3 +171,20 @@ localTest("legacy link without attempt row is kept", async () => {
 		assert.equal(await linkedTo(mosqueId), b);
 	});
 });
+
+localTest(
+	"undo rejection sets attempt pending and stays unlinked",
+	async () => {
+		await withSeed(async ({ mosqueId, institution }) => {
+			const a = await institution(
+				"rejected",
+				"rejected",
+				new Date("2026-11-01"),
+			);
+			await setStatus(a, "pending");
+			await syncQuestForInstitutions(db, [a]);
+			assert.equal(await linkedTo(mosqueId), null);
+			assert.equal(await attemptStatus(a), "pending");
+		});
+	},
+);
