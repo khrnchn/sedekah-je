@@ -74,7 +74,7 @@ export default function QuestCard({ mosque, onClose }: QuestCardProps) {
 						type="button"
 						onClick={onClose}
 						aria-label="Close"
-						className="rounded-md p-1.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+						className="inline-flex h-11 w-11 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
 					>
 						<X className="h-4 w-4" />
 					</button>
@@ -116,12 +116,12 @@ export default function QuestCard({ mosque, onClose }: QuestCardProps) {
 					<div className="mt-3 flex gap-2">
 						<Button
 							type="button"
-							className="flex-1 bg-foreground text-background hover:bg-foreground/90"
+							className="h-11 flex-1 bg-foreground text-background hover:bg-foreground/90"
 							onClick={() => setContributeOpen(true)}
 						>
 							Submit QR
 						</Button>
-						<Button asChild variant="outline">
+						<Button asChild variant="outline" className="h-11">
 							<a href={directionsUrl(mosque)} target="_blank" rel="noreferrer">
 								Directions
 							</a>

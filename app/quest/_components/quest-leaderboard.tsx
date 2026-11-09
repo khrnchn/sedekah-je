@@ -33,6 +33,7 @@ export default function QuestLeaderboard({
 				type="button"
 				variant="outline"
 				size="sm"
+				className="h-11 shrink-0 px-3"
 				onClick={() => setOpen(true)}
 			>
 				Leaderboard
@@ -78,8 +79,7 @@ export default function QuestLeaderboard({
 													alt={entry.name ?? "User"}
 												/>
 												<AvatarFallback className="bg-muted text-xs">
-													{(entry.name ?? entry.userId)
-														.trim()
+													{(entry.name?.trim() || entry.userId)
 														.charAt(0)
 														.toUpperCase()}
 												</AvatarFallback>

@@ -29,15 +29,15 @@ export default function QuestHeader({
 
 	return (
 		<header className="border-b border-border bg-background px-4 pb-3 pt-4">
-			<div className="flex items-center justify-between gap-3">
+			<div className="flex items-center justify-between gap-2">
 				<div className="min-w-0">
-					<h1 className="text-base font-semibold tracking-tight text-foreground">
+					<h1 className="whitespace-nowrap text-base font-semibold tracking-tight text-foreground">
 						Mosque Quest
 					</h1>
 					<p className="text-xs text-muted-foreground">Petaling</p>
 				</div>
-				<div className="flex items-center gap-3">
-					<div className="text-right">
+				<div className="flex items-center gap-2">
+					<div className="whitespace-nowrap pr-1 text-right">
 						<p className="font-mono text-base font-semibold tabular-nums text-foreground">
 							{stats.hasQr}
 							<span className="text-muted-foreground">/{stats.total}</span>
@@ -70,7 +70,7 @@ export default function QuestHeader({
 						aria-pressed={view === v.value}
 						onClick={() => onViewChange(v.value)}
 						className={cn(
-							"flex-1 rounded-md py-1.5 text-xs transition-colors",
+							"min-h-11 flex-1 rounded-md text-xs transition-colors",
 							view === v.value
 								? "bg-background font-semibold text-foreground shadow-sm"
 								: "text-muted-foreground hover:text-foreground",

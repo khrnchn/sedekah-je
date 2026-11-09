@@ -354,7 +354,11 @@ export default function QuestMapLeaflet({
 				/>
 				{mosques.map((mosque) => {
 					if (!isValidCoords(mosque.coords)) return null;
-					if (statusFilter !== "all" && statusFilter !== mosque.status)
+					if (
+						statusFilter !== "all" &&
+						statusFilter !== "unmapped" &&
+						statusFilter !== mosque.status
+					)
 						return null;
 					const useSelectedVariant = mosque.id === selectedId;
 					const markerIcon =
