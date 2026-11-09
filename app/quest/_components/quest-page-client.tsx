@@ -2,7 +2,7 @@
 
 import "../quest.css";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { questTour } from "@/app/quest/_lib/tour";
 import type {
 	QuestLeaderboardEntry,
@@ -10,7 +10,11 @@ import type {
 	QuestStats,
 	QuestStatusFilter,
 } from "@/app/quest/_lib/types";
-import type { QuestView } from "@/app/quest/_lib/url-state";
+import {
+	LAST_DISTRICT_KEY,
+	type QuestView,
+	questPath,
+} from "@/app/quest/_lib/url-state";
 import QuestBoard from "./quest-board";
 import QuestCard from "./quest-card";
 import QuestGrid from "./quest-grid";
@@ -19,6 +23,7 @@ import QuestHeader from "./quest-header";
 import QuestMap from "./quest-map";
 
 type QuestPageClientProps = {
+	district: { slug: string; name: string };
 	mosques: QuestMosqueView[];
 	stats: QuestStats;
 	leaderboard: QuestLeaderboardEntry[];
@@ -27,6 +32,7 @@ type QuestPageClientProps = {
 };
 
 export default function QuestPageClient({
+	district,
 	mosques,
 	stats,
 	leaderboard,
@@ -40,6 +46,12 @@ export default function QuestPageClient({
 	);
 	const [statusFilter, setStatusFilter] = useState<QuestStatusFilter>("all");
 	const [groupIds, setGroupIds] = useState<number[] | null>(null);
+
+	useEffect(() => {
+		try {
+			localStorage.setItem(LAST_DISTRICT_KEY, district.slug);
+		} catch {}
+	}, [district.slug]);
 
 	const selectedMosque = mosques.find((m) => m.id === selectedId) ?? null;
 	const groupMosques = groupIds
@@ -66,11 +78,11 @@ export default function QuestPageClient({
 		setGroupIds(null);
 		setView(nextView);
 		setSelectedId(nextSelectedId);
-		const params = new URLSearchParams();
-		if (nextView !== "map") params.set("view", nextView);
-		if (nextSelectedId !== null) params.set("m", String(nextSelectedId));
-		const query = params.toString();
-		window.history.replaceState(null, "", query ? `/quest?${query}` : "/quest");
+		window.history.replaceState(
+			null,
+			"",
+			questPath(district.slug, nextView, nextSelectedId),
+		);
 	};
 
 	const onSelect = (id: number | null) => {
@@ -99,6 +111,7 @@ export default function QuestPageClient({
 			className="quest-surface flex h-dvh w-full flex-col bg-background"
 		>
 			<QuestHeader
+				districtName={district.name}
 				stats={stats}
 				leaderboard={leaderboard}
 				view={view}
@@ -108,6 +121,7 @@ export default function QuestPageClient({
 				<main className="relative min-w-0 flex-1">
 					{view === "map" ? (
 						<QuestMap
+							districtSlug={district.slug}
 							mosques={mosques}
 							selectedId={selectedId}
 							onSelect={onSelect}
@@ -130,6 +144,7 @@ export default function QuestPageClient({
 						/>
 					) : (
 						<QuestGrid
+							districtName={district.name}
 							mosques={mosques}
 							selectedId={selectedId}
 							onSelect={onSelect}
@@ -148,6 +163,7 @@ export default function QuestPageClient({
 						key={selectedMosque.id}
 						mosque={selectedMosque}
 						view={view}
+						districtSlug={district.slug}
 						onClose={() => onSelect(null)}
 						step={
 							tourIndex === -1

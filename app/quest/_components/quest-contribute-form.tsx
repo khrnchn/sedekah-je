@@ -9,7 +9,7 @@ import {
 	submitQuestAttempt,
 } from "@/app/quest/_lib/actions";
 import type { QuestMosqueView } from "@/app/quest/_lib/types";
-import type { QuestView } from "@/app/quest/_lib/url-state";
+import { type QuestView, questPath } from "@/app/quest/_lib/url-state";
 import { GoogleIcon } from "@/components/shared/icons";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +26,7 @@ import { signInWithGoogle } from "@/lib/auth-client";
 type QuestContributeFormProps = {
 	mosque: QuestMosqueView;
 	view: QuestView;
+	districtSlug: string;
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 };
@@ -38,9 +39,11 @@ const SUCCESS_COPY = {
 function ContributeFormContent({
 	mosque,
 	view,
+	districtSlug,
 }: {
 	mosque: QuestMosqueView;
 	view: QuestView;
+	districtSlug: string;
 }) {
 	const { isAuthenticated, isLoading: authLoading } = useAuth();
 	const { qrContent, qrExtracting, handleQrImageChange } =
@@ -62,8 +65,7 @@ function ContributeFormContent({
 	}
 
 	if (!isAuthenticated) {
-		// view=map is the default, so the shell's URL omits it
-		const callback = `/quest?${view === "map" ? "" : `view=${view}&`}m=${mosque.id}`;
+		const callback = questPath(districtSlug, view, mosque.id);
 		return (
 			<div className="space-y-3">
 				<p className="text-sm text-muted-foreground">
@@ -190,6 +192,7 @@ function ContributeFormContent({
 export default function QuestContributeForm({
 	mosque,
 	view,
+	districtSlug,
 	open,
 	onOpenChange,
 }: QuestContributeFormProps) {
@@ -201,7 +204,11 @@ export default function QuestContributeForm({
 						Submit QR for {mosque.name}
 					</DialogTitle>
 				</DialogHeader>
-				<ContributeFormContent mosque={mosque} view={view} />
+				<ContributeFormContent
+					mosque={mosque}
+					view={view}
+					districtSlug={districtSlug}
+				/>
 			</DialogContent>
 		</Dialog>
 	);

@@ -13,12 +13,14 @@ const STATUS = {
 } as const;
 
 type QuestGridProps = {
+	districtName: string;
 	mosques: QuestMosqueView[];
 	selectedId: number | null;
 	onSelect: (id: number) => void;
 };
 
 export default function QuestGrid({
+	districtName,
 	mosques,
 	selectedId,
 	onSelect,
@@ -33,7 +35,9 @@ export default function QuestGrid({
 			<div className="quest-grid-wrap">
 				<div className="quest-board-heading">
 					<h2>Every mosque counts.</h2>
-					<span>{mosques.length} in Petaling</span>
+					<span>
+						{mosques.length} in {districtName}
+					</span>
 				</div>
 				<ul className="mb-6 flex flex-wrap gap-x-5 gap-y-2 text-xs text-muted-foreground">
 					{Object.entries(STATUS).map(([status, s]) => (

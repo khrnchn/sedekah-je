@@ -38,6 +38,7 @@ const STATUS = {
 type QuestCardProps = {
 	mosque: QuestMosqueView;
 	view: QuestView;
+	districtSlug: string;
 	onClose: () => void;
 	step?: {
 		index: number;
@@ -50,6 +51,7 @@ type QuestCardProps = {
 export default function QuestCard({
 	mosque,
 	view,
+	districtSlug,
 	onClose,
 	step,
 }: QuestCardProps) {
@@ -186,6 +188,7 @@ export default function QuestCard({
 			<QuestContributeForm
 				mosque={mosque}
 				view={view}
+				districtSlug={districtSlug}
 				open={contributeOpen}
 				onOpenChange={setContributeOpen}
 			/>

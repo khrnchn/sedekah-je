@@ -143,7 +143,8 @@
 	overflow: hidden;
 	border-radius: 2px;
 }
-.quest-progress > div {
+.quest-progress > * {
+	display: block;
 	height: 100%;
 	background: #059669;
 	border-radius: inherit;
@@ -1169,4 +1170,249 @@
 }
 .quest-detail-step button:hover {
 	background: oklch(var(--muted));
+}
+
+/* Leaflet chrome shared by the district and overview maps. */
+/* Keeps Leaflet panes and the map dock (z-index 400 to 1000) below portalled sheets. */
+.quest-map-container {
+	isolation: isolate;
+}
+.quest-map-container .quest-street-tiles {
+	filter: grayscale(1);
+}
+.dark .quest-map-container .quest-street-tiles {
+	filter: grayscale(1) invert(1) brightness(0.9);
+}
+.dark .quest-map-container .leaflet-control-zoom a,
+.dark .quest-map-container .leaflet-control-attribution {
+	filter: none;
+}
+.quest-map-container .leaflet-container {
+	background: oklch(var(--muted));
+	font-family: inherit;
+}
+.quest-map-container .leaflet-control-zoom a {
+	width: 44px;
+	height: 44px;
+	line-height: 44px;
+	background: oklch(var(--background));
+	color: oklch(var(--foreground));
+	border-color: oklch(var(--border));
+}
+.quest-map-container .leaflet-control-zoom a:hover {
+	background: oklch(var(--muted));
+}
+.quest-map-container .leaflet-control-zoom {
+	border: 1px solid oklch(var(--border));
+	border-radius: 8px;
+	box-shadow: none;
+	overflow: hidden;
+}
+@media (max-width: 767px) {
+	.quest-map-container .leaflet-control-zoom {
+		display: none;
+	}
+}
+.quest-map-container .quest-recenter-wrap {
+	top: 4px;
+}
+@media (min-width: 768px) {
+	.quest-map-container .quest-recenter-wrap {
+		top: 100px;
+	}
+}
+.quest-map-container .leaflet-bottom.leaflet-right {
+	bottom: var(--quest-attribution-offset, 0px);
+}
+.quest-map-container .leaflet-control-attribution {
+	background: oklch(var(--background) / 0.92);
+	color: oklch(var(--muted-foreground));
+	font-size: 10px;
+}
+.quest-map-container .leaflet-control-attribution a {
+	color: oklch(var(--muted-foreground));
+}
+
+.quest-back {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 44px;
+	height: 44px;
+	flex-shrink: 0;
+	margin-left: -10px;
+	border-radius: 9px;
+	color: oklch(var(--foreground));
+}
+.quest-back:hover {
+	background: oklch(var(--muted));
+}
+
+/* Selangor overview: map above the district list on phones, beside it on desktop. */
+.quest-overview {
+	flex: 1;
+	min-height: 0;
+	overflow-y: auto;
+}
+.quest-overview-map {
+	height: 42dvh;
+	min-height: 260px;
+	border-bottom: 1px solid oklch(var(--border));
+}
+.quest-overview-list {
+	padding: 20px 16px max(32px, env(safe-area-inset-bottom));
+}
+@media (min-width: 768px) {
+	.quest-overview {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) 400px;
+		overflow: hidden;
+	}
+	.quest-overview-map {
+		height: 100%;
+		border-bottom: 0;
+		border-right: 1px solid oklch(var(--border));
+	}
+	.quest-overview-list {
+		overflow-y: auto;
+		padding: 28px 28px 40px;
+	}
+}
+.quest-continue {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	min-height: 56px;
+	margin-bottom: 20px;
+	padding: 10px 16px;
+	border-radius: 10px;
+	background: oklch(var(--foreground));
+	color: oklch(var(--background));
+}
+.quest-continue > span {
+	display: flex;
+	flex-direction: column;
+}
+.quest-continue-label {
+	font-size: 11px;
+	opacity: 0.7;
+}
+.quest-continue strong {
+	font-size: 15px;
+	font-weight: 600;
+	letter-spacing: -0.015em;
+}
+.quest-overview-summary p {
+	font-size: 12px;
+	color: oklch(var(--muted-foreground));
+	font-variant-numeric: tabular-nums;
+}
+.quest-overview-summary strong {
+	color: oklch(var(--foreground));
+	font-weight: 600;
+}
+.quest-overview-summary .quest-progress {
+	margin-top: 7px;
+}
+.quest-overview-heading {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin-top: 24px;
+}
+.quest-overview-heading h2 {
+	font-size: 20px;
+	font-weight: 500;
+	letter-spacing: -0.035em;
+}
+.quest-near-me {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	height: 44px;
+	padding: 0 14px;
+	border: 1px solid oklch(var(--border));
+	border-radius: 8px;
+	font-size: 12px;
+	font-weight: 500;
+}
+.quest-near-me:hover {
+	background: oklch(var(--muted));
+}
+.quest-near-me:disabled {
+	opacity: 0.6;
+}
+.quest-near-me-message {
+	min-height: 8px;
+	margin-top: 6px;
+	font-size: 12px;
+	color: oklch(var(--muted-foreground));
+}
+.quest-district-list li {
+	border-bottom: 1px solid oklch(var(--border));
+}
+.quest-district-row {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	min-height: 72px;
+	padding: 14px 8px;
+	border-radius: 4px;
+	transition: background 140ms;
+}
+.quest-district-row:hover {
+	background: oklch(var(--muted));
+}
+.quest-district-row-top {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 12px;
+}
+.quest-district-name {
+	font-size: 14px;
+	font-weight: 500;
+	letter-spacing: -0.015em;
+}
+.quest-district-count {
+	font-size: 12px;
+	color: oklch(var(--muted-foreground));
+	font-variant-numeric: tabular-nums;
+}
+.quest-district-count strong {
+	color: oklch(var(--foreground));
+	font-weight: 600;
+}
+.quest-district-meta {
+	font-size: 11px;
+	color: oklch(var(--muted-foreground));
+	font-variant-numeric: tabular-nums;
+}
+.quest-overview-legend {
+	position: absolute;
+	left: 12px;
+	top: 12px;
+	z-index: 500;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 6px 10px;
+	border: 1px solid oklch(var(--border));
+	border-radius: 8px;
+	background: oklch(var(--background));
+	color: oklch(var(--muted-foreground));
+	font-size: 10px;
+	font-variant-numeric: tabular-nums;
+}
+.quest-overview-legend-ramp {
+	width: 56px;
+	height: 6px;
+	border-radius: 3px;
+	background: linear-gradient(
+		to right,
+		rgb(5 150 105 / 6%),
+		rgb(5 150 105 / 66%)
+	);
 }

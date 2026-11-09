@@ -1,7 +1,13 @@
 "use client";
 
-import { Grid2X2, List, Map as MapIcon, Moon, Sun } from "lucide-react";
-import Image from "next/image";
+import {
+	ChevronLeft,
+	Grid2X2,
+	List,
+	Map as MapIcon,
+	Moon,
+	Sun,
+} from "lucide-react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import type { QuestLeaderboardEntry, QuestStats } from "@/app/quest/_lib/types";
@@ -16,6 +22,7 @@ const VIEWS = [
 ] as const;
 
 type QuestHeaderProps = {
+	districtName: string;
 	stats: QuestStats;
 	leaderboard: QuestLeaderboardEntry[];
 	view: QuestView;
@@ -23,6 +30,7 @@ type QuestHeaderProps = {
 };
 
 export default function QuestHeader({
+	districtName,
 	stats,
 	leaderboard,
 	view,
@@ -34,15 +42,20 @@ export default function QuestHeader({
 	return (
 		<header className="quest-header shrink-0">
 			<div className="quest-topbar">
-				<Link href="/" aria-label="Sedekah Je home" className="quest-brand">
-					<Image src="/masjid.svg" width={36} height={36} alt="" priority />
+				<Link
+					href="/quest"
+					aria-label="All districts"
+					title="All districts"
+					className="quest-back"
+				>
+					<ChevronLeft size={20} aria-hidden />
 				</Link>
 				<div className="quest-title">
-					<h1>Mosque Quest</h1>
-					<span className="quest-district">Petaling, Selangor</span>
+					<h1>{districtName}</h1>
+					<span className="quest-district">Mosque Quest, Selangor</span>
 				</div>
 				<div className="quest-header-actions">
-					<QuestLeaderboard leaderboard={leaderboard} />
+					<QuestLeaderboard leaderboard={leaderboard} scope={districtName} />
 					<button
 						type="button"
 						className="quest-theme-button"

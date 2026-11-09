@@ -3,10 +3,11 @@
 import "leaflet/dist/leaflet.css";
 
 import { createLeafletContext, LeafletProvider } from "@react-leaflet/core";
-import type { FeatureCollection, Geometry } from "geojson";
+import type { Geometry } from "geojson";
 import {
 	DomEvent,
 	divIcon,
+	type LatLngBounds,
 	Map as LeafletMap,
 	latLngBounds,
 	point,
@@ -28,43 +29,41 @@ import type {
 	QuestMosqueView,
 	QuestStatusFilter,
 } from "@/app/quest/_lib/types";
-import petalingBoundary from "@/data/petaling-boundary.json";
+import { districtBoundary } from "@/lib/features/quest/districts";
 import type { QuestStatus } from "@/lib/features/quest/rules";
 import { cn } from "@/lib/utils";
 
-const STREET_TILE_URL =
+export const STREET_TILE_URL =
 	"https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}";
-const TILE_ATTRIBUTION =
+export const TILE_ATTRIBUTION =
 	'Tiles &copy; <a href="https://www.esri.com/">Esri</a>, HERE, Garmin, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>';
-const TILE_MAX_ZOOM = 19;
+export const TILE_MAX_ZOOM = 19;
 const SELECT_MIN_ZOOM = 16;
 // Keeps the boundary clear of the legend bar overlaid at the bottom.
 const FIT_PADDING_TOP_LEFT: [number, number] = [16, 16];
 const FIT_PADDING_BOTTOM_RIGHT: [number, number] = [16, 120];
 
-const PETALING_BOUNDARY = petalingBoundary as FeatureCollection;
-
-const PETALING_BOUNDS = (() => {
+// Bounds of every ring in a district or set of districts, as [lat, lng].
+export function boundaryBounds(features: { geometry: Geometry | null }[]) {
 	const coords: [number, number][] = [];
-	const walk = (geometry: Geometry | null) => {
-		if (geometry?.type === "Polygon") {
-			for (const ring of geometry.coordinates) {
+	for (const { geometry } of features) {
+		const polygons =
+			geometry?.type === "Polygon"
+				? [geometry.coordinates]
+				: geometry?.type === "MultiPolygon"
+					? geometry.coordinates
+					: [];
+		for (const polygon of polygons) {
+			for (const ring of polygon) {
 				for (const [lon, lat] of ring) coords.push([lat, lon]);
 			}
-		} else if (geometry?.type === "MultiPolygon") {
-			for (const polygon of geometry.coordinates) {
-				for (const ring of polygon) {
-					for (const [lon, lat] of ring) coords.push([lat, lon]);
-				}
-			}
 		}
-	};
-	for (const feature of PETALING_BOUNDARY.features) walk(feature.geometry);
+	}
 	return latLngBounds(coords);
-})();
+}
 
-const fitPetaling = (map: LeafletMap) =>
-	map.fitBounds(PETALING_BOUNDS, {
+const fitBoundary = (map: LeafletMap, bounds: LatLngBounds) =>
+	map.fitBounds(bounds, {
 		paddingTopLeft: FIT_PADDING_TOP_LEFT,
 		paddingBottomRight: FIT_PADDING_BOTTOM_RIGHT,
 	});
@@ -143,6 +142,7 @@ function clusterIcon(points: QuestMosqueView[]) {
 }
 
 type QuestMapLeafletProps = {
+	districtSlug: string;
 	mosques: QuestMosqueView[];
 	selectedId: number | null;
 	onSelect: (id: number | null) => void;
@@ -155,11 +155,16 @@ type QuestMapLeafletProps = {
 
 // Builds the Leaflet map by hand instead of MapContainer so Strict Mode and
 // HMR reattaching the same node do not throw "Map container is already initialized".
-function SafeMapContainer({
+export function SafeMapContainer({
 	className,
+	bounds,
+	padding,
 	children,
 }: {
 	className?: string;
+	bounds: LatLngBounds;
+	// Defaults to leaving room for the district map's bottom dock.
+	padding?: [number, number];
 	children?: ReactNode;
 }) {
 	const [context, setContext] = useState<ReturnType<
@@ -167,30 +172,34 @@ function SafeMapContainer({
 	> | null>(null);
 	const mapRef = useRef<LeafletMap | null>(null);
 
-	const handleMapRef = useCallback((node: HTMLDivElement | null) => {
-		if (!node || mapRef.current) return;
+	const handleMapRef = useCallback(
+		(node: HTMLDivElement | null) => {
+			if (!node || mapRef.current) return;
 
-		const leafletKey = Object.keys(node).find((key) =>
-			key.startsWith("_leaflet_id"),
-		);
-		if (leafletKey) Reflect.deleteProperty(node, leafletKey);
-		node.innerHTML = "";
+			const leafletKey = Object.keys(node).find((key) =>
+				key.startsWith("_leaflet_id"),
+			);
+			if (leafletKey) Reflect.deleteProperty(node, leafletKey);
+			node.innerHTML = "";
 
-		const map = new LeafletMap(node, {
-			scrollWheelZoom: true,
-			zoomControl: true,
-			maxZoom: TILE_MAX_ZOOM,
-			// Native integer zooms keep raster place labels sharp.
-			zoomSnap: 1,
-		});
-		// The floating controls leave the bottom edge clear for attribution.
-		map.attributionControl.setPosition("bottomright");
-		map.attributionControl.setPrefix(false);
-		map.zoomControl.setPosition("topright");
-		fitPetaling(map);
-		mapRef.current = map;
-		setContext(createLeafletContext(map));
-	}, []);
+			const map = new LeafletMap(node, {
+				scrollWheelZoom: true,
+				zoomControl: true,
+				maxZoom: TILE_MAX_ZOOM,
+				// Native integer zooms keep raster place labels sharp.
+				zoomSnap: 1,
+			});
+			// The floating controls leave the bottom edge clear for attribution.
+			map.attributionControl.setPosition("bottomright");
+			map.attributionControl.setPrefix(false);
+			map.zoomControl.setPosition("topright");
+			if (padding) map.fitBounds(bounds, { padding });
+			else fitBoundary(map, bounds);
+			mapRef.current = map;
+			setContext(createLeafletContext(map));
+		},
+		[bounds, padding],
+	);
 
 	useEffect(() => {
 		return () => {
@@ -209,7 +218,7 @@ function SafeMapContainer({
 	);
 }
 
-function SyncMapSize() {
+export function SyncMapSize() {
 	const map = useMap();
 
 	useEffect(() => {
@@ -294,7 +303,13 @@ function DeselectOnMapClick({ onSelect }: { onSelect: (id: null) => void }) {
 	return null;
 }
 
-function RecenterControl() {
+function RecenterControl({
+	name,
+	bounds,
+}: {
+	name: string;
+	bounds: LatLngBounds;
+}) {
 	const map = useMap();
 
 	return (
@@ -308,10 +323,10 @@ function RecenterControl() {
 			<div className="leaflet-control">
 				<button
 					type="button"
-					aria-label="Show all of Petaling"
-					title="Show all of Petaling"
+					aria-label={`Show all of ${name}`}
+					title={`Show all of ${name}`}
 					className="flex h-11 w-11 items-center justify-center rounded-md border border-border bg-background text-foreground shadow-sm hover:bg-muted"
-					onClick={() => fitPetaling(map)}
+					onClick={() => fitBoundary(map, bounds)}
 				>
 					<LocateFixed className="h-5 w-5" />
 				</button>
@@ -455,6 +470,7 @@ function QuestMarkers({
 }
 
 export default function QuestMapLeaflet({
+	districtSlug,
 	mosques,
 	selectedId,
 	onSelect,
@@ -466,6 +482,11 @@ export default function QuestMapLeaflet({
 }: QuestMapLeafletProps) {
 	const { resolvedTheme } = useTheme();
 	const isDark = resolvedTheme === "dark";
+	const boundary = districtBoundary(districtSlug);
+	const bounds = useMemo(
+		() => boundaryBounds(boundary ? [boundary] : []),
+		[boundary],
+	);
 
 	const counts: Record<QuestStatus, number> = {
 		has_qr: 0,
@@ -494,25 +515,27 @@ export default function QuestMapLeaflet({
 
 	return (
 		<div className="quest-map-container relative h-full w-full">
-			<SafeMapContainer className="z-0 h-full w-full">
+			<SafeMapContainer className="z-0 h-full w-full" bounds={bounds}>
 				<TileLayer
 					className="quest-street-tiles"
 					attribution={TILE_ATTRIBUTION}
 					url={STREET_TILE_URL}
 					maxZoom={TILE_MAX_ZOOM}
 				/>
-				<GeoJSON
-					key={lineColor}
-					data={PETALING_BOUNDARY}
-					style={() => ({
-						color: lineColor,
-						weight: 1,
-						opacity: 0.5,
-						fillColor: lineColor,
-						fillOpacity: 0.025,
-					})}
-					interactive={false}
-				/>
+				{boundary && (
+					<GeoJSON
+						key={`${districtSlug}-${lineColor}`}
+						data={boundary}
+						style={() => ({
+							color: lineColor,
+							weight: 1,
+							opacity: 0.5,
+							fillColor: lineColor,
+							fillOpacity: 0.025,
+						})}
+						interactive={false}
+					/>
+				)}
 				<QuestMarkers
 					mosques={visible}
 					selectedId={selectedId}
@@ -523,7 +546,10 @@ export default function QuestMapLeaflet({
 				<SyncMapSize />
 				<PanToSelected coords={selectedCoords} selectedId={selectedId} />
 				<DeselectOnMapClick onSelect={onSelect} />
-				<RecenterControl />
+				<RecenterControl
+					name={boundary?.properties.name ?? "the district"}
+					bounds={bounds}
+				/>
 			</SafeMapContainer>
 
 			{unmapped > 0 && (
@@ -594,58 +620,6 @@ export default function QuestMapLeaflet({
 					})}
 				</fieldset>
 			</div>
-
-			<style>
-				{`
-				.quest-map-container .quest-street-tiles { filter: grayscale(1); }
-				.dark .quest-map-container .quest-street-tiles { filter: grayscale(1) invert(1) brightness(0.9); }
-				.dark .quest-map-container .leaflet-control-zoom a,
-				.dark .quest-map-container .leaflet-control-attribution { filter: none; }
-				.quest-map-container .leaflet-container {
-					background: oklch(var(--muted));
-					font-family: inherit;
-				}
-				.quest-map-container .leaflet-control-zoom a {
-					width: 44px;
-					height: 44px;
-					line-height: 44px;
-					background: oklch(var(--background));
-					color: oklch(var(--foreground));
-					border-color: oklch(var(--border));
-				}
-				.quest-map-container .leaflet-control-zoom a:hover {
-					background: oklch(var(--muted));
-				}
-				.quest-map-container .leaflet-control-zoom {
-					border: 1px solid oklch(var(--border));
-					border-radius: 8px;
-					box-shadow: none;
-					overflow: hidden;
-				}
-				@media (max-width: 767px) {
-					.quest-map-container .leaflet-control-zoom {
-						display: none;
-					}
-				}
-				.quest-map-container .quest-recenter-wrap {
-					top: 4px;
-				}
-				@media (min-width: 768px) {
-					.quest-map-container .quest-recenter-wrap {
-						top: 100px;
-					}
-				}
-				.quest-map-container .leaflet-bottom.leaflet-right { bottom: var(--quest-attribution-offset, 0px); }
-				.quest-map-container .leaflet-control-attribution {
-					background: oklch(var(--background) / 0.92);
-					color: oklch(var(--muted-foreground));
-					font-size: 10px;
-				}
-				.quest-map-container .leaflet-control-attribution a {
-					color: oklch(var(--muted-foreground));
-				}
-			`}
-			</style>
 		</div>
 	);
 }

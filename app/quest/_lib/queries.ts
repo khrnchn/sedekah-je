@@ -5,10 +5,16 @@ import { unstable_cache } from "next/cache";
 import { db } from "@/db";
 import { institutions, questAttempts, questMosques, users } from "@/db/schema";
 import { deriveQuestStatus } from "@/lib/features/quest/rules";
-import type { QuestLeaderboardEntry, QuestMosqueView } from "./types";
+import type {
+	QuestDistrictStats,
+	QuestLeaderboardEntry,
+	QuestMosqueView,
+} from "./types";
 
+// unstable_cache folds the call arguments into the cache key, so each
+// district (and null for all of Selangor) is cached separately.
 export const getQuestMosques = unstable_cache(
-	async (): Promise<QuestMosqueView[]> => {
+	async (district: string | null): Promise<QuestMosqueView[]> => {
 		const pending = db
 			.select({
 				questMosqueId: questAttempts.questMosqueId,
@@ -45,6 +51,7 @@ export const getQuestMosques = unstable_cache(
 				),
 			)
 			.leftJoin(users, eq(questAttempts.userId, users.id))
+			.where(district ? eq(questMosques.district, district) : undefined)
 			.orderBy(questMosques.name);
 
 		return rows.map((r) => {
@@ -78,7 +85,7 @@ export const getQuestMosques = unstable_cache(
 );
 
 export const getQuestLeaderboard = unstable_cache(
-	async (): Promise<QuestLeaderboardEntry[]> => {
+	async (district: string | null): Promise<QuestLeaderboardEntry[]> => {
 		const contributionsCount = count(questAttempts.id);
 		const rows = await db
 			.select({
@@ -100,6 +107,7 @@ export const getQuestLeaderboard = unstable_cache(
 				and(
 					isNotNull(questAttempts.userId),
 					eq(questAttempts.status, "approved"),
+					district ? eq(questMosques.district, district) : undefined,
 				),
 			)
 			.groupBy(users.id, users.name, users.image, users.avatarUrl)
@@ -115,5 +123,38 @@ export const getQuestLeaderboard = unstable_cache(
 		}));
 	},
 	["quest-leaderboard"],
+	{ revalidate: 300, tags: ["quest-mosques"] },
+);
+
+// Mirrors deriveQuestStatus: approved link means has QR, otherwise any
+// pending attempt means in review.
+export const getQuestDistrictStats = unstable_cache(
+	async (): Promise<QuestDistrictStats[]> => {
+		const pending = db
+			.selectDistinct({ questMosqueId: questAttempts.questMosqueId })
+			.from(questAttempts)
+			.where(eq(questAttempts.status, "pending"))
+			.as("pending");
+		const hasQr = sql`${institutions.status} = 'approved'`;
+		const rows = await db
+			.select({
+				district: questMosques.district,
+				total: count(),
+				hasQr: sql<number>`count(*) filter (where ${hasQr})`,
+				inReview: sql<number>`count(*) filter (where not coalesce(${hasQr}, false) and ${pending.questMosqueId} is not null)`,
+			})
+			.from(questMosques)
+			.leftJoin(institutions, eq(questMosques.institutionId, institutions.id))
+			.leftJoin(pending, eq(pending.questMosqueId, questMosques.id))
+			.groupBy(questMosques.district);
+
+		return rows.map((r) => ({
+			district: r.district,
+			total: Number(r.total),
+			hasQr: Number(r.hasQr),
+			inReview: Number(r.inReview),
+		}));
+	},
+	["quest-district-stats"],
 	{ revalidate: 300, tags: ["quest-mosques"] },
 );

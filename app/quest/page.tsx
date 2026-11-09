@@ -1,11 +1,18 @@
+import { eq } from "drizzle-orm";
 import type { Metadata } from "next";
-import QuestPageClient from "./_components/quest-page-client";
-import { getQuestLeaderboard, getQuestMosques } from "./_lib/queries";
-import type { QuestStats } from "./_lib/types";
-import { parseQuestParams } from "./_lib/url-state";
+import { redirect } from "next/navigation";
+import { db } from "@/db";
+import { questMosques } from "@/db/schema";
+import {
+	districtByName,
+	QUEST_DISTRICTS,
+} from "@/lib/features/quest/districts";
+import QuestOverview from "./_components/quest-overview";
+import { getQuestDistrictStats, getQuestLeaderboard } from "./_lib/queries";
+import { questPath, VIEWS } from "./_lib/url-state";
 
 const DESCRIPTION =
-	"Find the missing donation QR codes for mosques in Petaling.";
+	"Find the missing donation QR codes for mosques across Selangor.";
 
 export const metadata: Metadata = {
 	title: "Mosque Quest",
@@ -29,35 +36,38 @@ export default async function QuestPage({
 }: {
 	searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-	const [params, mosques, leaderboard] = await Promise.all([
-		searchParams,
-		getQuestMosques(),
-		getQuestLeaderboard(),
+	const params = await searchParams;
+
+	// Links from before districts existed: /quest?m={id}&view=...
+	const m = typeof params.m === "string" ? params.m : "";
+	// quest_mosques.id is a Postgres integer.
+	if (/^\d+$/.test(m) && Number(m) <= 2147483647) {
+		const [row] = await db
+			.select({ district: questMosques.district })
+			.from(questMosques)
+			.where(eq(questMosques.id, Number(m)))
+			.limit(1);
+		const district = row ? districtByName(row.district) : null;
+		if (district) {
+			const view = VIEWS.find((v) => v === params.view) ?? "map";
+			redirect(questPath(district.slug, view, Number(m)));
+		}
+	}
+
+	const [stats, leaderboard] = await Promise.all([
+		getQuestDistrictStats(),
+		getQuestLeaderboard(null),
 	]);
 
-	const stats: QuestStats = {
-		total: mosques.length,
-		hasQr: mosques.filter((m) => m.status === "has_qr").length,
-		inReview: mosques.filter((m) => m.status === "in_review").length,
-		missing: mosques.filter((m) => m.status === "missing").length,
-		unmapped: mosques.filter((m) => m.coords === null).length,
-	};
+	const districts = QUEST_DISTRICTS.map((d) => {
+		const s = stats.find((row) => row.district === d.name);
+		return {
+			...d,
+			total: s?.total ?? 0,
+			hasQr: s?.hasQr ?? 0,
+			inReview: s?.inReview ?? 0,
+		};
+	});
 
-	const { view, selectedId } = parseQuestParams(
-		{
-			view: typeof params.view === "string" ? params.view : undefined,
-			m: typeof params.m === "string" ? params.m : undefined,
-		},
-		new Set(mosques.map((m) => m.id)),
-	);
-
-	return (
-		<QuestPageClient
-			mosques={mosques}
-			stats={stats}
-			leaderboard={leaderboard}
-			initialView={view}
-			initialSelectedId={selectedId}
-		/>
-	);
+	return <QuestOverview districts={districts} leaderboard={leaderboard} />;
 }

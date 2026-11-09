@@ -34,3 +34,10 @@ export type QuestLeaderboardEntry = {
 };
 
 export type QuestStatusFilter = QuestStatus | "all" | "unmapped";
+
+export type QuestDistrictStats = {
+	district: string;
+	total: number;
+	hasQr: number;
+	inReview: number;
+};

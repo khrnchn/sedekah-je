@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { directionsUrl, parseQuestParams } from "@/app/quest/_lib/url-state";
+import {
+	directionsUrl,
+	parseQuestParams,
+	questPath,
+} from "@/app/quest/_lib/url-state";
 
 test("parseQuestParams keeps a valid view and a known mosque id", () => {
 	assert.deepEqual(
@@ -48,4 +52,14 @@ test("directionsUrl falls back to the encoded name and address", () => {
 	assert.ok(
 		url.includes(encodeURIComponent("Masjid Al-Ikhlas, SS 3, Petaling Jaya")),
 	);
+});
+
+test("questPath scopes the URL to the district and omits the default view", () => {
+	assert.equal(questPath("petaling", "map", null), "/quest/petaling");
+	assert.equal(questPath("klang", "map", 7), "/quest/klang?m=7");
+	assert.equal(
+		questPath("hulu-langat", "grid", 12),
+		"/quest/hulu-langat?view=grid&m=12",
+	);
+	assert.equal(questPath("sepang", "board", null), "/quest/sepang?view=board");
 });

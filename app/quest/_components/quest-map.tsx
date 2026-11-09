@@ -20,6 +20,7 @@ const QuestMapLeaflet = dynamic(
 );
 
 type QuestMapProps = {
+	districtSlug: string;
 	mosques: QuestMosqueView[];
 	selectedId: number | null;
 	onSelect: (id: number | null) => void;

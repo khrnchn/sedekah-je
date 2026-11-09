@@ -17,10 +17,12 @@ import { cn } from "@/lib/utils";
 
 type QuestLeaderboardProps = {
 	leaderboard: QuestLeaderboardEntry[];
+	scope: string;
 };
 
 export default function QuestLeaderboard({
 	leaderboard,
+	scope,
 }: QuestLeaderboardProps) {
 	const { user } = useAuth();
 	const [open, setOpen] = useState(false);
@@ -46,7 +48,7 @@ export default function QuestLeaderboard({
 					<SheetHeader className="border-b border-border px-5 py-4 text-left">
 						<SheetTitle>Leaderboard</SheetTitle>
 						<SheetDescription>
-							Most QR codes added through the quest.
+							Most QR codes added through the quest in {scope}.
 						</SheetDescription>
 					</SheetHeader>
 					<div className="flex-1 overflow-y-auto px-5 py-4">
