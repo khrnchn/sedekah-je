@@ -228,6 +228,16 @@ export default function QRExtractionFeature({
 	}, [inputId, isSubmitting, qrStatus.qrExtracting]);
 
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
+	const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+	useEffect(() => {
+		if (!selectedFile) {
+			setPreviewUrl(null);
+			return;
+		}
+		const url = URL.createObjectURL(selectedFile);
+		setPreviewUrl(url);
+		return () => URL.revokeObjectURL(url);
+	}, [selectedFile]);
 	const handleFileChangeWrapper = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (handleFileChange) {
 			handleFileChange(e);
@@ -270,7 +280,7 @@ export default function QRExtractionFeature({
 				<p className="text-xs leading-relaxed text-muted-foreground">
 					Saiz maksimum 5MB. Format yang disokong: JPG, PNG, WebP.
 				</p>
-				<p className="text-xs leading-relaxed text-muted-foreground">
+				<p className="hidden text-xs leading-relaxed text-muted-foreground [@media(pointer:fine)]:block">
 					Boleh juga tampal imej dengan Ctrl+V atau Cmd+V.
 				</p>
 			</div>
@@ -320,11 +330,13 @@ export default function QRExtractionFeature({
 						className="hidden"
 					/>
 					<div className="flex flex-col sm:flex-row gap-2">
+						{/* `capture` is ignored without a touch camera, so on desktop this
+						    only duplicates the gallery picker. */}
 						<Button
 							type="button"
 							asChild
 							disabled={isSubmitting || qrStatus.qrExtracting}
-							className="h-12 flex-1 gap-2 text-base"
+							className="h-12 flex-1 gap-2 text-base [@media(pointer:fine)]:hidden"
 						>
 							<label
 								htmlFor={inputId}
@@ -352,12 +364,33 @@ export default function QRExtractionFeature({
 								className="flex h-12 w-full cursor-pointer items-center justify-center gap-2"
 							>
 								<ImagePlus className="h-4 w-4" />
-								Pilih dari Galeri
+								<span className="[@media(pointer:fine)]:hidden">
+									Pilih dari Galeri
+								</span>
+								<span className="hidden [@media(pointer:fine)]:inline">
+									{qrStatus.qrExtracting
+										? "Memproses..."
+										: selectedFile || initialImageUrl
+											? "Ganti Gambar"
+											: "Pilih Gambar"}
+								</span>
 							</label>
 						</Button>
 					</div>
 					{selectedFile && (
 						<div className="flex items-center gap-3 rounded-md bg-muted/50 px-3 py-2 text-sm">
+							{previewUrl && (
+								<div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md border bg-background">
+									<Image
+										unoptimized
+										src={previewUrl}
+										alt="Pratonton gambar QR"
+										fill
+										sizes="64px"
+										className="object-contain"
+									/>
+								</div>
+							)}
 							<div className="flex flex-col min-w-0">
 								<span className="truncate max-w-xs">{selectedFile.name}</span>
 								<span className="text-xs text-muted-foreground">

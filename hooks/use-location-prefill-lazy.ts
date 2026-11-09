@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import type { UseFormSetValue } from "react-hook-form";
 import { toast } from "sonner";
 import type { InstitutionFormData } from "@/app/(user)/contribute/_lib/validations";
-import type { states as STATE_OPTIONS } from "@/lib/institution-constants";
+import { normalizeMalaysianState } from "@/lib/integrations/geocode";
 
 /**
  * Encapsulates the location-detection logic for InstitutionForm with lazy loading.
@@ -37,16 +37,17 @@ export function useLocationPrefillLazy(
 							`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`,
 						);
 						const data = await res.json();
-						console.log("Reverse geocoding data:", data);
-
-						// Suggest institution name when display_name hints at a mosque/surau
-						if (
+						// Only suggest a name when the nearest place is an institution,
+						// otherwise this offers road or taman names.
+						const suggestedName =
 							typeof data.display_name === "string"
-							// TODO: Uncomment this when we have a way to filter out non-institutional places
-							// && /\b(masjid|mosque|surau)\b/i.test(data.display_name)
+								? data.display_name.split(",")[0].trim()
+								: "";
+						if (
+							/\b(masjid|mosque|surau|musolla|madrasah|maahad|tahfiz|pondok)\b/i.test(
+								suggestedName,
+							)
 						) {
-							const suggestedName = data.display_name.split(",")[0].trim();
-
 							toast("Institusi dikesan", {
 								description: `Gunakan "${suggestedName}" sebagai nama institusi?`,
 								action: {
@@ -62,11 +63,13 @@ export function useLocationPrefillLazy(
 								data.address.city ||
 								data.address.village ||
 								"";
-							const state = data.address.state || "";
+							// Nominatim uses names like "Penang" or "Wilayah Persekutuan
+							// Kuala Lumpur" that don't match the state select options.
+							const state = normalizeMalaysianState(data.address.state);
 							setPrefilledCity(city);
-							setPrefilledState(state);
-							setValue("city", city);
-							setValue("state", state as (typeof STATE_OPTIONS)[number]);
+							setPrefilledState(state ?? "");
+							setValue("city", city, { shouldValidate: true });
+							if (state) setValue("state", state, { shouldValidate: true });
 							setValue("lat", latitude.toString());
 							setValue("lon", longitude.toString());
 						}

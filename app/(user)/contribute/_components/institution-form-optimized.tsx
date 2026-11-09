@@ -7,7 +7,7 @@ import {
 	ChevronUp,
 	ClipboardCheck,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
 	lazy,
 	Suspense,
@@ -42,6 +42,7 @@ import {
 } from "@/lib/institution-constants";
 import { cn, toTitleCase } from "@/lib/utils";
 import {
+	checkQrDuplicate,
 	getContributionCooldown,
 	type SubmitInstitutionFormState,
 	submitInstitution,
@@ -62,6 +63,7 @@ function SubmitButton({
 	isAuthenticated,
 	isInCooldown,
 	qrExtractionFailed,
+	isDuplicateQr,
 }: {
 	isSubmitting: boolean;
 	qrExtracting: boolean;
@@ -69,13 +71,15 @@ function SubmitButton({
 	hasFile: boolean;
 	isAuthenticated: boolean;
 	isInCooldown: boolean;
+	isDuplicateQr: boolean;
 }) {
 	const isDisabled =
 		isSubmitting ||
 		qrExtracting ||
 		!hasFile ||
 		!isAuthenticated ||
-		isInCooldown;
+		isInCooldown ||
+		isDuplicateQr;
 
 	const helperText = !isAuthenticated
 		? "Log masuk diperlukan sebelum submission boleh dihantar."
@@ -85,9 +89,11 @@ function SubmitButton({
 				? "Tunggu sehingga QR selesai diproses."
 				: !hasFile
 					? "Muat naik gambar QR dahulu untuk aktifkan butang hantar."
-					: qrExtractionFailed
-						? "QR akan disemak secara manual selepas dihantar."
-						: "Submission akan masuk ke semakan komuniti sebelum dipaparkan.";
+					: isDuplicateQr
+						? "QR ini sudah ada dalam sistem. Tukar gambar QR untuk teruskan."
+						: qrExtractionFailed
+							? "QR akan disemak secara manual selepas dihantar."
+							: "Submission akan masuk ke semakan komuniti sebelum dipaparkan.";
 
 	return (
 		<div className="space-y-2">
@@ -194,8 +200,59 @@ function FormSection({
 	);
 }
 
+function SubmissionSuccess({ onAddAnother }: { onAddAnother: () => void }) {
+	const headingRef = useRef<HTMLHeadingElement>(null);
+	useEffect(() => {
+		window.scrollTo({ top: 0 });
+		headingRef.current?.focus();
+	}, []);
+
+	return (
+		<div className="mx-auto max-w-xl px-4 pb-20 md:px-0 md:pb-6">
+			<div className="space-y-4 rounded-lg border border-border/70 bg-card/70 p-6 text-center shadow-sm">
+				<CheckCircle2 className="mx-auto h-10 w-10 text-primary" />
+				<div className="space-y-1">
+					<h2
+						ref={headingRef}
+						tabIndex={-1}
+						className="text-lg font-semibold outline-none"
+					>
+						Jazakallahu khair!
+					</h2>
+					<p className="text-sm text-muted-foreground">
+						Submission anda sedang disemak dan akan dipaparkan di direktori
+						selepas diluluskan.
+					</p>
+				</div>
+				<div className="flex flex-col gap-2 sm:flex-row">
+					<Button asChild className="h-12 flex-1 text-base">
+						<Link href="/my-contributions">Lihat sumbangan saya</Link>
+					</Button>
+					<Button
+						type="button"
+						variant="outline"
+						className="h-12 flex-1 text-base"
+						onClick={onAddAnother}
+					>
+						Tambah institusi lain
+					</Button>
+				</div>
+			</div>
+		</div>
+	);
+}
+
+// Unmounting the form on success means "Tambah institusi lain" gets a fresh
+// form, including the QR upload state that lives in child components.
 export default function InstitutionFormOptimized() {
-	const router = useRouter();
+	const [submitted, setSubmitted] = useState(false);
+	if (submitted) {
+		return <SubmissionSuccess onAddAnother={() => setSubmitted(false)} />;
+	}
+	return <InstitutionForm onSuccess={() => setSubmitted(true)} />;
+}
+
+function InstitutionForm({ onSuccess }: { onSuccess: () => void }) {
 	const { user } = useAuth();
 
 	/* QR and location state */
@@ -215,9 +272,20 @@ export default function InstitutionFormOptimized() {
 		SubmitInstitutionFormState,
 		{ status: "error" }
 	> | null>(null);
+	const latestQrContentRef = useRef<string | null>(null);
 	const handleQrContentChange = useCallback((content: string | null) => {
 		setQrContent(content);
 		setDuplicateFeedback(null);
+		latestQrContentRef.current = content;
+		if (!content) return;
+		// Submit re-checks on the server, so a failed lookup here is harmless.
+		checkQrDuplicate(content)
+			.then((result) => {
+				if (result && latestQrContentRef.current === content) {
+					setDuplicateFeedback(result);
+				}
+			})
+			.catch(() => {});
 	}, []);
 
 	const [additionalInfoExpanded, setAdditionalInfoExpanded] = useState(false);
@@ -372,10 +440,7 @@ export default function InstitutionFormOptimized() {
 			const result = await submitInstitution(undefined, formData);
 
 			if (result.status === "success") {
-				toast.success("Jazakallahu khair!", {
-					description: "Submission anda sedang disemak.",
-				});
-				router.replace("/my-contributions");
+				onSuccess();
 				return;
 			} else if (result.status === "error") {
 				// Handle rate limit with cooldown: show timer, don't set form error
@@ -389,28 +454,23 @@ export default function InstitutionFormOptimized() {
 					return;
 				}
 
-				// Handle specific field errors
-				if (result.errors) {
-					for (const [key, messages] of Object.entries(result.errors)) {
-						if (key !== "general") {
-							form.setError(key as keyof InstitutionFormData, {
-								type: "manual",
-								message: messages.join(", "),
-							});
-						}
+				// Errors for keys the form doesn't render (e.g. qrImage) would be
+				// invisible as field errors, so show them in the general notice.
+				const generalMessages: string[] = [];
+				for (const [key, messages] of Object.entries(result.errors ?? {})) {
+					if (key in extendedInstitutionFormClientSchema.shape) {
+						form.setError(key as keyof InstitutionFormData, {
+							type: "manual",
+							message: messages.join(", "),
+						});
+					} else {
+						generalMessages.push(...messages);
 					}
 				}
-				// Handle general, non-field-specific errors
-				const generalError = result.errors?.general?.[0];
-				if (generalError) {
+				if (generalMessages.length > 0) {
 					form.setError("root.general", {
 						type: "manual",
-						message: generalError,
-					});
-				} else {
-					toast.error("Ralat", {
-						description:
-							"Sila semak borang anda. Terdapat ralat dalam data yang dihantar.",
+						message: generalMessages.join(" "),
 					});
 				}
 			}
@@ -442,10 +502,7 @@ export default function InstitutionFormOptimized() {
 			className="mx-auto max-w-xl space-y-6 px-4 pb-20 md:px-0 md:pb-6"
 		>
 			<ContributionBrief />
-			<fieldset
-				disabled={isSubmitting || qrStatus.qrExtracting}
-				className="space-y-6 sm:space-y-7"
-			>
+			<fieldset disabled={isSubmitting} className="space-y-6 sm:space-y-7">
 				{/* Hidden fields */}
 				<input
 					type="hidden"
@@ -475,6 +532,17 @@ export default function InstitutionFormOptimized() {
 							onClearQrContent={setClearQrContent}
 						/>
 					</Suspense>
+					<div aria-live="polite" aria-atomic="true">
+						{duplicateFeedback && (
+							<SubmissionNotice
+								message={
+									duplicateFeedback.errors.general?.[0] ??
+									"QR code ini telah pun wujud dalam sistem. Sila semak semula."
+								}
+								existingInstitution={duplicateFeedback.existingInstitution}
+							/>
+						)}
+					</div>
 				</FormSection>
 
 				<FormSection title="2. Maklumat institusi">
@@ -515,6 +583,7 @@ export default function InstitutionFormOptimized() {
 									onValueChange={field.onChange}
 								>
 									<SelectTrigger
+										ref={field.ref}
 										id="category"
 										className={cn("w-full h-12 text-base")}
 										aria-invalid={fieldState.invalid}
@@ -562,6 +631,7 @@ export default function InstitutionFormOptimized() {
 										onValueChange={field.onChange}
 									>
 										<SelectTrigger
+											ref={field.ref}
 											id="state"
 											className={cn("w-full h-12 text-base")}
 											aria-invalid={fieldState.invalid}
@@ -805,6 +875,7 @@ export default function InstitutionFormOptimized() {
 						hasFile={qrStatus.hasFile}
 						isAuthenticated={!!user?.id}
 						isInCooldown={!!cooldownEndsAt}
+						isDuplicateQr={!!duplicateFeedback}
 					/>
 				</div>
 			</fieldset>
@@ -814,14 +885,6 @@ export default function InstitutionFormOptimized() {
 					<CooldownTimer
 						cooldownEndsAt={cooldownEndsAt}
 						onCooldownEnd={() => setCooldownEndsAt(null)}
-					/>
-				) : duplicateFeedback ? (
-					<SubmissionNotice
-						message={
-							duplicateFeedback.errors.general?.[0] ??
-							"QR code ini telah pun wujud dalam sistem. Sila semak semula."
-						}
-						existingInstitution={duplicateFeedback.existingInstitution}
 					/>
 				) : errors.root?.general?.message ? (
 					<SubmissionNotice message={errors.root.general.message} />

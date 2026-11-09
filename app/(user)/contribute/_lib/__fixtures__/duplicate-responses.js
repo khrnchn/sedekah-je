@@ -20,6 +20,8 @@ mock.module("@/auth", () => ({
 	},
 }));
 mock.module("next/headers", () => ({ headers: async () => new Headers() }));
+const afterTasks = [];
+mock.module("next/server", () => ({ after: (task) => afterTasks.push(task) }));
 mock.module("next/cache", () => ({
 	revalidatePath: () => {},
 	revalidateTag: () => {},
@@ -65,6 +67,10 @@ const store = {
 			},
 		}),
 	}),
+	update: () => {
+		effects.push("update-institution");
+		return { set: () => ({ where: async () => {} }) };
+	},
 	insert: (table) => {
 		effects.push(table === institutions ? "insert-institution" : "insert-user");
 		return {
@@ -84,7 +90,9 @@ mock.module("@/lib/queries/users", () => ({
 mock.module("@/lib/integrations/telegram", () => ({
 	logInstitutionSubmissionFailure: effect("failure-notification"),
 }));
-const { submitInstitution } = await import("../submit-institution.ts");
+const { submitInstitution, checkQrDuplicate } = await import(
+	"../submit-institution.ts"
+);
 
 const row = (overrides = {}) => ({
 	id: 50,
@@ -173,6 +181,16 @@ await duplicate(
 	],
 	{ id: 7, status: "pending" },
 );
+matches = [row()];
+assert.deepEqual(await checkQrDuplicate(" qr-payload "), {
+	...baseError,
+	existingInstitution: approved(),
+});
+matches = [row({ status: "pending", contributorId: "foreign" })];
+assert.deepEqual(await checkQrDuplicate("qr-payload"), baseError);
+matches = [];
+assert.equal(await checkQrDuplicate("qr-payload"), null);
+assert.equal(await checkQrDuplicate("   "), null);
 limited = true;
 assert.equal((await request()).cooldownEndsAt, new Date(0).toISOString());
 assert.deepEqual(effects, []);
@@ -182,11 +200,14 @@ await duplicate([row()], approved()); // Preserve the website's client-decode fa
 decodedQr = "qr-payload";
 matches = [];
 assert.deepEqual(await request(), { status: "success" });
+assert.deepEqual(effects, ["upload", "insert-institution"]);
+for (const task of afterTasks.splice(0)) await task();
 assert.deepEqual(effects, [
 	"upload",
+	"insert-institution",
 	"geocode",
 	"reverse-google",
-	"insert-institution",
+	"update-institution",
 	"notify",
 ]);
 assert.equal(insertedValues.contributorId, "session-1");
