@@ -15,12 +15,17 @@ const raw: JaisMosque[] = JSON.parse(
 	readFileSync(resolve(__dirname, "../data/jais-petaling.json"), "utf-8"),
 );
 
-const mosques: NewQuestMosque[] = raw.map((m) => ({
-	name: m.nama,
-	address: m.alamat,
-	district: m.daerah,
-	jaisId: String(m.jaisId),
-}));
+// These JAIS ids duplicate other rows
+const skipJaisIds = new Set([433, 443, 444, 445]);
+
+const mosques: NewQuestMosque[] = raw
+	.filter((m) => !skipJaisIds.has(m.jaisId))
+	.map((m) => ({
+		name: m.nama,
+		address: m.alamat,
+		district: m.daerah,
+		jaisId: String(m.jaisId),
+	}));
 
 async function seed() {
 	console.log(`Seeding ${mosques.length} quest mosques...`);

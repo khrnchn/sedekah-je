@@ -25,11 +25,10 @@ export default function QuestError({
 
 				<div className="space-y-2">
 					<h2 className="text-xl font-semibold text-foreground">
-						Ralat berlaku
+						Something went wrong
 					</h2>
 					<p className="max-w-sm text-sm text-muted-foreground">
-						Kami mengalami masalah sementara. Sila cuba lagi atau kembali ke
-						halaman utama.
+						We hit a temporary problem. Try again or go back to the home page.
 					</p>
 				</div>
 
@@ -40,17 +39,17 @@ export default function QuestError({
 						className="gap-2 bg-green-600 hover:bg-green-700"
 					>
 						<RefreshCw className="h-4 w-4" />
-						Cuba lagi
+						Try again
 					</Button>
 					<Button asChild variant="outline" className="border-border">
-						<Link href="/">Ke Laman Utama</Link>
+						<Link href="/">Home</Link>
 					</Button>
 				</div>
 
 				{process.env.NODE_ENV === "development" && (
 					<details className="mt-4 w-full max-w-lg">
 						<summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground">
-							Butiran ralat (Development)
+							Error details (development)
 						</summary>
 						<pre className="mt-2 max-h-32 overflow-auto rounded-md bg-muted p-3 text-xs text-muted-foreground">
 							{error.message}

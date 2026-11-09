@@ -1,5 +1,6 @@
 "use client";
 
+import { Trophy } from "lucide-react";
 import { useState } from "react";
 import type { QuestLeaderboardEntry } from "@/app/quest/_lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -33,10 +34,12 @@ export default function QuestLeaderboard({
 				type="button"
 				variant="outline"
 				size="sm"
-				className="h-11 shrink-0 px-3"
+				aria-label="Leaderboard"
+				className="h-11 w-11 shrink-0 p-0 sm:w-auto sm:px-3"
 				onClick={() => setOpen(true)}
 			>
-				Leaderboard
+				<Trophy className="h-4 w-4 sm:hidden" aria-hidden="true" />
+				<span className="hidden sm:inline">Leaderboard</span>
 			</Button>
 			<Sheet open={open} onOpenChange={setOpen}>
 				<SheetContent className="flex w-full flex-col gap-0 p-0 sm:max-w-sm">
