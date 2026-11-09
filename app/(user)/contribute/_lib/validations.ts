@@ -68,8 +68,22 @@ export const extendedInstitutionFormClientSchema = z.object({
 	lon: longitudeString,
 });
 
-// Server-side schema should be based on the pure db schema
-export const institutionFormServerSchema = createInsertSchema(institutions);
+// Slug is generated after validation. drizzle-zod builds on zod/v4, so refine
+// through callbacks instead of mixing in schemas from the v3 `z` above.
+export const institutionFormServerSchema = createInsertSchema(institutions, {
+	name: (schema) => schema.min(1, "Nama institusi diperlukan"),
+	city: (schema) => schema.min(1, "Bandar diperlukan"),
+	category: (schema) =>
+		schema.refine(
+			(value) => (categories as readonly string[]).includes(value),
+			"Sila pilih kategori",
+		),
+	state: (schema) =>
+		schema.refine(
+			(value) => (states as readonly string[]).includes(value),
+			"Sila pilih negeri",
+		),
+}).omit({ slug: true });
 
 export type InstitutionFormData = z.infer<
 	typeof extendedInstitutionFormClientSchema

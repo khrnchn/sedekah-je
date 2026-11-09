@@ -3,6 +3,7 @@
 import { eq } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { headers } from "next/headers";
+import { after } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions } from "@/db/institutions";
@@ -40,6 +41,14 @@ export type SubmitInstitutionFormState =
 			existingInstitution?: ExistingInstitution;
 	  };
 
+type DuplicateQrState = Extract<
+	SubmitInstitutionFormState,
+	{ status: "error" }
+>;
+
+const DUPLICATE_QR_MESSAGE =
+	"QR code ini telah pun wujud dalam sistem. Sila semak semula.";
+
 // Helper function to generate a unique slug
 async function generateUniqueSlug(name: string): Promise<string> {
 	const baseSlug = slugify(name);
@@ -68,11 +77,6 @@ export async function submitInstitution(
 	_prevState: SubmitInstitutionFormState | undefined,
 	formData: FormData,
 ): Promise<SubmitInstitutionFormState> {
-	console.log(
-		"Server action called with formData:",
-		Array.from(formData.entries()),
-	);
-
 	// --- Authentication check (server-side, not client-submitted)
 	const hdrs = await headers();
 	const session = await auth.api.getSession({ headers: hdrs });
@@ -132,7 +136,7 @@ export async function submitInstitution(
 			status: "error",
 			errors: {
 				general: [
-					`Anda telah mencapai had ${SUBMISSIONS_PER_DAY} submission sehari. Sila cuba lagi esok. Terima kasih!`,
+					`Anda telah mencapai had ${SUBMISSIONS_PER_DAY} submission dalam tempoh 24 jam. Terima kasih!`,
 				],
 			},
 			cooldownEndsAt: rateLimit.cooldownEndsAt.toISOString(),
@@ -185,27 +189,18 @@ export async function submitInstitution(
 		}
 	}
 
-	// Generate unique slug before validation since it's required by the schema
-	const slug = await generateUniqueSlug(rawFromForm.name as string);
-
-	const dataToValidate = {
+	const parsed = institutionFormServerSchema.safeParse({
 		...rawFromForm,
-		slug,
 		socialMedia,
 		coords,
-	};
-
-	const parsed = institutionFormServerSchema.safeParse(dataToValidate);
+	});
 
 	if (!parsed.success) {
-		console.log("Validation failed:", parsed.error.flatten().fieldErrors);
 		return {
 			status: "error",
 			errors: parsed.error.flatten().fieldErrors,
 		};
 	}
-
-	console.log("Validation passed, proceeding with submission");
 
 	// --- Handle QR image upload + server-side QR extraction
 	let qrImageUrl: string | undefined;
@@ -272,11 +267,7 @@ export async function submitInstitution(
 				status: "error",
 				code: "duplicate_qr",
 				...duplicate,
-				errors: {
-					general: [
-						"QR code ini telah pun wujud dalam sistem. Sila semak semula.",
-					],
-				},
+				errors: { general: [DUPLICATE_QR_MESSAGE] },
 			};
 		}
 	}
@@ -319,55 +310,59 @@ export async function submitInstitution(
 		}
 	}
 
-	// Geocode if coords not provided
-	if (!coords) {
-		const geocoded = await geocodeInstitutionWithFallback(
-			parsed.data.name,
-			parsed.data.city,
-			parsed.data.state,
-		);
-		if (geocoded) coords = geocoded;
-		else console.error("Geocoding failed");
-	}
-
-	// Reverse geocode address from coords when address is not provided
-	let address = parsed.data.address;
-	if (!address && coords) {
-		const reverseAddress = await reverseGeocodeWithGoogle(coords[0], coords[1]);
-		if (reverseAddress) {
-			address = reverseAddress;
-		} else {
-			// Fallback to Nominatim when Google API key is missing or fails
-			const nominatimResult = await reverseGeocodeInstitution(
-				coords[0],
-				coords[1],
-			);
-			if (nominatimResult) address = nominatimResult.addressLine;
-		}
-	}
-
 	try {
+		const slug = await generateUniqueSlug(parsed.data.name);
 		const [{ id: newId }] = await db
 			.insert(institutions)
 			.values({
 				...parsed.data,
-				address,
-				// We can safely cast here because client-side validation ensures
-				// these are valid enum values. The server-side schema is intentionally
-				// loose as per project rules (no pgEnum).
+				slug,
+				// Safe: the server schema refines these to the allowed values.
 				category: parsed.data.category as (typeof categories)[number],
 				state: parsed.data.state as (typeof states)[number],
-				coords: coords, // Coords may be updated by geocoding
+				coords,
 				qrImage: qrImageUrl,
 				qrContent: qrContent || null,
-				contributorId: contributorId, // Include the contributor ID
-				status: "pending", // Always pending for new submissions
+				contributorId,
+				status: "pending",
 				supportedPayment: [isToyyibpay(qrContent) ? "toyyibpay" : "duitnow"],
 			})
 			.returning({ id: institutions.id });
 
-		// Log to Telegram
-		if (user) {
+		// Geocoding can take seconds and the contributor doesn't need it, so it
+		// runs after the response. The review card is sent last so it includes it.
+		const enrichAndNotify = async () => {
+			try {
+				let finalCoords = coords;
+				if (!finalCoords) {
+					const geocoded = await geocodeInstitutionWithFallback(
+						parsed.data.name,
+						parsed.data.city,
+						parsed.data.state,
+					);
+					if (geocoded) finalCoords = geocoded;
+					else console.error("Geocoding failed");
+				}
+
+				let address = parsed.data.address;
+				if (!address && finalCoords) {
+					address =
+						(await reverseGeocodeWithGoogle(finalCoords[0], finalCoords[1])) ??
+						// Nominatim fallback when the Google API key is missing or fails
+						(await reverseGeocodeInstitution(finalCoords[0], finalCoords[1]))
+							?.addressLine;
+				}
+
+				if (finalCoords !== coords || address !== parsed.data.address) {
+					await db
+						.update(institutions)
+						.set({ coords: finalCoords, address })
+						.where(eq(institutions.id, newId));
+				}
+			} catch (error) {
+				console.error("Failed to geocode new institution:", error);
+			}
+
 			try {
 				await notifyInstitutionSubmission(newId);
 			} catch (telegramError) {
@@ -376,6 +371,11 @@ export async function submitInstitution(
 					telegramError,
 				);
 			}
+		};
+		try {
+			after(enrichAndNotify);
+		} catch {
+			void enrichAndNotify();
 		}
 
 		// Revalidate paths to show the new submission.
@@ -418,6 +418,30 @@ export async function submitInstitution(
 			},
 		};
 	}
+}
+
+// Lets the form flag a known QR right after upload, before the user fills the
+// rest. Same disclosure rules as the submit path via findDuplicateQr.
+export async function checkQrDuplicate(
+	qrContent: string,
+): Promise<DuplicateQrState | null> {
+	const hdrs = await headers();
+	const session = await auth.api.getSession({ headers: hdrs });
+	const trimmed = qrContent.trim();
+	if (!session?.user?.id || !trimmed) return null;
+
+	const duplicate = await findDuplicateQr(trimmed, {
+		kind: "session",
+		id: session.user.id,
+	});
+	if (!duplicate) return null;
+
+	return {
+		status: "error",
+		code: "duplicate_qr",
+		...duplicate,
+		errors: { general: [DUPLICATE_QR_MESSAGE] },
+	};
 }
 
 export type ContributionCooldownResult =
