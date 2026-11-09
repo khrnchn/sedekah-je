@@ -284,6 +284,23 @@ export default function QuestMapLeaflet({
 					})}
 					interactive={false}
 				/>
+				{/* Transparent 44px tap targets kept below every dot (re-added layers
+				    append on top, hence bringToBack) so a direct hit on a dot wins. */}
+				{visible.map((mosque) =>
+					mosque.id === selectedId ? null : (
+						<CircleMarker
+							key={`hit-${mosque.id}`}
+							center={mosque.coords as [number, number]}
+							radius={22}
+							bubblingMouseEvents={false}
+							pathOptions={{ stroke: false, fill: true, fillOpacity: 0 }}
+							eventHandlers={{
+								add: (event) => event.target.bringToBack(),
+								click: () => onSelect(mosque.id),
+							}}
+						/>
+					),
+				)}
 				{visible.map((mosque) => {
 					if (mosque.id === selectedId) return null;
 					const style = DOT_STYLE[mosque.status];
