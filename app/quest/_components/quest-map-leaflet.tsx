@@ -1,51 +1,51 @@
 "use client";
 
-// IMPORTANT: the order matters!
 import "leaflet/dist/leaflet.css";
-import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
-import "leaflet-defaulticon-compatibility";
 
 import { createLeafletContext, LeafletProvider } from "@react-leaflet/core";
 import type { FeatureCollection, Geometry } from "geojson";
-import type { MapOptions } from "leaflet";
-import { divIcon, Map as LeafletMap, latLngBounds } from "leaflet";
+import { DomEvent, Map as LeafletMap, latLngBounds } from "leaflet";
 import { LocateFixed } from "lucide-react";
 import { useTheme } from "next-themes";
 import type { ReactNode } from "react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { GeoJSON, Marker, TileLayer, Tooltip, useMap } from "react-leaflet";
+import { useCallback, useEffect, useRef, useState } from "react";
+import {
+	CircleMarker,
+	GeoJSON,
+	TileLayer,
+	useMap,
+	useMapEvents,
+} from "react-leaflet";
 import type {
 	QuestMosqueView,
 	QuestStatusFilter,
 } from "@/app/quest/_lib/types";
 import petalingBoundary from "@/data/petaling-boundary.json";
+import type { QuestStatus } from "@/lib/features/quest/rules";
+import { cn } from "@/lib/utils";
 
-const PETALING_ZOOM = 13;
-
-const DARK_TILE_URL =
-	"https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
 const LIGHT_TILE_URL =
-	"https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
+	"https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}";
+const DARK_TILE_URL =
+	"https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}";
 const TILE_ATTRIBUTION =
-	'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/">CARTO</a>';
+	"Tiles &copy; Esri &mdash; Esri, HERE, Garmin, &copy; OpenStreetMap contributors";
+const TILE_MAX_ZOOM = 16;
+const SELECT_MIN_ZOOM = 14;
+// Keeps the boundary clear of the legend bar overlaid at the bottom.
+const FIT_PADDING_TOP_LEFT: [number, number] = [16, 16];
+const FIT_PADDING_BOTTOM_RIGHT: [number, number] = [16, 120];
 
-const MARKER_SIZE_DEFAULT: [number, number] = [42, 56];
 const PETALING_BOUNDARY = petalingBoundary as FeatureCollection;
 
-function collectBoundaryCoords(geo: FeatureCollection): [number, number][] {
+const PETALING_BOUNDS = (() => {
 	const coords: [number, number][] = [];
-
-	const walkGeometry = (geometry: Geometry | null) => {
-		if (!geometry) return;
-
-		if (geometry.type === "Polygon") {
+	const walk = (geometry: Geometry | null) => {
+		if (geometry?.type === "Polygon") {
 			for (const ring of geometry.coordinates) {
 				for (const [lon, lat] of ring) coords.push([lat, lon]);
 			}
-			return;
-		}
-
-		if (geometry.type === "MultiPolygon") {
+		} else if (geometry?.type === "MultiPolygon") {
 			for (const polygon of geometry.coordinates) {
 				for (const ring of polygon) {
 					for (const [lon, lat] of ring) coords.push([lat, lon]);
@@ -53,29 +53,34 @@ function collectBoundaryCoords(geo: FeatureCollection): [number, number][] {
 			}
 		}
 	};
-
-	for (const feature of geo.features) {
-		walkGeometry(feature.geometry);
-	}
-
-	return coords;
-}
-
-const PETALING_BOUNDARY_COORDS = collectBoundaryCoords(PETALING_BOUNDARY);
-const PETALING_CENTER = (() => {
-	if (PETALING_BOUNDARY_COORDS.length === 0)
-		return [3.1, 101.65] as [number, number];
-	let totalLat = 0;
-	let totalLon = 0;
-	for (const [lat, lon] of PETALING_BOUNDARY_COORDS) {
-		totalLat += lat;
-		totalLon += lon;
-	}
-	return [
-		totalLat / PETALING_BOUNDARY_COORDS.length,
-		totalLon / PETALING_BOUNDARY_COORDS.length,
-	] as [number, number];
+	for (const feature of PETALING_BOUNDARY.features) walk(feature.geometry);
+	return latLngBounds(coords);
 })();
+
+const fitPetaling = (map: LeafletMap) =>
+	map.fitBounds(PETALING_BOUNDS, {
+		paddingTopLeft: FIT_PADDING_TOP_LEFT,
+		paddingBottomRight: FIT_PADDING_BOTTOM_RIGHT,
+	});
+
+const LEGEND: { status: QuestStatus; label: string }[] = [
+	{ status: "has_qr", label: "Has QR" },
+	{ status: "missing", label: "Missing" },
+	{ status: "in_review", label: "In review" },
+];
+
+const DOT_STYLE: Record<
+	QuestStatus,
+	{ fill: string; stroke: string; legend: string }
+> = {
+	has_qr: { fill: "#059669", stroke: "#059669", legend: "bg-emerald-600" },
+	missing: {
+		fill: "#ffffff",
+		stroke: "#18181b",
+		legend: "border-2 border-zinc-900 bg-white",
+	},
+	in_review: { fill: "#d97706", stroke: "#d97706", legend: "bg-amber-600" },
+};
 
 type QuestMapLeafletProps = {
 	mosques: QuestMosqueView[];
@@ -86,73 +91,49 @@ type QuestMapLeafletProps = {
 	onShowUnmapped: () => void;
 };
 
-type SafeMapContainerProps = {
-	center: [number, number];
-	zoom: number;
-	className?: string;
-	scrollWheelZoom?: boolean;
-	zoomControl?: boolean;
-	children?: ReactNode;
-};
-
+// Builds the Leaflet map by hand instead of MapContainer so Strict Mode and
+// HMR reattaching the same node do not throw "Map container is already initialized".
 function SafeMapContainer({
-	center,
-	zoom,
 	className,
 	children,
-	scrollWheelZoom,
-	zoomControl,
-}: SafeMapContainerProps) {
+}: {
+	className?: string;
+	children?: ReactNode;
+}) {
 	const [context, setContext] = useState<ReturnType<
 		typeof createLeafletContext
 	> | null>(null);
-	const contextRef = useRef<ReturnType<typeof createLeafletContext> | null>(
-		null,
-	);
-	const initRef = useRef(false);
 	const mapRef = useRef<LeafletMap | null>(null);
 
-	const mapOptions = useMemo<MapOptions>(
-		() => ({
-			scrollWheelZoom,
-			zoomControl,
-		}),
-		[scrollWheelZoom, zoomControl],
-	);
+	const handleMapRef = useCallback((node: HTMLDivElement | null) => {
+		if (!node || mapRef.current) return;
 
-	const handleMapRef = useCallback(
-		(node: HTMLDivElement | null) => {
-			if (!node || contextRef.current || initRef.current) return;
-			initRef.current = true;
+		const leafletKey = Object.keys(node).find((key) =>
+			key.startsWith("_leaflet_id"),
+		);
+		if (leafletKey) Reflect.deleteProperty(node, leafletKey);
+		node.innerHTML = "";
 
-			// Clean leftover Leaflet state from Strict Mode/HMR reattach.
-			const leafletKey = Object.keys(node).find((key) =>
-				key.startsWith("_leaflet_id"),
-			);
-			if (leafletKey) {
-				Reflect.deleteProperty(node, leafletKey);
-			}
-			node.innerHTML = "";
-
-			const map = new LeafletMap(node, mapOptions);
-			map.setView(center, zoom);
-			mapRef.current = map;
-			const nextContext = createLeafletContext(map);
-			contextRef.current = nextContext;
-			setContext(nextContext);
-		},
-		[center, zoom, mapOptions],
-	);
+		const map = new LeafletMap(node, {
+			scrollWheelZoom: true,
+			zoomControl: true,
+			maxZoom: TILE_MAX_ZOOM,
+			// Integer snapping leaves the boundary at about half the screen width.
+			zoomSnap: 0.25,
+		});
+		// The legend bar owns the bottom edge, so attribution moves to the top.
+		map.attributionControl.setPosition("topleft");
+		map.zoomControl.setPosition("topright");
+		fitPetaling(map);
+		mapRef.current = map;
+		setContext(createLeafletContext(map));
+	}, []);
 
 	useEffect(() => {
 		return () => {
-			if (mapRef.current) {
-				mapRef.current.remove();
-				mapRef.current = null;
-			}
-			contextRef.current = null;
+			mapRef.current?.remove();
+			mapRef.current = null;
 			setContext(null);
-			initRef.current = false;
 		};
 	}, []);
 
@@ -165,96 +146,74 @@ function SafeMapContainer({
 	);
 }
 
-function FlyToSelected({
-	mosques,
-	selectedId,
-}: {
-	mosques: QuestMosqueView[];
-	selectedId: number | null;
-}) {
-	const map = useMap();
-
-	const selected = useMemo(
-		() => mosques.find((m) => m.id === selectedId),
-		[mosques, selectedId],
-	);
-
-	useEffect(() => {
-		if (!selected?.coords || !isValidCoords(selected.coords)) return;
-
-		const coords = selected.coords;
-		let cancelled = false;
-
-		// Delay slightly to let any layout changes (e.g. bottom sheet opening)
-		// settle before we read the map container size and fly.
-		const timer = setTimeout(() => {
-			if (cancelled) return;
-
-			map.invalidateSize({ pan: false });
-			map.flyTo(coords, 14, { duration: 0.8 });
-		}, 50);
-
-		return () => {
-			cancelled = true;
-			clearTimeout(timer);
-		};
-	}, [map, selected?.coords]);
-
-	return null;
-}
-
 function SyncMapSize() {
 	const map = useMap();
 
 	useEffect(() => {
 		const invalidate = () => map.invalidateSize({ pan: false });
-
-		// Ensure size is correct after initial mount/layout.
 		requestAnimationFrame(invalidate);
-
-		const container = map.getContainer();
 		const resizeObserver = new ResizeObserver(invalidate);
-		resizeObserver.observe(container);
-
-		window.addEventListener("resize", invalidate);
-		return () => {
-			resizeObserver.disconnect();
-			window.removeEventListener("resize", invalidate);
-		};
+		resizeObserver.observe(map.getContainer());
+		return () => resizeObserver.disconnect();
 	}, [map]);
 
+	return null;
+}
+
+function PanToSelected({ coords }: { coords: [number, number] | null }) {
+	const map = useMap();
+	const lat = coords?.[0];
+	const lng = coords?.[1];
+
+	useEffect(() => {
+		if (lat === undefined || lng === undefined) return;
+
+		// Wait for the card to mount and the map container to resize first.
+		const timer = setTimeout(() => {
+			map.invalidateSize({ pan: false });
+			const zoom = Math.max(map.getZoom(), SELECT_MIN_ZOOM);
+			const isDesktop = window.matchMedia("(min-width: 768px)").matches;
+			// Mobile card is a bottom sheet capped at 40dvh over the map; shift the
+			// center down by half of it so the dot lands in the visible upper part.
+			const offsetY = isDesktop ? 0 : (window.innerHeight * 0.4) / 2;
+			const target = map.unproject(
+				map.project([lat, lng], zoom).add([0, offsetY]),
+				zoom,
+			);
+			map.flyTo(target, zoom, { duration: 0.6 });
+		}, 50);
+
+		return () => clearTimeout(timer);
+	}, [map, lat, lng]);
+
+	return null;
+}
+
+function DeselectOnMapClick({ onSelect }: { onSelect: (id: null) => void }) {
+	useMapEvents({ click: () => onSelect(null) });
 	return null;
 }
 
 function RecenterControl() {
 	const map = useMap();
 
-	const handleRecenter = useCallback(() => {
-		if (PETALING_BOUNDARY_COORDS.length > 0) {
-			map.fitBounds(latLngBounds(PETALING_BOUNDARY_COORDS), {
-				padding: [24, 24],
-				maxZoom: 14,
-			});
-			return;
-		}
-		map.setView(PETALING_CENTER, PETALING_ZOOM);
-	}, [map]);
-
 	return (
-		<div className="leaflet-top leaflet-right">
-			<div className="leaflet-control quest-recenter-control">
+		<div
+			// React's stopPropagation runs after Leaflet already saw the click.
+			ref={(node) => {
+				if (node) DomEvent.disableClickPropagation(node);
+			}}
+			className="leaflet-top leaflet-right quest-recenter-wrap"
+		>
+			<div className="leaflet-control">
 				<button
 					type="button"
-					aria-label="Kembali ke sempadan Petaling"
-					title="Kembali ke Petaling"
-					className="quest-recenter-button"
-					onClick={(event) => {
-						event.preventDefault();
-						event.stopPropagation();
-						handleRecenter();
-					}}
+					aria-label="Show all of Petaling"
+					title="Show all of Petaling"
+					className="flex h-11 w-11 items-center justify-center rounded-md border border-border bg-background text-foreground shadow-sm hover:bg-muted"
+					onClick={() => fitPetaling(map)}
 				>
-					<LocateFixed className="h-4 w-4" />
+					<LocateFixed className="h-5 w-5" />
 				</button>
 			</div>
 		</div>
@@ -268,200 +227,214 @@ const isValidCoords = (
 	coords.length === 2 &&
 	coords.every((value) => typeof value === "number" && Number.isFinite(value));
 
-function createMosqueIcon(
-	size: [number, number],
-	options: { locked: boolean; selected: boolean },
-) {
-	const [width, height] = size;
-	const lockBadge = options.locked
-		? `<span style="position:absolute;right:2px;bottom:4px;display:flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:9999px;background:rgba(24,24,27,0.9);border:1px solid rgba(113,113,122,0.9);font-size:10px;line-height:1;">🔒</span>`
-		: "";
-	const glow = options.locked
-		? "filter:grayscale(1) brightness(0.75) contrast(0.9);opacity:0.9;"
-		: options.selected
-			? "filter:drop-shadow(0 0 10px rgba(16,185,129,0.95)) drop-shadow(0 0 22px rgba(16,185,129,0.65));"
-			: "filter:drop-shadow(0 0 6px rgba(16,185,129,0.45));";
-	const pulseClass = options.selected ? " quest-marker-pulse" : "";
-	const lockedFilter = options.locked ? "is-locked" : "";
-
-	return divIcon({
-		className: `quest-marker-icon${pulseClass} ${lockedFilter}`.trim(),
-		html: `<div style="position:relative;width:${width}px;height:${height}px;"><img src="/masjid.svg" alt="" style="display:block;width:${width}px;height:${height}px;${glow}" />${lockBadge}</div>`,
-		iconSize: size,
-		iconAnchor: [width / 2, height],
-		tooltipAnchor: [0, -height],
-	});
-}
-
 export default function QuestMapLeaflet({
 	mosques,
 	selectedId,
 	onSelect,
 	statusFilter,
+	onStatusFilterChange,
+	onShowUnmapped,
 }: QuestMapLeafletProps) {
 	const { resolvedTheme } = useTheme();
 	const isDark = resolvedTheme === "dark";
 
-	const unlockedDefaultIcon = useMemo(
-		() =>
-			createMosqueIcon(MARKER_SIZE_DEFAULT, { locked: false, selected: false }),
-		[],
+	const counts: Record<QuestStatus, number> = {
+		has_qr: 0,
+		missing: 0,
+		in_review: 0,
+	};
+	let unmapped = 0;
+	for (const mosque of mosques) {
+		counts[mosque.status] += 1;
+		if (!isValidCoords(mosque.coords)) unmapped += 1;
+	}
+
+	const activeStatus =
+		statusFilter === "all" || statusFilter === "unmapped" ? null : statusFilter;
+	const visible = mosques.filter(
+		(m) =>
+			isValidCoords(m.coords) &&
+			(activeStatus === null || m.status === activeStatus),
 	);
-	const unlockedSelectedIcon = useMemo(
-		() =>
-			createMosqueIcon(MARKER_SIZE_DEFAULT, { locked: false, selected: true }),
-		[],
-	);
-	const lockedDefaultIcon = useMemo(
-		() =>
-			createMosqueIcon(MARKER_SIZE_DEFAULT, { locked: true, selected: false }),
-		[],
-	);
-	const lockedSelectedIcon = useMemo(
-		() =>
-			createMosqueIcon(MARKER_SIZE_DEFAULT, { locked: true, selected: true }),
-		[],
-	);
+	const selected = visible.find((m) => m.id === selectedId) ?? null;
+	const selectedCoords =
+		mosques.find((m) => m.id === selectedId)?.coords ?? null;
 
 	const tileUrl = isDark ? DARK_TILE_URL : LIGHT_TILE_URL;
-	const boundaryColor = isDark ? "#22c55e" : "#16a34a";
-	const boundaryFillOpacity = isDark ? 0.08 : 0.06;
+	const lineColor = isDark ? "#fafafa" : "#18181b";
 
 	return (
-		<div
-			className="quest-map-container h-full w-full"
-			data-theme={resolvedTheme}
-		>
-			<SafeMapContainer
-				center={PETALING_CENTER}
-				zoom={PETALING_ZOOM}
-				scrollWheelZoom
-				className="h-full w-full z-0"
-				zoomControl
-			>
-				<TileLayer key={tileUrl} attribution={TILE_ATTRIBUTION} url={tileUrl} />
+		<div className="quest-map-container relative h-full w-full">
+			<SafeMapContainer className="z-0 h-full w-full">
+				<TileLayer
+					key={tileUrl}
+					attribution={TILE_ATTRIBUTION}
+					url={tileUrl}
+					maxZoom={TILE_MAX_ZOOM}
+				/>
 				<GeoJSON
+					key={lineColor}
 					data={PETALING_BOUNDARY}
 					style={() => ({
-						color: boundaryColor,
-						weight: 2,
-						opacity: 0.85,
-						fillColor: boundaryColor,
-						fillOpacity: boundaryFillOpacity,
-						dashArray: "8 6",
+						color: lineColor,
+						weight: 1,
+						opacity: 0.5,
+						fillColor: lineColor,
+						fillOpacity: 0.025,
 					})}
 					interactive={false}
 				/>
-				{mosques.map((mosque) => {
-					if (!isValidCoords(mosque.coords)) return null;
-					if (
-						statusFilter !== "all" &&
-						statusFilter !== "unmapped" &&
-						statusFilter !== mosque.status
-					)
-						return null;
-					const useSelectedVariant = mosque.id === selectedId;
-					const markerIcon =
-						mosque.status === "has_qr"
-							? useSelectedVariant
-								? unlockedSelectedIcon
-								: unlockedDefaultIcon
-							: useSelectedVariant
-								? lockedSelectedIcon
-								: lockedDefaultIcon;
+				{visible.map((mosque) => {
+					if (mosque.id === selectedId) return null;
+					const style = DOT_STYLE[mosque.status];
 					return (
-						<Marker
+						<CircleMarker
 							key={mosque.id}
-							position={mosque.coords}
-							icon={markerIcon}
-							eventHandlers={{
-								click: () => onSelect(mosque.id),
+							center={mosque.coords as [number, number]}
+							radius={5}
+							bubblingMouseEvents={false}
+							pathOptions={{
+								color: style.stroke,
+								weight: mosque.status === "missing" ? 2 : 0,
+								fillColor: style.fill,
+								fillOpacity: 1,
 							}}
-						>
-							<Tooltip
-								direction="top"
-								offset={[0, -8]}
-								className="quest-tooltip"
-							>
-								{mosque.name}
-							</Tooltip>
-						</Marker>
+							eventHandlers={{ click: () => onSelect(mosque.id) }}
+						/>
 					);
 				})}
+				{selected && (
+					<>
+						<CircleMarker
+							key={`halo-${selected.id}`}
+							center={selected.coords as [number, number]}
+							radius={18}
+							interactive={false}
+							pathOptions={{
+								color: lineColor,
+								weight: 1,
+								opacity: 0.3,
+								fillColor: DOT_STYLE[selected.status].fill,
+								fillOpacity: 0.12,
+							}}
+						/>
+						<CircleMarker
+							key={`selected-${selected.id}`}
+							center={selected.coords as [number, number]}
+							radius={8}
+							bubblingMouseEvents={false}
+							pathOptions={{
+								color:
+									selected.status === "missing"
+										? DOT_STYLE.missing.stroke
+										: "#ffffff",
+								weight: 3,
+								fillColor: DOT_STYLE[selected.status].fill,
+								fillOpacity: 1,
+							}}
+						/>
+					</>
+				)}
 				<SyncMapSize />
-				<FlyToSelected mosques={mosques} selectedId={selectedId} />
+				<PanToSelected coords={selectedCoords} />
+				<DeselectOnMapClick onSelect={onSelect} />
 				<RecenterControl />
-				<style>
-					{`
-					.quest-tooltip {
-						background: oklch(var(--popover)) !important;
-						color: oklch(var(--popover-foreground)) !important;
-						border: 1px solid oklch(var(--border)) !important;
-						border-radius: 6px !important;
-						font-size: 12px !important;
-						padding: 4px 8px !important;
-					}
-					.quest-tooltip::before {
-						border-top-color: oklch(var(--border)) !important;
-					}
-					.quest-marker-icon {
-						background: transparent !important;
-						border: 0 !important;
-					}
-					.quest-marker-pulse {
-						animation: quest-pin-pulse 1.5s ease-out infinite;
-						transform-origin: center bottom;
-					}
-					@keyframes quest-pin-pulse {
-						0% { transform: scale(1); }
-						50% { transform: scale(1.06); }
-						100% { transform: scale(1); }
-					}
-					.quest-map-container .leaflet-layer,
-					.quest-map-container .leaflet-control-zoom-in,
-					.quest-map-container .leaflet-control-zoom-out,
-					.quest-map-container .leaflet-control-attribution {
-						filter: none !important;
-					}
-					.leaflet-control-zoom a {
-						background: oklch(var(--accent)) !important;
-						color: oklch(var(--foreground)) !important;
-						border-color: oklch(var(--border)) !important;
-					}
-					.leaflet-control-zoom a:hover {
-						background: oklch(var(--muted)) !important;
-					}
-					.quest-recenter-control {
-						margin-top: 8px;
-						border: 1px solid oklch(var(--border)) !important;
-						border-radius: 4px !important;
-						overflow: hidden;
-						box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
-					}
-					.quest-recenter-button {
-						display: flex;
-						align-items: center;
-						justify-content: center;
-						width: 30px;
-						height: 30px;
-						background: oklch(var(--accent));
-						color: oklch(var(--foreground));
-						border: 0;
-						cursor: pointer;
-					}
-					.quest-recenter-button:hover {
-						background: oklch(var(--muted));
-					}
-					.leaflet-control-attribution {
-						background: oklch(var(--background) / 0.8) !important;
-						color: oklch(var(--muted-foreground)) !important;
-					}
-					.leaflet-control-attribution a {
-						color: oklch(var(--muted-foreground)) !important;
-					}
-				`}
-				</style>
 			</SafeMapContainer>
+
+			<div
+				className={cn(
+					"absolute inset-x-0 bottom-0 z-[1000] rounded-t-2xl border-t border-border bg-background px-4 pb-4 pt-3 shadow-[0_-4px_16px_rgba(0,0,0,0.06)]",
+					selectedId !== null && "hidden md:block",
+				)}
+			>
+				<div className="flex gap-2">
+					{LEGEND.map(({ status, label }) => (
+						<button
+							key={status}
+							type="button"
+							aria-pressed={activeStatus === status}
+							onClick={() =>
+								onStatusFilterChange(activeStatus === status ? "all" : status)
+							}
+							className={cn(
+								"flex h-11 min-w-0 flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border px-2 text-sm",
+								activeStatus === status
+									? "border-foreground bg-muted font-medium text-foreground"
+									: "border-transparent text-muted-foreground",
+							)}
+						>
+							<span
+								aria-hidden
+								className={cn(
+									"inline-block h-2.5 w-2.5 shrink-0 rounded-full",
+									DOT_STYLE[status].legend,
+								)}
+							/>
+							{label} <span className="tabular-nums">{counts[status]}</span>
+						</button>
+					))}
+				</div>
+				{unmapped > 0 && (
+					<div className="mt-1 flex items-center justify-between gap-3 text-sm">
+						<span className="text-muted-foreground">
+							{unmapped === 1
+								? "1 mosque has no map location"
+								: `${unmapped} mosques have no map location`}
+						</span>
+						<button
+							type="button"
+							onClick={onShowUnmapped}
+							className="-mr-2 h-11 shrink-0 rounded-md px-2 font-semibold text-foreground hover:bg-muted"
+						>
+							View list
+						</button>
+					</div>
+				)}
+			</div>
+
+			<style>
+				{`
+				.quest-map-container .leaflet-container {
+					background: oklch(var(--muted));
+					font-family: inherit;
+				}
+				.quest-map-container .leaflet-control-zoom a {
+					width: 44px;
+					height: 44px;
+					line-height: 44px;
+					background: oklch(var(--background));
+					color: oklch(var(--foreground));
+					border-color: oklch(var(--border));
+				}
+				.quest-map-container .leaflet-control-zoom a:hover {
+					background: oklch(var(--muted));
+				}
+				.quest-map-container .leaflet-control-zoom {
+					border-color: oklch(var(--border));
+				}
+				@media (max-width: 767px) {
+					.quest-map-container .leaflet-control-zoom {
+						display: none;
+					}
+				}
+				.quest-map-container .quest-recenter-wrap {
+					top: 36px;
+				}
+				@media (min-width: 768px) {
+					.quest-map-container .quest-recenter-wrap {
+						top: 100px;
+					}
+				}
+				.quest-map-container .leaflet-control-attribution {
+					background: oklch(var(--background) / 0.75);
+					color: oklch(var(--muted-foreground));
+					font-size: 10px;
+				}
+				.quest-map-container .leaflet-control-attribution a {
+					color: oklch(var(--muted-foreground));
+				}
+			`}
+			</style>
 		</div>
 	);
 }
