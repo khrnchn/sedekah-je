@@ -366,7 +366,7 @@ export function buildReviewCard(
 			: []),
 		...(candidate.quest
 			? [
-					`Quest: ${candidate.quest.mosqueName.slice(0, 60)}, ${candidate.quest.attempts} attempts`,
+					`Quest: ${candidate.quest.mosqueName.slice(0, 60)}, ${candidate.quest.attempts} ${candidate.quest.attempts === 1 ? "attempt" : "attempts"}`,
 				]
 			: []),
 		"",

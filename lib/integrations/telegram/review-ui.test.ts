@@ -90,7 +90,14 @@ describe("Telegram institution review UI", () => {
 			adminBaseUrl: null,
 		});
 
+		const single = buildReviewCard(
+			{ ...candidate, quest: { mosqueName: "Masjid Al-Irsyad", attempts: 1 } },
+			"community",
+			{ adminBaseUrl: null },
+		);
+
 		assert.ok(quest.caption.includes("Quest: Masjid Al-Irsyad, 2 attempts"));
+		assert.ok(single.caption.includes("Quest: Masjid Al-Irsyad, 1 attempt\n"));
 		assert.ok(!plain.caption.includes("Quest:"));
 	});
 
