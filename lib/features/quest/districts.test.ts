@@ -59,3 +59,9 @@ test("districtAt returns null outside Selangor", () => {
 	// Open sea west of Klang
 	assert.equal(districtAt(3.0, 100.9), null);
 });
+
+test("districtAt treats Putrajaya as a hole in Sepang", () => {
+	assert.equal(districtAt(2.9365, 101.6915), null);
+	// Cyberjaya
+	assert.equal(districtAt(2.9213, 101.6559), "sepang");
+});

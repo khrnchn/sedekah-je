@@ -9,7 +9,7 @@ import {
 } from "@/lib/features/quest/districts";
 import QuestOverview from "./_components/quest-overview";
 import { getQuestDistrictStats, getQuestLeaderboard } from "./_lib/queries";
-import { questPath, VIEWS } from "./_lib/url-state";
+import { VIEWS } from "./_lib/url-state";
 
 const DESCRIPTION =
 	"Find the missing donation QR codes for mosques across Selangor.";
@@ -49,8 +49,16 @@ export default async function QuestPage({
 			.limit(1);
 		const district = row ? districtByName(row.district) : null;
 		if (district) {
+			const query = new URLSearchParams();
+			for (const [key, value] of Object.entries(params)) {
+				if (typeof value === "string" && key !== "m" && key !== "view") {
+					query.set(key, value);
+				}
+			}
 			const view = VIEWS.find((v) => v === params.view) ?? "map";
-			redirect(questPath(district.slug, view, Number(m)));
+			if (view !== "map") query.set("view", view);
+			query.set("m", m);
+			redirect(`/quest/${district.slug}?${query.toString()}`);
 		}
 	}
 

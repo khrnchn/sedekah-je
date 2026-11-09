@@ -8,6 +8,7 @@ import {
 	Moon,
 	Sun,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import type { QuestLeaderboardEntry, QuestStats } from "@/app/quest/_lib/types";
@@ -49,6 +50,9 @@ export default function QuestHeader({
 					className="quest-back"
 				>
 					<ChevronLeft size={20} aria-hidden />
+				</Link>
+				<Link href="/" aria-label="Sedekah Je home" className="quest-brand">
+					<Image src="/masjid.svg" width={36} height={36} alt="" />
 				</Link>
 				<div className="quest-title">
 					<h1>{districtName}</h1>

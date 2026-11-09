@@ -12,7 +12,6 @@ import { useEffect, useState } from "react";
 import type { QuestLeaderboardEntry } from "@/app/quest/_lib/types";
 import { LAST_DISTRICT_KEY } from "@/app/quest/_lib/url-state";
 import { Skeleton } from "@/components/ui/skeleton";
-import { districtAt, districtBySlug } from "@/lib/features/quest/districts";
 import QuestLeaderboard from "./quest-leaderboard";
 
 const QuestOverviewMap = dynamic(() => import("./quest-overview-map"), {
@@ -49,9 +48,9 @@ export default function QuestOverview({
 	useEffect(() => {
 		try {
 			const slug = localStorage.getItem(LAST_DISTRICT_KEY);
-			setLastDistrict(slug ? districtBySlug(slug) : null);
+			setLastDistrict(districts.find((d) => d.slug === slug) ?? null);
 		} catch {}
-	}, []);
+	}, [districts]);
 
 	const total = districts.reduce((sum, d) => sum + d.total, 0);
 	const hasQr = districts.reduce((sum, d) => sum + d.hasQr, 0);
@@ -68,7 +67,8 @@ export default function QuestOverview({
 		setLocating(true);
 		setLocateMessage(null);
 		navigator.geolocation.getCurrentPosition(
-			(position) => {
+			async (position) => {
+				const { districtAt } = await import("@/lib/features/quest/districts");
 				const slug = districtAt(
 					position.coords.latitude,
 					position.coords.longitude,
