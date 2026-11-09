@@ -1,6 +1,8 @@
-import { isNull, sql } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
+import type { FeatureCollection, Position } from "geojson";
 import { db } from "@/db";
 import { questMosques } from "@/db/schema";
+import districts from "../data/selangor-districts.json";
 
 type NominatimResult = {
 	lat: string;
@@ -29,6 +31,7 @@ function getArgValue(flag: string): string | null {
 const limitArg = getArgValue("--limit");
 const pauseArg = getArgValue("--pause-ms");
 const dryRun = process.argv.includes("--dry-run");
+const districtArg = getArgValue("--district");
 const limit = limitArg ? Number.parseInt(limitArg, 10) : 0;
 const pauseMs = pauseArg ? Number.parseInt(pauseArg, 10) : DEFAULT_PAUSE_MS;
 const email = process.env.NOMINATIM_EMAIL;
@@ -67,15 +70,38 @@ async function geocode(query: string): Promise<NominatimResult | null> {
 	return data[0] ?? null;
 }
 
-function isLikelySelangor(result: NominatimResult | null): boolean {
-	if (!result?.address) return true;
-	const { country_code, state, county, city, town, suburb } = result.address;
-	if (country_code && country_code.toLowerCase() !== "my") return false;
-	const haystack = [state, county, city, town, suburb]
-		.filter(Boolean)
-		.join(" ")
-		.toLowerCase();
-	return haystack.includes("selangor") || haystack.includes("petaling");
+// Ray casting over every ring; holes toggle inside/outside so they are honoured.
+function inRings(rings: Position[][], lat: number, lon: number) {
+	let inside = false;
+	for (const ring of rings) {
+		for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+			const [xi, yi] = ring[i];
+			const [xj, yj] = ring[j];
+			if (
+				yi > lat !== yj > lat &&
+				lon < ((xj - xi) * (lat - yi)) / (yj - yi) + xi
+			)
+				inside = !inside;
+		}
+	}
+	return inside;
+}
+
+// Name-only fallbacks happily match a same-named mosque in another town, so a
+// result only counts when it lands inside the mosque's own district.
+function insideDistrict(result: NominatimResult, district: string) {
+	const feature = (districts as FeatureCollection).features.find(
+		(f) => f.properties?.name === district,
+	);
+	if (!feature) return false;
+	const lat = Number.parseFloat(result.lat);
+	const lon = Number.parseFloat(result.lon);
+	const geometry = feature.geometry;
+	if (geometry.type === "Polygon")
+		return inRings(geometry.coordinates, lat, lon);
+	if (geometry.type === "MultiPolygon")
+		return geometry.coordinates.some((polygon) => inRings(polygon, lat, lon));
+	return false;
 }
 
 function buildQuery(mosque: {
@@ -85,17 +111,6 @@ function buildQuery(mosque: {
 }) {
 	const normalizedName = normalizeName(mosque.name);
 	const baseParts = [normalizedName, mosque.address].filter(Boolean);
-	const district = mosque.district || "Petaling";
-	const cityFallbacks = [
-		"Petaling Jaya",
-		"Shah Alam",
-		"Subang Jaya",
-		"Puchong",
-		"Kota Damansara",
-		"Sungai Buloh",
-		"Seri Kembangan",
-	];
-
 	const nameVariants = [
 		normalizedName,
 		normalizedName.replace(/^masjid\s+/i, "").trim(),
@@ -103,13 +118,15 @@ function buildQuery(mosque: {
 	];
 
 	const variants = [
-		[...baseParts, district, "Selangor", "Malaysia"],
-		...nameVariants.map((name) => [name, district, "Selangor", "Malaysia"]),
-		...nameVariants.map((name) => [name, "Petaling", "Selangor", "Malaysia"]),
+		[...baseParts, mosque.district, "Selangor", "Malaysia"],
+		[mosque.address, mosque.district, "Selangor", "Malaysia"],
+		...nameVariants.map((name) => [
+			name,
+			mosque.district,
+			"Selangor",
+			"Malaysia",
+		]),
 		...nameVariants.map((name) => [name, "Selangor", "Malaysia"]),
-		...cityFallbacks.flatMap((city) =>
-			nameVariants.map((name) => [name, city, "Selangor", "Malaysia"]),
-		),
 	];
 	return variants.map((parts) => parts.filter(Boolean).join(", "));
 }
@@ -135,7 +152,12 @@ async function main() {
 			district: questMosques.district,
 		})
 		.from(questMosques)
-		.where(isNull(questMosques.coords))
+		.where(
+			and(
+				isNull(questMosques.coords),
+				districtArg ? eq(questMosques.district, districtArg) : undefined,
+			),
+		)
 		.orderBy(questMosques.id)
 		.limit(limit > 0 ? limit : undefined);
 
@@ -156,7 +178,7 @@ async function main() {
 
 		for (const query of queries) {
 			const result = await geocode(query);
-			if (result && isLikelySelangor(result)) {
+			if (result && insideDistrict(result, row.district)) {
 				found = result;
 				break;
 			}
