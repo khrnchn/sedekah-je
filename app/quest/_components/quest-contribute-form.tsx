@@ -2,7 +2,7 @@
 
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useActionState, useState } from "react";
+import { useActionState, useState, useTransition } from "react";
 import { CooldownTimer } from "@/app/(user)/contribute/_components/cooldown-timer";
 import {
 	type QuestSubmitState,
@@ -49,6 +49,7 @@ function ContributeFormContent({
 		QuestSubmitState,
 		FormData
 	>(submitQuestAttempt, { status: "idle" });
+	const [, startTransition] = useTransition();
 	const [fileError, setFileError] = useState<string | null>(null);
 	const [hasFile, setHasFile] = useState(false);
 
@@ -90,7 +91,14 @@ function ContributeFormContent({
 	}
 
 	return (
-		<form action={formAction} className="space-y-4">
+		<form
+			onSubmit={(e) => {
+				e.preventDefault();
+				const data = new FormData(e.currentTarget);
+				startTransition(() => formAction(data));
+			}}
+			className="space-y-4"
+		>
 			<input type="hidden" name="questMosqueId" value={mosque.id} />
 			<input type="hidden" name="qrContent" value={qrContent ?? ""} />
 
@@ -134,7 +142,7 @@ function ContributeFormContent({
 				<Input
 					id="quest-source-url"
 					name="sourceUrl"
-					type="url"
+					type="text"
 					inputMode="url"
 					placeholder="https://facebook.com/post/..."
 					className="h-11"
