@@ -12,11 +12,11 @@ type JaisMosque = {
 };
 
 const raw: JaisMosque[] = JSON.parse(
-	readFileSync(resolve(__dirname, "../data/jais-petaling.json"), "utf-8"),
+	readFileSync(resolve(__dirname, "../data/jais-selangor.json"), "utf-8"),
 );
 
 // These JAIS ids duplicate other rows
-const skipJaisIds = new Set([433, 443, 444, 445]);
+const skipJaisIds = new Set([423, 430, 433, 443, 444, 445]);
 
 const mosques: NewQuestMosque[] = raw
 	.filter((m) => !skipJaisIds.has(m.jaisId))

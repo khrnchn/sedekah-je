@@ -13,7 +13,9 @@ interface Mosque {
 	daerah: string;
 }
 
-async function getPetalingMosqueIds(): Promise<{ id: number; nama: string }[]> {
+async function getSelangorMosques(): Promise<
+	{ id: number; nama: string; daerah: string }[]
+> {
 	console.log("Fetching mosque list...");
 	const res = await fetch(LIST_URL);
 	if (!res.ok) {
@@ -24,14 +26,14 @@ async function getPetalingMosqueIds(): Promise<{ id: number; nama: string }[]> {
 	const html = await res.text();
 	const $ = cheerio.load(html);
 
-	const mosques: { id: number; nama: string }[] = [];
+	const mosques: { id: number; nama: string; daerah: string }[] = [];
 
 	$("table tbody tr").each((_, row) => {
 		const cells = $(row).find("td");
 		if (cells.length < 4) return;
 
 		const daerah = $(cells[2]).text().trim();
-		if (daerah !== "Petaling") return;
+		if (!daerah) return;
 
 		const nama = $(cells[1]).text().trim();
 		const profileLink = $(row).find('a[href*="/profail/masjid/"]').attr("href");
@@ -46,10 +48,10 @@ async function getPetalingMosqueIds(): Promise<{ id: number; nama: string }[]> {
 		const lower = nama.toLowerCase();
 		if (lower === "test" || lower === "ict masjid") return;
 
-		mosques.push({ id, nama });
+		mosques.push({ id, nama, daerah });
 	});
 
-	console.log(`Found ${mosques.length} Petaling mosques`);
+	console.log(`Found ${mosques.length} Selangor mosques`);
 	return mosques;
 }
 
@@ -101,7 +103,7 @@ async function getAddress(id: number): Promise<string> {
 }
 
 async function main() {
-	const list = await getPetalingMosqueIds();
+	const list = await getSelangorMosques();
 	const results: Mosque[] = [];
 	const BATCH_SIZE = 5;
 
@@ -116,7 +118,7 @@ async function main() {
 					jaisId: item.id,
 					nama: item.nama,
 					alamat,
-					daerah: "Petaling" as const,
+					daerah: item.daerah,
 				};
 			}),
 		);
@@ -127,10 +129,10 @@ async function main() {
 		}
 	}
 
-	const outputPath = `${import.meta.dir}/../data/jais-petaling.json`;
+	const outputPath = `${import.meta.dir}/../data/jais-selangor.json`;
 	await Bun.write(outputPath, JSON.stringify(results, null, 2));
 	console.log(
-		`\nDone! Wrote ${results.length} mosques to data/jais-petaling.json`,
+		`\nDone! Wrote ${results.length} mosques to data/jais-selangor.json`,
 	);
 }
 
