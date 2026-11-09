@@ -9,6 +9,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { timestamps } from "./helpers";
 import { institutions } from "./institutions";
+import { questAttempts } from "./quest_attempts";
 
 export const questMosques = pgTable("quest_mosques", {
 	id: serial("id").primaryKey(),
@@ -21,12 +22,16 @@ export const questMosques = pgTable("quest_mosques", {
 	...timestamps,
 });
 
-export const questMosquesRelations = relations(questMosques, ({ one }) => ({
-	institution: one(institutions, {
-		fields: [questMosques.institutionId],
-		references: [institutions.id],
+export const questMosquesRelations = relations(
+	questMosques,
+	({ one, many }) => ({
+		institution: one(institutions, {
+			fields: [questMosques.institutionId],
+			references: [institutions.id],
+		}),
+		attempts: many(questAttempts),
 	}),
-}));
+);
 
 export type QuestMosque = typeof questMosques.$inferSelect;
 export type NewQuestMosque = typeof questMosques.$inferInsert;
