@@ -511,7 +511,8 @@ export default function QuestMapLeaflet({
 	const selectedCoords =
 		mosques.find((m) => m.id === selectedId)?.coords ?? null;
 
-	const lineColor = isDark ? "#fafafa" : "#18181b";
+	// Atlas-style district edge: burnt ink by day, warm amber at night.
+	const lineColor = isDark ? "#e8a65c" : "#8a4b1c";
 
 	return (
 		<div className="quest-map-container relative h-full w-full">
@@ -528,10 +529,11 @@ export default function QuestMapLeaflet({
 						data={boundary}
 						style={() => ({
 							color: lineColor,
-							weight: 1,
-							opacity: 0.5,
+							weight: 1.5,
+							opacity: 0.75,
+							dashArray: "6 4",
 							fillColor: lineColor,
-							fillOpacity: 0.025,
+							fillOpacity: 0.04,
 						})}
 						interactive={false}
 					/>
@@ -608,10 +610,13 @@ export default function QuestMapLeaflet({
 								{status !== "all" && (
 									<span
 										aria-hidden
-										className={cn(
-											"inline-block size-2 shrink-0 rounded-full",
-											status === "has_qr" ? "bg-emerald-600" : "bg-amber-600",
-										)}
+										className="inline-block size-2 shrink-0 rounded-full"
+										style={{
+											background:
+												status === "has_qr"
+													? "var(--quest-ink-qr)"
+													: "var(--quest-ink-review)",
+										}}
 									/>
 								)}
 								{label} <span className="tabular-nums">{count}</span>

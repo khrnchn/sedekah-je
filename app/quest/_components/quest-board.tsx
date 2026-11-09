@@ -16,10 +16,10 @@ const STATUS_CHIPS: { value: QuestStatusFilter; label: string }[] = [
 	{ value: "has_qr", label: "Has QR" },
 ];
 
-const STATUS_DOT = {
-	has_qr: "bg-emerald-600",
-	in_review: "bg-amber-600",
-	missing: "border-2 border-zinc-900 bg-white",
+const STATUS_LABEL = {
+	has_qr: "Has QR",
+	in_review: "In review",
+	missing: "Missing QR",
 } as const;
 
 type QuestBoardProps = {
@@ -188,11 +188,12 @@ export default function QuestBoard({
 									</span>
 									<span
 										aria-hidden
-										className={cn(
-											"size-2.5 shrink-0 rounded-full",
-											STATUS_DOT[m.status],
-										)}
-									/>
+										className="quest-row-seal"
+										data-status={m.status}
+									>
+										<span />
+									</span>
+									<span className="sr-only">{STATUS_LABEL[m.status]}, </span>
 									<span className="min-w-0 flex-1">
 										<span className="quest-row-name block truncate text-foreground">
 											{m.name}
@@ -204,7 +205,7 @@ export default function QuestBoard({
 										</span>
 									</span>
 									{m.pendingAttempts > 0 && m.status === "in_review" ? (
-										<span className="shrink-0 text-xs font-medium text-amber-700 dark:text-amber-400">
+										<span className="quest-row-review">
 											{m.pendingAttempts} in review
 										</span>
 									) : (

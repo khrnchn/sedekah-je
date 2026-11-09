@@ -75,7 +75,7 @@ export default function QuestLeaderboard({
 												entry.userId === user?.id && "font-medium",
 											)}
 										>
-											<span className="w-6 text-right text-sm tabular-nums text-muted-foreground">
+											<span className="quest-rank" data-rank={entry.rank}>
 												{entry.rank}
 											</span>
 											<Avatar className="h-7 w-7">
@@ -92,8 +92,9 @@ export default function QuestLeaderboard({
 											<span className="min-w-0 flex-1 truncate text-sm text-foreground">
 												{entry.name ?? "Anonymous"}
 											</span>
-											<span className="text-sm tabular-nums text-muted-foreground">
+											<span className="quest-rank-count">
 												{entry.count}
+												<span aria-hidden className="quest-rank-seal" />
 											</span>
 										</li>
 									))}
