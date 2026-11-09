@@ -7,6 +7,7 @@ let limited = false;
 let decodedQr = "qr-payload";
 let effects = [];
 let insertedValues;
+const updatedValues = [];
 const effect = (name, result) => async () => {
 	effects.push(name);
 	return result;
@@ -67,10 +68,14 @@ const store = {
 			},
 		}),
 	}),
-	update: () => {
-		effects.push("update-institution");
-		return { set: () => ({ where: async () => {} }) };
-	},
+	update: () => ({
+		set: (values) => ({
+			where: async () => {
+				effects.push("update-institution");
+				updatedValues.push(values);
+			},
+		}),
+	}),
 	insert: (table) => {
 		effects.push(table === institutions ? "insert-institution" : "insert-user");
 		return {
@@ -208,7 +213,9 @@ assert.deepEqual(effects, [
 	"geocode",
 	"reverse-google",
 	"update-institution",
+	"update-institution",
 	"notify",
 ]);
+assert.deepEqual(updatedValues, [{ coords: [3, 101] }, { address: "Address" }]);
 assert.equal(insertedValues.contributorId, "session-1");
 assert.equal(insertedValues.status, "pending");
