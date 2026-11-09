@@ -12,6 +12,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { formatDateTime } from "@/lib/date-utils";
+import { normalizeInstitutionCategory } from "@/lib/institution-categories";
 import { reviewQuestAttempt } from "./_lib/actions";
 import { getPendingExistingQuestAttempts } from "./_lib/queries";
 
@@ -57,7 +58,7 @@ export default async function QuestAttemptsPage() {
 											</TableCell>
 											<TableCell>
 												<Link
-													href={`/${attempt.listingCategory}/${attempt.listingSlug}`}
+													href={`/${normalizeInstitutionCategory(attempt.listingCategory)}/${attempt.listingSlug}`}
 													target="_blank"
 													className="font-medium underline underline-offset-4"
 												>
@@ -66,6 +67,11 @@ export default async function QuestAttemptsPage() {
 												<div className="text-xs text-muted-foreground">
 													{attempt.listingAddress ?? attempt.listingCity}
 												</div>
+												{attempt.linkedMosqueName && (
+													<p className="mt-2 text-xs font-medium text-destructive">
+														Already linked to {attempt.linkedMosqueName}
+													</p>
+												)}
 												<p className="mt-2 max-w-xs text-xs text-muted-foreground">
 													No photo for existing listings. Compare the listing
 													name and address with the mosque.

@@ -81,10 +81,31 @@ export async function syncQuestMosques(
 		.innerJoin(institutions, eq(institutions.id, questAttempts.institutionId))
 		.where(inArray(questAttempts.questMosqueId, questMosqueIds));
 
+	// A listing can back only one mosque, so skip candidates linked elsewhere.
+	const candidateIds = [...new Set(attempts.map((a) => a.institutionId))];
+	const linkedMosqueByInstitution = new Map<number, number>();
+	if (candidateIds.length > 0) {
+		const links = await tx
+			.select({
+				id: questMosques.id,
+				institutionId: questMosques.institutionId,
+			})
+			.from(questMosques)
+			.where(inArray(questMosques.institutionId, candidateIds));
+		for (const link of links) {
+			if (link.institutionId !== null)
+				linkedMosqueByInstitution.set(link.institutionId, link.id);
+		}
+	}
+
 	for (const mosque of mosques) {
-		const candidates: LinkCandidate[] = attempts.filter(
-			(attempt) => attempt.questMosqueId === mosque.id,
-		);
+		const candidates: LinkCandidate[] = attempts.filter((attempt) => {
+			if (attempt.questMosqueId !== mosque.id) return false;
+			const linkedMosqueId = linkedMosqueByInstitution.get(
+				attempt.institutionId,
+			);
+			return linkedMosqueId === undefined || linkedMosqueId === mosque.id;
+		});
 		// Legacy links predating quest_attempts have no row; keep them while approved.
 		if (
 			mosque.institutionId !== null &&
@@ -102,6 +123,9 @@ export async function syncQuestMosques(
 
 		const next = resolveQuestLink(mosque.institutionId, candidates);
 		if (next === mosque.institutionId) continue;
+		if (mosque.institutionId !== null)
+			linkedMosqueByInstitution.delete(mosque.institutionId);
+		if (next !== null) linkedMosqueByInstitution.set(next, mosque.id);
 		await tx
 			.update(questMosques)
 			.set({ institutionId: next })
