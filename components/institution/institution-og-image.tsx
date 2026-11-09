@@ -22,18 +22,11 @@ export function InstitutionOgImage({
 		name.length > 150 ? 28 : name.length > 95 ? 36 : name.length > 60 ? 44 : 54;
 	const location = [...new Set([city, state].filter(Boolean))].join(" · ");
 	const brand = paymentBrands[payment];
-	const size = 360;
+	const size = 340;
 	const roundLogo = payment === "duitnow" || payment === "boost";
 	const logo = payment === "toyyibpay" ? "toyyibpay-wordmark" : payment;
 
-	const gridLines =
-		Array.from({ length: 20 }, (_, i) => `<path d="M${i * 64} 0V630"/>`).join(
-			"",
-		) +
-		Array.from({ length: 10 }, (_, i) => `<path d="M0 ${i * 64}H1200"/>`).join(
-			"",
-		);
-	const grid = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"><g fill="none" stroke="#02675B" >${gridLines}</g></svg>`)}`;
+	const arch = `data:image/svg+xml,${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"><defs><linearGradient id="mint" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#CFE5DB"/><stop offset="0.55" stop-color="#E7EFE5"/><stop offset="1" stop-color="#FCFAF3"/></linearGradient></defs><path d="M535 630V300C535 100 685 20 910 -100C1135 20 1285 100 1285 300V630Z" fill="url(#mint)"/></svg>')}`;
 
 	return (
 		<div
@@ -43,17 +36,17 @@ export function InstitutionOgImage({
 				height: 630,
 				display: "flex",
 				background:
-					"linear-gradient(125deg, #C4FFD9 0%, #8FE5D4 48%, #86B9F1 100%)",
+					"linear-gradient(115deg, #FFFCF5 0%, #FCFAF3 65%, #F0F5EC 100%)",
 				fontFamily: "Poppins",
 			}}
 		>
 			{/* biome-ignore lint/performance/noImgElement: ImageResponse requires native image elements. */}
 			<img
-				src={grid}
+				src={arch}
 				alt=""
 				width={1200}
 				height={630}
-				style={{ position: "absolute", top: 0, left: 0, opacity: 0.07 }}
+				style={{ position: "absolute", top: 0, left: 0 }}
 			/>
 			<div
 				style={{
@@ -62,7 +55,7 @@ export function InstitutionOgImage({
 					display: "flex",
 					flexDirection: "column",
 					background: "transparent",
-					color: "#073C3A",
+					color: "#133431",
 					padding: "48px 52px",
 				}}
 			>
@@ -71,11 +64,11 @@ export function InstitutionOgImage({
 					<img
 						src="https://sedekah.je/masjid.svg"
 						alt=""
-						width={56}
-						height={56}
+						width={72}
+						height={72}
 					/>
-					<span style={{ fontSize: 28, fontWeight: 700, letterSpacing: -1 }}>
-						sedekah.je
+					<span style={{ fontSize: 34, fontWeight: 700, letterSpacing: -1 }}>
+						sedekah<span style={{ color: "#079C8C" }}>.je</span>
 					</span>
 				</div>
 				<div
@@ -84,7 +77,7 @@ export function InstitutionOgImage({
 						flex: 1,
 						flexDirection: "column",
 						justifyContent: "center",
-						paddingTop: 24,
+						paddingTop: 8,
 					}}
 				>
 					<div
@@ -104,7 +97,7 @@ export function InstitutionOgImage({
 							style={{
 								display: "flex",
 								fontSize: 23,
-								color: "#215F5B",
+								color: "#5D756D",
 								marginTop: 28,
 							}}
 						>
@@ -129,10 +122,11 @@ export function InstitutionOgImage({
 						display: "flex",
 						flexDirection: "column",
 						alignItems: "center",
-						padding: "28px 24px",
+						padding: "32px 28px",
 						background: "#FFFFFF",
-						borderRadius: 28,
-						boxShadow: "0 18px 40px rgba(7, 60, 58, 0.13)",
+						borderRadius: 24,
+						border: "1px solid #F0F0E9",
+						boxShadow: "0 12px 28px rgba(30, 65, 49, 0.04)",
 					}}
 				>
 					<div
