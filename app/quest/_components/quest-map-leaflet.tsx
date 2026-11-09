@@ -14,7 +14,10 @@ import { useTheme } from "next-themes";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GeoJSON, Marker, TileLayer, Tooltip, useMap } from "react-leaflet";
-import type { QuestMosqueWithStatus } from "@/app/quest/_lib/types";
+import type {
+	QuestMosqueView,
+	QuestStatusFilter,
+} from "@/app/quest/_lib/types";
 import petalingBoundary from "@/data/petaling-boundary.json";
 
 const PETALING_ZOOM = 13;
@@ -75,11 +78,12 @@ const PETALING_CENTER = (() => {
 })();
 
 type QuestMapLeafletProps = {
-	mosques: QuestMosqueWithStatus[];
+	mosques: QuestMosqueView[];
 	selectedId: number | null;
-	onMarkerClick: (id: number) => void;
-	bottomSheetOpen?: boolean;
-	isDesktop?: boolean;
+	onSelect: (id: number | null) => void;
+	statusFilter: QuestStatusFilter;
+	onStatusFilterChange: (filter: QuestStatusFilter) => void;
+	onShowUnmapped: () => void;
 };
 
 type SafeMapContainerProps = {
@@ -165,7 +169,7 @@ function FlyToSelected({
 	mosques,
 	selectedId,
 }: {
-	mosques: QuestMosqueWithStatus[];
+	mosques: QuestMosqueView[];
 	selectedId: number | null;
 }) {
 	const map = useMap();
@@ -258,7 +262,7 @@ function RecenterControl() {
 }
 
 const isValidCoords = (
-	coords: QuestMosqueWithStatus["coords"],
+	coords: QuestMosqueView["coords"],
 ): coords is [number, number] =>
 	Array.isArray(coords) &&
 	coords.length === 2 &&
@@ -292,8 +296,8 @@ function createMosqueIcon(
 export default function QuestMapLeaflet({
 	mosques,
 	selectedId,
-	onMarkerClick,
-	isDesktop,
+	onSelect,
+	statusFilter,
 }: QuestMapLeafletProps) {
 	const { resolvedTheme } = useTheme();
 	const isDark = resolvedTheme === "dark";
@@ -350,22 +354,24 @@ export default function QuestMapLeaflet({
 				/>
 				{mosques.map((mosque) => {
 					if (!isValidCoords(mosque.coords)) return null;
-					const isSelected = mosque.id === selectedId;
-					const useSelectedVariant = isSelected && !isDesktop;
-					const markerIcon = mosque.isUnlocked
-						? useSelectedVariant
-							? unlockedSelectedIcon
-							: unlockedDefaultIcon
-						: useSelectedVariant
-							? lockedSelectedIcon
-							: lockedDefaultIcon;
+					if (statusFilter !== "all" && statusFilter !== mosque.status)
+						return null;
+					const useSelectedVariant = mosque.id === selectedId;
+					const markerIcon =
+						mosque.status === "has_qr"
+							? useSelectedVariant
+								? unlockedSelectedIcon
+								: unlockedDefaultIcon
+							: useSelectedVariant
+								? lockedSelectedIcon
+								: lockedDefaultIcon;
 					return (
 						<Marker
 							key={mosque.id}
 							position={mosque.coords}
 							icon={markerIcon}
 							eventHandlers={{
-								click: () => onMarkerClick(mosque.id),
+								click: () => onSelect(mosque.id),
 							}}
 						>
 							<Tooltip

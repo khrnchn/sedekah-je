@@ -1,148 +1,104 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import type {
 	QuestLeaderboardEntry,
-	QuestMosqueWithStatus,
-	QuestSortOption,
+	QuestMosqueView,
 	QuestStats,
+	QuestStatusFilter,
 } from "@/app/quest/_lib/types";
-import { useMediaQuery } from "@/hooks/use-media-query";
-import QuestBottomSheet from "./quest-bottom-sheet";
+import type { QuestView } from "@/app/quest/_lib/url-state";
+import QuestCard from "./quest-card";
 import QuestHeader from "./quest-header";
 import QuestMap from "./quest-map";
-import QuestMosqueDetail from "./quest-mosque-detail";
-import QuestSidebar from "./quest-sidebar";
 
 type QuestPageClientProps = {
-	mosques: QuestMosqueWithStatus[];
+	mosques: QuestMosqueView[];
 	stats: QuestStats;
 	leaderboard: QuestLeaderboardEntry[];
+	initialView: QuestView;
+	initialSelectedId: number | null;
 };
-
-type QuestStatusFilter = "all" | "unlocked" | "locked";
-
-function sortMosques(
-	mosques: QuestMosqueWithStatus[],
-	sort: QuestSortOption,
-): QuestMosqueWithStatus[] {
-	if (sort === "status") {
-		return [...mosques].sort((a, b) => {
-			if (a.isUnlocked !== b.isUnlocked) {
-				return a.isUnlocked ? -1 : 1;
-			}
-			return a.name.localeCompare(b.name);
-		});
-	}
-	return mosques;
-}
 
 export default function QuestPageClient({
 	mosques,
 	stats,
 	leaderboard,
+	initialView,
+	initialSelectedId,
 }: QuestPageClientProps) {
-	const isDesktop = useMediaQuery("(min-width: 768px)");
-	const [selectedId, setSelectedId] = useState<number | null>(null);
-	const [sort, setSort] = useState<QuestSortOption>("alphabetical");
-	const [searchQuery, setSearchQuery] = useState("");
+	const router = useRouter();
+	const [view, setView] = useState<QuestView>(initialView);
+	const [selectedId, setSelectedId] = useState<number | null>(
+		initialSelectedId,
+	);
 	const [statusFilter, setStatusFilter] = useState<QuestStatusFilter>("all");
-	const [sheetOpen, setSheetOpen] = useState(false);
 
-	const filteredMosques = useMemo(() => {
-		const normalizedQuery = searchQuery.trim().toLowerCase();
+	const selectedMosque = mosques.find((m) => m.id === selectedId) ?? null;
 
-		return mosques.filter((mosque) => {
-			if (statusFilter === "unlocked" && !mosque.isUnlocked) return false;
-			if (statusFilter === "locked" && mosque.isUnlocked) return false;
+	const navigate = (nextView: QuestView, nextSelectedId: number | null) => {
+		setView(nextView);
+		setSelectedId(nextSelectedId);
+		const params = new URLSearchParams();
+		if (nextView !== "map") params.set("view", nextView);
+		if (nextSelectedId !== null) params.set("m", String(nextSelectedId));
+		const query = params.toString();
+		router.replace(query ? `/quest?${query}` : "/quest", { scroll: false });
+	};
 
-			if (!normalizedQuery) return true;
+	const onSelect = (id: number | null) => navigate(view, id);
+	const onShowUnmapped = () => {
+		setStatusFilter("unmapped");
+		navigate("board", selectedId);
+	};
 
-			const haystack = `${mosque.name} ${mosque.address ?? ""}`.toLowerCase();
-			return haystack.includes(normalizedQuery);
-		});
-	}, [mosques, searchQuery, statusFilter]);
-
-	const sortedMosques = useMemo(
-		() => sortMosques(filteredMosques, sort),
-		[filteredMosques, sort],
-	);
-
-	const selectedMosque = useMemo(
-		() => sortedMosques.find((m) => m.id === selectedId) ?? null,
-		[sortedMosques, selectedId],
-	);
-
-	useEffect(() => {
-		if (selectedId === null) return;
-		if (!sortedMosques.some((mosque) => mosque.id === selectedId)) {
-			setSelectedId(null);
-		}
-	}, [selectedId, sortedMosques]);
-
-	const handleSelect = useCallback(
-		(id: number) => {
-			const next = selectedId === id ? null : id;
-			setSelectedId(next);
-			if (!isDesktop && next !== null) {
-				setSheetOpen(true);
-			}
-		},
-		[isDesktop, selectedId],
-	);
+	const placeholderMosques = mosques.filter((m) => {
+		if (statusFilter === "all") return true;
+		if (statusFilter === "unmapped") return m.coords === null;
+		return m.status === statusFilter;
+	});
 
 	return (
 		<div className="flex h-dvh w-full flex-col bg-background">
-			<QuestHeader stats={stats} leaderboard={leaderboard} />
-			<div className="relative flex flex-1 overflow-hidden">
-				{isDesktop && (
-					<QuestSidebar
-						mosques={sortedMosques}
-						totalMosques={mosques.length}
-						selectedId={selectedId}
-						onSelect={handleSelect}
-						sort={sort}
-						onSortChange={setSort}
-						searchQuery={searchQuery}
-						onSearchQueryChange={setSearchQuery}
-						statusFilter={statusFilter}
-						onStatusFilterChange={setStatusFilter}
-					/>
-				)}
-				<div className="relative flex-1">
-					<QuestMap
-						mosques={sortedMosques}
-						selectedId={selectedId}
-						onMarkerClick={handleSelect}
-						bottomSheetOpen={sheetOpen}
-						isDesktop={isDesktop}
-					/>
-					{isDesktop && (
-						<QuestMosqueDetail
-							mosque={selectedMosque}
-							onClose={() => setSelectedId(null)}
+			<QuestHeader
+				stats={stats}
+				leaderboard={leaderboard}
+				view={view}
+				onViewChange={(next) => navigate(next, selectedId)}
+			/>
+			<div className="relative flex min-h-0 flex-1">
+				<main className="relative min-w-0 flex-1">
+					{view === "map" ? (
+						<QuestMap
+							mosques={mosques}
+							selectedId={selectedId}
+							onSelect={onSelect}
+							statusFilter={statusFilter}
+							onStatusFilterChange={setStatusFilter}
+							onShowUnmapped={onShowUnmapped}
 						/>
+					) : (
+						<ul className="h-full divide-y divide-border overflow-y-auto px-4">
+							{placeholderMosques.map((m) => (
+								<li key={m.id}>
+									<button
+										type="button"
+										onClick={() => onSelect(m.id)}
+										className="w-full py-3 text-left text-sm text-foreground"
+									>
+										{m.name}
+									</button>
+								</li>
+							))}
+						</ul>
 					)}
-				</div>
-				{!isDesktop && (
-					<QuestBottomSheet
-						mosques={sortedMosques}
-						totalMosques={mosques.length}
-						selectedId={selectedId}
-						selectedMosque={selectedMosque}
-						onSelect={handleSelect}
-						onClearSelection={() => setSelectedId(null)}
-						sort={sort}
-						onSortChange={setSort}
-						searchQuery={searchQuery}
-						onSearchQueryChange={setSearchQuery}
-						statusFilter={statusFilter}
-						onStatusFilterChange={setStatusFilter}
-						open={sheetOpen}
-						onOpenChange={(open) => {
-							setSheetOpen(open);
-							if (!open) setSelectedId(null);
-						}}
+				</main>
+				{selectedMosque && (
+					<QuestCard
+						key={selectedMosque.id}
+						mosque={selectedMosque}
+						onClose={() => onSelect(null)}
 					/>
 				)}
 			</div>

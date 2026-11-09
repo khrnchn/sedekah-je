@@ -32,3 +32,5 @@ export type QuestLeaderboardEntry = {
 	image: string | null;
 	count: number;
 };
+
+export type QuestStatusFilter = QuestStatus | "all" | "unmapped";
