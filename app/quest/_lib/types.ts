@@ -1,26 +1,28 @@
 import type { PaymentOption } from "@/app/types/institutions";
-import type { QuestMosque } from "@/db/schema";
+import type { QuestStatus } from "@/lib/features/quest/rules";
 
-export type InstitutionStatus = "approved" | "pending" | "rejected";
-
-export type QuestMosqueWithStatus = QuestMosque & {
-	/** True only when linked institution is approved */
-	isUnlocked: boolean;
-	/** True when linked institution is pending review */
-	isPending: boolean;
-	/** Status of the linked institution (null if none) */
-	institutionStatus: InstitutionStatus | null;
+export type QuestMosqueView = {
+	id: number;
+	name: string;
+	address: string | null;
+	coords: [number, number] | null;
+	status: QuestStatus;
+	pendingAttempts: number;
 	institutionSlug: string | null;
 	institutionCategory: string | null;
 	qrContent: string | null;
 	supportedPayment: PaymentOption[] | null;
+	contributorName: string | null;
 };
 
 export type QuestSortOption = "alphabetical" | "status";
 
 export type QuestStats = {
 	total: number;
-	unlocked: number;
+	hasQr: number;
+	inReview: number;
+	missing: number;
+	unmapped: number;
 };
 
 export type QuestLeaderboardEntry = {
