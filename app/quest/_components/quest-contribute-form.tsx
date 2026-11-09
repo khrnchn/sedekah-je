@@ -195,9 +195,9 @@ export default function QuestContributeForm({
 }: QuestContributeFormProps) {
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className="border-border bg-card sm:max-w-md">
+			<DialogContent className="quest-portal quest-submit-dialog border-border bg-card sm:max-w-md">
 				<DialogHeader>
-					<DialogTitle className="text-foreground">
+					<DialogTitle className="pr-8 text-left text-foreground">
 						Submit QR for {mosque.name}
 					</DialogTitle>
 				</DialogHeader>

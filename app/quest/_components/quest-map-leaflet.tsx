@@ -4,18 +4,26 @@ import "leaflet/dist/leaflet.css";
 
 import { createLeafletContext, LeafletProvider } from "@react-leaflet/core";
 import type { FeatureCollection, Geometry } from "geojson";
-import { DomEvent, Map as LeafletMap, latLngBounds } from "leaflet";
-import { LocateFixed } from "lucide-react";
+import {
+	DomEvent,
+	divIcon,
+	Map as LeafletMap,
+	latLngBounds,
+	point,
+} from "leaflet";
+import { ArrowUpRight, LocateFixed, MapPinOff } from "lucide-react";
 import { useTheme } from "next-themes";
 import type { ReactNode } from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-	CircleMarker,
 	GeoJSON,
+	Marker,
 	TileLayer,
+	Tooltip,
 	useMap,
 	useMapEvents,
 } from "react-leaflet";
+import { clusterMapPoints } from "@/app/quest/_lib/map-clusters";
 import type {
 	QuestMosqueView,
 	QuestStatusFilter,
@@ -24,14 +32,12 @@ import petalingBoundary from "@/data/petaling-boundary.json";
 import type { QuestStatus } from "@/lib/features/quest/rules";
 import { cn } from "@/lib/utils";
 
-const LIGHT_TILE_URL =
-	"https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}";
-const DARK_TILE_URL =
-	"https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}";
+const STREET_TILE_URL =
+	"https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}";
 const TILE_ATTRIBUTION =
-	"Tiles &copy; Esri &mdash; Esri, HERE, Garmin, &copy; OpenStreetMap contributors";
-const TILE_MAX_ZOOM = 16;
-const SELECT_MIN_ZOOM = 14;
+	'Tiles &copy; <a href="https://www.esri.com/">Esri</a>, HERE, Garmin, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>';
+const TILE_MAX_ZOOM = 19;
+const SELECT_MIN_ZOOM = 16;
 // Keeps the boundary clear of the legend bar overlaid at the bottom.
 const FIT_PADDING_TOP_LEFT: [number, number] = [16, 16];
 const FIT_PADDING_BOTTOM_RIGHT: [number, number] = [16, 120];
@@ -63,24 +69,78 @@ const fitPetaling = (map: LeafletMap) =>
 		paddingBottomRight: FIT_PADDING_BOTTOM_RIGHT,
 	});
 
-const LEGEND: { status: QuestStatus; label: string }[] = [
-	{ status: "has_qr", label: "Has QR" },
+const LEGEND: { status: QuestStatus | "all"; label: string }[] = [
+	{ status: "all", label: "All" },
 	{ status: "missing", label: "Missing" },
+	{ status: "has_qr", label: "Has QR" },
 	{ status: "in_review", label: "In review" },
 ];
 
-const DOT_STYLE: Record<
-	QuestStatus,
-	{ fill: string; stroke: string; legend: string }
-> = {
-	has_qr: { fill: "#059669", stroke: "#059669", legend: "bg-emerald-600" },
-	missing: {
-		fill: "#ffffff",
-		stroke: "#18181b",
-		legend: "border-2 border-zinc-900 bg-white",
-	},
-	in_review: { fill: "#d97706", stroke: "#d97706", legend: "bg-amber-600" },
+const STATUS_LABEL: Record<QuestStatus, string> = {
+	has_qr: "Has QR",
+	missing: "Missing QR",
+	in_review: "In review",
 };
+
+function mosqueIcon(status: QuestStatus, selected: boolean, detailed: boolean) {
+	const fullSprite = detailed || selected;
+	const badge =
+		status === "has_qr"
+			? '<path d="m5 9 3 3 5-6"/>'
+			: status === "in_review"
+				? '<circle cx="9" cy="9" r="5.5"/><path d="M9 6v3l2 1"/>'
+				: '<path d="M6.5 6a2.5 2.5 0 1 1 4 2c-1 .6-1.5 1-1.5 2"/><path d="M9 13h.01"/>';
+	return divIcon({
+		className: `quest-logo-marker ${fullSprite ? "is-detailed" : "is-simplified"} ${selected ? "is-selected" : ""}`,
+		iconSize: [48, 48],
+		iconAnchor: [24, 24],
+		tooltipAnchor: [0, -24],
+		html: `<span class="quest-marker-symbol" data-status="${status}" aria-hidden="true">${fullSprite ? '<img src="/masjid.svg" alt="" width="34" height="34"/>' : '<span class="quest-marker-silhouette"></span>'}<span class="quest-marker-badge"><svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${badge}</svg></span></span>`,
+	});
+}
+
+// Clusters fit their members up to this zoom; past it a tap lists them instead.
+const CLUSTER_MAX_ZOOM = 17;
+const CLUSTER_FIT_PADDING: [number, number] = [64, 64];
+
+function clusterDistance(zoom: number) {
+	if (zoom < 13) return 44;
+	if (zoom < 15) return 30;
+	// Only true overlaps still group at street level.
+	return 14;
+}
+
+function clusterIcon(points: QuestMosqueView[]) {
+	const counts: Record<QuestStatus, number> = {
+		has_qr: 0,
+		in_review: 0,
+		missing: 0,
+	};
+	for (const point of points) counts[point.status] += 1;
+	const radius = 18;
+	const circumference = 2 * Math.PI * radius;
+	let offset = 0;
+	const arcs = (["has_qr", "in_review"] as const)
+		.filter((status) => counts[status] > 0)
+		.map((status) => {
+			const length = (counts[status] / points.length) * circumference;
+			const arc = `<circle class="quest-cluster-arc" data-status="${status}" r="${radius}" cx="22" cy="22" stroke-dasharray="${length} ${circumference - length}" stroke-dashoffset="${-offset}"/>`;
+			offset += length;
+			return arc;
+		})
+		.join("");
+	const left = counts.missing;
+	const center =
+		left > 0
+			? `<strong>${left}</strong><span>left</span>`
+			: '<svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m4 9.5 3.5 3.5L14 6"/></svg>';
+	return divIcon({
+		className: "quest-cluster-marker",
+		iconSize: [44, 44],
+		iconAnchor: [22, 22],
+		html: `<span class="quest-cluster-ring" data-done="${left === 0}" aria-hidden="true"><svg width="44" height="44" viewBox="0 0 44 44"><circle class="quest-cluster-track" r="${radius}" cx="22" cy="22"/>${arcs}</svg><span class="quest-cluster-count">${center}</span></span>`,
+	});
+}
 
 type QuestMapLeafletProps = {
 	mosques: QuestMosqueView[];
@@ -89,6 +149,8 @@ type QuestMapLeafletProps = {
 	statusFilter: QuestStatusFilter;
 	onStatusFilterChange: (filter: QuestStatusFilter) => void;
 	onShowUnmapped: () => void;
+	onFindMissing: () => void;
+	onShowGroup: (ids: number[]) => void;
 };
 
 // Builds the Leaflet map by hand instead of MapContainer so Strict Mode and
@@ -118,11 +180,12 @@ function SafeMapContainer({
 			scrollWheelZoom: true,
 			zoomControl: true,
 			maxZoom: TILE_MAX_ZOOM,
-			// Integer snapping leaves the boundary at about half the screen width.
-			zoomSnap: 0.25,
+			// Native integer zooms keep raster place labels sharp.
+			zoomSnap: 1,
 		});
-		// The legend bar owns the bottom edge, so attribution moves to the top.
-		map.attributionControl.setPosition("topleft");
+		// The floating controls leave the bottom edge clear for attribution.
+		map.attributionControl.setPosition("bottomright");
+		map.attributionControl.setPrefix(false);
 		map.zoomControl.setPosition("topright");
 		fitPetaling(map);
 		mapRef.current = map;
@@ -160,31 +223,68 @@ function SyncMapSize() {
 	return null;
 }
 
-function PanToSelected({ coords }: { coords: [number, number] | null }) {
+function PanToSelected({
+	coords,
+	selectedId,
+}: {
+	coords: [number, number] | null;
+	selectedId: number | null;
+}) {
 	const map = useMap();
 	const lat = coords?.[0];
 	const lng = coords?.[1];
 
 	useEffect(() => {
-		if (lat === undefined || lng === undefined) return;
-
-		// Wait for the card to mount and the map container to resize first.
-		const timer = setTimeout(() => {
-			map.invalidateSize({ pan: false });
-			const zoom = Math.max(map.getZoom(), SELECT_MIN_ZOOM);
-			const isDesktop = window.matchMedia("(min-width: 768px)").matches;
-			// Mobile card is a bottom sheet capped at 40dvh over the map; shift the
-			// center down by half of it so the dot lands in the visible upper part.
-			const offsetY = isDesktop ? 0 : (window.innerHeight * 0.4) / 2;
-			const target = map.unproject(
-				map.project([lat, lng], zoom).add([0, offsetY]),
-				zoom,
-			);
-			map.flyTo(target, zoom, { duration: 0.6 });
-		}, 50);
-
-		return () => clearTimeout(timer);
-	}, [map, lat, lng]);
+		let frame = 0;
+		let previousGeometry = "";
+		const position = () => {
+			cancelAnimationFrame(frame);
+			frame = requestAnimationFrame(() => {
+				map.invalidateSize({ pan: false });
+				const zoom = Math.max(map.getZoom(), SELECT_MIN_ZOOM);
+				const drawer =
+					selectedId !== null ? document.querySelector(".quest-detail") : null;
+				const mapRect = map.getContainer().getBoundingClientRect();
+				const isDesktop = window.matchMedia("(min-width: 768px)").matches;
+				const covered =
+					!isDesktop && drawer
+						? Math.max(
+								0,
+								mapRect.bottom - drawer.getBoundingClientRect().top + 16,
+							)
+						: 0;
+				map
+					.getContainer()
+					.style.setProperty("--quest-attribution-offset", `${covered}px`);
+				if (lat === undefined || lng === undefined) return;
+				const geometry = `${mapRect.width}:${mapRect.height}:${covered}`;
+				if (geometry === previousGeometry) return;
+				const firstPosition = previousGeometry === "";
+				previousGeometry = geometry;
+				const target = map.unproject(
+					map.project([lat, lng], zoom).add([0, covered / 2]),
+					zoom,
+				);
+				if (
+					firstPosition &&
+					!window.matchMedia("(prefers-reduced-motion: reduce)").matches
+				)
+					map.flyTo(target, zoom, { duration: 0.45 });
+				else map.setView(target, zoom, { animate: false });
+			});
+		};
+		position();
+		// QR content and long names change the sheet height after selection.
+		const observer = new ResizeObserver(position);
+		observer.observe(map.getContainer());
+		const drawer =
+			selectedId !== null ? document.querySelector(".quest-detail") : null;
+		if (drawer) observer.observe(drawer);
+		return () => {
+			cancelAnimationFrame(frame);
+			observer.disconnect();
+		};
+	}, [map, lat, lng, selectedId]);
 
 	return null;
 }
@@ -227,6 +327,133 @@ const isValidCoords = (
 	coords.length === 2 &&
 	coords.every((value) => typeof value === "number" && Number.isFinite(value));
 
+function QuestMarkers({
+	mosques,
+	selectedId,
+	onSelect,
+	onShowGroup,
+}: {
+	mosques: QuestMosqueView[];
+	selectedId: number | null;
+	onSelect: (id: number) => void;
+	onShowGroup: (ids: number[]) => void;
+}) {
+	const map = useMap();
+	const [zoom, setZoom] = useState(map.getZoom());
+	useMapEvents({ zoomend: () => setZoom(map.getZoom()) });
+	const detailed = zoom >= 15.5;
+	const icons = useMemo(
+		() => ({
+			has_qr: [
+				mosqueIcon("has_qr", false, detailed),
+				mosqueIcon("has_qr", true, detailed),
+			],
+			missing: [
+				mosqueIcon("missing", false, detailed),
+				mosqueIcon("missing", true, detailed),
+			],
+			in_review: [
+				mosqueIcon("in_review", false, detailed),
+				mosqueIcon("in_review", true, detailed),
+			],
+		}),
+		[detailed],
+	);
+	const groups = useMemo(
+		() =>
+			clusterMapPoints(
+				mosques.filter((m) => m.id !== selectedId),
+				(coords) => map.project(coords, zoom),
+				clusterDistance(zoom),
+			),
+		[mosques, selectedId, map, zoom],
+	);
+	const selected = mosques.find((m) => m.id === selectedId);
+	const renderedGroups = selected?.coords
+		? [...groups, { points: [selected], coords: selected.coords }]
+		: groups;
+	return (
+		<>
+			{renderedGroups.map((group) => {
+				if (group.points.length === 1) {
+					const mosque = group.points[0];
+					const isSelected = mosque.id === selectedId;
+					const label = `${mosque.name}, ${STATUS_LABEL[mosque.status]}`;
+					return (
+						<Marker
+							key={`mosque-${mosque.id}`}
+							position={group.coords}
+							icon={icons[mosque.status][isSelected ? 1 : 0]}
+							title={label}
+							keyboard
+							riseOnHover
+							zIndexOffset={isSelected ? 1000 : 0}
+							bubblingMouseEvents={false}
+							eventHandlers={{
+								click: () => onSelect(mosque.id),
+								add: (event) => {
+									event.target.getElement()?.setAttribute("aria-label", label);
+								},
+							}}
+						>
+							<Tooltip direction="top" offset={[0, -4]}>
+								{mosque.name}
+							</Tooltip>
+						</Marker>
+					);
+				}
+				const left = group.points.filter((m) => m.status === "missing").length;
+				const label = `${group.points.length} mosques here, ${left} without a QR`;
+				return (
+					<Marker
+						key={`group-${group.points.map((m) => m.id).join("-")}`}
+						position={group.coords}
+						icon={clusterIcon(group.points)}
+						title={label}
+						keyboard
+						bubblingMouseEvents={false}
+						eventHandlers={{
+							add: (event) => {
+								event.target.getElement()?.setAttribute("aria-label", label);
+							},
+							click: () => {
+								const bounds = latLngBounds(
+									group.points.flatMap((m) => (m.coords ? [m.coords] : [])),
+								);
+								const fitZoom = Math.min(
+									map.getBoundsZoom(bounds, false, point(CLUSTER_FIT_PADDING)),
+									CLUSTER_MAX_ZOOM,
+								);
+								const duration = window.matchMedia(
+									"(prefers-reduced-motion: reduce)",
+								).matches
+									? 0
+									: 0.45;
+								if (fitZoom > zoom) {
+									map.flyToBounds(bounds, {
+										padding: CLUSTER_FIT_PADDING,
+										maxZoom: CLUSTER_MAX_ZOOM,
+										duration,
+									});
+								} else if (zoom < CLUSTER_MAX_ZOOM) {
+									// Bounds already fit, yet members still overlap: step closer.
+									map.flyTo(
+										group.coords,
+										Math.min(zoom + 2, CLUSTER_MAX_ZOOM),
+										{ duration },
+									);
+								} else {
+									onShowGroup(group.points.map((m) => m.id));
+								}
+							},
+						}}
+					/>
+				);
+			})}
+		</>
+	);
+}
+
 export default function QuestMapLeaflet({
 	mosques,
 	selectedId,
@@ -234,6 +461,8 @@ export default function QuestMapLeaflet({
 	statusFilter,
 	onStatusFilterChange,
 	onShowUnmapped,
+	onFindMissing,
+	onShowGroup,
 }: QuestMapLeafletProps) {
 	const { resolvedTheme } = useTheme();
 	const isDark = resolvedTheme === "dark";
@@ -254,22 +483,22 @@ export default function QuestMapLeaflet({
 	const visible = mosques.filter(
 		(m) =>
 			isValidCoords(m.coords) &&
-			(activeStatus === null || m.status === activeStatus),
+			(activeStatus === null ||
+				m.status === activeStatus ||
+				m.id === selectedId),
 	);
-	const selected = visible.find((m) => m.id === selectedId) ?? null;
 	const selectedCoords =
 		mosques.find((m) => m.id === selectedId)?.coords ?? null;
 
-	const tileUrl = isDark ? DARK_TILE_URL : LIGHT_TILE_URL;
 	const lineColor = isDark ? "#fafafa" : "#18181b";
 
 	return (
 		<div className="quest-map-container relative h-full w-full">
 			<SafeMapContainer className="z-0 h-full w-full">
 				<TileLayer
-					key={tileUrl}
+					className="quest-street-tiles"
 					attribution={TILE_ATTRIBUTION}
-					url={tileUrl}
+					url={STREET_TILE_URL}
 					maxZoom={TILE_MAX_ZOOM}
 				/>
 				<GeoJSON
@@ -284,133 +513,94 @@ export default function QuestMapLeaflet({
 					})}
 					interactive={false}
 				/>
-				{/* Transparent 44px tap targets kept below every dot (re-added layers
-				    append on top, hence bringToBack) so a direct hit on a dot wins. */}
-				{visible.map((mosque) =>
-					mosque.id === selectedId ? null : (
-						<CircleMarker
-							key={`hit-${mosque.id}`}
-							center={mosque.coords as [number, number]}
-							radius={22}
-							bubblingMouseEvents={false}
-							pathOptions={{ stroke: false, fill: true, fillOpacity: 0 }}
-							eventHandlers={{
-								add: (event) => event.target.bringToBack(),
-								click: () => onSelect(mosque.id),
-							}}
-						/>
-					),
-				)}
-				{visible.map((mosque) => {
-					if (mosque.id === selectedId) return null;
-					const style = DOT_STYLE[mosque.status];
-					return (
-						<CircleMarker
-							key={mosque.id}
-							center={mosque.coords as [number, number]}
-							radius={5}
-							bubblingMouseEvents={false}
-							pathOptions={{
-								color: style.stroke,
-								weight: mosque.status === "missing" ? 2 : 0,
-								fillColor: style.fill,
-								fillOpacity: 1,
-							}}
-							eventHandlers={{ click: () => onSelect(mosque.id) }}
-						/>
-					);
-				})}
-				{selected && (
-					<>
-						<CircleMarker
-							key={`halo-${selected.id}`}
-							center={selected.coords as [number, number]}
-							radius={18}
-							interactive={false}
-							pathOptions={{
-								color: lineColor,
-								weight: 1,
-								opacity: 0.3,
-								fillColor: DOT_STYLE[selected.status].fill,
-								fillOpacity: 0.12,
-							}}
-						/>
-						<CircleMarker
-							key={`selected-${selected.id}`}
-							center={selected.coords as [number, number]}
-							radius={8}
-							bubblingMouseEvents={false}
-							pathOptions={{
-								color:
-									selected.status === "missing"
-										? DOT_STYLE.missing.stroke
-										: "#ffffff",
-								weight: 3,
-								fillColor: DOT_STYLE[selected.status].fill,
-								fillOpacity: 1,
-							}}
-						/>
-					</>
-				)}
+				<QuestMarkers
+					mosques={visible}
+					selectedId={selectedId}
+					onSelect={onSelect}
+					onShowGroup={onShowGroup}
+				/>
+
 				<SyncMapSize />
-				<PanToSelected coords={selectedCoords} />
+				<PanToSelected coords={selectedCoords} selectedId={selectedId} />
 				<DeselectOnMapClick onSelect={onSelect} />
 				<RecenterControl />
 			</SafeMapContainer>
 
+			{unmapped > 0 && (
+				<button
+					type="button"
+					className="quest-off-map"
+					onClick={onShowUnmapped}
+					aria-label={`${unmapped} mosques have no map location. View list`}
+				>
+					<MapPinOff size={14} />
+					<span>{unmapped} off map</span>
+				</button>
+			)}
 			<div
 				className={cn(
-					"absolute inset-x-0 bottom-0 z-[1000] rounded-t-2xl border-t border-border bg-background px-4 pb-4 pt-3 shadow-[0_-4px_16px_rgba(0,0,0,0.06)]",
+					"quest-map-dock",
 					selectedId !== null && "hidden md:block",
 				)}
 			>
-				<div className="flex gap-2">
-					{LEGEND.map(({ status, label }) => (
-						<button
-							key={status}
-							type="button"
-							aria-pressed={activeStatus === status}
-							onClick={() =>
-								onStatusFilterChange(activeStatus === status ? "all" : status)
-							}
-							className={cn(
-								"flex h-11 min-w-0 flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-full border px-2 text-sm",
-								activeStatus === status
-									? "border-foreground bg-muted font-medium text-foreground"
-									: "border-transparent text-muted-foreground",
-							)}
-						>
-							<span
-								aria-hidden
-								className={cn(
-									"inline-block h-2.5 w-2.5 shrink-0 rounded-full",
-									DOT_STYLE[status].legend,
-								)}
-							/>
-							{label} <span className="tabular-nums">{counts[status]}</span>
+				<div className="quest-map-mission">
+					<p>
+						{counts.missing > 0 ? (
+							<>
+								<strong>{counts.missing}</strong> mosques need a QR
+							</>
+						) : (
+							"Every mosque has a QR"
+						)}
+					</p>
+					{counts.missing > 0 && (
+						<button type="button" onClick={onFindMissing}>
+							Find missing <ArrowUpRight size={13} />
 						</button>
-					))}
+					)}
 				</div>
-				{unmapped > 0 && (
-					<div className="mt-1 flex items-center justify-between gap-3 text-sm">
-						<span className="text-muted-foreground">
-							{unmapped === 1
-								? "1 mosque has no map location"
-								: `${unmapped} mosques have no map location`}
-						</span>
-						<button
-							type="button"
-							onClick={onShowUnmapped}
-							className="-mr-2 h-11 shrink-0 rounded-md px-2 font-semibold text-foreground hover:bg-muted"
-						>
-							View list
-						</button>
-					</div>
-				)}
+				<fieldset className="quest-map-legend">
+					<legend className="sr-only">Show on map</legend>
+					{LEGEND.filter(
+						({ status }) => status !== "in_review" || counts.in_review > 0,
+					).map(({ status, label }) => {
+						const active =
+							status === "all"
+								? activeStatus === null
+								: activeStatus === status;
+						const count = status === "all" ? mosques.length : counts[status];
+						return (
+							<button
+								key={status}
+								type="button"
+								aria-pressed={active}
+								onClick={() => {
+									onSelect(null);
+									onStatusFilterChange(active ? "all" : status);
+								}}
+							>
+								{status !== "all" && (
+									<span
+										aria-hidden
+										className={cn(
+											"inline-block size-2 shrink-0 rounded-full",
+											status === "has_qr" ? "bg-emerald-600" : "bg-amber-600",
+										)}
+									/>
+								)}
+								{label} <span className="tabular-nums">{count}</span>
+							</button>
+						);
+					})}
+				</fieldset>
 			</div>
 
 			<style>
 				{`
+				.quest-map-container .quest-street-tiles { filter: grayscale(1); }
+				.dark .quest-map-container .quest-street-tiles { filter: grayscale(1) invert(1) brightness(0.9); }
+				.dark .quest-map-container .leaflet-control-zoom a,
+				.dark .quest-map-container .leaflet-control-attribution { filter: none; }
 				.quest-map-container .leaflet-container {
 					background: oklch(var(--muted));
 					font-family: inherit;
@@ -427,7 +617,10 @@ export default function QuestMapLeaflet({
 					background: oklch(var(--muted));
 				}
 				.quest-map-container .leaflet-control-zoom {
-					border-color: oklch(var(--border));
+					border: 1px solid oklch(var(--border));
+					border-radius: 8px;
+					box-shadow: none;
+					overflow: hidden;
 				}
 				@media (max-width: 767px) {
 					.quest-map-container .leaflet-control-zoom {
@@ -435,15 +628,16 @@ export default function QuestMapLeaflet({
 					}
 				}
 				.quest-map-container .quest-recenter-wrap {
-					top: 36px;
+					top: 4px;
 				}
 				@media (min-width: 768px) {
 					.quest-map-container .quest-recenter-wrap {
 						top: 100px;
 					}
 				}
+				.quest-map-container .leaflet-bottom.leaflet-right { bottom: var(--quest-attribution-offset, 0px); }
 				.quest-map-container .leaflet-control-attribution {
-					background: oklch(var(--background) / 0.75);
+					background: oklch(var(--background) / 0.92);
 					color: oklch(var(--muted-foreground));
 					font-size: 10px;
 				}

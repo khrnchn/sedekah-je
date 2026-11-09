@@ -1,16 +1,19 @@
 "use client";
 
+import { Grid2X2, List, Map as MapIcon, Moon, Sun } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useTheme } from "next-themes";
 import type { QuestLeaderboardEntry, QuestStats } from "@/app/quest/_lib/types";
 import type { QuestView } from "@/app/quest/_lib/url-state";
-import { ModeToggle } from "@/components/shared/mode-toggle";
 import { cn } from "@/lib/utils";
 import QuestLeaderboard from "./quest-leaderboard";
 
-const VIEW_LABELS: { value: QuestView; label: string }[] = [
-	{ value: "map", label: "Map" },
-	{ value: "board", label: "Board" },
-	{ value: "grid", label: "Grid" },
-];
+const VIEWS = [
+	{ value: "map", label: "Map", icon: MapIcon },
+	{ value: "board", label: "Board", icon: List },
+	{ value: "grid", label: "Grid", icon: Grid2X2 },
+] as const;
 
 type QuestHeaderProps = {
 	stats: QuestStats;
@@ -25,61 +28,68 @@ export default function QuestHeader({
 	view,
 	onViewChange,
 }: QuestHeaderProps) {
+	const { resolvedTheme, setTheme } = useTheme();
 	const pct = stats.total > 0 ? (stats.hasQr / stats.total) * 100 : 0;
 
 	return (
-		<header className="border-b border-border bg-background px-4 pb-3 pt-4">
-			<div className="flex items-center justify-between gap-2">
-				<div className="min-w-0">
-					<h1 className="whitespace-nowrap text-base font-semibold tracking-tight text-foreground">
-						Mosque Quest
-					</h1>
-					<p className="text-xs text-muted-foreground">Petaling</p>
+		<header className="quest-header shrink-0">
+			<div className="quest-topbar">
+				<Link href="/" aria-label="Sedekah Je home" className="quest-brand">
+					<Image src="/masjid.svg" width={36} height={36} alt="" priority />
+				</Link>
+				<div className="quest-title">
+					<h1>Mosque Quest</h1>
+					<span className="quest-district">Petaling, Selangor</span>
 				</div>
-				<div className="flex items-center gap-2">
-					<div className="whitespace-nowrap pr-1 text-right">
-						<p className="font-mono text-base font-semibold tabular-nums text-foreground">
-							{stats.hasQr}
-							<span className="text-muted-foreground">/{stats.total}</span>
-						</p>
-						<p className="text-xs text-muted-foreground">have QR</p>
-					</div>
+				<div className="quest-header-actions">
 					<QuestLeaderboard leaderboard={leaderboard} />
-					<ModeToggle className="h-11 w-11 shrink-0" />
+					<button
+						type="button"
+						className="quest-theme-button"
+						aria-label="Toggle light or dark theme"
+						onClick={() =>
+							setTheme(resolvedTheme === "dark" ? "light" : "dark")
+						}
+					>
+						<Sun size={17} className="dark:hidden" />
+						<Moon size={17} className="hidden dark:block" />
+					</button>
 				</div>
 			</div>
-			<div
-				role="progressbar"
-				aria-label="Mosques with QR"
-				aria-valuemin={0}
-				aria-valuemax={stats.total}
-				aria-valuenow={stats.hasQr}
-				className="mt-2 h-[3px] overflow-hidden rounded-full bg-muted"
-			>
-				<div
-					className="h-full rounded-full bg-emerald-600"
-					style={{ width: `${pct}%` }}
-				/>
-			</div>
-			<fieldset className="mt-3 flex rounded-lg border border-border bg-muted p-0.5">
-				<legend className="sr-only">View</legend>
-				{VIEW_LABELS.map((v) => (
-					<button
-						key={v.value}
-						type="button"
-						aria-pressed={view === v.value}
-						onClick={() => onViewChange(v.value)}
-						className={cn(
-							"min-h-11 flex-1 rounded-md text-xs transition-colors",
-							view === v.value
-								? "bg-background font-semibold text-foreground shadow-sm"
-								: "text-muted-foreground hover:text-foreground",
-						)}
+			<div className="quest-navigation">
+				<fieldset className="quest-view-tabs">
+					<legend className="sr-only">View</legend>
+					{VIEWS.map(({ value, label, icon: Icon }) => (
+						<button
+							key={value}
+							type="button"
+							aria-pressed={view === value}
+							onClick={() => onViewChange(value)}
+							className={cn("quest-view-tab", view === value && "is-active")}
+						>
+							<Icon size={15} strokeWidth={1.7} />
+							{label}
+						</button>
+					))}
+				</fieldset>
+				<div className="quest-progress-summary">
+					<p>
+						<strong>{stats.hasQr}</strong>
+						<span> / {stats.total}</span>
+						<span className="quest-progress-label"> have QR</span>
+					</p>
+					<div
+						role="progressbar"
+						aria-label="Mosques with QR"
+						aria-valuemin={0}
+						aria-valuemax={stats.total}
+						aria-valuenow={stats.hasQr}
+						className="quest-progress"
 					>
-						{v.label}
-					</button>
-				))}
-			</fieldset>
+						<div style={{ width: `${pct}%` }} />
+					</div>
+				</div>
+			</div>
 		</header>
 	);
 }
