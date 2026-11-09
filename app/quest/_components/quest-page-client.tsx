@@ -92,6 +92,7 @@ export default function QuestPageClient({
 					<QuestCard
 						key={selectedMosque.id}
 						mosque={selectedMosque}
+						view={view}
 						onClose={() => onSelect(null)}
 					/>
 				)}

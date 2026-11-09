@@ -1,14 +1,17 @@
 "use client";
 
-import { CheckCircle2, ImagePlus, Loader2, XCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useCallback, useRef, useState } from "react";
-import { toast } from "sonner";
-import { submitQuestContribution } from "@/app/quest/_lib/actions";
-import type { QuestMosqueWithStatus } from "@/app/quest/_lib/types";
+import { Loader2 } from "lucide-react";
+import Link from "next/link";
+import { useActionState, useState } from "react";
+import { CooldownTimer } from "@/app/(user)/contribute/_components/cooldown-timer";
+import {
+	type QuestSubmitState,
+	submitQuestAttempt,
+} from "@/app/quest/_lib/actions";
+import type { QuestMosqueView } from "@/app/quest/_lib/types";
+import type { QuestView } from "@/app/quest/_lib/url-state";
 import { GoogleIcon } from "@/components/shared/icons";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Dialog,
 	DialogContent,
@@ -21,82 +24,33 @@ import { useQrExtractionLazy } from "@/hooks/use-qr-extraction-lazy";
 import { signInWithGoogle } from "@/lib/auth-client";
 
 type QuestContributeFormProps = {
-	mosque: QuestMosqueWithStatus;
+	mosque: QuestMosqueView;
+	view: QuestView;
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 };
 
-function isValidUrl(s: string): boolean {
-	try {
-		const u = new URL(s);
-		return u.protocol === "http:" || u.protocol === "https:";
-	} catch {
-		return false;
-	}
-}
+const SUCCESS_COPY = {
+	new: "Thanks. Your QR is in review.",
+	existing: "Thanks. We'll check this matches the existing listing.",
+} as const;
 
 function ContributeFormContent({
 	mosque,
-	onSuccess,
+	view,
 }: {
-	mosque: QuestMosqueWithStatus;
-	onSuccess: () => void;
+	mosque: QuestMosqueView;
+	view: QuestView;
 }) {
-	const router = useRouter();
 	const { isAuthenticated, isLoading: authLoading } = useAuth();
-	const {
-		qrContent,
-		qrExtracting,
-		qrExtractionFailed,
-		hasAttemptedExtraction,
-		handleQrImageChange,
-	} = useQrExtractionLazy();
-	const [submitting, setSubmitting] = useState(false);
-	const [fromOnline, setFromOnline] = useState(false);
-	const [sourceUrl, setSourceUrl] = useState("");
-	const [submitAttempted, setSubmitAttempted] = useState(false);
-	const fileInputRef = useRef<HTMLInputElement>(null);
-
-	const sourceUrlError =
-		submitAttempted && fromOnline && sourceUrl.trim() && !isValidUrl(sourceUrl);
-
-	const handleSubmit = useCallback(async () => {
-		if (!fileInputRef.current?.files?.[0]) return;
-
-		setSubmitAttempted(true);
-
-		if (fromOnline && sourceUrl.trim() && !isValidUrl(sourceUrl)) {
-			toast("URL tidak sah.");
-			return;
-		}
-
-		setSubmitting(true);
-		try {
-			const formData = new FormData();
-			formData.set("questMosqueId", mosque.id.toString());
-			formData.set("qrImage", fileInputRef.current.files[0]);
-			if (qrContent) {
-				formData.set("qrContent", qrContent);
-			}
-			if (fromOnline && sourceUrl.trim()) {
-				formData.set("sourceUrl", sourceUrl.trim());
-			}
-
-			const result = await submitQuestContribution(formData);
-
-			if (result.status === "success") {
-				toast("QR berjaya dihantar untuk semakan!");
-				onSuccess();
-				router.refresh();
-			} else if (result.status === "error") {
-				toast(result.message);
-			}
-		} catch {
-			toast("Berlaku ralat. Sila cuba lagi.");
-		} finally {
-			setSubmitting(false);
-		}
-	}, [mosque.id, qrContent, onSuccess, fromOnline, sourceUrl, router]);
+	const { qrContent, qrExtracting, handleQrImageChange } =
+		useQrExtractionLazy();
+	const [state, formAction, pending] = useActionState<
+		QuestSubmitState,
+		FormData
+	>(submitQuestAttempt, { status: "idle" });
+	const [fileError, setFileError] = useState<string | null>(null);
+	const [hasFile, setHasFile] = useState(false);
 
 	if (authLoading) {
 		return (
@@ -107,158 +61,139 @@ function ContributeFormContent({
 	}
 
 	if (!isAuthenticated) {
+		// view=map is the default, so the shell's URL omits it
+		const callback = `/quest?${view === "map" ? "" : `view=${view}&`}m=${mosque.id}`;
 		return (
-			<div className="space-y-3 p-4">
-				<p className="text-center text-sm text-muted-foreground">
-					Log masuk untuk sumbang QR kod
+			<div className="space-y-3">
+				<p className="text-sm text-muted-foreground">
+					Sign in to submit a QR for this mosque.
 				</p>
 				<Button
 					type="button"
 					variant="outline"
-					className="w-full border-border text-foreground hover:bg-accent"
-					onClick={() => signInWithGoogle("/quest")}
+					className="h-11 w-full"
+					onClick={() => signInWithGoogle(callback)}
 				>
 					<GoogleIcon className="mr-2 h-5 w-5" />
-					Log Masuk dengan Google
+					Sign in with Google
 				</Button>
 			</div>
 		);
 	}
 
-	const hasFile = !!fileInputRef.current?.files?.[0];
-	const canSubmit = hasFile && !qrExtracting && !submitting;
+	if (state.status === "success") {
+		return (
+			<output className="block py-2 text-sm text-foreground">
+				{SUCCESS_COPY[state.kind]}
+			</output>
+		);
+	}
 
 	return (
-		<div className="space-y-4 p-4">
-			<div className="rounded-md bg-muted px-3 py-2">
-				<p className="text-xs text-muted-foreground">Masjid</p>
-				<p className="text-sm font-medium text-foreground">{mosque.name}</p>
-			</div>
+		<form action={formAction} className="space-y-4">
+			<input type="hidden" name="questMosqueId" value={mosque.id} />
+			<input type="hidden" name="qrContent" value={qrContent ?? ""} />
 
-			<div>
+			<div className="space-y-1.5">
 				<label
-					htmlFor="quest-qr-upload"
-					className="flex cursor-pointer flex-col items-center gap-2 rounded-lg border-2 border-dashed border-border p-6 transition-colors hover:border-muted-foreground"
+					htmlFor="quest-qr-image"
+					className="text-sm font-medium text-foreground"
 				>
-					<ImagePlus className="h-8 w-8 text-muted-foreground" />
-					<span className="text-sm text-muted-foreground">
-						{hasAttemptedExtraction
-							? "Tukar gambar QR"
-							: "Muat naik gambar kod QR"}
-					</span>
-					<input
-						ref={fileInputRef}
-						id="quest-qr-upload"
-						type="file"
-						accept="image/*"
-						className="hidden"
-						onChange={handleQrImageChange}
-					/>
+					QR photo
 				</label>
-			</div>
-
-			{qrExtracting && (
-				<div className="flex items-center gap-2 text-sm text-muted-foreground">
-					<Loader2 className="h-4 w-4 animate-spin" />
-					<span>Mengekstrak kod QR...</span>
-				</div>
-			)}
-
-			{hasAttemptedExtraction && !qrExtracting && qrContent && (
-				<div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
-					<CheckCircle2 className="h-4 w-4" />
-					<span>Kod QR berjaya dikesan</span>
-				</div>
-			)}
-
-			{qrExtractionFailed && !qrExtracting && (
-				<div className="flex items-center gap-2 text-sm text-amber-600 dark:text-amber-400">
-					<XCircle className="h-4 w-4" />
-					<span>QR tidak dikesan - admin akan semak secara manual</span>
-				</div>
-			)}
-
-			<div className="flex items-center gap-2">
-				<Checkbox
-					id="quest-from-online"
-					checked={fromOnline}
-					onCheckedChange={(c) => setFromOnline(c === true)}
-				/>
-				<label
-					htmlFor="quest-from-online"
-					className="cursor-pointer text-sm text-muted-foreground"
-				>
-					Saya jumpa QR ini dari online
-				</label>
-			</div>
-
-			{fromOnline && (
-				<div className="space-y-1.5">
-					<label
-						htmlFor="quest-source-url"
-						className="text-sm text-muted-foreground"
-					>
-						Sumber URL (pilihan)
-					</label>
-					<Input
-						id="quest-source-url"
-						type="text"
-						placeholder="https://facebook.com/post/..."
-						value={sourceUrl}
-						onChange={(e) => setSourceUrl(e.target.value)}
-						className={
-							sourceUrlError
-								? "border-amber-500 focus-visible:ring-amber-500"
-								: ""
+				<Input
+					id="quest-qr-image"
+					name="qrImage"
+					type="file"
+					accept="image/*"
+					required
+					className="h-11 cursor-pointer py-2"
+					onChange={(e) => {
+						const file = e.target.files?.[0];
+						setHasFile(!!file);
+						if (file && file.size > 5 * 1024 * 1024) {
+							setFileError("The photo must be 5MB or smaller.");
+						} else if (file && !file.type.startsWith("image/")) {
+							setFileError("The file must be an image.");
+						} else {
+							setFileError(null);
 						}
-					/>
-					<p className="text-xs text-muted-foreground">
-						Bantu admin sahkan sumber QR.
-					</p>
-					{sourceUrlError && (
-						<p className="text-xs text-amber-600 dark:text-amber-400">
-							URL tidak sah.
-						</p>
-					)}
-				</div>
-			)}
+						handleQrImageChange(e);
+					}}
+				/>
+			</div>
+
+			<div className="space-y-1.5">
+				<label
+					htmlFor="quest-source-url"
+					className="text-sm font-medium text-foreground"
+				>
+					Source link{" "}
+					<span className="font-normal text-muted-foreground">(optional)</span>
+				</label>
+				<Input
+					id="quest-source-url"
+					name="sourceUrl"
+					type="url"
+					inputMode="url"
+					placeholder="https://facebook.com/post/..."
+					className="h-11"
+				/>
+			</div>
+
+			<div aria-live="polite" className="space-y-2 text-sm">
+				{fileError && <p className="text-destructive">{fileError}</p>}
+				{state.status === "error" && (
+					<>
+						<p className="text-destructive">{state.message}</p>
+						{state.existingUrl && (
+							<Link
+								href={state.existingUrl}
+								className="inline-flex min-h-11 items-center font-medium text-foreground underline"
+							>
+								View existing listing
+							</Link>
+						)}
+						{state.cooldownEndsAt && (
+							<CooldownTimer cooldownEndsAt={state.cooldownEndsAt} />
+						)}
+					</>
+				)}
+			</div>
 
 			<Button
-				type="button"
-				className="w-full"
-				disabled={!canSubmit}
-				onClick={handleSubmit}
+				type="submit"
+				className="h-11 w-full"
+				disabled={!hasFile || !!fileError || qrExtracting || pending}
 			>
-				{submitting ? (
+				{pending ? (
 					<>
 						<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-						Menghantar...
+						Submitting...
 					</>
 				) : (
-					"Hantar QR"
+					"Submit"
 				)}
 			</Button>
-		</div>
+		</form>
 	);
 }
 
 export default function QuestContributeForm({
 	mosque,
+	view,
 	open,
 	onOpenChange,
 }: QuestContributeFormProps) {
-	const handleSuccess = useCallback(() => {
-		onOpenChange(false);
-	}, [onOpenChange]);
-
-	// Use Dialog everywhere to avoid nested Drawer when launched from bottom sheet
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className="border-border bg-card sm:max-w-md [&>button]:text-muted-foreground [&>button]:hover:text-foreground">
+			<DialogContent className="border-border bg-card sm:max-w-md">
 				<DialogHeader>
-					<DialogTitle className="text-foreground">Sumbang QR</DialogTitle>
+					<DialogTitle className="text-foreground">
+						Submit QR for {mosque.name}
+					</DialogTitle>
 				</DialogHeader>
-				<ContributeFormContent mosque={mosque} onSuccess={handleSuccess} />
+				<ContributeFormContent mosque={mosque} view={view} />
 			</DialogContent>
 		</Dialog>
 	);

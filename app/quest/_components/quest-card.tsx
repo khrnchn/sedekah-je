@@ -4,7 +4,7 @@ import { X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import type { QuestMosqueView } from "@/app/quest/_lib/types";
-import { directionsUrl } from "@/app/quest/_lib/url-state";
+import { directionsUrl, type QuestView } from "@/app/quest/_lib/url-state";
 import QrCodeDisplay from "@/components/institution/qr-code-display";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -29,10 +29,11 @@ const STATUS_PILL = {
 
 type QuestCardProps = {
 	mosque: QuestMosqueView;
+	view: QuestView;
 	onClose: () => void;
 };
 
-export default function QuestCard({ mosque, onClose }: QuestCardProps) {
+export default function QuestCard({ mosque, view, onClose }: QuestCardProps) {
 	const [contributeOpen, setContributeOpen] = useState(false);
 	const pill = STATUS_PILL[mosque.status];
 	const listingHref =
@@ -129,6 +130,7 @@ export default function QuestCard({ mosque, onClose }: QuestCardProps) {
 					</div>
 					<QuestContributeForm
 						mosque={mosque}
+						view={view}
 						open={contributeOpen}
 						onOpenChange={setContributeOpen}
 					/>
