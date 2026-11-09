@@ -7,6 +7,7 @@ import type { QuestMosqueView } from "@/app/quest/_lib/types";
 import { directionsUrl, type QuestView } from "@/app/quest/_lib/url-state";
 import QrCodeDisplay from "@/components/institution/qr-code-display";
 import { Button } from "@/components/ui/button";
+import { normalizeInstitutionCategory } from "@/lib/institution-categories";
 import { cn } from "@/lib/utils";
 import QuestContributeForm from "./quest-contribute-form";
 
@@ -38,7 +39,7 @@ export default function QuestCard({ mosque, view, onClose }: QuestCardProps) {
 	const pill = STATUS_PILL[mosque.status];
 	const listingHref =
 		mosque.institutionCategory && mosque.institutionSlug
-			? `/${mosque.institutionCategory}/${mosque.institutionSlug}`
+			? `/${normalizeInstitutionCategory(mosque.institutionCategory)}/${mosque.institutionSlug}`
 			: null;
 
 	return (

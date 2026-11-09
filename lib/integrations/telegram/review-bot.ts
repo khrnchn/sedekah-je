@@ -8,6 +8,7 @@ import {
 	undoInstitutionReview,
 } from "@/lib/features/institution-review/review";
 import { reviewVersion } from "@/lib/features/institution-review/telegram-evidence";
+import { normalizeInstitutionCategory } from "@/lib/institution-categories";
 import {
 	createTelegramBotClient,
 	type TelegramBotClient,
@@ -689,7 +690,7 @@ export async function notifyQuestAttempt(attemptId: number): Promise<boolean> {
 		env.TELEGRAM_ADMIN_BASE_URL ?? process.env.BETTER_AUTH_URL ?? "";
 	await sendReviewText(client, {
 		chatId: env.TELEGRAM_CHAT_ID,
-		text: `Quest attempt: ${attempt.mosqueName} → existing listing ${attempt.listingName} (${adminBase}/${attempt.category}/${attempt.slug}). Review: ${adminBase}/admin/quest`,
+		text: `Quest attempt: ${attempt.mosqueName} → existing listing ${attempt.listingName} (${adminBase}/${normalizeInstitutionCategory(attempt.category)}/${attempt.slug}). Review: ${adminBase}/admin/quest`,
 	});
 	return true;
 }
