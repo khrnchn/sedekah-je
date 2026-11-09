@@ -1,6 +1,6 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { and, eq, isNull, or } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 import { after } from "next/server";
@@ -353,12 +353,29 @@ export async function submitInstitution(
 							?.addressLine;
 				}
 
-				if (finalCoords !== coords || address !== parsed.data.address) {
+				// Only fill fields that are still empty, so an admin correction made
+				// while geocoding ran is not overwritten.
+				if (!coords && finalCoords) {
 					await db
 						.update(institutions)
-						.set({ coords: finalCoords, address })
-						.where(eq(institutions.id, newId));
+						.set({ coords: finalCoords })
+						.where(
+							and(eq(institutions.id, newId), isNull(institutions.coords)),
+						);
 				}
+				if (!parsed.data.address && address) {
+					await db
+						.update(institutions)
+						.set({ address })
+						.where(
+							and(
+								eq(institutions.id, newId),
+								or(isNull(institutions.address), eq(institutions.address, "")),
+							),
+						);
+				}
+				// The pending queue may have cached the row before enrichment.
+				revalidateTag("pending-institutions", "max");
 			} catch (error) {
 				console.error("Failed to geocode new institution:", error);
 			}

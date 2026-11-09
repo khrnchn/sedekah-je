@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { toast } from "sonner";
 import { compressImage } from "@/lib/image-utils";
 import { decodeQrFromImageBlob } from "@/lib/qr-decode-browser";
@@ -16,9 +16,14 @@ export function useQrExtractionLazy() {
 	const [qrExtracting, setQrExtracting] = useState(false);
 	const [qrExtractionFailed, setQrExtractionFailed] = useState(false);
 	const [hasAttemptedExtraction, setHasAttemptedExtraction] = useState(false);
+	// Decoding is async, so a removed or replaced image can finish after the
+	// newer one. Only the latest run may write state or swap the input's file.
+	const latestRunRef = useRef(0);
 
 	const handleQrImageChange = useCallback(
 		async (event: React.ChangeEvent<HTMLInputElement>) => {
+			const run = ++latestRunRef.current;
+			const isStale = () => run !== latestRunRef.current;
 			const file = event.target.files?.[0];
 			if (!file) {
 				// Prevent infinite loops by checking current state before setting
@@ -61,6 +66,7 @@ export function useQrExtractionLazy() {
 				// Decode the original. Compressing first re-encodes the QR module
 				// edges and is what made this fail where the admin tool succeeded.
 				const decoded = await decodeQrFromImageBlob(file);
+				if (isStale()) return;
 
 				if (decoded) {
 					setQrContent(decoded);
@@ -84,7 +90,7 @@ export function useQrExtractionLazy() {
 						quality: 0.8,
 						maxFileSizeMB: MAX_FILE_SIZE_MB,
 					});
-					if (compressed.size < file.size) {
+					if (!isStale() && compressed.size < file.size) {
 						const dataTransfer = new DataTransfer();
 						dataTransfer.items.add(compressed);
 						event.target.files = dataTransfer.files;
@@ -94,9 +100,10 @@ export function useQrExtractionLazy() {
 					console.warn("QR image compression failed:", compressError);
 				}
 
-				setQrExtracting(false);
+				if (!isStale()) setQrExtracting(false);
 			} catch (error) {
 				console.error("QR extraction error:", error);
+				if (isStale()) return;
 				setQrExtractionFailed(true);
 				toast("Ralat mengekstrak QR", {
 					description: "Admin akan mengekstrak kandungan QR secara manual.",
@@ -108,6 +115,8 @@ export function useQrExtractionLazy() {
 	);
 
 	const clearQrContent = useCallback(() => {
+		latestRunRef.current++;
+		setQrExtracting(false);
 		// Prevent infinite loops by checking current state before setting
 		if (qrContent !== null || qrExtractionFailed || hasAttemptedExtraction) {
 			setQrContent(null);

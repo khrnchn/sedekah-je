@@ -83,11 +83,19 @@ export function EditInstitutionSheet({
 			formData.append("name", name.trim());
 			formData.append("institutionId", institution.id);
 
-			const qrImageInput = document.getElementById(
-				"edit-institution-qrImage",
-			) as HTMLInputElement;
-			if (qrImageInput?.files?.[0]) {
-				formData.append("qrImage", qrImageInput.files[0]);
+			const qrFile =
+				(
+					document.getElementById(
+						"edit-institution-qrImage",
+					) as HTMLInputElement | null
+				)?.files?.[0] ??
+				(
+					document.getElementById(
+						"edit-institution-qrImage-gallery",
+					) as HTMLInputElement | null
+				)?.files?.[0];
+			if (qrFile) {
+				formData.append("qrImage", qrFile);
 			}
 			if (qrContent) {
 				formData.append("qrContent", qrContent);

@@ -37,13 +37,16 @@ export function useLocationPrefillLazy(
 							`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}`,
 						);
 						const data = await res.json();
-						// Only suggest a name when the nearest place is an institution,
-						// otherwise this offers road or taman names.
+						// Only suggest a name when the nearest place is an institution.
+						// The category check drops roads and areas like "Jalan Masjid".
 						const suggestedName =
 							typeof data.display_name === "string"
 								? data.display_name.split(",")[0].trim()
 								: "";
 						if (
+							!["highway", "place", "landuse", "boundary"].includes(
+								data.category,
+							) &&
 							/\b(masjid|mosque|surau|musolla|madrasah|maahad|tahfiz|pondok)\b/i.test(
 								suggestedName,
 							)
@@ -69,7 +72,13 @@ export function useLocationPrefillLazy(
 							setPrefilledCity(city);
 							setPrefilledState(state ?? "");
 							setValue("city", city, { shouldValidate: true });
-							if (state) setValue("state", state, { shouldValidate: true });
+							// Clear a previously chosen state rather than keep one that
+							// may not match the new coordinates.
+							setValue(
+								"state",
+								(state ?? undefined) as InstitutionFormData["state"],
+								{ shouldValidate: !!state },
+							);
 							setValue("lat", latitude.toString());
 							setValue("lon", longitude.toString());
 						}

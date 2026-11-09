@@ -243,6 +243,11 @@ export default function QRExtractionFeature({
 			handleFileChange(e);
 		}
 		if (e.target.files?.[0]) {
+			// Submit handlers read either input, so keep only the latest pick.
+			const otherInput = document.getElementById(
+				e.target.id === inputId ? `${inputId}-gallery` : inputId,
+			) as HTMLInputElement | null;
+			if (otherInput) otherInput.value = "";
 			setSelectedFile(e.target.files[0]);
 			// Update hasFile status when a file is selected
 			const newStatus = {
