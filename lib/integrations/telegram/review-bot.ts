@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
-import { institutions, users } from "@/db/schema";
+import { institutions, questAttempts, questMosques, users } from "@/db/schema";
 import { env } from "@/env";
 import { REJECTION_TEMPLATES } from "@/lib/admin-templates";
 import {
@@ -41,7 +41,7 @@ import {
 	shouldAutoAnalyseSubmission,
 } from "./review-analysis";
 import { reviewCardDigest, syncReviewCard } from "./review-card-sync";
-import { sendReviewPayload } from "./review-text";
+import { sendReviewPayload, sendReviewText } from "./review-text";
 import {
 	handleToolCallback,
 	handleToolReply,
@@ -666,6 +666,31 @@ export async function notifyInstitutionSubmission(
 		candidate,
 		scope,
 	);
+	return true;
+}
+
+export async function notifyQuestAttempt(attemptId: number): Promise<boolean> {
+	const client = getTelegramClient();
+	if (!client || !env.TELEGRAM_CHAT_ID) return false;
+	const [attempt] = await db
+		.select({
+			mosqueName: questMosques.name,
+			listingName: institutions.name,
+			category: institutions.category,
+			slug: institutions.slug,
+		})
+		.from(questAttempts)
+		.innerJoin(questMosques, eq(questMosques.id, questAttempts.questMosqueId))
+		.innerJoin(institutions, eq(institutions.id, questAttempts.institutionId))
+		.where(eq(questAttempts.id, attemptId))
+		.limit(1);
+	if (!attempt) return false;
+	const adminBase =
+		env.TELEGRAM_ADMIN_BASE_URL ?? process.env.BETTER_AUTH_URL ?? "";
+	await sendReviewText(client, {
+		chatId: env.TELEGRAM_CHAT_ID,
+		text: `Quest attempt: ${attempt.mosqueName} → existing listing ${attempt.listingName} (${adminBase}/${attempt.category}/${attempt.slug}). Review: ${adminBase}/admin/quest`,
+	});
 	return true;
 }
 

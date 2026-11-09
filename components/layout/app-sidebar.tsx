@@ -111,6 +111,11 @@ const data = {
 			url: "/admin/claim-requests",
 			icon: "User",
 		},
+		{
+			name: "Quest attempts",
+			url: "/admin/quest",
+			icon: "MapPin",
+		},
 	],
 };
 

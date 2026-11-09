@@ -76,6 +76,7 @@ export type TelegramReviewCandidate = {
 	duplicateInstitutionId: number | null;
 	position: number;
 	total: number;
+	quest?: { mosqueName: string; attempts: number };
 };
 
 const CALLBACK_ACTION_CODES = {
@@ -362,6 +363,11 @@ export function buildReviewCard(
 		...(candidate.reviewMetadata?.held ? ["⏸ Held"] : []),
 		...(candidate.partnerName
 			? [`Partner: ${candidate.partnerName.slice(0, 40)}`]
+			: []),
+		...(candidate.quest
+			? [
+					`Quest: ${candidate.quest.mosqueName.slice(0, 60)}, ${candidate.quest.attempts} attempts`,
+				]
 			: []),
 		"",
 		ai,

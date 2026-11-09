@@ -80,6 +80,20 @@ describe("Telegram institution review UI", () => {
 		assert.ok(card.caption.includes("Partner: Taubat"));
 	});
 
+	test("shows the quest mosque and attempt count only for quest listings", () => {
+		const quest = buildReviewCard(
+			{ ...candidate, quest: { mosqueName: "Masjid Al-Irsyad", attempts: 2 } },
+			"community",
+			{ adminBaseUrl: null },
+		);
+		const plain = buildReviewCard(candidate, "community", {
+			adminBaseUrl: null,
+		});
+
+		assert.ok(quest.caption.includes("Quest: Masjid Al-Irsyad, 2 attempts"));
+		assert.ok(!plain.caption.includes("Quest:"));
+	});
+
 	test("blocks quick approval when required review evidence is missing", () => {
 		const incomplete = {
 			...candidate,

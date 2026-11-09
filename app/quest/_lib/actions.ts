@@ -10,7 +10,10 @@ import { db } from "@/db";
 import { institutions, questMosques } from "@/db/schema";
 import { classifyQuestQr } from "@/lib/features/quest/rules";
 import { r2Storage } from "@/lib/integrations/r2-client";
-import { notifyInstitutionSubmission } from "@/lib/integrations/telegram/review-bot";
+import {
+	notifyInstitutionSubmission,
+	notifyQuestAttempt,
+} from "@/lib/integrations/telegram/review-bot";
 import { decodeQrFromBuffer } from "@/lib/qr-decode";
 import { isToyyibpay } from "@/lib/qr-utils";
 import { findDuplicateQr } from "@/lib/queries/institution-duplicate";
@@ -162,6 +165,7 @@ export async function submitQuestAttempt(
 	}
 
 	if (classified.kind === "existing") {
+		let attemptId: number;
 		try {
 			const outcome = await db.transaction((tx) =>
 				insertQuestAttempt(tx, {
@@ -171,15 +175,22 @@ export async function submitQuestAttempt(
 					institutionId: classified.institutionId,
 				}),
 			);
-			if (outcome === "has_qr") {
+			if (outcome.result === "has_qr") {
 				return { status: "error", message: HAS_QR_MESSAGE };
 			}
-			if (outcome === "already_submitted") {
+			if (outcome.result === "already_submitted") {
 				return { status: "error", message: ALREADY_SUBMITTED_MESSAGE };
 			}
+			attemptId = outcome.id;
 		} catch (error) {
 			console.error("Failed to insert quest attempt:", error);
 			return { status: "error", message: SAVE_FAILED_MESSAGE };
+		}
+
+		try {
+			await notifyQuestAttempt(attemptId);
+		} catch (telegramError) {
+			console.error("Failed to notify Telegram:", telegramError);
 		}
 
 		revalidateTag("quest-mosques", "max");
@@ -203,7 +214,9 @@ export async function submitQuestAttempt(
 	}
 
 	// Assigned inside the transaction callback; the cast stops TS narrowing it to "ok".
-	let outcome = "ok" as Awaited<ReturnType<typeof insertQuestAttempt>>;
+	let outcome = "ok" as Awaited<
+		ReturnType<typeof insertQuestAttempt>
+	>["result"];
 	let newId: number | undefined;
 	try {
 		await db.transaction(async (tx) => {
@@ -226,12 +239,12 @@ export async function submitQuestAttempt(
 					contributorRemarks: `Quest contribution for mosque ID ${mosque.id} (JAIS: ${mosque.jaisId})`,
 				})
 				.returning({ id: institutions.id });
-			outcome = await insertQuestAttempt(tx, {
+			({ result: outcome } = await insertQuestAttempt(tx, {
 				questMosqueId: mosque.id,
 				userId,
 				kind: "new",
 				institutionId: row.id,
-			});
+			}));
 			if (outcome !== "ok") tx.rollback();
 			newId = row.id;
 		});
