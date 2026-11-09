@@ -43,9 +43,11 @@ import {
 import { cn, toTitleCase } from "@/lib/utils";
 import {
 	getContributionCooldown,
+	type SubmitInstitutionFormState,
 	submitInstitution,
 } from "../_lib/submit-institution";
 import { CooldownTimer } from "./cooldown-timer";
+import { SubmissionNotice } from "./submission-notice";
 
 // Lazy load heavy features for better mobile performance
 const QRExtractionFeature = lazy(() => import("./qr-extraction-feature"));
@@ -209,6 +211,15 @@ export default function InstitutionFormOptimized() {
 		clearQrContentRef.current = fn;
 	}, []);
 
+	const [duplicateFeedback, setDuplicateFeedback] = useState<Extract<
+		SubmitInstitutionFormState,
+		{ status: "error" }
+	> | null>(null);
+	const handleQrContentChange = useCallback((content: string | null) => {
+		setQrContent(content);
+		setDuplicateFeedback(null);
+	}, []);
+
 	const [additionalInfoExpanded, setAdditionalInfoExpanded] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [enableAdvancedFeatures, setEnableAdvancedFeatures] = useState(false);
@@ -304,6 +315,7 @@ export default function InstitutionFormOptimized() {
 		}
 
 		setIsSubmitting(true);
+		setDuplicateFeedback(null);
 		// Clear previous general errors
 		form.clearErrors("root.general");
 
@@ -372,6 +384,11 @@ export default function InstitutionFormOptimized() {
 					return;
 				}
 
+				if (result.code === "duplicate_qr") {
+					setDuplicateFeedback(result);
+					return;
+				}
+
 				// Handle specific field errors
 				if (result.errors) {
 					for (const [key, messages] of Object.entries(result.errors)) {
@@ -409,7 +426,18 @@ export default function InstitutionFormOptimized() {
 
 	return (
 		<form
-			onSubmit={handleSubmit(onSubmit)}
+			onSubmit={(event) => {
+				setDuplicateFeedback(null);
+				void handleSubmit(onSubmit)(event);
+			}}
+			onChangeCapture={(event) => {
+				if (
+					event.target instanceof HTMLInputElement &&
+					event.target.type === "file"
+				) {
+					setDuplicateFeedback(null);
+				}
+			}}
 			encType="multipart/form-data"
 			className="mx-auto max-w-xl space-y-6 px-4 pb-20 md:px-0 md:pb-6"
 		>
@@ -442,7 +470,7 @@ export default function InstitutionFormOptimized() {
 					<Suspense fallback={<QRUploadSkeleton />}>
 						<QRExtractionFeature
 							isSubmitting={isSubmitting}
-							onQrContentChange={setQrContent}
+							onQrContentChange={handleQrContentChange}
 							onStatusChange={setQrStatus}
 							onClearQrContent={setClearQrContent}
 						/>
@@ -781,20 +809,24 @@ export default function InstitutionFormOptimized() {
 				</div>
 			</fieldset>
 
-			{cooldownEndsAt ? (
-				<CooldownTimer
-					cooldownEndsAt={cooldownEndsAt}
-					onCooldownEnd={() => setCooldownEndsAt(null)}
-				/>
-			) : (
-				errors.root?.general && (
-					<div className="mt-4 rounded-md border border-destructive/20 bg-destructive/10 p-3 text-center">
-						<p className="text-sm font-medium text-destructive">
-							{errors.root.general.message}
-						</p>
-					</div>
-				)
-			)}
+			<output className="block" aria-live="polite" aria-atomic="true">
+				{cooldownEndsAt ? (
+					<CooldownTimer
+						cooldownEndsAt={cooldownEndsAt}
+						onCooldownEnd={() => setCooldownEndsAt(null)}
+					/>
+				) : duplicateFeedback ? (
+					<SubmissionNotice
+						message={
+							duplicateFeedback.errors.general?.[0] ??
+							"QR code ini telah pun wujud dalam sistem. Sila semak semula."
+						}
+						existingInstitution={duplicateFeedback.existingInstitution}
+					/>
+				) : errors.root?.general?.message ? (
+					<SubmissionNotice message={errors.root.general.message} />
+				) : null}
+			</output>
 		</form>
 	);
 }

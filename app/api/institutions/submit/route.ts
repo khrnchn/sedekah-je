@@ -8,7 +8,6 @@ import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions } from "@/db/institutions";
 import { users } from "@/db/users";
-import { normalizeInstitutionCategory } from "@/lib/institution-categories";
 import {
 	categories as validCategories,
 	states as validStates,
@@ -22,6 +21,7 @@ import { r2Storage } from "@/lib/integrations/r2-client";
 import { notifyInstitutionSubmission } from "@/lib/integrations/telegram/review-bot";
 import { decodeQrFromBuffer } from "@/lib/qr-decode";
 import { isToyyibpay } from "@/lib/qr-utils";
+import { findDuplicateQr } from "@/lib/queries/institution-duplicate";
 import {
 	checkSubmissionRateLimit,
 	SUBMISSIONS_PER_DAY,
@@ -311,49 +311,15 @@ export async function POST(request: NextRequest) {
 
 	// --- Duplicate QR content check (before upload to avoid orphaned objects)
 	if (qrContent) {
-		const matches = await db
-			.select({
-				id: institutions.id,
-				name: institutions.name,
-				slug: institutions.slug,
-				category: institutions.category,
-				status: institutions.status,
-				partnerId: institutions.partnerId,
-				contributorId: institutions.contributorId,
-			})
-			.from(institutions)
-			.where(eq(institutions.qrContent, qrContent));
-
-		function isOwnedPending(match: (typeof matches)[number]) {
-			return (
-				match.status === "pending" &&
-				(partner
-					? match.partnerId === partner.id
-					: match.contributorId === sessionUser?.id)
-			);
-		}
-
-		function priority(match: (typeof matches)[number]) {
-			if (match.status === "approved") return 0;
-			return isOwnedPending(match) ? 1 : 2;
-		}
-
-		const [existing] = matches.sort(
-			(a, b) => priority(a) - priority(b) || a.id - b.id,
+		const duplicate = await findDuplicateQr(
+			qrContent,
+			partner
+				? { kind: "partner", id: partner.id }
+				: { kind: "session", id: sessionUser?.id ?? "" },
 		);
 
-		if (existing) {
-			const existingInstitution =
-				existing.status === "approved"
-					? {
-							id: existing.id,
-							name: existing.name,
-							status: "approved",
-							url: `https://sedekah.je/${normalizeInstitutionCategory(existing.category)}/${existing.slug}`,
-						}
-					: isOwnedPending(existing)
-						? { id: existing.id, status: "pending" }
-						: undefined;
+		if (duplicate) {
+			const { existingInstitution } = duplicate;
 			return json(
 				{
 					status: "error",

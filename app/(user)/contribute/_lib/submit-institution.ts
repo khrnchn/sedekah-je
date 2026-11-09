@@ -18,6 +18,10 @@ import { notifyInstitutionSubmission } from "@/lib/integrations/telegram/review-
 import { decodeQrFromBuffer } from "@/lib/qr-decode";
 import { isToyyibpay } from "@/lib/qr-utils";
 import {
+	type ExistingInstitution,
+	findDuplicateQr,
+} from "@/lib/queries/institution-duplicate";
+import {
 	checkSubmissionRateLimit,
 	SUBMISSIONS_PER_DAY,
 } from "@/lib/queries/institution-submission-limit";
@@ -32,6 +36,8 @@ export type SubmitInstitutionFormState =
 			status: "error";
 			errors: Record<string, string[]>;
 			cooldownEndsAt?: string;
+			code?: "duplicate_qr";
+			existingInstitution?: ExistingInstitution;
 	  };
 
 // Helper function to generate a unique slug
@@ -256,15 +262,16 @@ export async function submitInstitution(
 
 	// --- Duplicate QR check (before R2 upload to avoid orphaned objects)
 	if (qrContent) {
-		const [existingQr] = await db
-			.select({ id: institutions.id })
-			.from(institutions)
-			.where(eq(institutions.qrContent, qrContent))
-			.limit(1);
+		const duplicate = await findDuplicateQr(qrContent, {
+			kind: "session",
+			id: contributorId,
+		});
 
-		if (existingQr) {
+		if (duplicate) {
 			return {
 				status: "error",
+				code: "duplicate_qr",
+				...duplicate,
 				errors: {
 					general: [
 						"QR code ini telah pun wujud dalam sistem. Sila semak semula.",
