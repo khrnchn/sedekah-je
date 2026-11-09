@@ -4,6 +4,7 @@ import {
 	CheckCircle,
 	Clock,
 	type LucideIcon,
+	MapPin,
 	User,
 	XCircle,
 } from "lucide-react";
@@ -23,6 +24,7 @@ const iconMap: Record<string, LucideIcon> = {
 	CheckCircle,
 	XCircle,
 	User,
+	MapPin,
 };
 
 function isPathActive(pathname: string, url: string) {

@@ -13,7 +13,13 @@ import {
 	sql,
 } from "drizzle-orm";
 import { db } from "@/db";
-import { institutions, telegramReviewSessions, users } from "@/db/schema";
+import {
+	institutions,
+	questAttempts,
+	questMosques,
+	telegramReviewSessions,
+	users,
+} from "@/db/schema";
 import { reviewVersion } from "@/lib/features/institution-review/telegram-evidence";
 import type {
 	TelegramReviewCandidate,
@@ -65,7 +71,7 @@ async function hydrateCandidate(
 				)
 				.limit(1)
 		: [];
-	const [positionResult, totalResult] = await Promise.all([
+	const [positionResult, totalResult, questResult] = await Promise.all([
 		store
 			.select({ value: count() })
 			.from(institutions)
@@ -80,6 +86,20 @@ async function hydrateCandidate(
 			.select({ value: count() })
 			.from(institutions)
 			.where(and(eq(institutions.status, "pending"), scopeCondition)),
+		store
+			.select({
+				mosqueName: questMosques.name,
+				attempts: sql<number>`(
+					select count(*) from ${questAttempts} as counted
+					where counted.quest_mosque_id = ${questMosques.id}
+					and counted.status in ('pending', 'approved')
+				)`.mapWith(Number),
+			})
+			.from(questAttempts)
+			.innerJoin(questMosques, eq(questMosques.id, questAttempts.questMosqueId))
+			.where(eq(questAttempts.institutionId, row.id))
+			.orderBy(asc(questAttempts.id))
+			.limit(1),
 	]);
 
 	return {
@@ -89,6 +109,7 @@ async function hydrateCandidate(
 		duplicateInstitutionId: duplicate[0]?.id ?? null,
 		position: positionResult[0]?.value ?? 1,
 		total: totalResult[0]?.value ?? 0,
+		...(questResult[0] ? { quest: questResult[0] } : {}),
 	};
 }
 

@@ -5,6 +5,7 @@ import { insertQuestAttempt } from "@/app/quest/_lib/attempts";
 import { db } from "@/db";
 import { institutions, questAttempts, questMosques, users } from "@/db/schema";
 import { env } from "@/env";
+import { getTelegramReviewCandidate } from "@/lib/integrations/telegram/review-repository";
 
 // Opt in explicitly; refuse any non-loopback database. Never use the project's real DB.
 const enabled = process.env.QUEST_LOCAL_TESTS === "true";
@@ -91,7 +92,7 @@ localTest("mosque linked to approved listing returns has_qr", async () => {
 				institutionId: other,
 			}),
 		);
-		assert.equal(outcome, "has_qr");
+		assert.deepEqual(outcome, { result: "has_qr" });
 		assert.equal(await attemptCount(mosqueId), 0);
 	});
 });
@@ -110,7 +111,7 @@ localTest("mosque linked to pending listing still accepts", async () => {
 			kind: "new",
 			institutionId: other,
 		});
-		assert.equal(outcome, "ok");
+		assert.equal(outcome.result, "ok");
 		assert.equal(await attemptCount(mosqueId), 1);
 	});
 });
@@ -126,15 +127,50 @@ localTest(
 				kind: "existing" as const,
 				institutionId: listing,
 			};
-			assert.equal(
+			const first = await db.transaction((tx) => insertQuestAttempt(tx, input));
+			assert.equal(first.result, "ok");
+			assert.deepEqual(
 				await db.transaction((tx) => insertQuestAttempt(tx, input)),
-				"ok",
-			);
-			assert.equal(
-				await db.transaction((tx) => insertQuestAttempt(tx, input)),
-				"already_submitted",
+				{ result: "already_submitted" },
 			);
 			assert.equal(await attemptCount(mosqueId), 1);
+		});
+	},
+);
+
+localTest(
+	"review card counts pending and approved attempts for the mosque",
+	async () => {
+		await withSeed(async ({ mosqueId, userId, institution }) => {
+			const fresh = await institution("pending");
+			const approved = await institution("approved");
+			const rejected = await institution("approved");
+			const unrelated = await institution("pending");
+			await db.insert(questAttempts).values([
+				{ questMosqueId: mosqueId, userId, kind: "new", institutionId: fresh },
+				{
+					questMosqueId: mosqueId,
+					userId,
+					kind: "existing",
+					institutionId: approved,
+					status: "approved",
+				},
+				{
+					questMosqueId: mosqueId,
+					userId,
+					kind: "existing",
+					institutionId: rejected,
+					status: "rejected",
+				},
+			]);
+
+			const card = await getTelegramReviewCandidate(fresh, "all");
+			assert.deepEqual(card?.quest, {
+				mosqueName: "Masjid Ujian",
+				attempts: 2,
+			});
+			const plain = await getTelegramReviewCandidate(unrelated, "all");
+			assert.equal(plain?.quest, undefined);
 		});
 	},
 );

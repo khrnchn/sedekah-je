@@ -12,7 +12,11 @@ export async function insertQuestAttempt(
 		kind: QuestAttemptKind;
 		institutionId: number;
 	},
-): Promise<"ok" | "has_qr" | "already_submitted"> {
+): Promise<
+	| { result: "ok"; id: number }
+	| { result: "has_qr" }
+	| { result: "already_submitted" }
+> {
 	// Lock only the mosque row; a join here would also lock the linked listing.
 	const [mosque] = await tx
 		.select({ institutionId: questMosques.institutionId })
@@ -26,7 +30,7 @@ export async function insertQuestAttempt(
 			.select({ status: institutions.status })
 			.from(institutions)
 			.where(eq(institutions.id, mosque.institutionId));
-		if (linked?.status === "approved") return "has_qr";
+		if (linked?.status === "approved") return { result: "has_qr" };
 	}
 
 	const inserted = await tx
@@ -34,5 +38,7 @@ export async function insertQuestAttempt(
 		.values(input)
 		.onConflictDoNothing()
 		.returning({ id: questAttempts.id });
-	return inserted.length === 0 ? "already_submitted" : "ok";
+	return inserted[0]
+		? { result: "ok", id: inserted[0].id }
+		: { result: "already_submitted" };
 }
