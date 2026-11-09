@@ -85,6 +85,13 @@
 			"when": 1792424447113,
 			"tag": "0011_true_goliath",
 			"breakpoints": true
+		},
+		{
+			"idx": 12,
+			"version": "7",
+			"when": 1794209112587,
+			"tag": "0012_quest_attempts",
+			"breakpoints": true
 		}
 	]
 }
