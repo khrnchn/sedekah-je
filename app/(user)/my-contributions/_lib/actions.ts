@@ -5,6 +5,7 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { auth } from "@/auth";
 import { db } from "@/db";
 import { institutions } from "@/db/institutions";
+import { syncQuestForInstitutions } from "@/lib/features/quest/sync";
 import { r2Storage } from "@/lib/integrations/r2-client";
 import { logRejectedInstitutionUpdate } from "@/lib/integrations/telegram";
 import { getUserById } from "@/lib/queries/users";
@@ -163,20 +164,23 @@ export async function updateRejectedInstitution(
 	const newSlug = await generateUniqueSlugForUpdate(name.trim(), institutionId);
 
 	try {
-		await db
-			.update(institutions)
-			.set({
-				name: name.trim(),
-				slug: newSlug,
-				qrImage: qrImageUrl,
-				qrContent,
-				status: "pending",
-				adminNotes: null,
-				reviewedBy: null,
-				reviewedAt: null,
-				updatedAt: new Date(),
-			})
-			.where(eq(institutions.id, institutionId));
+		await db.transaction(async (tx) => {
+			await tx
+				.update(institutions)
+				.set({
+					name: name.trim(),
+					slug: newSlug,
+					qrImage: qrImageUrl,
+					qrContent,
+					status: "pending",
+					adminNotes: null,
+					reviewedBy: null,
+					reviewedAt: null,
+					updatedAt: new Date(),
+				})
+				.where(eq(institutions.id, institutionId));
+			await syncQuestForInstitutions(tx, [institutionId]);
+		});
 
 		try {
 			await logRejectedInstitutionUpdate({
@@ -202,6 +206,7 @@ export async function updateRejectedInstitution(
 		revalidatePath("/admin/institutions/pending", "page");
 		revalidateTag("institutions-count", "max");
 		revalidateTag("pending-institutions", "max");
+		revalidateTag("quest-mosques", "max");
 
 		return { status: "success" };
 	} catch (error) {
