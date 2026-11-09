@@ -2,7 +2,7 @@ import { and, eq, inArray, sql } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { after } from "next/server";
 import { db } from "@/db";
-import { institutions, questMosques, users } from "@/db/schema";
+import { institutions, users } from "@/db/schema";
 import { sendInstitutionApprovalEmail } from "@/lib/email/approval";
 import { buildInstitutionApproveLink } from "@/lib/email/approval-link";
 import {
@@ -11,6 +11,7 @@ import {
 	createInstitutionReviewModule,
 	type InstitutionReviewDecision,
 } from "@/lib/features/institution-review/review-core";
+import { syncQuestForInstitutions } from "@/lib/features/quest/sync";
 import {
 	appendReviewHistory,
 	consumeReviewOperation,
@@ -37,12 +38,11 @@ function runReviewSideEffects(decision: InstitutionReviewDecision) {
 	revalidateTag("dashboard-data", "max");
 	revalidateTag("recent-activities", "max");
 	revalidateTag("user-contributions", "max");
+	revalidateTag("quest-mosques", "max");
 
 	if (decision === "approved") {
 		revalidateTag("institutions", "max");
 		revalidateTag("leaderboard", "max");
-	} else {
-		revalidateTag("quest-mosques", "max");
 	}
 }
 
@@ -147,6 +147,7 @@ export async function undoInstitutionReview(input: {
 			)
 			.returning();
 		if (!reverted) return null;
+		await syncQuestForInstitutions(tx, [reverted.id]);
 
 		try {
 			runReviewSideEffects(current.status as InstitutionReviewDecision);
@@ -243,12 +244,7 @@ export const reviewPendingInstitution = createInstitutionReviewModule({
 					.returning();
 
 				if (!updated) return null;
-				if (input.decision === "rejected") {
-					await tx
-						.update(questMosques)
-						.set({ institutionId: null })
-						.where(eq(questMosques.institutionId, input.institutionId));
-				}
+				await syncQuestForInstitutions(tx, [updated.id]);
 				return updated;
 			});
 		},
@@ -365,17 +361,10 @@ export async function undoInstitutionApprovals(input: {
 			)
 			.returning();
 
-		if (updated.length > 0) {
-			await tx
-				.update(questMosques)
-				.set({ institutionId: null })
-				.where(
-					inArray(
-						questMosques.institutionId,
-						updated.map((row) => row.id),
-					),
-				);
-		}
+		await syncQuestForInstitutions(
+			tx,
+			updated.map((row) => row.id),
+		);
 		return updated;
 	});
 
@@ -420,17 +409,10 @@ export const reviewPendingInstitutions = createInstitutionBatchReviewModule({
 					)
 					.returning();
 
-				if (updated.length > 0 && input.decision === "rejected") {
-					await tx
-						.update(questMosques)
-						.set({ institutionId: null })
-						.where(
-							inArray(
-								questMosques.institutionId,
-								updated.map((row) => row.id),
-							),
-						);
-				}
+				await syncQuestForInstitutions(
+					tx,
+					updated.map((row) => row.id),
+				);
 				return updated;
 			});
 		},
