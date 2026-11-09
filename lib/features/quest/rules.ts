@@ -15,10 +15,7 @@ export function deriveQuestStatus(input: {
 	pendingAttempts: number;
 }): QuestStatus {
 	if (input.linkedInstitutionStatus === "approved") return "has_qr";
-	if (input.linkedInstitutionStatus === null && input.pendingAttempts > 0) {
-		return "in_review";
-	}
-	return "missing";
+	return input.pendingAttempts > 0 ? "in_review" : "missing";
 }
 
 export function resolveQuestLink(
