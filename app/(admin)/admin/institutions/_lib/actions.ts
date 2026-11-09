@@ -6,6 +6,7 @@ import { db } from "@/db";
 import { institutions, users } from "@/db/schema";
 import { requireAdminSession } from "@/lib/auth-helpers";
 import { reviewPendingInstitution } from "@/lib/features/institution-review/review";
+import { syncQuestForInstitutions } from "@/lib/features/quest/sync";
 import { normalizeInstitutionCategory } from "@/lib/institution-categories";
 import { reverseGeocodeInstitution } from "@/lib/integrations/geocode";
 import { slugify } from "@/lib/utils";
@@ -228,16 +229,23 @@ export async function undoApproval(id: number, adminNotes?: string) {
 		throw new Error("Can only undo approval for approved institutions");
 	}
 
-	const result = await db
-		.update(institutions)
-		.set({
-			status: "rejected",
-			reviewedBy: reviewerId,
-			reviewedAt: new Date(),
-			adminNotes: adminNotes || "Approval undone (duplicate)",
-		})
-		.where(eq(institutions.id, id))
-		.returning();
+	const result = await db.transaction(async (tx) => {
+		const rows = await tx
+			.update(institutions)
+			.set({
+				status: "rejected",
+				reviewedBy: reviewerId,
+				reviewedAt: new Date(),
+				adminNotes: adminNotes || "Approval undone (duplicate)",
+			})
+			.where(eq(institutions.id, id))
+			.returning();
+		await syncQuestForInstitutions(
+			tx,
+			rows.map((row) => row.id),
+		);
+		return rows;
+	});
 
 	// Revalidate relevant pages to update the UI
 	revalidatePath("/admin/institutions/approved", "page");
@@ -253,6 +261,7 @@ export async function undoApproval(id: number, adminNotes?: string) {
 	revalidateTag("dashboard-data", "max");
 	revalidateTag("recent-activities", "max");
 	revalidateTag("user-contributions", "max");
+	revalidateTag("quest-mosques", "max");
 
 	return result;
 }
