@@ -3,61 +3,73 @@
 import { and, asc, count, desc, eq, isNotNull, sql } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import { db } from "@/db";
-import { institutions, questMosques, users } from "@/db/schema";
-import type {
-	QuestLeaderboardEntry,
-	QuestMosqueWithStatus,
-	QuestStats,
-} from "./types";
+import { institutions, questAttempts, questMosques, users } from "@/db/schema";
+import { deriveQuestStatus } from "@/lib/features/quest/rules";
+import type { QuestLeaderboardEntry, QuestMosqueView } from "./types";
 
 export const getQuestMosques = unstable_cache(
-	async (): Promise<QuestMosqueWithStatus[]> => {
+	async (): Promise<QuestMosqueView[]> => {
+		const pending = db
+			.select({
+				questMosqueId: questAttempts.questMosqueId,
+				pendingCount: count().as("pending_count"),
+			})
+			.from(questAttempts)
+			.where(eq(questAttempts.status, "pending"))
+			.groupBy(questAttempts.questMosqueId)
+			.as("pending");
+
 		const rows = await db
 			.select({
 				id: questMosques.id,
 				name: questMosques.name,
 				address: questMosques.address,
-				district: questMosques.district,
-				jaisId: questMosques.jaisId,
 				coords: questMosques.coords,
-				institutionId: questMosques.institutionId,
-				createdAt: questMosques.createdAt,
-				updatedAt: questMosques.updatedAt,
+				pendingAttempts: sql<number>`coalesce(${pending.pendingCount}, 0)`,
 				institutionSlug: institutions.slug,
 				institutionCategory: institutions.category,
 				qrContent: institutions.qrContent,
 				supportedPayment: institutions.supportedPayment,
 				institutionStatus: institutions.status,
+				contributorName: users.name,
 			})
 			.from(questMosques)
 			.leftJoin(institutions, eq(questMosques.institutionId, institutions.id))
+			.leftJoin(pending, eq(pending.questMosqueId, questMosques.id))
+			.leftJoin(
+				questAttempts,
+				and(
+					eq(questAttempts.questMosqueId, questMosques.id),
+					eq(questAttempts.institutionId, questMosques.institutionId),
+					eq(questAttempts.status, "approved"),
+				),
+			)
+			.leftJoin(users, eq(questAttempts.userId, users.id))
 			.orderBy(questMosques.name);
 
 		return rows.map((r) => {
-			const status = r.institutionStatus as
-				| "approved"
-				| "pending"
-				| "rejected"
-				| null;
-			const isUnlocked = status === "approved";
-			const isPending = status === "pending";
+			const pendingAttempts = Number(r.pendingAttempts);
+			const status = deriveQuestStatus({
+				linkedInstitutionStatus: r.institutionStatus as
+					| "approved"
+					| "pending"
+					| "rejected"
+					| null,
+				pendingAttempts,
+			});
+			const hasQr = status === "has_qr";
 			return {
 				id: r.id,
 				name: r.name,
 				address: r.address,
-				district: r.district,
-				jaisId: r.jaisId,
 				coords: r.coords,
-				institutionId: r.institutionId,
-				createdAt: r.createdAt,
-				updatedAt: r.updatedAt,
-				isUnlocked,
-				isPending,
-				institutionStatus: status,
-				institutionSlug: r.institutionSlug,
-				institutionCategory: r.institutionCategory,
-				qrContent: r.qrContent,
-				supportedPayment: r.supportedPayment,
+				status,
+				pendingAttempts,
+				institutionSlug: hasQr ? r.institutionSlug : null,
+				institutionCategory: hasQr ? r.institutionCategory : null,
+				qrContent: hasQr ? r.qrContent : null,
+				supportedPayment: hasQr ? r.supportedPayment : null,
+				contributorName: hasQr ? r.contributorName : null,
 			};
 		});
 	},
@@ -65,32 +77,9 @@ export const getQuestMosques = unstable_cache(
 	{ revalidate: 300, tags: ["quest-mosques"] },
 );
 
-export const getQuestStats = unstable_cache(
-	async (): Promise<QuestStats> => {
-		const [stats] = await db
-			.select({
-				total: count(),
-			})
-			.from(questMosques);
-
-		const [unlockedCount] = await db
-			.select({ count: count() })
-			.from(questMosques)
-			.innerJoin(institutions, eq(questMosques.institutionId, institutions.id))
-			.where(eq(institutions.status, "approved"));
-
-		return {
-			total: Number(stats?.total ?? 0),
-			unlocked: Number(unlockedCount?.count ?? 0),
-		};
-	},
-	["quest-stats"],
-	{ revalidate: 300, tags: ["quest-mosques"] },
-);
-
 export const getQuestLeaderboard = unstable_cache(
 	async (): Promise<QuestLeaderboardEntry[]> => {
-		const contributionsCount = count(questMosques.id);
+		const contributionsCount = count(questAttempts.id);
 		const rows = await db
 			.select({
 				userId: users.id,
@@ -98,13 +87,19 @@ export const getQuestLeaderboard = unstable_cache(
 				image: sql<string | null>`coalesce(${users.image}, ${users.avatarUrl})`,
 				count: contributionsCount,
 			})
-			.from(questMosques)
-			.innerJoin(institutions, eq(questMosques.institutionId, institutions.id))
-			.innerJoin(users, eq(institutions.contributorId, users.id))
+			.from(questAttempts)
+			.innerJoin(
+				questMosques,
+				and(
+					eq(questAttempts.questMosqueId, questMosques.id),
+					eq(questAttempts.institutionId, questMosques.institutionId),
+				),
+			)
+			.innerJoin(users, eq(questAttempts.userId, users.id))
 			.where(
 				and(
-					isNotNull(institutions.contributorId),
-					eq(institutions.status, "approved"),
+					isNotNull(questAttempts.userId),
+					eq(questAttempts.status, "approved"),
 				),
 			)
 			.groupBy(users.id, users.name, users.image, users.avatarUrl)
