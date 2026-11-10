@@ -9,6 +9,7 @@ import {
 	Loader2,
 	LogIn,
 	LogOut,
+	MapPinned,
 	Menu,
 	Moon,
 } from "lucide-react";
@@ -51,6 +52,11 @@ const links = [
 		icon: HeartHandshake,
 	},
 	{
+		name: "Quest",
+		href: "/quest",
+		icon: MapPinned,
+	},
+	{
 		name: "Carta Penghantar QR",
 		href: "/leaderboard",
 		icon: BarChart,
@@ -65,6 +71,7 @@ const links = [
 const publicLinks = [
 	{ name: "Laman Utama", href: "/", icon: Home },
 	{ name: "Hantar QR", href: "/contribute", icon: HeartHandshake },
+	{ name: "Quest", href: "/quest", icon: MapPinned },
 	{ name: "Carta Penghantar QR", href: "/leaderboard", icon: BarChart },
 	{ name: "Ramadhan", href: "/ramadhan", icon: Moon },
 ];
