@@ -30,7 +30,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 				<input
 					type={type}
 					className={cn(
-						"min-h-0 min-w-0 flex-1 border-0 bg-transparent p-0 text-base leading-normal text-foreground md:text-sm",
+						"min-h-0 min-w-0 flex-1 border-0 bg-transparent p-0 text-base leading-normal text-foreground [@media(pointer:fine)]:md:text-sm",
 						"file:border-0 file:bg-transparent file:text-sm file:font-medium",
 						"placeholder:text-muted-foreground",
 						"shadow-none outline-none focus-visible:ring-0 focus-visible:ring-offset-0",
