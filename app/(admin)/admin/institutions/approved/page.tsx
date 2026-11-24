@@ -15,7 +15,7 @@ export default async function ApprovedInstitutionsPage(props: {
 	return (
 		<SidebarProvider>
 			<AppSidebar variant="inset" />
-			<SidebarInset>
+			<SidebarInset className="min-w-0 overflow-x-hidden">
 				<AdminLayout
 					title="Approved Institutions"
 					description="View and manage approved institutions"

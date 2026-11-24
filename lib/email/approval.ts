@@ -1,9 +1,14 @@
 import { EmailParams, MailerSend, Recipient, Sender } from "mailersend";
 import { env } from "@/env";
+import {
+	type ApprovalSendResult,
+	approvalSendError,
+	approvalSendResponse,
+} from "./approval-result";
 
 /**
  * Sends an institution approval email to the submitter via MailerSend template.
- * No-op if MailerSend is not configured (missing API key or template ID).
+ * Missing configuration is an explicit failure; acceptance requires a message ID.
  */
 export async function sendInstitutionApprovalEmail(params: {
 	recipientEmail: string;
@@ -13,14 +18,19 @@ export async function sendInstitutionApprovalEmail(params: {
 	state: string;
 	category: string;
 	institutionName: string;
-}): Promise<{ ok: boolean; error?: string }> {
+}): Promise<ApprovalSendResult> {
 	const apiKey = env.MAILERSEND_API_KEY;
 	const templateId = env.MAILERSEND_APPROVAL_TEMPLATE_ID;
 	const fromEmail = env.MAILERSEND_FROM_EMAIL ?? "noreply@mail.sedekah.je";
 	const fromName = env.MAILERSEND_FROM_NAME ?? "SedekahJe";
 
 	if (!apiKey || !templateId) {
-		return { ok: true }; // no-op when not configured
+		return {
+			ok: false,
+			certainty: "rejected",
+			error:
+				"Approval email is not configured. Set the MailerSend API key and approval template before retrying.",
+		};
 	}
 
 	try {
@@ -51,10 +61,8 @@ export async function sendInstitutionApprovalEmail(params: {
 			.setTemplateId(templateId)
 			.setPersonalization(personalization);
 
-		await mailerSend.email.send(emailParams);
-		return { ok: true };
+		return approvalSendResponse(await mailerSend.email.send(emailParams));
 	} catch (err) {
-		const message = err instanceof Error ? err.message : String(err);
-		return { ok: false, error: message };
+		return approvalSendError(err);
 	}
 }

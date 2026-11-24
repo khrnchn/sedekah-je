@@ -92,6 +92,13 @@
 			"when": 1794209112587,
 			"tag": "0012_quest_attempts",
 			"breakpoints": true
+		},
+		{
+			"idx": 13,
+			"version": "7",
+			"when": 1795489800852,
+			"tag": "0013_approval_email_tracking",
+			"breakpoints": true
 		}
 	]
 }

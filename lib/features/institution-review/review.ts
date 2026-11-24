@@ -3,8 +3,10 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { after } from "next/server";
 import { db } from "@/db";
 import { institutions, users } from "@/db/schema";
-import { sendInstitutionApprovalEmail } from "@/lib/email/approval";
-import { buildInstitutionApproveLink } from "@/lib/email/approval-link";
+import {
+	queueApprovalEmails,
+	sendTrackedApprovalEmail,
+} from "@/lib/email/approval-delivery";
 import {
 	assertActiveAdminReviewer,
 	createInstitutionBatchReviewModule,
@@ -47,40 +49,13 @@ function runReviewSideEffects(decision: InstitutionReviewDecision) {
 }
 
 function scheduleApprovalEmail(row: typeof institutions.$inferSelect): void {
-	if (!row.contributorId) return;
-
-	const payload = {
-		contributorId: row.contributorId,
-		category: row.category,
-		slug: row.slug,
-		name: row.name,
-		state: row.state,
-		city: row.city,
-	};
 	workAfterResponse(async () => {
 		try {
-			const [contributor] = await db
-				.select({ email: users.email, name: users.name })
-				.from(users)
-				.where(eq(users.id, payload.contributorId))
-				.limit(1);
-			if (!contributor?.email) return;
-
-			const send = await sendInstitutionApprovalEmail({
-				recipientEmail: contributor.email,
-				recipientName: contributor.name ?? null,
-				approveLink: buildInstitutionApproveLink(
-					payload.category,
-					payload.slug,
-				),
-				city: payload.city,
-				state: payload.state,
-				category: payload.category,
-				institutionName: payload.name,
+			await sendTrackedApprovalEmail(row.id);
+		} catch {
+			console.error("[approval email] Processing failed", {
+				institutionId: row.id,
 			});
-			if (!send.ok) console.error("[approval email]", send.error);
-		} catch (error) {
-			console.error("[approval email]", error);
 		}
 	});
 }
@@ -244,6 +219,8 @@ export const reviewPendingInstitution = createInstitutionReviewModule({
 					.returning();
 
 				if (!updated) return null;
+				if (input.decision === "approved")
+					await queueApprovalEmails(tx, [updated.id]);
 				await syncQuestForInstitutions(tx, [updated.id]);
 				return updated;
 			});
@@ -271,64 +248,7 @@ async function findReviewer(reviewerId: string) {
 function scheduleApprovalEmails(
 	rows: (typeof institutions.$inferSelect)[],
 ): void {
-	const payloads = rows.flatMap((row) =>
-		row.contributorId
-			? [
-					{
-						id: row.id,
-						contributorId: row.contributorId,
-						category: row.category,
-						slug: row.slug,
-						name: row.name,
-						state: row.state,
-						city: row.city,
-					},
-				]
-			: [],
-	);
-	if (payloads.length === 0) return;
-
-	workAfterResponse(async () => {
-		try {
-			const contributorIds = [...new Set(payloads.map((p) => p.contributorId))];
-			const contributors = await db
-				.select({ id: users.id, email: users.email, name: users.name })
-				.from(users)
-				.where(inArray(users.id, contributorIds));
-			const byId = new Map(contributors.map((c) => [c.id, c]));
-
-			const sends = payloads.flatMap((payload) => {
-				const contributor = byId.get(payload.contributorId);
-				if (!contributor?.email) return [];
-				return [
-					sendInstitutionApprovalEmail({
-						recipientEmail: contributor.email,
-						recipientName: contributor.name ?? null,
-						approveLink: buildInstitutionApproveLink(
-							payload.category,
-							payload.slug,
-						),
-						city: payload.city,
-						state: payload.state,
-						category: payload.category,
-						institutionName: payload.name,
-					}).then((send) => {
-						if (!send.ok)
-							console.error("[approval email]", payload.id, send.error);
-					}),
-				];
-			});
-
-			const results = await Promise.allSettled(sends);
-			for (const result of results) {
-				if (result.status === "rejected") {
-					console.error("[approval email]", result.reason);
-				}
-			}
-		} catch (error) {
-			console.error("[approval email]", error);
-		}
-	});
+	for (const row of rows) scheduleApprovalEmail(row);
 }
 
 /**
@@ -409,6 +329,11 @@ export const reviewPendingInstitutions = createInstitutionBatchReviewModule({
 					)
 					.returning();
 
+				if (input.decision === "approved")
+					await queueApprovalEmails(
+						tx,
+						updated.map((row) => row.id),
+					);
 				await syncQuestForInstitutions(
 					tx,
 					updated.map((row) => row.id),

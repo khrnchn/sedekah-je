@@ -7,23 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { formatDateTime } from "@/lib/date-utils";
-import type { categories, states } from "@/lib/institution-constants";
+import { ApprovalEmailStatus } from "./approval-email-status";
+import type { ApprovedInstitution } from "./approved-table";
 import { AssignContributorDialog } from "./assign-contributor-dialog";
 import { UndoApprovalDialog } from "./undo-approval-dialog";
-
-type ApprovedInstitution = {
-	id: number;
-	name: string;
-	category: (typeof categories)[number];
-	state: (typeof states)[number];
-	city: string;
-	contributorName: string | null;
-	contributorId: string | null;
-	createdAt: Date;
-	reviewedAt: Date | null;
-	reviewedBy: string | null;
-	reviewerName: string | null;
-};
 
 type User = {
 	id: string;
@@ -129,6 +116,17 @@ export const createColumns = (
 				const date = row.getValue("reviewedAt") as Date | null;
 				return <div>{formatDateTime(date)}</div>;
 			},
+			enableSorting: false,
+		},
+		{
+			id: "approvalEmail",
+			header: "Approval email",
+			cell: ({ row }) => (
+				<ApprovalEmailStatus
+					institutionId={row.original.id}
+					email={row.original.approvalEmail}
+				/>
+			),
 			enableSorting: false,
 		},
 		{

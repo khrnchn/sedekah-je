@@ -5,7 +5,9 @@ import { revalidatePath, revalidateTag } from "next/cache";
 import { db } from "@/db";
 import { institutions, users } from "@/db/schema";
 import { requireAdminSession } from "@/lib/auth-helpers";
+import { sendTrackedApprovalEmail } from "@/lib/email/approval-delivery";
 import { reviewPendingInstitution } from "@/lib/features/institution-review/review";
+import { assertActiveAdminReviewer } from "@/lib/features/institution-review/review-core";
 import { syncQuestForInstitutions } from "@/lib/features/quest/sync";
 import { normalizeInstitutionCategory } from "@/lib/institution-categories";
 import { reverseGeocodeInstitution } from "@/lib/integrations/geocode";
@@ -319,4 +321,24 @@ export async function undoRejection(id: number, adminNotes?: string) {
 	revalidateTag("user-contributions", "max");
 
 	return result;
+}
+
+export async function retryInstitutionApprovalEmail(institutionId: number) {
+	const { session } = await requireAdminSession();
+	const [reviewer] = await db
+		.select({
+			role: users.role,
+			isActive: users.isActive,
+			banned: users.banned,
+		})
+		.from(users)
+		.where(eq(users.id, session.user.id))
+		.limit(1);
+	assertActiveAdminReviewer(reviewer ?? null);
+	if (!Number.isSafeInteger(institutionId) || institutionId <= 0)
+		throw new Error("Invalid institution ID");
+	const result = await sendTrackedApprovalEmail(institutionId);
+	revalidatePath("/admin/institutions/approved", "page");
+	if (!result.ok) return { ok: false, error: result.error };
+	return { ok: true };
 }

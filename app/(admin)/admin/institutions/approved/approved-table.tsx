@@ -31,11 +31,13 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { REJECTION_TEMPLATES } from "@/lib/admin-templates";
+import type { ApprovalEmailSummary } from "@/lib/email/approval-status";
 import { categories, states } from "@/lib/institution-constants";
 import { batchUndoApproval } from "../_lib/batch-actions";
 import { createColumns } from "./columns";
 
 export type ApprovedInstitution = {
+	approvalEmail: ApprovalEmailSummary | null;
 	id: number;
 	name: string;
 	category: (typeof categories)[number];
@@ -76,6 +78,16 @@ export default function ApprovedInstitutionsTable({
 }) {
 	const router = useRouter();
 	const pathname = usePathname();
+	const awaitingEmail = data.institutions.some(
+		(row) =>
+			row.approvalEmail &&
+			["pending", "sending", "accepted"].includes(row.approvalEmail.status),
+	);
+	useEffect(() => {
+		if (!awaitingEmail) return;
+		const timer = setInterval(() => router.refresh(), 15_000);
+		return () => clearInterval(timer);
+	}, [awaitingEmail, router]);
 	const searchParams = useSearchParams();
 	const [isPending, startTransition] = useTransition();
 
@@ -285,9 +297,7 @@ export default function ApprovedInstitutionsTable({
 	return (
 		<>
 			<div
-				className={
-					isPending ? "opacity-50 pointer-events-none transition-opacity" : ""
-				}
+				className={`min-w-0 w-full overflow-x-auto ${isPending ? "opacity-50 pointer-events-none transition-opacity" : ""}`}
 			>
 				<ReusableDataTable
 					columns={columns}

@@ -1,10 +1,14 @@
 // page.tsx – server component for viewing a single approved institution
 
+import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { AdminLayout } from "@/components/layout/admin-layout";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { db } from "@/db";
+import { approvalEmails } from "@/db/schema";
 import { getApprovedInstitutionById } from "../../_lib/queries";
+import { ApprovalEmailStatus } from "../approval-email-status";
 import ClientSection from "./client-section";
 
 interface Props {
@@ -24,6 +28,11 @@ export default async function ApprovedInstitutionDetailPage(props: Props) {
 	if (!institution) {
 		notFound();
 	}
+	const [email] = await db
+		.select()
+		.from(approvalEmails)
+		.where(eq(approvalEmails.institutionId, idNum))
+		.limit(1);
 	return (
 		<SidebarProvider>
 			<AppSidebar variant="inset" />
@@ -38,6 +47,19 @@ export default async function ApprovedInstitutionDetailPage(props: Props) {
 						{ label: `#${institution.id}` },
 					]}
 				>
+					<section
+						className="mb-6 space-y-3 rounded-lg border p-4"
+						aria-labelledby="approval-email-heading"
+					>
+						<h2 id="approval-email-heading" className="font-semibold">
+							Approval email
+						</h2>
+						<ApprovalEmailStatus
+							institutionId={idNum}
+							email={email ?? null}
+							detailed
+						/>
+					</section>
 					<ClientSection institution={institution} />
 				</AdminLayout>
 			</SidebarInset>

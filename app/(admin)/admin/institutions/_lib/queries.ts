@@ -14,7 +14,7 @@ import {
 import { alias } from "drizzle-orm/pg-core";
 import { unstable_cache } from "next/cache";
 import { db } from "@/db";
-import { institutions, users } from "@/db/schema";
+import { approvalEmails, institutions, users } from "@/db/schema";
 import { requireAdminSession } from "@/lib/auth-helpers";
 import { categories, states } from "@/lib/institution-constants";
 import { getPendingScopeCondition } from "./pending-scope-condition";
@@ -311,6 +311,16 @@ export async function getApprovedInstitutionsPaginated(searchParams: {
 				db
 					.select({
 						id: institutions.id,
+						approvalEmail: {
+							institutionId: approvalEmails.institutionId,
+							status: approvalEmails.status,
+							attemptCount: approvalEmails.attemptCount,
+							lastError: approvalEmails.lastError,
+							attemptedAt: approvalEmails.attemptedAt,
+							acceptedAt: approvalEmails.acceptedAt,
+							deliveredAt: approvalEmails.deliveredAt,
+							messageId: approvalEmails.messageId,
+						},
 						name: institutions.name,
 						category: institutions.category,
 						state: institutions.state,
@@ -329,6 +339,10 @@ export async function getApprovedInstitutionsPaginated(searchParams: {
 					})
 					.from(institutions)
 					.leftJoin(users, eq(institutions.contributorId, users.id))
+					.leftJoin(
+						approvalEmails,
+						eq(approvalEmails.institutionId, institutions.id),
+					)
 					.where(whereClause)
 					.orderBy(desc(institutions.createdAt), desc(institutions.id))
 					.offset(offset)
@@ -346,7 +360,7 @@ export async function getApprovedInstitutionsPaginated(searchParams: {
 			};
 		},
 		[
-			"approved-institutions-paginated",
+			"approved-institutions-paginated-email-v1",
 			qNorm,
 			pageNorm,
 			limitNorm,

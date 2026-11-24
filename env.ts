@@ -19,6 +19,8 @@ export const env = createEnv({
 		MAILERSEND_FROM_NAME: z.string().optional(),
 		MAILERSEND_APPROVAL_TEMPLATE_ID: z.string().min(1).optional(),
 
+		MAILERSEND_WEBHOOK_SECRET: z.string().min(16).optional(),
+
 		// Telegram review bot (optional; all values are server-only)
 		TELEGRAM_BOT_TOKEN: z.string().min(1).optional(),
 		TELEGRAM_CHAT_ID: z
