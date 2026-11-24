@@ -99,6 +99,13 @@
 			"when": 1795489800852,
 			"tag": "0013_approval_email_tracking",
 			"breakpoints": true
+		},
+		{
+			"idx": 14,
+			"version": "7",
+			"when": 1795535516994,
+			"tag": "0014_approval_email_providers",
+			"breakpoints": true
 		}
 	]
 }

@@ -108,6 +108,9 @@ export function ApprovalEmailStatus({
 					{email && (
 						<>
 							<p>
+								Provider: {email.provider === "gmail" ? "Gmail" : "MailerSend"}
+							</p>
+							<p>
 								Attempts: {email.attemptCount} · Last attempt:{" "}
 								{formatDateTime(email.attemptedAt)}
 							</p>

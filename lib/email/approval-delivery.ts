@@ -53,6 +53,7 @@ export async function sendTrackedApprovalEmail(
 			.update(approvalEmails)
 			.set({
 				status: "sending",
+				provider: "mailersend",
 				attemptToken: token,
 				attemptCount: sql`${approvalEmails.attemptCount} + 1`,
 				attemptedAt: new Date(),
@@ -189,7 +190,12 @@ export async function recordApprovalEmailEvent(event: {
 						: null,
 				updatedAt: new Date(),
 			})
-			.where(eq(approvalEmails.messageId, event.messageId));
+			.where(
+				and(
+					eq(approvalEmails.messageId, event.messageId),
+					eq(approvalEmails.provider, "mailersend"),
+				),
+			);
 	});
 	invalidateApprovalEmailStatus();
 }

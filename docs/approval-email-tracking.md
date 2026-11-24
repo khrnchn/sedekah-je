@@ -33,3 +33,9 @@ APPROVAL_EMAIL_LOCAL_TESTS=true bun test lib/email
 ```
 
 These tests send no real email. They exercise concurrent claims, explicit rejection, safe retry, missing configuration, uncertain outcomes, transaction rollback, signature authentication, early callbacks and event ordering.
+
+## Grouped Gmail notifications
+
+Migration `0014_approval_email_providers` records the provider separately. An explicitly authorized operator backfill can send one connected-Gmail summary per contributor covering several approvals. Those institution records share the actual Gmail message ID and remain Accepted; Gmail send acceptance does not confirm inbox delivery. MailerSend callbacks only update MailerSend records.
+
+The connected Gmail account is an operator tool, not a Railway credential. Future automatic application emails still use MailerSend until a separate runtime sender is configured. The operator must claim eligible records before sending, preserve a private send receipt, and record the resulting message ID. Interrupted or ambiguous sends require investigation before retrying.

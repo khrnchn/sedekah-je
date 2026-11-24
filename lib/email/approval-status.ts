@@ -27,8 +27,10 @@ export const approvalEmailDescriptions: Record<ApprovalEmailStatus, string> = {
 	pending: "Waiting to send. You can send this pending email now.",
 	sending:
 		"A send attempt started. Check provider activity before attempting another send.",
-	accepted: "MailerSend accepted the email. Delivery has not been confirmed.",
-	delivered: "MailerSend confirmed delivery to the recipient’s mail server.",
+	accepted:
+		"The email provider accepted this message. Delivery has not been confirmed.",
+	delivered:
+		"The email provider confirmed delivery to the recipient’s mail server.",
 	failed: "The email was not accepted. Fix this issue, then retry.",
 	bounced:
 		"The recipient’s mail server rejected the email. Check the recipient before sending again.",
@@ -38,6 +40,7 @@ export const approvalEmailDescriptions: Record<ApprovalEmailStatus, string> = {
 
 export type ApprovalEmailSummary = Pick<
 	typeof import("@/db/schema").approvalEmails.$inferSelect,
+	| "provider"
 	| "institutionId"
 	| "status"
 	| "attemptCount"

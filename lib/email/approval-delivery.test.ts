@@ -185,6 +185,35 @@ localTest(
 	},
 );
 localTest(
+	"grouped Gmail messages share an ID and ignore MailerSend callbacks",
+	async () => {
+		const gmailIds = [await seed(), await seed()];
+		const mailersendId = await seed();
+		const messageId = randomUUID();
+		for (const id of gmailIds) {
+			await db
+				.update(approvalEmails)
+				.set({ provider: "gmail", status: "accepted", messageId })
+				.where(eq(approvalEmails.institutionId, id));
+		}
+		await sendTrackedApprovalEmail(mailersendId, async () => ({
+			ok: true,
+			messageId,
+		}));
+		await recordApprovalEmailEvent({
+			messageId,
+			status: "delivered",
+			occurredAt: new Date(),
+		});
+		for (const id of gmailIds)
+			assert.equal((await current(id)).status, "accepted");
+		assert.equal((await current(mailersendId)).status, "delivered");
+		await db
+			.delete(approvalEmailEvents)
+			.where(eq(approvalEmailEvents.messageId, messageId));
+	},
+);
+localTest(
 	"queued emails roll back with an unsuccessful approval transaction",
 	async () => {
 		const id = await seed();

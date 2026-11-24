@@ -312,6 +312,7 @@ export async function getApprovedInstitutionsPaginated(searchParams: {
 					.select({
 						id: institutions.id,
 						approvalEmail: {
+							provider: approvalEmails.provider,
 							institutionId: approvalEmails.institutionId,
 							status: approvalEmails.status,
 							attemptCount: approvalEmails.attemptCount,
@@ -360,7 +361,7 @@ export async function getApprovedInstitutionsPaginated(searchParams: {
 			};
 		},
 		[
-			"approved-institutions-paginated-email-v1",
+			"approved-institutions-paginated-email-v2",
 			qNorm,
 			pageNorm,
 			limitNorm,
