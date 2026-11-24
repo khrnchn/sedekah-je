@@ -10,7 +10,6 @@ import {
 	inspectDuitNow,
 	metres,
 	operationVersion,
-	reviewVersion,
 	similarInstitutionNames,
 	telegramApprovalBlockers,
 } from "./telegram-evidence";
@@ -50,79 +49,49 @@ test("name comparisons are conservative with abbreviations, generic and truncate
 	assert.equal(similarInstitutionNames("Masjid UPM", "Masjid UPM"), true);
 	assert.ok(metres([3.1, 101.6], [3.1001, 101.6]) < 300);
 });
-test("physical mosque posters require explicit recipient and display evidence", () => {
+test("pre-AI approval needs complete QR/location data but no evidence attestation", () => {
 	const row = makeRecord();
-	assert.ok(
-		telegramApprovalBlockers(row, []).some((b) => b.includes("recipient")),
-	);
-	row.reviewMetadata = {
-		evidence: {
-			version: reviewVersion(row),
-			recipientInstitution: true,
-			physicalDisplay: true,
-		},
-	};
 	assert.deepEqual(telegramApprovalBlockers(row, []), []);
+	for (const category of ["masjid", "surau", "kebajikan", "tahfiz"] as const) {
+		assert.deepEqual(telegramApprovalBlockers({ ...row, category }, []), []);
+	}
+	for (const updates of [
+		{ qrImage: null },
+		{ qrContent: null },
+		{ address: " " },
+		{ coords: null },
+	]) {
+		assert.ok(telegramApprovalBlockers({ ...row, ...updates }, []).length);
+	}
 	const before = operationVersion(row);
 	row.city = "Shah Alam";
 	assert.notEqual(operationVersion(row), before);
-	assert.ok(telegramApprovalBlockers(row, []).length);
+	assert.deepEqual(telegramApprovalBlockers(row, []), []);
 });
-test("NGO/tahfiz official graphics pass after ownership and official source confirmation", () => {
-	for (const category of ["kebajikan", "tahfiz"] as const) {
-		const row = makeRecord({ category });
-		row.reviewMetadata = {
-			evidence: {
-				version: reviewVersion(row),
-				recipientInstitution: true,
-				officialSource: "https://official.example.test/donate",
-			},
-		};
-		assert.deepEqual(telegramApprovalBlockers(row, []), []);
-		row.category = "masjid";
-		assert.ok(row.reviewMetadata.evidence);
-		row.reviewMetadata.evidence.version = reviewVersion(row);
-		assert.ok(
-			telegramApprovalBlockers(row, []).some((b) => b.includes("physical")),
-		);
-	}
-});
-test("individual recipients, missing payload, checksum failure, holds and duplicates remain guarded", () => {
-	const row = makeRecord({ qrContent: makePayload("AHMAD BIN ALI") });
-	assert.ok(telegramApprovalBlockers(row, []).length > 0);
-	row.qrContent = null;
-	assert.ok(
-		telegramApprovalBlockers(row, []).some((b) => b.includes("checksum")),
-	);
-	row.qrContent = makePayload();
-	row.reviewMetadata = {
-		held: true,
-		evidence: {
-			version: reviewVersion(row),
-			recipientInstitution: true,
-			physicalDisplay: true,
-		},
-	};
-	assert.ok(telegramApprovalBlockers(row, []).some((b) => b.includes("held")));
-	row.reviewMetadata.held = false;
+test("format, recipient and fuzzy duplicate warnings remain advisory for manual review", () => {
+	const row = makeRecord({ qrContent: "https://example.test/payment" });
+	assert.deepEqual(telegramApprovalBlockers(row, []), []);
 	const duplicate = {
-		...makeRecord({ id: 706, name: "Masjid UPM" }),
+		...makeRecord({ id: 706 }),
 		reason: "similar_name" as const,
-		version: "fixture-duplicate-v1",
+	};
+	assert.deepEqual(telegramApprovalBlockers(row, [duplicate]), []);
+	assert.deepEqual(
+		telegramApprovalBlockers(row, [{ ...duplicate, reason: "nearby" }]),
+		[],
+	);
+});
+test("holds and exact payload duplicates still block approval", () => {
+	const row = makeRecord({ reviewMetadata: { held: true } });
+	assert.ok(telegramApprovalBlockers(row, []).some((b) => b.includes("held")));
+	row.reviewMetadata = null;
+	const duplicate = {
+		...makeRecord({ id: 706 }),
+		reason: "exact_payload" as const,
 	};
 	assert.ok(
 		telegramApprovalBlockers(row, [duplicate]).some((b) =>
-			b.includes("duplicates"),
+			b.includes("Exact payload duplicate"),
 		),
-	);
-	row.reviewMetadata.differentInstitutions = {
-		version: reviewVersion(row),
-		ids: [706],
-		versions: { "706": "fixture-duplicate-v1" },
-	};
-	assert.deepEqual(telegramApprovalBlockers(row, [duplicate]), []);
-	assert.ok(
-		telegramApprovalBlockers(row, [{ ...duplicate, reason: "exact_payload" }])
-			.length > 0,
 	);
 });

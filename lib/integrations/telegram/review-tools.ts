@@ -350,20 +350,6 @@ export async function handleToolCallback(
 				promptMessageId: message.message_id,
 			};
 			if (op.kind === "approve" || op.kind === "reject") {
-				if (op.kind === "approve") {
-					const latest = await tools.getRecord(op.institutionId);
-					if (!latest?.qrImage) throw new Error("QR image is unavailable");
-					const imageHash = createHash("sha256")
-						.update(await tools.fetchImage(latest.qrImage))
-						.digest("hex");
-					if (
-						imageHash !== op.payload.imageHash ||
-						imageHash !== latest.reviewMetadata?.evidence?.imageHash
-					)
-						throw new Error(
-							"Image evidence changed; confirm the recipient and display again",
-						);
-				}
 				const reviewed = await tools.review({
 					institutionId: op.institutionId,
 					reviewerId: config.reviewerUserId,
@@ -618,23 +604,10 @@ export async function handleToolCallback(
 				row,
 				await tools.duplicates(row),
 			);
-			if (blockers.length === 0 && row.qrImage) {
-				const bytes = await tools.fetchImage(row.qrImage);
-				const imageHash = createHash("sha256").update(bytes).digest("hex");
-				if (imageHash !== row.reviewMetadata?.evidence?.imageHash)
-					blockers.push(
-						"Confirm image evidence again; image bytes changed or no image confirmation is saved",
-					);
-				const decoded = await tools.recoverQr(bytes);
-				if (decoded !== row.qrContent)
-					blockers.push(
-						"Image QR differs from the saved payload or cannot be decoded. Use Retry/replace QR.",
-					);
-			}
 			if (blockers.length)
 				await client.sendMessage({
 					chatId: config.chatId,
-					text: `Approval needs attention:\n${blockers.map((b) => `• ${b}`).join("\n")}`,
+					text: `Approval needs attention:\n${blockers.map((b) => `• ${b}`).join("\n")}\n\nUse Review tools to correct the missing data or compare an exact QR duplicate.`,
 				});
 			else
 				await preview(
@@ -642,8 +615,8 @@ export async function handleToolCallback(
 					config,
 					candidate,
 					"approve",
-					{ imageHash: row.reviewMetadata?.evidence?.imageHash },
-					`Approve ${row.name}? Recipient ownership and image evidence were confirmed. Current data and duplicates will be checked again.`,
+					{},
+					`Approve ${row.name}? Verify the QR recipient and institution details before confirming. Current data and exact QR duplicates will be checked again.`,
 					tools,
 				);
 		} else if (action.action === "analysis") {

@@ -84,16 +84,16 @@ are included in search and navigation.
   payload in one database transaction. Audit history retains the prior pair.
   Abandoned previews may leave unreferenced staged objects; never delete prior
   audit references when cleaning storage.
-- **Confirm evidence** requires ownership confirmation: the recipient belongs to
+- **Confirm evidence** optionally records ownership confirmation: the recipient belongs to
   the institution and is not an individual. Reply `PHYSICAL` to attest a photo of
   its physical display. NGO (`kebajikan`)/tahfiz graphics may instead use an official
   HTTPS source URL the admin has opened and verified. A second confirmation saves
-  that attestation. Image byte hashes are checked again before quick approval.
+  that attestation with an image byte hash. This is advisory and does not gate approval.
 - **Compare duplicates** shows exact payload matches, similar names in the same
   state and approved institutions within 300 metres. Nearby is a suggestion.
   Choose **Different institution** or confirm rejection as a duplicate of the
   displayed ID. Alternate QR data remains stored. Exact payload matches always
-  block quick approval; changed comparison records require a fresh decision.
+  block quick approval. Similar-name and nearby suggestions remain advisory.
 - **Hold** keeps a record `pending` but removes it from ordinary next navigation.
   Use **Held submissions** or `/find ID`, then **Resume submission** to return it
   to its original queue. Community and bulk-import queues remain separate.
@@ -109,15 +109,31 @@ Long plain-text previews and AI reports are split without truncation. Confirmati
 buttons are bound to the final preview message. Older approval/undo confirmations
 must be reopened after this upgrade.
 
+Approval uses the pre-AI **Approve → Confirm approval** flow. Required data is a
+QR image, a non-empty decoded payload, an address and coordinates. Exact payload
+duplicates block approval, and held submissions must be resumed first. The final
+save rechecks these conditions and the operation's current record snapshot.
+Recipient-name, checksum, image-type and similar/nearby-duplicate warnings remain
+advisory: the admin reviews the evidence and decides. AI availability and saved
+recipient/physical-display attestations do not gate approval.
+
 ## Optional AI assessment
 
 ```dotenv
 GEMINI_API_KEY=""
 GEMINI_MODEL="gemini-flash-latest"
+TELEGRAM_AI_PROVIDER="gemini"
 TELEGRAM_AI_ENABLED="false"
 ```
 
-For the verified Claude-compatible gateway, use server-only settings:
+The default is direct Gemini. A direct text probe and the existing image
+assessment request both succeeded on 23 November 2026. To switch a deployed bot
+back from the unavailable gateway, set `TELEGRAM_AI_PROVIDER="gemini"` in its
+server environment and redeploy. Keep its existing `GEMINI_API_KEY`; gateway
+credentials are not used by Gemini. `TELEGRAM_AI_ENABLED` gates both automatic
+and requested analysis, so leave it `true` if photo checks should remain active.
+
+For a Claude-compatible gateway, the optional server-only settings are:
 
 ```dotenv
 TELEGRAM_AI_PROVIDER="anthropic-compatible"
@@ -129,9 +145,8 @@ TELEGRAM_AI_ENABLED="false"
 
 Use the provider key only in the server environment and keep automatic analysis
 disabled until previously reviewed real images have been checked. The gateway
-accepted a synthetic image assessment on 27 October 2026. Direct Gemini access
-was still returning a billing-related 403 at the last check. Manual tools do not
-depend on either provider.
+accepted a synthetic image assessment on 27 October 2026 but later returned
+503/404 errors. Manual tools do not depend on either provider.
 
 When enabled, saving an ordinary community or partner submission persists queued
 work before scheduling it through Next.js `after`. Bulk imports and untouched

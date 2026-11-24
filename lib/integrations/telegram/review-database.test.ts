@@ -172,14 +172,11 @@ localTest(
 	},
 );
 localTest(
-	"Postgres: approval rechecks evidence, duplicates and operation; undo cannot undo a later review",
+	"Postgres: manual approval needs no evidence and rechecks duplicates and operation; undo cannot undo a later review",
 	async () => {
 		const row = await seed();
-		const evidence = await operation(row, "evidence", {
-			physicalDisplay: true,
-		});
-		await applyReviewOperation(evidence, actor);
 		const verified = await current(row.id);
+		assert.equal(verified.reviewMetadata?.evidence, undefined);
 		const approval = await operation(verified, "approve");
 		const { id, ...other } = makeRecord({
 			slug: "exact-duplicate",

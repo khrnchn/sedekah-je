@@ -261,8 +261,20 @@ test("missing QR payload opens from search and offers replacement", async () => 
 	await h.action("qr");
 	assert.equal(h.ops[0].kind, "prompt-qr");
 });
-test("evidence confirmation and old approval callbacks cannot directly approve", async () => {
+test("manual approval opens confirmation without evidence or an available AI provider", async () => {
 	const h = harness();
+	h.record.reviewMetadata = {
+		analysis: {
+			version: reviewVersion(h.record),
+			state: "unavailable",
+			model: "offline-gateway",
+			attempts: 1,
+			error: "http_404",
+		},
+	};
+	h.tools.fetchImage = async () => {
+		throw new Error("Approval must not require image analysis");
+	};
 	let approved = 0;
 	h.tools.review = async () => {
 		approved++;
@@ -270,13 +282,18 @@ test("evidence confirmation and old approval callbacks cannot directly approve",
 	};
 	await h.action("approve");
 	assert.equal(approved, 0);
-	assert.match(h.text(), /Approval needs attention/);
+	assert.equal(h.ops.at(-1)?.kind, "approve");
+	assert.doesNotMatch(h.text(), /Approval needs attention|were confirmed/);
+	await h.confirm();
+	assert.equal(approved, 1);
+});
+test("optional evidence confirmation still previews an attestation and rejects old approval callbacks", async () => {
+	const h = harness();
 	await h.action("evidence");
 	await h.reply("PHYSICAL");
 	assert.equal(h.ops.at(-1)?.kind, "evidence");
 	assert.match(h.text(), /not an individual/);
 	await h.action("approve-confirm");
-	assert.equal(approved, 0);
 	assert.match(h.text(), /older confirmation expired/);
 });
 test("approval carries a durable operation binding and creates guarded undo", async () => {

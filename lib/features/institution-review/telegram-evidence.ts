@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { z } from "zod";
+import { getReviewBlockerCodes } from "./review-blockers";
 
 export const assessmentSchema = z
 	.object({
@@ -231,46 +232,22 @@ export function telegramApprovalBlockers(
 	row: EvidenceRecord,
 	duplicates: DuplicateCandidate[],
 ): string[] {
-	const qr = inspectDuitNow(row.qrContent),
-		meta = row.reviewMetadata;
-	const evidence =
-		meta?.evidence?.version === reviewVersion(row) ? meta.evidence : undefined;
-	const blockers: string[] = [];
-	if (!row.qrImage || !qr.valid)
-		blockers.push(
-			"A valid DuitNow QR image and checksum are required; other formats need web review",
-		);
-	if (!row.address?.trim() || !row.coords)
-		blockers.push("Complete address and coordinates are required");
-	if (meta?.held) blockers.push("Resume this held submission first");
-	if (!evidence?.recipientInstitution)
-		blockers.push(
-			"Confirm recipient belongs to this institution and is not an individual",
-		);
-	if (
-		!evidence?.physicalDisplay &&
-		!(
-			["kebajikan", "tahfiz"].includes(row.category) && evidence?.officialSource
-		)
-	)
-		blockers.push(
-			"Confirm physical display, or verify an official source URL for NGO/tahfiz artwork",
-		);
-	if (duplicates.some((d) => d.reason === "exact_payload"))
-		blockers.push("Exact payload duplicate blocks quick approval");
-	const decided =
-		meta?.differentInstitutions?.version === reviewVersion(row)
-			? meta.differentInstitutions.ids
-			: [];
-	if (
-		duplicates.some(
-			(d) =>
-				d.reason !== "exact_payload" &&
-				(!decided.includes(d.id) ||
-					!d.version ||
-					meta?.differentInstitutions?.versions?.[String(d.id)] !== d.version),
-		)
-	)
-		blockers.push("Compare suspected duplicates and explicitly decide");
+	const messages = {
+		"qr-image": "QR image is missing",
+		"qr-content": "QR content is missing",
+		address: "Address is missing",
+		coords: "Coordinates are missing",
+	};
+	const blockers = getReviewBlockerCodes({
+		...row,
+		duplicateInstitutionId:
+			duplicates.find((d) => d.reason === "exact_payload")?.id ?? null,
+	}).map((blocker) =>
+		blocker.code === "duplicate"
+			? `Exact payload duplicate blocks quick approval (#${blocker.duplicateInstitutionId})`
+			: messages[blocker.code],
+	);
+	if (row.reviewMetadata?.held)
+		blockers.push("Resume this held submission first");
 	return blockers;
 }
